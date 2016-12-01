@@ -37,11 +37,15 @@ public class MMSClientHandler {
 		this.myPort = port;
 	}
 	
-	
-	
 	public String sendMSG(String dstMRN, String data) throws Exception{
 		return this.sndHdr.sendPost(dstMRN, data);
 	}
+	
+	//OONI
+	public String requestFile(String dstMRN, String fileName) throws Exception{
+		return this.sndHdr.sendPost2(dstMRN, fileName);
+	}
+	//OONI
 	class locUpdate implements Runnable{
 
 		@Override
