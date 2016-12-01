@@ -17,7 +17,7 @@ public class NettyStartupUtil {
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
-            b.handler(new LoggingHandler(LogLevel.TRACE));
+            b.handler(new LoggingHandler(LogLevel.INFO));
             b.childHandler(childHandler);
             block.accept(b);
             Channel ch = b.bind(port).sync().channel();
