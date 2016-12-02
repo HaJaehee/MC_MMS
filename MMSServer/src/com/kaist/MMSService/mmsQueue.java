@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -34,18 +35,18 @@ public class mmsQueue {
     		throw new Exception("No entry");
     	}
 	}
-	public static synchronized void putMessage(String mrn, FullHttpRequest req){
+	public static synchronized void putMessage(String mrn, FullHttpRequest req) throws UnsupportedEncodingException{
 		//String dstMRN;
     	//dstMRN = req.headers().get("dstMRN");
     	//System.out.println("dstMRN: "  + dstMRN);
     	if (queue.containsKey(mrn)){
     		//byte[] ret = queue.get(mrn);
-    		String ret = queue.get(mrn).toString();
+    		String ret = new String(queue.get(mrn), "UTF-8");
     		//String ret = new String(queue.get(mrn));
     		//byte[] requestBytes = new byte[req.content().capacity()];//= new byte[2048];//= new byte[req.content().capacity()];
     		String requestBytes = req.content().toString(Charset.forName("UTF-8"));
         	//byte[] requestBytes = req.content().toString(Charset.forName("UTF-8")).getBytes();
-    		String newEntry = ret + "," + requestBytes;
+    		String newEntry = ret + ", " + requestBytes;
     		
     		//byte[] newEntry  = new byte[ret.length + requestBytes.length + 1];
     		//System.arraycopy(ret, 0, newEntry, 0, ret.length);

@@ -1,4 +1,4 @@
-import com.kaist.ServiceConsumer.MMSClientHandler;
+import com.kaist.ServiceProvider.*;
 
 public class ServiceProvider {
 	public static void main(String args[]) throws Exception{

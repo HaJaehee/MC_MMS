@@ -15,10 +15,10 @@ public class MMSClientHandler {
 	private sndH sndHdr;
 	private String myMRN;
 	private int myPort;
-	public interface resCallBack{
+	interface resCallBack{
 		void callbackMethod(String data);
 	}
-	public interface reqCallBack{
+	interface reqCallBack{
 		String callbackMethod(String data);
 	}
 	private resCallBack myCallBack;
@@ -92,7 +92,7 @@ public class MMSClientHandler {
 	class rcvH extends MMSRcvHandler{
 		public rcvH(int port) throws IOException {
 			super(port);
-			Thread locationUpdate = new Thread(new locUpdate(2));
+			Thread locationUpdate = new Thread(new locUpdate(1));
 			locationUpdate.start();
 		}
 	}
@@ -107,7 +107,7 @@ public class MMSClientHandler {
 	class polH extends MMSRcvHandler{
 		public polH(String myMRN, String destMRN, int interval) throws IOException {
 			super(myMRN, destMRN, interval);
-			Thread locationUpdate = new Thread(new locUpdate(1));
+			Thread locationUpdate = new Thread(new locUpdate(2));
 			locationUpdate.start();
 		}
 		

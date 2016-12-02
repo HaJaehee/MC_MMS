@@ -36,7 +36,6 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
 
     private void processHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
         try {
-        	//Destination MRN에 대해서 확인한다.
         	String dstMRN;
         	dstMRN = req.headers().get("dstMRN");
         	
@@ -45,7 +44,6 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
         	//System.out.println(req.getUri());
         	
         	if (req.getUri().equals("/polling")){
-        		//Queue에서 값을 빼온다.
         		String srcMRN = req.headers().get("srcMRN");
         		try{
         			//System.out.println("srcMRN : " + srcMRN);
@@ -60,10 +58,9 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
         		}
         		
         	} else{
-	        	//CM에 MRN을 질의한다.              
-        		//System.out.println("dstMRN: " + dstMRN);
+        		System.out.println("dstMRN: " + dstMRN);
 	        	String IPAddress = requestToCM("MRN-Request:" + dstMRN);
-	        	//System.out.println("IPAddress = " + IPAddress);
+	        	System.out.println("IPAddress = " + IPAddress);
 	        	if (IPAddress.equals("No")){
 	        		mmsQueue.putMessage(dstMRN, req);
 	        		replyToSender(ctx, "No Device having that MRN".getBytes());
@@ -73,9 +70,8 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
 	        	int model = Integer.parseInt(IPAddress.split(":")[2]);
 	        	IPAddress = IPAddress.split(":")[0];
 	        	
-	        	//System.out.println("MRN: " + dstMRN + " IPAddress: " + IPAddress + " port:" + port + " model: " + model);
-	        	if (model == 2){ //model B일 경우 (destination이 MSR, MIR, SP일 경우)
-	        		// 릴레이
+	        	System.out.println("MRN: " + dstMRN + " IPAddress: " + IPAddress + " port:" + port + " model: " + model);
+	        	if (model == 2){
 		        	HttpRelayHandler http = new HttpRelayHandler();
 		        	
 		        	byte[] response = http.sendPost(req, IPAddress, port);
@@ -93,7 +89,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
         }
     }
     
-    private void replyToSender(ChannelHandlerContext ctx, byte[] data){ // Sender에게 데이터를 return 한다
+    private void replyToSender(ChannelHandlerContext ctx, byte[] data){
     	ByteBuf textb = Unpooled.copiedBuffer(data);
     	long responseLen = data.length;
     	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
@@ -105,7 +101,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
         f.addListener(ChannelFutureListener.CLOSE);
     }
     
-    private String requestToCM(String request) throws UnknownHostException, IOException{ //CM에 Component의 위치를 질의한다.
+    private String requestToCM(String request) throws UnknownHostException, IOException{
     	
     	//String modifiedSentence;
     	String returnedIP;
@@ -126,8 +122,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
     }
     
     
-    private byte[] sendPost(FullHttpRequest req, String IPAddress, int port) throws Exception { // Server에 Data를 보낸다.
-    	//System.out.println("uri?:" + req.getUri());
+    private byte[] sendPost(FullHttpRequest req, String IPAddress, int port) throws Exception { 
 		String url = "http://" + IPAddress + ":" + port + req.getUri();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();

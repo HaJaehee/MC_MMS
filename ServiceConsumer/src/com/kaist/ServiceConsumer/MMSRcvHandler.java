@@ -166,7 +166,6 @@ public class MMSRcvHandler {
 			in.close();
 			
 			String res = response.toString();
-			res = res.trim();
 			if (!res.equals("EMPTY")){
 				processRequest(res);
 			}else {
