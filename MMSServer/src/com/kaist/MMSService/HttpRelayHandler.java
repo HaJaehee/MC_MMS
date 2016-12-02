@@ -6,9 +6,13 @@ import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
@@ -44,9 +48,11 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
         	System.out.println("MRN: " + dstMRN + " IPAddress: " + IPAddress + " port:" + port);
         	
         	HttpRelayHandler http = new HttpRelayHandler();
-        	String response = http.sendPost(req, IPAddress, port);
-        	ByteBuf textb = Unpooled.copiedBuffer(response, CharsetUtil.UTF_8);
-        	long responseLen = response.length();
+        	
+        	byte[] response = http.sendPost(req, IPAddress, port);
+        	
+        	ByteBuf textb = Unpooled.copiedBuffer(response);
+        	long responseLen = response.length;
         	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         	res.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8");
         	HttpUtil.setContentLength(res, responseLen);
@@ -85,9 +91,9 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
     	return returnedIP;
     	
     }
-    private String sendPost(FullHttpRequest req, String IPAddress, int port) throws Exception {
-
-		String url = "http://" + IPAddress + ":" + port + "/";
+    private byte[] sendPost(FullHttpRequest req, String IPAddress, int port) throws Exception {
+    	//System.out.println("uri?:" + req.getUri());
+		String url = "http://" + IPAddress + ":" + port + req.getUri();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
@@ -106,24 +112,32 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
 		wr.writeBytes(urlParameters);
 		wr.flush();
 		wr.close();
-
-		int responseCode = con.getResponseCode();
-		System.out.println("\nSending 'POST' request to URL : " + url);
-		System.out.println("Post parameters : " + urlParameters);
-		System.out.println("Response Code : " + responseCode);
-		
-		BufferedReader in = new BufferedReader(
-		        new InputStreamReader(con.getInputStream()));
-		String inputLine;
-		StringBuffer response = new StringBuffer();
-		while ((inputLine = in.readLine()) != null) {
-			response.append(inputLine);
+		try{
+			int responseCode = con.getResponseCode();
+			System.out.println("\nSending 'POST' request to URL : " + url);
+			System.out.println("Post parameters : " + urlParameters);
+			System.out.println("Response Code : " + responseCode);
+			BufferedReader in = new BufferedReader(
+			        new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			ByteArrayOutputStream byteArr = new ByteArrayOutputStream();
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(byteArr));
+			//StringBuffer response = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+				//response.append(inputLine);
+				out.append(inputLine); out.newLine();
+			}
+			out.close();
+			in.close();
+			
+	
+			//return result
+			return byteArr.toByteArray();
+		}catch(Exception e){
+			
+			return "No Reply".getBytes();
 		}
-		in.close();
-
-		//return result
-		
-		return response.toString();
+		//return response.toString();
 
 	}
 
