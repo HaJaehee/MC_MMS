@@ -7,8 +7,8 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-//srcMRNL: "mrn:kor:123123"
-//dstMRN:  "mrn:kor:123124"
+//srcMRNL: "urn:mrn:imo:imo-no:1000007"
+//dstMRN:  "urn:mrn:smart-navi:device:tm-server"
 public class MMSSndHandler {
 	private final String USER_AGENT = "MMSClient/0.1";
 	private String myMRN;
@@ -18,7 +18,7 @@ public class MMSSndHandler {
 	static void callbacktype(String data){}
 	public String sendPost(String dstMRN, String data) throws Exception {
 
-		String url = "http://localhost:8088/"; // MMS Server
+		String url = "http://"+MMSConfiguration.MMSURL+"/"; // MMS Server
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
@@ -39,9 +39,9 @@ public class MMSSndHandler {
 		wr.close();
 
 		int responseCode = con.getResponseCode();
-		System.out.println("\nSending 'POST' request to URL : " + url);
-		System.out.println("Post parameters : " + urlParameters);
-		System.out.println("Response Code : " + responseCode);
+		//System.out.println("\nSending 'POST' request to URL : " + url);
+		//System.out.println("Post parameters : " + urlParameters);
+		//System.out.println("Response Code : " + responseCode);
 		
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream()));
@@ -59,7 +59,7 @@ public class MMSSndHandler {
 	//OONI
 	public String sendPost2(String dstMRN, String fileName) throws Exception {
 
-		String url = "http://localhost:8088/get"; // MMS Server
+		String url = "http://"+MMSConfiguration.MMSURL+"/get"; // MMS Server
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
@@ -80,9 +80,9 @@ public class MMSSndHandler {
 		wr.close();
 
 		int responseCode = con.getResponseCode();
-		System.out.println("\nSending 'POST' request to URL : " + url);
-		System.out.println("Post parameters : " + urlParameters);
-		System.out.println("Response Code : " + responseCode);
+		//System.out.println("\nSending 'POST' request to URL : " + url);
+		//System.out.println("Post parameters : " + urlParameters);
+		//System.out.println("Response Code : " + responseCode);
 		
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream()));

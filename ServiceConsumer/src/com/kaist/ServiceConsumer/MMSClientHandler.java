@@ -11,13 +11,14 @@ import java.net.UnknownHostException;
 
 public class MMSClientHandler {
 	private rcvH rcvHdr;
+	private polH polHdr;
 	private sndH sndHdr;
 	private String myMRN;
 	private int myPort;
-	interface resCallBack{
+	public interface resCallBack{
 		void callbackMethod(String data);
 	}
-	interface reqCallBack{
+	public interface reqCallBack{
 		String callbackMethod(String data);
 	}
 	private resCallBack myCallBack;
@@ -27,35 +28,56 @@ public class MMSClientHandler {
 	}
 	//private reqCallBack myreqCallBack;
 	public void setReqCallBack(reqCallBack callback){
-		 this.rcvHdr.mh.setReqCallBack(callback);
+		 if (this.rcvHdr != null)
+			 this.rcvHdr.mh.setReqCallBack(callback);
+		 if (this.polHdr != null)
+			 this.polHdr.ph.setReqCallBack(callback);
 	}
 	
-	public MMSClientHandler(String myMRN , int port) throws IOException{
-		this.rcvHdr = new rcvH(port);
+	public MMSClientHandler(String myMRN) throws IOException{
 		this.sndHdr = new sndH(myMRN);
 		this.myMRN = myMRN;
-		this.myPort = port;
+	}
+
+	public void setPolling (String destMRN, int interval) throws IOException
+	{
+		this.polHdr = new polH(myMRN, destMRN, interval);
 	}
 	
-	
+	public void setPort (int port) throws IOException
+	{
+		this.myPort = port;
+		this.rcvHdr = new rcvH(port);
+	}
 	
 	public String sendMSG(String dstMRN, String data) throws Exception{
 		return this.sndHdr.sendPost(dstMRN, data);
 	}
+	
+	//OONI
+	public String requestFile(String dstMRN, String fileName) throws Exception{
+		return this.sndHdr.sendPost2(dstMRN, fileName);
+	}
+	//OONI
 	class locUpdate implements Runnable{
 
+		private int MSGtype;
+		public locUpdate(int MSGType) {
+			// TODO Auto-generated constructor stub
+			this.MSGtype = MSGType;
+		}	
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
 			try {
 				while(true){
-					Thread.sleep(1000);
 					//System.out.println("send location update");
 					DatagramSocket dSock = new DatagramSocket();
-					InetAddress server = InetAddress.getByName("localhost");
-					byte[] data = ("location_update:"+ myMRN + "," + myPort).getBytes();
-					DatagramPacket outPacket = new DatagramPacket(data, data.length, server, 8089);
+					InetAddress server = InetAddress.getByName(MMSConfiguration.CMURL);
+					byte[] data = ("location_update:"+ myMRN + "," + myPort + "," + MSGtype).getBytes();
+					DatagramPacket outPacket = new DatagramPacket(data, data.length, server, MMSConfiguration.CMPort);
 					dSock.send(outPacket);
+					Thread.sleep(1000);
 				}
 				
 			} catch (InterruptedException |  IOException e) {
@@ -68,18 +90,25 @@ public class MMSClientHandler {
 	
 	}
 	class rcvH extends MMSRcvHandler{
-		
 		public rcvH(int port) throws IOException {
 			super(port);
-			Thread locationUpdate = new Thread(new locUpdate());
+			Thread locationUpdate = new Thread(new locUpdate(2));
 			locationUpdate.start();
 		}
-		
 	}
+	
 	class sndH extends MMSSndHandler{
 		
 		public sndH(String myMRN) {
 			super(myMRN);
+		}
+	}
+	
+	class polH extends MMSRcvHandler{
+		public polH(String myMRN, String destMRN, int interval) throws IOException {
+			super(myMRN, destMRN, interval);
+			Thread locationUpdate = new Thread(new locUpdate(1));
+			locationUpdate.start();
 		}
 		
 	}
