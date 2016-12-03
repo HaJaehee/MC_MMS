@@ -4,14 +4,13 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URL;
@@ -55,7 +54,7 @@ public class MMSRcvHandler {
     	
         @Override
         public void handle(HttpExchange t) throws IOException {
-        	//System.out.println("File request");
+        	if(MMSConfiguration.logging)System.out.println("File request");
         	InputStream in = t.getRequestBody();
             ByteArrayOutputStream _out = new ByteArrayOutputStream();
             byte[] buf = new byte[2048];
@@ -63,13 +62,14 @@ public class MMSRcvHandler {
             while ((read = in.read(buf)) != -1) {
                 _out.write(buf, 0, read);
             }
-            //System.out.println(new String( buf, Charset.forName("UTF-8") ));
+            if(MMSConfiguration.logging)System.out.println(new String( buf, Charset.forName("UTF-8") ));
             String receivedData = new String( buf, Charset.forName("UTF-8"));
             String response = this.processRequest(receivedData.trim());
-            //String response = "This is the response";
+            
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
+            os.flush();
             os.close();
         }
         private String processRequest(String data) {
@@ -99,6 +99,7 @@ public class MMSRcvHandler {
             t.sendResponseHeaders(200, file.length());
             OutputStream os = t.getResponseBody();
             os.write(bytearray,0,bytearray.length);
+            os.flush();
             os.close();
         }
     }
@@ -140,23 +141,25 @@ public class MMSRcvHandler {
 			//add request header
 			con.setRequestMethod("POST");
 			con.setRequestProperty("User-Agent", USER_AGENT);
+			con.setRequestProperty("Accept-Charset", "UTF-8");
 			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 			con.setRequestProperty("srcMRN", myMRN);
 			con.setRequestProperty("dstMRN", destMRN);
 
 			// Send post request
 			con.setDoOutput(true);
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			BufferedWriter wr = new BufferedWriter(
+					new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
 			wr.flush();
 			wr.close();
 
 			int responseCode = con.getResponseCode();
-			//System.out.println("\nSending 'POST' request to URL : " + url);
-			//System.out.println("Polling...");
-			//System.out.println("Response Code : " + responseCode);
+			if(MMSConfiguration.logging)System.out.println("\nSending 'POST' request to URL : " + url);
+			if(MMSConfiguration.logging)System.out.println("Polling...");
+			if(MMSConfiguration.logging)System.out.println("Response Code : " + responseCode);
 			
 			BufferedReader in = new BufferedReader(
-			        new InputStreamReader(con.getInputStream()));
+			        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 			String inputLine;
 			
 			StringBuffer response = new StringBuffer();
@@ -164,13 +167,14 @@ public class MMSRcvHandler {
 				response.append(inputLine.trim() + "\n");
 			}
 			
+			
 			in.close();
 			
 			String res = response.toString();
 			if (!res.equals("EMPTY\n")){
 				processRequest(res);
 			}else {
-				//processRequest("");
+				//processRequest(res);
 			}
 		}
 		

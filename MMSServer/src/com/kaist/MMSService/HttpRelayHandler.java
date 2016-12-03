@@ -3,17 +3,16 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
-import io.netty.util.CharsetUtil;
+
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -26,7 +25,6 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
     public HttpRelayHandler(){
         // super(); // set auto-release to false
     	//myqueue = new mmsQueue();
-    	//System.out.println("adsfasdfa");
     }
 
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
@@ -41,29 +39,29 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
         	dstMRN = req.headers().get("dstMRN");
         	
         	
-        	//System.out.println("dstMRN: "  + dstMRN);
-        	//System.out.println(req.getUri());
+        	if(MMSConfiguration.logging)System.out.println("dstMRN: "  + dstMRN);
+        	if(MMSConfiguration.logging)System.out.println(req.getUri());
         	
         	if (req.getUri().equals("/polling")){
         		//Queue
         		String srcMRN = req.headers().get("srcMRN");
         		try{
-        			//System.out.println("srcMRN : " + srcMRN);
+        			if(MMSConfiguration.logging)System.out.println("srcMRN : " + srcMRN);
         			byte[] msg = MMSQueue.getMessage(srcMRN);
-        			System.out.println("get some value: " + msg.toString());
+        			if(MMSConfiguration.logging)System.out.println("get some value: " + msg.toString());
         			replyToSender(ctx, msg);
         		}catch(Exception e){
         			byte[] msg = "EMPTY".getBytes();
-        			//System.out.println("get EMPTY");
+        			if(MMSConfiguration.logging)System.out.println("get EMPTY");
         			replyToSender(ctx, msg);
         			return;
         		}
         		
         	} else{
 	        	//.              
-        		//System.out.println("dstMRN: " + dstMRN);
+        		if(MMSConfiguration.logging)System.out.println("dstMRN: " + dstMRN);
 	        	String IPAddress = requestToCM("MRN-Request:" + dstMRN);
-	        	//System.out.println("IPAddress = " + IPAddress);
+	        	if(MMSConfiguration.logging)System.out.println("IPAddress = " + IPAddress);
 	        	if (IPAddress.equals("No")){
 	        		MMSQueue.putMessage(dstMRN, req);
 	        		replyToSender(ctx, "No Device having that MRN".getBytes());
@@ -72,10 +70,10 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
 	        	int port = Integer.parseInt(IPAddress.split(":")[1]);
 	        	int model = Integer.parseInt(IPAddress.split(":")[2]);
 	        	IPAddress = IPAddress.split(":")[0];
-	        	System.out.println("model: " + model);
-	        	//System.out.println("MRN: " + dstMRN + " IPAddress: " + IPAddress + " port:" + port + " model: " + model);
+	        	if(MMSConfiguration.logging)System.out.println("model: " + model);
+	        	if(MMSConfiguration.logging)System.out.println("MRN: " + dstMRN + " IPAddress: " + IPAddress + " port:" + port + " model: " + model);
 	        	if (model == 2){ //model B (destination MSR, MIR, SP)
-	        		// 
+	        		
 		        	HttpRelayHandler http = new HttpRelayHandler();
 		        	
 		        	byte[] response = http.sendPost(req, IPAddress, port);
@@ -108,26 +106,48 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
     private String requestToCM(String request) throws UnknownHostException, IOException{ //
     	
     	//String modifiedSentence;
-    	String returnedIP;
+    	String returnedIP = null;
     	
     	Socket CMSocket = new Socket("localhost", 1004);
-    	DataOutputStream outToCM = new DataOutputStream(CMSocket.getOutputStream());
-    	BufferedReader inFromCM = new BufferedReader(new InputStreamReader(CMSocket.getInputStream()));
     	
-    	outToCM.writeBytes(request + '\n');
-    	returnedIP = inFromCM.readLine();
-    	//System.out.println("FROM SERVER: " + returnedIP);
+    	
+    	BufferedWriter outToCM = new BufferedWriter(
+					new OutputStreamWriter(CMSocket.getOutputStream(),Charset.forName("UTF-8")));
+    	
+    	if(MMSConfiguration.logging)System.out.println(request);
+    	ServerSocket Sock = new ServerSocket(0);
+    	int rplPort = Sock.getLocalPort();
+    	if(MMSConfiguration.logging)System.out.println("Reply port : "+rplPort);
+    	outToCM.write(request+","+rplPort);
+    	outToCM.flush();
+    	outToCM.close();
+    	CMSocket.close();
+    	
+    	
+    	Socket ReplySocket = Sock.accept();
+    	BufferedReader inFromCM = new BufferedReader(
+    			new InputStreamReader(ReplySocket.getInputStream(),Charset.forName("UTF-8")));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
+		while ((inputLine = inFromCM.readLine()) != null) {
+			response.append(inputLine.trim());
+		}
+		
+    	returnedIP = response.toString();
+    	if(MMSConfiguration.logging)System.out.println("FROM SERVER: " + returnedIP);
+    	
     	if (returnedIP.equals("No"))
     		return "No";
     	returnedIP = returnedIP.substring(14);
-    	CMSocket.close();
-    	return returnedIP;
     	
+    	inFromCM.close();
+    	
+    	return returnedIP;
     }
     
     
     private byte[] sendPost(FullHttpRequest req, String IPAddress, int port) throws Exception { // 
-    	//System.out.println("uri?:" + req.getUri());
+    	if(MMSConfiguration.logging)System.out.println("uri?:" + req.getUri());
 		String url = "http://" + IPAddress + ":" + port + req.getUri();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -135,46 +155,46 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
 		//add reuqest header
 		con.setRequestMethod("POST");
 		con.setRequestProperty("User-Agent", USER_AGENT);
+		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-		//ByteBuf imsi = Unpooled.buffer();
-    	//req.content().getBytes(0, imsi, req.content().capacity());
-    	//System.out.println(imsi.toString(CharsetUtil.UTF_8));
-		//String urlParameters = imsi.toString(CharsetUtil.UTF_8);
+
 		String urlParameters = req.content().toString(Charset.forName("UTF-8")).trim();
 
 		// Send post request
 		con.setDoOutput(true);
-		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		wr.writeBytes(urlParameters);
+		BufferedWriter wr = new BufferedWriter(
+				new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
+		
+		wr.write(urlParameters);
 		wr.flush();
 		wr.close();
+		
 		try{
 			int responseCode = con.getResponseCode();
-			System.out.println("\nSending 'POST' request to URL : " + url);
-			System.out.println("Post parameters : " + urlParameters);
-			System.out.println("Response Code : " + responseCode);
+			if(MMSConfiguration.logging)System.out.println("\nSending 'POST' request to URL : " + url);
+			if(MMSConfiguration.logging)System.out.println("Post parameters : " + urlParameters);
+			if(MMSConfiguration.logging)System.out.println("Response Code : " + responseCode);
 			BufferedReader in = new BufferedReader(
-			        new InputStreamReader(con.getInputStream()));
+			        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 			String inputLine;
-			ByteArrayOutputStream byteArr = new ByteArrayOutputStream();
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(byteArr));
-			//StringBuffer response = new StringBuffer();
+			StringBuffer buf = new StringBuffer();
 			while ((inputLine = in.readLine()) != null) {
-				//response.append(inputLine);
-				out.append(inputLine); out.newLine();
+				buf = buf.append(inputLine + "\n"); 
 			}
-			out.close();
+
 			in.close();
-			
-	
+			String ret = buf.toString();
+			if(MMSConfiguration.logging)System.out.println("Responsed Msg : " + ret); 
 			//return result
-			return byteArr.toByteArray();
+			return ret.getBytes();
 		}catch(Exception e){
-			
+
 			return "No Reply".getBytes();
+			
 		}
 		//return response.toString();
 
+		
 	}
 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {

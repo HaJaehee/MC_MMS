@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-
-
 
 public class MMSClientHandler {
 	private rcvH rcvHdr;
@@ -90,23 +86,25 @@ public class MMSClientHandler {
 	class locUpdate implements Runnable{
 
 		private int MSGtype;
-		public locUpdate(int MSGType) {
+		private boolean infiniteLoop;
+		public locUpdate(int MSGType, boolean infiniteLoop) {
 			// TODO Auto-generated constructor stub
 			this.MSGtype = MSGType;
+			this.infiniteLoop = infiniteLoop;
 		}	
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
 			try {
-				while(true){
-					//System.out.println("send location update");
+				do{
+					if(MMSConfiguration.logging)System.out.println("send location update");
 					DatagramSocket dSock = new DatagramSocket();
 					InetAddress server = InetAddress.getByName(MMSConfiguration.CMURL);
 					byte[] data = ("location_update:"+ myMRN + "," + myPort + "," + MSGtype).getBytes();
 					DatagramPacket outPacket = new DatagramPacket(data, data.length, server, MMSConfiguration.CMPort);
 					dSock.send(outPacket);
-					Thread.sleep(1000);
-				}
+					Thread.sleep(MMSConfiguration.locUpdateInterval);
+				}while(infiniteLoop);
 				
 			} catch (InterruptedException |  IOException e) {
 				// TODO Auto-generated catch block
@@ -120,7 +118,7 @@ public class MMSClientHandler {
 	class rcvH extends MMSRcvHandler{
 		public rcvH(int port) throws IOException {
 			super(port);
-			Thread locationUpdate = new Thread(new locUpdate(2));
+			Thread locationUpdate = new Thread(new locUpdate(2,true));
 			locationUpdate.start();
 		}
 	}
@@ -135,7 +133,7 @@ public class MMSClientHandler {
 	class polH extends MMSRcvHandler{
 		public polH(String myMRN, String destMRN, int interval) throws IOException {
 			super(myMRN, destMRN, interval);
-			Thread locationUpdate = new Thread(new locUpdate(1));
+			Thread locationUpdate = new Thread(new locUpdate(1, true));
 			locationUpdate.start();
 		}
 	}
@@ -143,51 +141,24 @@ public class MMSClientHandler {
 	class MSR extends MMSRcvHandler{
 		public MSR(int port) throws IOException {
 			super(port);
-			try {
-				//System.out.println("send location update");
-				DatagramSocket dSock = new DatagramSocket();
-				InetAddress server = InetAddress.getByName(MMSConfiguration.CMURL);
-				byte[] data = ("location_update:"+ myMRN + "," + myPort + "," + 2).getBytes();
-				DatagramPacket outPacket = new DatagramPacket(data, data.length, server, MMSConfiguration.CMPort);
-				dSock.send(outPacket);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			Thread locationUpdate = new Thread(new locUpdate(2, false));
+			locationUpdate.start();
 		}
 	}
 	
 	class MIR extends MMSRcvHandler{
 		public MIR(int port) throws IOException {
 			super(port);
-			try {
-				//System.out.println("send location update");
-				DatagramSocket dSock = new DatagramSocket();
-				InetAddress server = InetAddress.getByName(MMSConfiguration.CMURL);
-				byte[] data = ("location_update:"+ myMRN + "," + myPort + "," + 2).getBytes();
-				DatagramPacket outPacket = new DatagramPacket(data, data.length, server, MMSConfiguration.CMPort);
-				dSock.send(outPacket);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			Thread locationUpdate = new Thread(new locUpdate(2, false));
+			locationUpdate.start();
 		}
 	}
 	
 	class MSP extends MMSRcvHandler{
 		public MSP(int port) throws IOException {
 			super(port);
-			try {
-				//System.out.println("send location update");
-				DatagramSocket dSock = new DatagramSocket();
-				InetAddress server = InetAddress.getByName(MMSConfiguration.CMURL);
-				byte[] data = ("location_update:"+ myMRN + "," + myPort + "," + 2).getBytes();
-				DatagramPacket outPacket = new DatagramPacket(data, data.length, server, MMSConfiguration.CMPort);
-				dSock.send(outPacket);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			Thread locationUpdate = new Thread(new locUpdate(2, false));
+			locationUpdate.start();
 		}
 	}
 }

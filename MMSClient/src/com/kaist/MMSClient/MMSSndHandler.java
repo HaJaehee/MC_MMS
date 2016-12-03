@@ -2,11 +2,12 @@ package com.kaist.MMSClient;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 //srcMRNL: "urn:mrn:imo:imo-no:1000007"
 //dstMRN:  "urn:mrn:smart-navi:device:tm-server"
 public class MMSSndHandler {
@@ -25,35 +26,40 @@ public class MMSSndHandler {
 		//add reuqest header
 		con.setRequestMethod("POST");
 		con.setRequestProperty("User-Agent", USER_AGENT);
+		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 		con.setRequestProperty("srcMRN", myMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
 		//con.addRequestProperty("Connection","keep-alive");
 		String urlParameters = data;
-
+		if(MMSConfiguration.logging)System.out.println("urlParameters: "+urlParameters);
+		
+		
 		// Send post request
 		con.setDoOutput(true);
-		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		wr.writeBytes(urlParameters);
+		BufferedWriter wr = new BufferedWriter(
+				new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
+		wr.write(urlParameters);
 		wr.flush();
 		wr.close();
 
 		int responseCode = con.getResponseCode();
-		//System.out.println("\nSending 'POST' request to URL : " + url);
-		//System.out.println("Post parameters : " + urlParameters);
-		//System.out.println("Response Code : " + responseCode);
+		if(MMSConfiguration.logging)System.out.println("\nSending 'POST' request to URL : " + url);
+		if(MMSConfiguration.logging)System.out.println("Post parameters : " + urlParameters);
+		if(MMSConfiguration.logging)System.out.println("Response Code : " + responseCode);
 		
 		BufferedReader in = new BufferedReader(
-		        new InputStreamReader(con.getInputStream()));
+		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 		String inputLine;
 		StringBuffer response = new StringBuffer();
+		
 		while ((inputLine = in.readLine()) != null) {
 			response.append(inputLine);
 		}
+		
 		in.close();
+		if(MMSConfiguration.logging)System.out.println("response: " + response.toString());
 		return new String(response.toString().getBytes(), "utf-8");
-		//print result
-		//System.out.println("response: " + response.toString());
 		//callback(response.toString());
 	}
 	//OONI
@@ -66,6 +72,7 @@ public class MMSSndHandler {
 		//add request header
 		con.setRequestMethod("POST");
 		con.setRequestProperty("User-Agent", USER_AGENT);
+		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 		con.setRequestProperty("srcMRN", myMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
@@ -74,25 +81,27 @@ public class MMSSndHandler {
 
 		// Send post request
 		con.setDoOutput(true);
-		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		wr.writeBytes(urlParameters);
+		BufferedWriter wr = new BufferedWriter(
+				new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
+		wr.write(urlParameters);
 		wr.flush();
 		wr.close();
 
 		int responseCode = con.getResponseCode();
-		//System.out.println("\nSending 'POST' request to URL : " + url);
-		//System.out.println("Post parameters : " + urlParameters);
-		//System.out.println("Response Code : " + responseCode);
+		if(MMSConfiguration.logging)System.out.println("\nSending 'POST' request to URL : " + url);
+		if(MMSConfiguration.logging)System.out.println("Post parameters : " + urlParameters);
+		if(MMSConfiguration.logging)System.out.println("Response Code : " + responseCode);
 		
 		BufferedReader in = new BufferedReader(
-		        new InputStreamReader(con.getInputStream()));
+		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 		String inputLine;
 		BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
-		//StringBuffer response = new StringBuffer();
+		
 		while ((inputLine = in.readLine()) != null) {
-			//response.append(inputLine);
 			out.append(inputLine); out.newLine();
 		}
+		
+		out.flush();
 		out.close();
 		in.close();
 		return fileName + "is saved";

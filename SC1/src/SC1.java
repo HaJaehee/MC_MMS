@@ -29,7 +29,8 @@ public class SC1 {
 		
 		//Service Consumer cannot be HTTP server and should poll from MMS. 
 		MMSClientHandler ph = new MMSClientHandler(myMRN);
-		ph.setPolling("urn:mrn:smart-navi:device:mms1",1000);
+		int pollInterval = 1000;
+		ph.setPolling("urn:mrn:smart-navi:device:mms1",pollInterval);
 		//Request Callback from the request message
 		ph.setReqCallBack(new MMSClientHandler.reqCallBack() {
 			@Override
