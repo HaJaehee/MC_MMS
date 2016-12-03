@@ -22,7 +22,7 @@ public class SC2 {
 				return "OK";
 			}
 		});
-		for (int i = 0; i < 10;i++){
+		for (int i = 0; i < 100;i++){
 			String a = mh.sendMSG("urn:mrn:smart-navi:device:tm-server", "hi hi hello " + i);
 			Thread.sleep(100);
 		}

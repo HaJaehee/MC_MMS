@@ -5,7 +5,7 @@ public class ServiceProvider {
 	public static void main(String args[]) throws Exception{
 		String myMRN;
 		int port;
-		myMRN = "urn:mrn:smart-navi:device:tm-server2";
+		myMRN = "urn:mrn:smart-navi:device:tm-server";
 		port = 8902;
 		
 		//MMSConfiguration.MMSURL="127.0.0.1:8088";
