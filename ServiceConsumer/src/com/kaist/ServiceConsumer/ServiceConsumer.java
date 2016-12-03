@@ -6,21 +6,9 @@ public class ServiceConsumer{
 	
 	public static void main(String args[]) throws Exception{
 		String myMRN;
-		int port;
 		//myMRN = args[0];
 		myMRN = "urn:mrn:imo:imo-no:1000007";
-		//port = Integer.parseInt(args[1]);
-		port = 8901;
-		MMSClientHandler mh = new MMSClientHandler(myMRN);
-		mh.setPort(port);
-		//Request Callback from the request message
-		mh.setReqCallBack(new MMSClientHandler.reqCallBack() {
-			@Override
-			public String callbackMethod(String message) {
-				System.out.println(message);
-				return "OK";
-			}
-		});
+
 		/*
 		("urn:mrn:imo:imo-no:1000007", "127.0.0.1:8901"); // SC
 		("urn:mrn:imo:imo-no:0100006", "127.0.0.1:8901"); // SC2
@@ -30,15 +18,7 @@ public class ServiceConsumer{
 	    ("urn:mrn:smart-navi:device:mms1", "127.0.0.1:8904"); // MMS
 	    ("urn:mrn:smart-navi:device:cm1", "127.0.0.1:8904"); // CM
 	    */
-		//simple message exchange
-		/*
-		String response = mh.sendMSG("urn:mrn:smart-navi:device:tm-server", "hello, SP");
-		System.out.println("response from SP :" + response);
-		response = mh.sendMSG("urn:mrn:smart-navi:device:mir1", "hello, MIR");
-		System.out.println("response from MIR :" + response);
-		response = mh.sendMSG("urn:mrn:smart-navi:device:msr1", "hello, MSR");
-		System.out.println("response from MSR :" + response);
-		*/
+
 		//file transferring
 		/*
 		String response = mh.requestFile("urn:mrn:smart-navi:device:tm-server", "test.xml");
@@ -47,13 +27,20 @@ public class ServiceConsumer{
 		System.out.println("response from MSR :" + response);
 		*/
 		
-		Scanner sc = new Scanner(System.in);
-		//String instMsgDestMRN = "urn:mrn:imo:imo-no:0100006";
-		String instMsg = "hello, SC2";
-		while (true){
-			String response = mh.sendMSG("urn:mrn:smart-navi:device:tm-server", instMsg);
-			System.out.println("response from SP :" + response);
-			sc.nextLine();
+		
+		//Service Consumer which can only send message
+		MMSClientHandler mh = new MMSClientHandler(myMRN);
+		//Request Callback from the request message
+		mh.setReqCallBack(new MMSClientHandler.reqCallBack() {
+			@Override
+			public String callbackMethod(String message) {
+				System.out.println(message);
+				return "OK";
+			}
+		});
+		for (int i = 0; i < 10;i++){
+			String a = mh.sendMSG("urn:mrn:smart-navi:device:tm-server", "hi hi hello " + i);
+			Thread.sleep(100);
 		}
 	}		
 }
