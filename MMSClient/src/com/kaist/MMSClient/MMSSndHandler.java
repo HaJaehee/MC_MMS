@@ -1,4 +1,4 @@
-package com.kaist.ServiceProvider;
+package com.kaist.MMSClient;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

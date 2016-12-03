@@ -1,4 +1,4 @@
-package com.kaist.ServiceProvider;
+package com.kaist.MMSClient;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -13,6 +13,8 @@ public class MMSClientHandler {
 	private rcvH rcvHdr;
 	private polH polHdr;
 	private sndH sndHdr;
+	private MIR mir;
+	private MSR msr;
 	private String myMRN;
 	private int myPort;
 	public interface resCallBack{
@@ -32,6 +34,10 @@ public class MMSClientHandler {
 			 this.rcvHdr.mh.setReqCallBack(callback);
 		 if (this.polHdr != null)
 			 this.polHdr.ph.setReqCallBack(callback);
+		 if (this.mir != null)
+			 this.mir.mh.setReqCallBack(callback);
+		 if (this.msr != null)
+			 this.msr.mh.setReqCallBack(callback);
 	}
 	
 	public MMSClientHandler(String myMRN) throws IOException{
@@ -48,6 +54,19 @@ public class MMSClientHandler {
 	{
 		this.myPort = port;
 		this.rcvHdr = new rcvH(port);
+	}
+	
+	public void setMSR (int port) throws IOException
+	{
+		this.myPort = port;
+		this.msr = new MSR(port);
+	}
+	
+	
+	public void setMIR (int port) throws IOException
+	{
+		this.myPort = port;
+		this.mir = new MIR(port);
 	}
 	
 	public String sendMSG(String dstMRN, String data) throws Exception{
@@ -110,6 +129,40 @@ public class MMSClientHandler {
 			Thread locationUpdate = new Thread(new locUpdate(1));
 			locationUpdate.start();
 		}
-		
+	}
+	
+	class MSR extends MMSRcvHandler{
+		public MSR(int port) throws IOException {
+			super(port);
+			try {
+				//System.out.println("send location update");
+				DatagramSocket dSock = new DatagramSocket();
+				InetAddress server = InetAddress.getByName(MMSConfiguration.CMURL);
+				byte[] data = ("location_update:"+ myMRN + "," + myPort + "," + 2).getBytes();
+				DatagramPacket outPacket = new DatagramPacket(data, data.length, server, MMSConfiguration.CMPort);
+				dSock.send(outPacket);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	class MIR extends MMSRcvHandler{
+		public MIR(int port) throws IOException {
+			super(port);
+			try {
+				//System.out.println("send location update");
+				DatagramSocket dSock = new DatagramSocket();
+				InetAddress server = InetAddress.getByName(MMSConfiguration.CMURL);
+				byte[] data = ("location_update:"+ myMRN + "," + myPort + "," + 2).getBytes();
+				DatagramPacket outPacket = new DatagramPacket(data, data.length, server, MMSConfiguration.CMPort);
+				dSock.send(outPacket);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 }
+

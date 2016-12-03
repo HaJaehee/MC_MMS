@@ -1,4 +1,5 @@
-package com.kaist.IdentityRegistry;
+import com.kaist.MMSClient.MMSClientHandler;
+import com.kaist.MMSClient.MMSConfiguration;
 
 public class IdentityRegistry{
 	
@@ -6,10 +7,15 @@ public class IdentityRegistry{
 		String myMRN;
 		int port;
 		//myMRN = args[0];
-		myMRN = "mrn:kor:123125";
+		myMRN = "urn:mrn:smart-navi:device:mir1";
 		//port = Integer.parseInt(args[1]);
-		port = 8903;
-		MMSClientHandler mh = new MMSClientHandler(myMRN, port);
+		port = 8904;
+		
+		//MMSConfiguration.MMSURL="127.0.0.1:8088";
+		//MMSConfiguration.CMURL="127.0.0.1";
+		
+		MMSClientHandler mh = new MMSClientHandler(myMRN);
+		mh.setMIR(port);
 		//Request Callback from the request message
 		mh.setReqCallBack(new MMSClientHandler.reqCallBack() {
 			@Override

@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Queue;
 import java.util.Set;
 
-public class mmsQueue {
+public class MMSQueue {
 	
 	
 	public static HashMap<String, String> queue = new HashMap<String, String>();

@@ -1,4 +1,4 @@
-package com.kaist.ServiceProvider;
+package com.kaist.MMSClient;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -48,8 +48,8 @@ public class MMSRcvHandler {
 		ph.start();
 	}
     static class MyHandler implements HttpHandler {
-    	com.kaist.ServiceProvider.MMSClientHandler.reqCallBack myreqCallBack;
-    	public void setReqCallBack(com.kaist.ServiceProvider.MMSClientHandler.reqCallBack callback){
+    	com.kaist.MMSClient.MMSClientHandler.reqCallBack myreqCallBack;
+    	public void setReqCallBack(com.kaist.MMSClient.MMSClientHandler.reqCallBack callback){
     		this.myreqCallBack = callback;
     	}
     	
@@ -64,7 +64,8 @@ public class MMSRcvHandler {
                 _out.write(buf, 0, read);
             }
             //System.out.println(new String( buf, Charset.forName("UTF-8") ));
-            String response = this.processRequest(new String( buf, Charset.forName("UTF-8")));
+            String receivedData = new String( buf, Charset.forName("UTF-8"));
+            String response = this.processRequest(receivedData.trim());
             //String response = "This is the response";
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
@@ -108,8 +109,8 @@ public class MMSRcvHandler {
 		private int interval;
 		private String myMRN;
 		private String destMRN;
-		com.kaist.ServiceProvider.MMSClientHandler.reqCallBack myreqCallBack;
-    	public void setReqCallBack(com.kaist.ServiceProvider.MMSClientHandler.reqCallBack callback){
+		com.kaist.MMSClient.MMSClientHandler.reqCallBack myreqCallBack;
+    	public void setReqCallBack(com.kaist.MMSClient.MMSClientHandler.reqCallBack callback){
     		this.myreqCallBack = callback;
     	}
 		
@@ -160,14 +161,13 @@ public class MMSRcvHandler {
 			
 			StringBuffer response = new StringBuffer();
 			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
+				response.append(inputLine.trim() + "\n");
 			}
 			
 			in.close();
 			
 			String res = response.toString();
-			res = res.trim();
-			if (!res.equals("EMPTY")){
+			if (!res.equals("EMPTY\n")){
 				processRequest(res);
 			}else {
 				//processRequest("");

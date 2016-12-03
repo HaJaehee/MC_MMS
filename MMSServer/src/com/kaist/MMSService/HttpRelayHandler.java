@@ -49,7 +49,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
         		String srcMRN = req.headers().get("srcMRN");
         		try{
         			//System.out.println("srcMRN : " + srcMRN);
-        			byte[] msg = mmsQueue.getMessage(srcMRN);
+        			byte[] msg = MMSQueue.getMessage(srcMRN);
         			System.out.println("get some value: " + msg.toString());
         			replyToSender(ctx, msg);
         		}catch(Exception e){
@@ -65,7 +65,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
 	        	String IPAddress = requestToCM("MRN-Request:" + dstMRN);
 	        	//System.out.println("IPAddress = " + IPAddress);
 	        	if (IPAddress.equals("No")){
-	        		mmsQueue.putMessage(dstMRN, req);
+	        		MMSQueue.putMessage(dstMRN, req);
 	        		replyToSender(ctx, "No Device having that MRN".getBytes());
 	        		return;
 	        	}
@@ -82,7 +82,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
 		        	replyToSender(ctx, response);
 		        	
 	        	}else{
-	        		mmsQueue.putMessage(dstMRN, req);
+	        		MMSQueue.putMessage(dstMRN, req);
 	        		replyToSender(ctx, "OK".getBytes());
 	        		return;
 	        	}

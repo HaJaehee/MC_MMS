@@ -1,4 +1,4 @@
-package com.kaist.ServiceConsumer;
+package com.kaist.MMSClient;
 
 public class MMSConfiguration {
 	public static String MMSURL = "52.78.97.177:8088";

@@ -1,4 +1,4 @@
-package com.kaist.MMSClient;
+
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -9,6 +9,9 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import com.kaist.MMSClient.MMSClientHandler;
+import com.kaist.MMSClient.MMSConfiguration;
+
 
 public class ServiceRegistry{
 	
@@ -16,10 +19,15 @@ public class ServiceRegistry{
 		String myMRN;
 		int port;
 		//myMRN = args[0];
-		myMRN = "mrn:kor:123126";
+		myMRN = "urn:mrn:smart-navi:device:msr1";
 		//port = Integer.parseInt(args[1]);
-		port = 8904;
-		MMSClientHandler mh = new MMSClientHandler(myMRN, port);
+		port = 8905;
+		
+		//MMSConfiguration.MMSURL="127.0.0.1:8088";
+		//MMSConfiguration.CMURL="127.0.0.1";
+		
+		MMSClientHandler mh = new MMSClientHandler(myMRN);
+		mh.setMSR(port);
 		//Request Callback from the request message
 		mh.setReqCallBack(new MMSClientHandler.reqCallBack() {
 			@Override
@@ -31,7 +39,4 @@ public class ServiceRegistry{
 		//String response = mh.sendMSG("mrn:kor:123124", "hello");
 		//System.out.println("response:" + response);
 	}
-	
-		
-		
 }
