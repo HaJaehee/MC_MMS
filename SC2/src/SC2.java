@@ -23,7 +23,7 @@ public class SC2 {
 			}
 		});
 		for (int i = 0; i < 100;i++){
-			String a = mh.sendMSG("urn:mrn:smart-navi:device:tm-server", "hi hi hello " + i);
+			String a = mh.sendMSG("urn:mrn:smart-navi:device:tm-server", "¾È³ç hi hello " + i);
 			Thread.sleep(100);
 		}
 		
