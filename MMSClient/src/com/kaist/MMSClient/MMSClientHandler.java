@@ -15,6 +15,7 @@ public class MMSClientHandler {
 	private sndH sndHdr;
 	private MIR mir;
 	private MSR msr;
+	private MSP msp;
 	private String myMRN;
 	private int myPort;
 	public interface resCallBack{
@@ -38,6 +39,8 @@ public class MMSClientHandler {
 			 this.mir.mh.setReqCallBack(callback);
 		 if (this.msr != null)
 			 this.msr.mh.setReqCallBack(callback);
+		 if (this.msp != null)
+			 this.msp.mh.setReqCallBack(callback);
 	}
 	
 	public MMSClientHandler(String myMRN) throws IOException{
@@ -67,6 +70,12 @@ public class MMSClientHandler {
 	{
 		this.myPort = port;
 		this.mir = new MIR(port);
+	}
+	
+	public void setMSP (int port) throws IOException
+	{
+		this.myPort = port;
+		this.msp = new MSP(port);
 	}
 	
 	public String sendMSG(String dstMRN, String data) throws Exception{
@@ -150,6 +159,23 @@ public class MMSClientHandler {
 	
 	class MIR extends MMSRcvHandler{
 		public MIR(int port) throws IOException {
+			super(port);
+			try {
+				//System.out.println("send location update");
+				DatagramSocket dSock = new DatagramSocket();
+				InetAddress server = InetAddress.getByName(MMSConfiguration.CMURL);
+				byte[] data = ("location_update:"+ myMRN + "," + myPort + "," + 2).getBytes();
+				DatagramPacket outPacket = new DatagramPacket(data, data.length, server, MMSConfiguration.CMPort);
+				dSock.send(outPacket);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	class MSP extends MMSRcvHandler{
+		public MSP(int port) throws IOException {
 			super(port);
 			try {
 				//System.out.println("send location update");
