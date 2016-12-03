@@ -160,12 +160,13 @@ public class MMSRcvHandler {
 			
 			StringBuffer response = new StringBuffer();
 			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
+				response.append(inputLine.trim() + "\n");
 			}
 			
 			in.close();
 			
 			String res = response.toString();
+			res = res.trim();
 			if (!res.equals("EMPTY")){
 				processRequest(res);
 			}else {

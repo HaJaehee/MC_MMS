@@ -36,6 +36,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
 
     private void processHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
         try {
+        	//Destination MRN
         	String dstMRN;
         	dstMRN = req.headers().get("dstMRN");
         	
@@ -44,6 +45,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
         	//System.out.println(req.getUri());
         	
         	if (req.getUri().equals("/polling")){
+        		//Queue
         		String srcMRN = req.headers().get("srcMRN");
         		try{
         			//System.out.println("srcMRN : " + srcMRN);
@@ -58,9 +60,10 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
         		}
         		
         	} else{
-        		System.out.println("dstMRN: " + dstMRN);
+	        	//.              
+        		//System.out.println("dstMRN: " + dstMRN);
 	        	String IPAddress = requestToCM("MRN-Request:" + dstMRN);
-	        	System.out.println("IPAddress = " + IPAddress);
+	        	//System.out.println("IPAddress = " + IPAddress);
 	        	if (IPAddress.equals("No")){
 	        		mmsQueue.putMessage(dstMRN, req);
 	        		replyToSender(ctx, "No Device having that MRN".getBytes());
@@ -69,9 +72,10 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
 	        	int port = Integer.parseInt(IPAddress.split(":")[1]);
 	        	int model = Integer.parseInt(IPAddress.split(":")[2]);
 	        	IPAddress = IPAddress.split(":")[0];
-	        	
-	        	System.out.println("MRN: " + dstMRN + " IPAddress: " + IPAddress + " port:" + port + " model: " + model);
-	        	if (model == 2){
+	        	System.out.println("model: " + model);
+	        	//System.out.println("MRN: " + dstMRN + " IPAddress: " + IPAddress + " port:" + port + " model: " + model);
+	        	if (model == 2){ //model B (destination MSR, MIR, SP)
+	        		// 
 		        	HttpRelayHandler http = new HttpRelayHandler();
 		        	
 		        	byte[] response = http.sendPost(req, IPAddress, port);
@@ -89,7 +93,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
         }
     }
     
-    private void replyToSender(ChannelHandlerContext ctx, byte[] data){
+    private void replyToSender(ChannelHandlerContext ctx, byte[] data){ // Sender
     	ByteBuf textb = Unpooled.copiedBuffer(data);
     	long responseLen = data.length;
     	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
@@ -101,7 +105,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
         f.addListener(ChannelFutureListener.CLOSE);
     }
     
-    private String requestToCM(String request) throws UnknownHostException, IOException{
+    private String requestToCM(String request) throws UnknownHostException, IOException{ //
     	
     	//String modifiedSentence;
     	String returnedIP;
@@ -122,7 +126,8 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
     }
     
     
-    private byte[] sendPost(FullHttpRequest req, String IPAddress, int port) throws Exception { 
+    private byte[] sendPost(FullHttpRequest req, String IPAddress, int port) throws Exception { // 
+    	//System.out.println("uri?:" + req.getUri());
 		String url = "http://" + IPAddress + ":" + port + req.getUri();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -135,7 +140,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
     	//req.content().getBytes(0, imsi, req.content().capacity());
     	//System.out.println(imsi.toString(CharsetUtil.UTF_8));
 		//String urlParameters = imsi.toString(CharsetUtil.UTF_8);
-		String urlParameters = req.content().toString(Charset.forName("UTF-8"));
+		String urlParameters = req.content().toString(Charset.forName("UTF-8")).trim();
 
 		// Send post request
 		con.setDoOutput(true);

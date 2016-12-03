@@ -1,4 +1,5 @@
 import com.kaist.ServiceConsumer.MMSClientHandler;
+import com.kaist.ServiceConsumer.MMSConfiguration;
 
 public class SC1 {
 	public static void main(String args[]) throws Exception{
@@ -9,6 +10,7 @@ public class SC1 {
 		//port = Integer.parseInt(args[1]);
 		port = 8904;
 		MMSClientHandler mh = new MMSClientHandler(myMRN);
+		
 		mh.setPort(port);
 		//Request Callback from the request message
 		mh.setReqCallBack(new MMSClientHandler.reqCallBack() {

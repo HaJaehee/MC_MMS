@@ -1,4 +1,5 @@
 import com.kaist.ServiceConsumer.MMSClientHandler;
+import com.kaist.ServiceConsumer.MMSConfiguration;
 
 public class SC2 {
 	public static void main(String args[]) throws Exception{
@@ -8,6 +9,7 @@ public class SC2 {
 		myMRN = "urn:mrn:imo:imo-no:1000007";
 		//port = Integer.parseInt(args[1]);
 		port = 8903;
+
 		MMSClientHandler mh = new MMSClientHandler(myMRN);
 		mh.setPort(port);
 		//Request Callback from the request message
@@ -18,7 +20,10 @@ public class SC2 {
 				return "OK";
 			}
 		});
-		String a = mh.sendMSG("urn:mrn:smart-navi:device:tm-server", "hi hi hello");
+		for (int i = 0; i < 10;i++){
+			String a = mh.sendMSG("urn:mrn:smart-navi:device:tm-server", "hi hi hello " + i);
+			Thread.sleep(100);
+		}
 		
 	}
 }

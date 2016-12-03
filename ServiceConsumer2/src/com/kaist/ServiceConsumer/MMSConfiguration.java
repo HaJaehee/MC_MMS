@@ -1,7 +1,7 @@
 package com.kaist.ServiceConsumer;
 
 public class MMSConfiguration {
-	public static String MMSURL = "127.0.0.1:8088";
-	public static String CMURL = "127.0.0.1";
+	public static String MMSURL = "52.78.97.177:8088";
+	public static String CMURL = "52.78.97.177";
 	public static int CMPort = 8089;
 }

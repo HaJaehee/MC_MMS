@@ -15,10 +15,10 @@ public class MMSClientHandler {
 	private sndH sndHdr;
 	private String myMRN;
 	private int myPort;
-	interface resCallBack{
+	public interface resCallBack{
 		void callbackMethod(String data);
 	}
-	interface reqCallBack{
+	public interface reqCallBack{
 		String callbackMethod(String data);
 	}
 	private resCallBack myCallBack;
