@@ -74,13 +74,17 @@ public class MMSClientHandler {
 		this.msp = new MSP(port);
 	}
 	
+	public String sendMSG(String dstMRN, String uri, String data) throws Exception{
+		return this.sndHdr.sendPost(dstMRN, uri, data);
+	}
+	
 	public String sendMSG(String dstMRN, String data) throws Exception{
 		return this.sndHdr.sendPost(dstMRN, data);
 	}
 	
 	//OONI
 	public String requestFile(String dstMRN, String fileName) throws Exception{
-		return this.sndHdr.sendPost2(dstMRN, fileName);
+		return this.sndHdr.sendPostFile(dstMRN, fileName);
 	}
 	//OONI
 	class locUpdate implements Runnable{

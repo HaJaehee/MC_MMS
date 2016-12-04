@@ -17,9 +17,14 @@ public class MMSSndHandler {
 		this.myMRN = myMRN;
 	}
 	static void callbacktype(String data){}
+	
 	public String sendPost(String dstMRN, String data) throws Exception {
+		return sendPost(dstMRN, "", data);
+	}
 
-		String url = "http://"+MMSConfiguration.MMSURL+"/"; // MMS Server
+	public String sendPost(String dstMRN, String uri, String data) throws Exception {
+
+		String url = "http://"+MMSConfiguration.MMSURL+"/"+uri; // MMS Server
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
@@ -60,10 +65,9 @@ public class MMSSndHandler {
 		in.close();
 		if(MMSConfiguration.logging)System.out.println("response: " + response.toString());
 		return new String(response.toString().getBytes(), "utf-8");
-		//callback(response.toString());
 	}
 	//OONI
-	public String sendPost2(String dstMRN, String fileName) throws Exception {
+	public String sendPostFile(String dstMRN, String fileName) throws Exception {
 
 		String url = "http://"+MMSConfiguration.MMSURL+"/get"; // MMS Server
 		URL obj = new URL(url);

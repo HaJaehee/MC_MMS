@@ -72,13 +72,11 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
 	        	IPAddress = IPAddress.split(":")[0];
 	        	if(MMSConfiguration.logging)System.out.println("model: " + model);
 	        	if(MMSConfiguration.logging)System.out.println("MRN: " + dstMRN + " IPAddress: " + IPAddress + " port:" + port + " model: " + model);
-	        	if (model == 2){ //model B (destination MSR, MIR, SP)
-	        		
+	        	if (model == 2){ //model B (destination MSR, MIR, or MSP as servers)
 		        	HttpRelayHandler http = new HttpRelayHandler();
 		        	
 		        	byte[] response = http.sendPost(req, IPAddress, port);
 		        	replyToSender(ctx, response);
-		        	
 	        	}else{
 	        		MMSQueue.putMessage(dstMRN, req);
 	        		replyToSender(ctx, "OK".getBytes());
@@ -149,6 +147,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
     private byte[] sendPost(FullHttpRequest req, String IPAddress, int port) throws Exception { // 
     	if(MMSConfiguration.logging)System.out.println("uri?:" + req.getUri());
 		String url = "http://" + IPAddress + ":" + port + req.getUri();
+		if(MMSConfiguration.logging)System.out.println(url);
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
@@ -188,7 +187,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
 			//return result
 			return ret.getBytes();
 		}catch(Exception e){
-
+			if(MMSConfiguration.logging)e.printStackTrace();
 			return "No Reply".getBytes();
 			
 		}

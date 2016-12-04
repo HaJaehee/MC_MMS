@@ -23,7 +23,7 @@ public class CMDummy {
        //-------------Put MRN --> IP Information -------------
        //MRNtoIP.put("urn:mrn:imo:imo-no:1000007", "127.0.0.1:8901:1"); // SC1
        //MRNtoIP.put("urn:mrn:imo:imo-no:0100006", "127.0.0.1:8902:1"); // SC1
-       MRNtoIP.put("urn:mrn:imo:imo-no:0010005", "127.0.0.1:8903:1"); // SC1
+       //MRNtoIP.put("urn:mrn:imo:imo-no:0010005", "127.0.0.1:8903:1"); // SC1
        //MRNtoIP.put("urn:mrn:smart-navi:device:mir1", "127.0.0.1:8904:2"); // MIR
        //MRNtoIP.put("urn:mrn:smart-navi:device:msr1", "127.0.0.1:8905:2"); // MSR
        MRNtoIP.put("urn:mrn:smart-navi:device:portal-server", "127.0.0.1:8906:2"); // SP1
@@ -31,7 +31,7 @@ public class CMDummy {
        MRNtoIP.put("urn:mrn:smart-navi:device:og-server", "127.0.0.1:8908:2"); // SP3
        MRNtoIP.put("urn:mrn:smart-navi:service:si-id:text-messenger", "127.0.0.1:8909:2"); // SP4
        MRNtoIP.put("urn:mrn:smart-navi:service:si-id:ocean-grid", "127.0.0.1:8910:2"); // SP5
-       
+       MRNtoIP.put("urn:mrn:simple:simple:server", "127.0.0.1:8080:2");
        
        
        //-----------------------------------------------------
