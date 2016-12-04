@@ -31,7 +31,7 @@ public class CMDummy {
        MRNtoIP.put("urn:mrn:smart-navi:device:og-server", "127.0.0.1:8908:2"); // SP3
        MRNtoIP.put("urn:mrn:smart-navi:service:si-id:text-messenger", "127.0.0.1:8909:2"); // SP4
        MRNtoIP.put("urn:mrn:smart-navi:service:si-id:ocean-grid", "127.0.0.1:8910:2"); // SP5
-       MRNtoIP.put("urn:mrn:simple:simple:server", "127.0.0.1:8080:2");
+       MRNtoIP.put("urn:mrn:simple:simple:server", "143.248.57.72:8080:2");
        
        
        //-----------------------------------------------------

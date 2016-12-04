@@ -74,8 +74,8 @@ public class MMSClientHandler {
 		this.msp = new MSP(port);
 	}
 	
-	public String sendMSG(String dstMRN, String uri, String data) throws Exception{
-		return this.sndHdr.sendPost(dstMRN, uri, data);
+	public String sendMSG(String dstMRN, String loc, String data) throws Exception{
+		return this.sndHdr.sendPost(dstMRN, loc, data);
 	}
 	
 	public String sendMSG(String dstMRN, String data) throws Exception{

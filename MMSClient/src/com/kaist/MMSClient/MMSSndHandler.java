@@ -22,9 +22,9 @@ public class MMSSndHandler {
 		return sendPost(dstMRN, "", data);
 	}
 
-	public String sendPost(String dstMRN, String uri, String data) throws Exception {
+	public String sendPost(String dstMRN, String loc, String data) throws Exception {
 
-		String url = "http://"+MMSConfiguration.MMSURL+"/"+uri; // MMS Server
+		String url = "http://"+MMSConfiguration.MMSURL+"/"+loc; // MMS Server
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
