@@ -3,22 +3,18 @@ import java.util.Scanner;
 import com.kaist.MMSClient.MMSClientHandler;
 import com.kaist.MMSClient.MMSConfiguration;
 
-public class SC2 {
+public class SC4 {
 	public static void main(String args[]) throws Exception{
 		String myMRN;
 		//myMRN = args[0];
-		myMRN = "urn:mrn:imo:imo-no:1000007";
+		myMRN = "urn:mrn:imo:imo-no:001141414";
 		
-		//MMSConfiguration.MMSURL="127.0.0.1:8088";
-		//MMSConfiguration.CMURL="127.0.0.1";
+		MMSConfiguration.MMSURL="127.0.0.1:8088";
+		MMSConfiguration.CMURL="127.0.0.1";
 
 		//Service Consumer which can only send message
 		MMSClientHandler mh = new MMSClientHandler(myMRN);
-
-		for (int i = 0; i < 100;i++){
-			String a = mh.sendMSG("urn:mrn:smart-navi:device:tm-server", "¾È³ç hi hello " + i);
-			//Thread.sleep(100);
-		}
+		mh.LocUpdate();
 		
 		/*
 		("urn:mrn:imo:imo-no:1000007", "127.0.0.1:8901"); // SC

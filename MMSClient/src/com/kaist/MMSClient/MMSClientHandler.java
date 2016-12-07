@@ -165,5 +165,12 @@ public class MMSClientHandler {
 			locationUpdate.start();
 		}
 	}
+	
+	
+	public void LocUpdate () {
+		Thread locationUpdate = new Thread(new locUpdate(1, true));
+		locationUpdate.start();
+	}
+	
 }
 
