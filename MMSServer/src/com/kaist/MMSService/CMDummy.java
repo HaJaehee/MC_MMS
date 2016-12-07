@@ -10,10 +10,12 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 public class CMDummy {
 	//All MRN to IP Mapping is in hashmap 
-	static HashMap<String, String> MRNtoIP = new HashMap<String, String>();
+	public static HashMap<String, String> MRNtoIP = new HashMap<String, String>();
 	
 	public static void main(String argv[]) throws Exception
     {
@@ -89,6 +91,36 @@ public class CMDummy {
         	  else
         		  if(MMSConfiguration.logging)System.out.println("No MRN to IP Mapping");*/        		  
         	  
+          }else if (data.regionMatches(0, "Dump-CM:", 0, 8)){
+
+        	  int rplPort = Integer.parseInt(data.split(",")[1]);
+        	  
+        	  Set<String> keys = MRNtoIP.keySet();
+        	  Iterator<String> keysIter = keys.iterator();
+        	  
+        	  if (keysIter.hasNext()){
+        		  do{
+        			  String key = keysIter.next();
+        			  String value = MRNtoIP.get(key);
+        			  
+        			  dataToReply = dataToReply + key + "," + value + "<br/>";
+        		  }while(keysIter.hasNext());
+        	  }
+        	  else{
+        		  if(MMSConfiguration.logging)System.out.println("No MRN to IP Mapping");
+        	  	  dataToReply = "No";
+        	  }
+        	  if(MMSConfiguration.logging)System.out.println(dataToReply);
+        	  if(MMSConfiguration.logging)System.out.println("CMDUMMY:END");
+              
+        	  Socket ReplySocket = new Socket("localhost",rplPort);
+        	  
+        	  BufferedWriter out = new BufferedWriter(
+    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
+        	  out.write(dataToReply);
+              out.flush();
+              out.close();
+              ReplySocket.close();
           }
        }
     }
