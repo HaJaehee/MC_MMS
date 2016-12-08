@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class CMDummy {
 	//All MRN to IP Mapping is in hashmap 
-	public static HashMap<String, String> MRNtoIP = new HashMap<String, String>();
+	private static HashMap<String, String> MRNtoIP = new HashMap<String, String>();
 	
 	public static void main(String argv[]) throws Exception
     {
@@ -33,7 +33,7 @@ public class CMDummy {
        MRNtoIP.put("urn:mrn:smart-navi:device:og-server", "127.0.0.1:8908:2"); // SP3
        MRNtoIP.put("urn:mrn:smart-navi:service:si-id:text-messenger", "127.0.0.1:8909:2"); // SP4
        MRNtoIP.put("urn:mrn:smart-navi:service:si-id:ocean-grid", "127.0.0.1:8910:2"); // SP5
-       MRNtoIP.put("urn:mrn:simple:simple:server", "143.248.57.72:8080:2");
+       //MRNtoIP.put("urn:mrn:simple:simple:server", "143.248.57.72:8080:2");
        
        
        //-----------------------------------------------------
@@ -93,6 +93,7 @@ public class CMDummy {
         	  
           }else if (data.regionMatches(0, "Dump-CM:", 0, 8)){
 
+        	  if(MMSConfiguration.logging)System.out.println("CMDUMMY:data: " + data);
         	  int rplPort = Integer.parseInt(data.split(",")[1]);
         	  
         	  Set<String> keys = MRNtoIP.keySet();
@@ -121,7 +122,22 @@ public class CMDummy {
               out.flush();
               out.close();
               ReplySocket.close();
+          }else if (data.equals("Empty-CM:") && MMSConfiguration.emptyCMDummy){
+        	  MRNtoIP.clear();
+        	  
+        	  if(MMSConfiguration.logging)System.out.println("CMDUMMY:EMPTY");
+        	  if(MMSConfiguration.logging)System.out.println("CMDUMMY:END");
+              
+          }else if (data.regionMatches(0, "Remove-Entry:", 0, 13) && MMSConfiguration.removeEntryCMDummy){
+        	  String mrn = data.substring(13);
+        	  MRNtoIP.remove(mrn);
+
+        	  if(MMSConfiguration.logging)System.out.println("CMDUMMY:REMOVE "+mrn);
+        	  if(MMSConfiguration.logging)System.out.println("CMDUMMY:END");
+              
           }
+          
+          
        }
     }
 }
