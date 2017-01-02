@@ -1,15 +1,16 @@
 package com.kaist.MMSService;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 
-import io.netty.channel.ChannelHandler.Sharable; 
 import io.netty.channel.ChannelHandlerContext; 
 import io.netty.channel.SimpleChannelInboundHandler; 
 import io.netty.channel.socket.DatagramPacket;
@@ -22,10 +23,13 @@ public class UdpHandler extends SimpleChannelInboundHandler<DatagramPacket> {
     	String returnedIP;
     	
     	Socket CMSocket = new Socket("localhost", 1004);
-    	DataOutputStream outToCM = new DataOutputStream(CMSocket.getOutputStream());
-    	BufferedReader inFromCM = new BufferedReader(new InputStreamReader(CMSocket.getInputStream()));
+    	BufferedWriter outToCM = new BufferedWriter(
+				new OutputStreamWriter(CMSocket.getOutputStream(),Charset.forName("UTF-8")));
+    	if(MMSConfiguration.logging)System.out.println(request);
     	
-    	outToCM.writeBytes(request + '\n');
+    	outToCM.write(request);
+    	outToCM.flush();
+    	
     	CMSocket.close();
     	return;
     	
@@ -37,7 +41,7 @@ public class UdpHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 	    InetAddress inetaddress = socketAddress.getAddress();
 	    String ipAddress = inetaddress.getHostAddress();
 	    this.requestToCM("Location-Update:" + ipAddress + "," + msg.content().toString(CharsetUtil.UTF_8).substring(16));
-		//System.out.println("channelRead0: " + msg.content().toString(CharsetUtil.UTF_8));
+	    if(MMSConfiguration.logging)System.out.println("channelRead0: " + msg.content().toString(CharsetUtil.UTF_8));
 	    
     } 
 	 public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
