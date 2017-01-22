@@ -8,8 +8,8 @@ public class ServiceProvider {
 		myMRN = "urn:mrn:smart-navi:device:tm-server";
 		port = 8902;
 		
-		//MMSConfiguration.MMSURL="127.0.0.1:8088";
-		//MMSConfiguration.CMURL="127.0.0.1";
+		MMSConfiguration.MMSURL="127.0.0.1:8088";
+		MMSConfiguration.CMURL="127.0.0.1";
 		
 		MMSClientHandler mh = new MMSClientHandler(myMRN);
 		mh.setMSP(port);

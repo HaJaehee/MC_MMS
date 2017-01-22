@@ -9,8 +9,8 @@ public class SC2 {
 		//myMRN = args[0];
 		myMRN = "urn:mrn:imo:imo-no:1000007";
 		
-		//MMSConfiguration.MMSURL="127.0.0.1:8088";
-		//MMSConfiguration.CMURL="127.0.0.1";
+		MMSConfiguration.MMSURL="127.0.0.1:8088";
+		MMSConfiguration.CMURL="127.0.0.1";
 
 		//Service Consumer which can only send message
 		MMSClientHandler mh = new MMSClientHandler(myMRN);

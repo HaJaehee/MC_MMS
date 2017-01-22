@@ -24,8 +24,8 @@ public class SC1 {
 		});
 		*/
 
-		//MMSConfiguration.MMSURL="127.0.0.1:8088";
-		//MMSConfiguration.CMURL="127.0.0.1";
+		MMSConfiguration.MMSURL="127.0.0.1:8088";
+		MMSConfiguration.CMURL="127.0.0.1";
 		
 		//Service Consumer cannot be HTTP server and should poll from MMS. 
 		MMSClientHandler ph = new MMSClientHandler(myMRN);

@@ -1,4 +1,4 @@
-package com.kaist.MMSService;
+package kr.ac.kaist.mms_server;
 
 public class MMSConfiguration {
 	public static final boolean logging = false;
