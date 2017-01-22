@@ -1,7 +1,5 @@
 package kr.ac.kaist.mns_interaction;
 
-import io.netty.util.CharsetUtil;
-
 public class LocatorUpdater {
 	
 	public String buildUpdate(String dstMRN, String locator) {

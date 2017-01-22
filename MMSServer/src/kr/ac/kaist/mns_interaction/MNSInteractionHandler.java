@@ -1,6 +1,8 @@
 package kr.ac.kaist.mns_interaction;
 
 public class MNSInteractionHandler {
+	private static final String TAG = "MNSInteractionHandler";
+
 	private LocatorUpdater locatorUpdater;
 	private LocatorQuerier locatorQuerier;
 	private MessageOutput messageOutput;

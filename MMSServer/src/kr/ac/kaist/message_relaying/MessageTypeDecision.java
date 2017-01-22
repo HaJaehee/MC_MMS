@@ -19,7 +19,7 @@ public class MessageTypeDecision {
 		String uri = parser.getUri();
 		
 //    	When polling
-    	if (httpMethod == HttpMethod.POST && uri.equals("/polling")) 
+    	if (httpMethod == HttpMethod.POST && uri.equals("/polling"))
     		return POLLING; 
     	
 //    	When Relaying

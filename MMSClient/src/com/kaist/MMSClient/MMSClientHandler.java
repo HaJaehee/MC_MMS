@@ -102,11 +102,13 @@ public class MMSClientHandler {
 			try {
 				do{
 					if(MMSConfiguration.logging)System.out.println("send location update");
+					
 					DatagramSocket dSock = new DatagramSocket();
 					InetAddress server = InetAddress.getByName(MMSConfiguration.CMURL);
 					byte[] data = ("location_update:"+ myMRN + "," + myPort + "," + MSGtype).getBytes();
 					DatagramPacket outPacket = new DatagramPacket(data, data.length, server, MMSConfiguration.CMPort);
 					dSock.send(outPacket);
+					
 					Thread.sleep(MMSConfiguration.locUpdateInterval);
 				}while(infiniteLoop);
 				
@@ -136,9 +138,9 @@ public class MMSClientHandler {
 	
 	class polH extends MMSRcvHandler{
 		public polH(String myMRN, String destMRN, int interval) throws IOException {
-			super(myMRN, destMRN, interval);
-			Thread locationUpdate = new Thread(new locUpdate(1, true));
-			locationUpdate.start();
+			super(myMRN, destMRN, interval, myPort, 1);
+//			Thread locationUpdate = new Thread(new locUpdate(1, true));
+//			locationUpdate.start();
 		}
 	}
 	
