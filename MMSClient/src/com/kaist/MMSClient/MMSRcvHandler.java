@@ -42,8 +42,8 @@ public class MMSRcvHandler {
         server.setExecutor(null); // creates a default executor
         server.start();
 	}
-	public MMSRcvHandler(String myMRN, String destMRN, int interval) throws IOException{
-		ph = new PollHandler(myMRN, destMRN, interval);
+	public MMSRcvHandler(String myMRN, String destMRN, int interval, int myPort, int MSGtype) throws IOException{
+		ph = new PollHandler(myMRN, destMRN, interval, myPort, MSGtype);
 		ph.start();
 	}
     static class MyHandler implements HttpHandler {
@@ -110,15 +110,19 @@ public class MMSRcvHandler {
 		private int interval;
 		private String myMRN;
 		private String destMRN;
+		private int myPort;
+		private int MSGtype;
 		com.kaist.MMSClient.MMSClientHandler.reqCallBack myreqCallBack;
     	public void setReqCallBack(com.kaist.MMSClient.MMSClientHandler.reqCallBack callback){
     		this.myreqCallBack = callback;
     	}
 		
-    	public PollHandler (String myMRN, String destMRN, int interval){
+    	public PollHandler (String myMRN, String destMRN, int interval, int myPort, int MSGtype){
     		this.interval = interval;
     		this.myMRN = myMRN;
     		this.destMRN = destMRN;
+    		this.myPort = myPort;
+    		this.MSGtype = MSGtype;
     	}
     	
     	public void run(){
@@ -136,6 +140,7 @@ public class MMSRcvHandler {
 			
 			String url = "http://"+MMSConfiguration.MMSURL+"/polling"; // MMS Server
 			URL obj = new URL(url);
+			String data = (myPort + ":" + MSGtype);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			
 			//add request header
@@ -145,11 +150,15 @@ public class MMSRcvHandler {
 			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 			con.setRequestProperty("srcMRN", myMRN);
 			con.setRequestProperty("dstMRN", destMRN);
+			String urlParameters = data;
 
+//			System.out.println("MMSRcvHandler, polling message");
+			
 			// Send post request
 			con.setDoOutput(true);
 			BufferedWriter wr = new BufferedWriter(
 					new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
+			wr.write(urlParameters);
 			wr.flush();
 			wr.close();
 
