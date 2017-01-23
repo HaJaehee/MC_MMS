@@ -1,5 +1,5 @@
-import com.kaist.MMSClient.MMSClientHandler;
-import com.kaist.MMSClient.MMSConfiguration;
+import kr.ac.kaist.mms_client.MMSClientHandler;
+import kr.ac.kaist.mms_client.MMSConfiguration;
 
 public class ServiceProvider {
 	public static void main(String args[]) throws Exception{

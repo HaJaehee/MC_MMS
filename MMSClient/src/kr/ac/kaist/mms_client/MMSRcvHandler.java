@@ -1,4 +1,4 @@
-package com.kaist.MMSClient;
+package kr.ac.kaist.mms_client;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -47,14 +48,15 @@ public class MMSRcvHandler {
 		ph.start();
 	}
     static class MyHandler implements HttpHandler {
-    	com.kaist.MMSClient.MMSClientHandler.reqCallBack myreqCallBack;
-    	public void setReqCallBack(com.kaist.MMSClient.MMSClientHandler.reqCallBack callback){
+    	private MMSDataParser mmsDataParser = new MMSDataParser();
+    	MMSClientHandler.reqCallBack myreqCallBack;
+    	
+    	public void setReqCallBack(MMSClientHandler.reqCallBack callback){
     		this.myreqCallBack = callback;
     	}
     	
         @Override
         public void handle(HttpExchange t) throws IOException {
-        	if(MMSConfiguration.logging)System.out.println("File request");
         	InputStream in = t.getRequestBody();
             ByteArrayOutputStream _out = new ByteArrayOutputStream();
             byte[] buf = new byte[2048];
@@ -64,7 +66,13 @@ public class MMSRcvHandler {
             }
             if(MMSConfiguration.logging)System.out.println(new String( buf, Charset.forName("UTF-8") ));
             String receivedData = new String( buf, Charset.forName("UTF-8"));
-            String response = this.processRequest(receivedData.trim());
+            
+//            System.out.println("rcvhandler: " + receivedData);
+            
+            ArrayList<MMSData> list = mmsDataParser.processParsing(receivedData.trim());
+            
+//            String response = this.processRequest(receivedData.trim());
+            String response = this.processRequest(list.get(0).getData());
             
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
@@ -81,6 +89,7 @@ public class MMSRcvHandler {
     static class GetHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
+        	if(MMSConfiguration.logging)System.out.println("File request");
         	InputStream in = t.getRequestBody();
             ByteArrayOutputStream _out = new ByteArrayOutputStream();
             byte[] buf = new byte[2048];
@@ -112,8 +121,9 @@ public class MMSRcvHandler {
 		private String destMRN;
 		private int myPort;
 		private int MSGtype;
-		com.kaist.MMSClient.MMSClientHandler.reqCallBack myreqCallBack;
-    	public void setReqCallBack(com.kaist.MMSClient.MMSClientHandler.reqCallBack callback){
+		private MMSDataParser mmsDataParser;
+		MMSClientHandler.reqCallBack myreqCallBack;
+    	public void setReqCallBack(MMSClientHandler.reqCallBack callback){
     		this.myreqCallBack = callback;
     	}
 		
@@ -123,6 +133,7 @@ public class MMSRcvHandler {
     		this.destMRN = destMRN;
     		this.myPort = myPort;
     		this.MSGtype = MSGtype;
+    		this.mmsDataParser = new MMSDataParser();
     	}
     	
     	public void run(){
@@ -181,7 +192,11 @@ public class MMSRcvHandler {
 			
 			String res = response.toString();
 			if (!res.equals("EMPTY\n")){
-				processRequest(res);
+				ArrayList<MMSData> list = mmsDataParser.processParsing(res);
+				
+				for(int i = 0; i < list.size(); i++) {
+					processRequest(list.get(i).getData());
+				}
 			}else {
 				//processRequest(res);
 			}

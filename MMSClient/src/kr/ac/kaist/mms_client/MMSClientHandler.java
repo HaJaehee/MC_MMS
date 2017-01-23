@@ -1,4 +1,4 @@
-package com.kaist.MMSClient;
+package kr.ac.kaist.mms_client;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

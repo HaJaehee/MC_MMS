@@ -54,7 +54,7 @@ public class MessageParsing {
 		
 		srcPort = Integer.parseInt(locationInfo.split(":")[0]);
 		srcModel = Integer.parseInt(locationInfo.split(":")[1]);
-		System.out.println(TAG + ":" + srcPort + "/" + srcModel);
+//		System.out.println(TAG + ":" + srcPort + "/" + srcModel);
 	}
 	
 	public void parsingDstInfo(String dstInfo){

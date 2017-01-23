@@ -1,4 +1,4 @@
-package com.kaist.MMSClient;
+package kr.ac.kaist.mms_client;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -8,9 +8,13 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 //srcMRNL: "urn:mrn:imo:imo-no:1000007"
 //dstMRN:  "urn:mrn:smart-navi:device:tm-server"
 public class MMSSndHandler {
+	private static final String TAG = "MMSSndHandler";
 	private final String USER_AGENT = "MMSClient/0.1";
 	private String myMRN;
 	public  MMSSndHandler (String myMRN){
@@ -36,7 +40,22 @@ public class MMSSndHandler {
 		con.setRequestProperty("srcMRN", myMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
 		//con.addRequestProperty("Connection","keep-alive");
-		String urlParameters = data;
+		
+//		change the string data to json format
+		JSONObject jsonFrame = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("seq", "1");
+		jsonObject.put("srcMRN", myMRN);
+		jsonObject.put("data", data);
+		jsonArray.add(jsonObject);
+		jsonFrame.put("payload", jsonArray);
+		
+		String jsonPayload = jsonFrame.toJSONString();
+		
+//		String urlParameters = data;
+		String urlParameters = jsonPayload;
+//		System.out.println(TAG + ":" + jsonPayload);
 		if(MMSConfiguration.logging)System.out.println("urlParameters: "+urlParameters);
 		
 		

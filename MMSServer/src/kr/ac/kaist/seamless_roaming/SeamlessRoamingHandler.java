@@ -31,7 +31,7 @@ public class SeamlessRoamingHandler {
 //		pmh.pushLocationInfo(mih, srcMRN, srcIP);
 		message = pmh.getSCMessage(srcMRN);
 		
-		System.out.println(TAG + ":" + srcMRN + "/" + srcIP + "/" + srcPort + "/" + srcModel);
+//		System.out.println(TAG + ":" + srcMRN + "/" + srcIP + "/" + srcPort + "/" + srcModel);
 		
 		return message;
 	}
