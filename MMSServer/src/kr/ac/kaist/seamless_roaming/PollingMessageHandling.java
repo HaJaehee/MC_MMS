@@ -4,11 +4,11 @@ import kr.ac.kaist.message_queue.MMSQueue;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 
 public class PollingMessageHandling {
-	public void pushLocationInfo(MNSInteractionHandler mih, String dstMRN, String locator) {
+	void pushLocationInfo(MNSInteractionHandler mih, String dstMRN, String locator) {
 		mih.updateDstInfo(dstMRN, locator);
 	}
 	
-	public byte[] getSCMessage(String sourceMRN) {
+	byte[] getSCMessage(String sourceMRN) {
 		byte[] message = null;
 		
 		try{

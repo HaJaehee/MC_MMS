@@ -7,7 +7,7 @@ import kr.ac.kaist.message_queue.MMSQueue;
 
 public class SCMessageHandling {
 
-	public void putSCMessage(String dstMRN, FullHttpRequest req){
+	void putSCMessage(String dstMRN, FullHttpRequest req){
 		try {
 			MMSQueue.putMessage(dstMRN, req);
 		} catch (UnsupportedEncodingException e) {

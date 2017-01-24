@@ -13,11 +13,11 @@ public class ServiceProvider {
 		
 		MMSClientHandler mh = new MMSClientHandler(myMRN);
 		mh.setMSP(port);
-		mh.setReqCallBack(new MMSClientHandler.reqCallBack() {
+		mh.setReqCallBack(new MMSClientHandler.ReqCallBack() {
 			@Override
 			public String callbackMethod(String message) {
 				try {
-					mh.sendMSG("urn:mrn:imo:imo-no:0100006", message);
+					mh.sendPostMsg("urn:mrn:imo:imo-no:0100006", message);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

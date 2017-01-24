@@ -17,6 +17,13 @@ public class MessageRelayingHandler extends SimpleChannelInboundHandler<FullHttp
 	private SeamlessRoamingHandler srh;
 	private MessageCastingHandler mch;
 	
+	public MessageRelayingHandler() {
+		super();
+		
+		initializeModule();
+		initializeSubModule();
+	}
+	
 	private void initializeSubModule() {
 		parser = new MessageParsing();
 		typeDecider = new MessageTypeDecision();
@@ -28,29 +35,22 @@ public class MessageRelayingHandler extends SimpleChannelInboundHandler<FullHttp
 		mch = new MessageCastingHandler();
 	}
 	
-	public MessageRelayingHandler() {
-		super();
-		
-		initializeModule();
-		initializeSubModule();
-	}
-	
 	private void processRelaying(int type, ChannelHandlerContext ctx, FullHttpRequest req){
-		String srcMRN = parser.getSourceMRN();
-		String dstMRN = parser.getDestinationMRN();
+		String srcMRN = parser.getSrcMRN();
+		String dstMRN = parser.getDstMRN();
 		HttpMethod httpMethod = parser.getHttpMethod();
 		String uri = parser.getUri();
-		String dstIP = parser.getDestinationIP();
-		int dstPort = parser.getDestinationPort();
+		String dstIP = parser.getDstIP();
+		int dstPort = parser.getDstPort();
 		
 		byte[] message = null;
 		
 		if (type == MessageTypeDecision.POLLING) {
-			parser.parsingLocationInfo(req);
+			parser.parsingLocInfo(req);
 			
-			String srcIP = parser.getSourceIP();
-			int srcPort = parser.getSourcePort();
-			int srcModel = parser.getSoruceModel();
+			String srcIP = parser.getSrcIP();
+			int srcPort = parser.getSrcPort();
+			int srcModel = parser.getSrcModel();
 			
 			message = srh.processPollingMessage(srcMRN, srcIP, srcPort, srcModel);
 		}
@@ -85,7 +85,7 @@ public class MessageRelayingHandler extends SimpleChannelInboundHandler<FullHttp
 //			received data by SC
 //			System.out.println(req.content().toString(Charset.forName("UTF-8")).trim());
 			
-			int type = typeDecider.doTypeDecision(parser, mch);
+			int type = typeDecider.decideType(parser, mch);
 			processRelaying(type, ctx, req);
 			
 		} finally {

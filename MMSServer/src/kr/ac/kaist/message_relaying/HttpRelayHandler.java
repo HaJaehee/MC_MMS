@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Deprecated
 public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 	private final String USER_AGENT = "MMSClient/0.1";
 	

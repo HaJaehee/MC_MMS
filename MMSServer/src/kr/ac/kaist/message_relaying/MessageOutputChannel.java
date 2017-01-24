@@ -35,12 +35,12 @@ public class MessageOutputChannel {
 	private static Map<String,List<String>> storedHeader = null;
 	private static boolean isStoredHeader = false;
 	
-	public void setResponseHeader(Map<String, List<String>> storingHeader){
+	void setResponseHeader(Map<String, List<String>> storingHeader){
 		isStoredHeader = true;
 		storedHeader = storingHeader;
 	}
 	
-	public void replyToSender(ChannelHandlerContext ctx, byte[] data){
+	void replyToSender(ChannelHandlerContext ctx, byte[] data){
     	ByteBuf textb = Unpooled.copiedBuffer(data);
     	long responseLen = data.length;
     	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
@@ -56,8 +56,9 @@ public class MessageOutputChannel {
 						res.headers().set(key,value);
 				}
 			}
-    	}else
+    	} else {
     		res.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8");
+    	}
     	
     	HttpUtil.setContentLength(res, responseLen);
     	ctx.write(res);
@@ -67,7 +68,7 @@ public class MessageOutputChannel {
     }
 	
 //  to do relaying
-	public byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws Exception { // 
+	byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws Exception { // 
 	  	if(MMSConfiguration.logging)System.out.println("uri?:" + req.getUri());
 		String url = "http://" + IPAddress + ":" + port + req.getUri();
 		if(MMSConfiguration.logging)System.out.println(url);
@@ -77,17 +78,19 @@ public class MessageOutputChannel {
 		
 		
 //		Setting HTTP method
-		if (httpMethod == httpMethod.POST)
+		if (httpMethod == httpMethod.POST){
 			con.setRequestMethod("POST");
-		else if (httpMethod == httpMethod.GET)
+		} else if (httpMethod == httpMethod.GET){
 			con.setRequestMethod("GET");
+		}
 		
 //		Setting remaining headers
 		for (Iterator<Map.Entry<String, String>> htr = httpHeaders.iterator(); htr.hasNext();){
 			Map.Entry<String, String> htrValue = htr.next();
 			//System.out.println(htrValue.getKey() + " " + htrValue.getValue());
-			if (!htrValue.getKey().equals("srcMRN") && !htrValue.getKey().equals("dstMRN"))
+			if (!htrValue.getKey().equals("srcMRN") && !htrValue.getKey().equals("dstMRN")){
 				con.setRequestProperty(htrValue.getKey(), htrValue.getValue());
+			}
 		}
 
 		String urlParameters = req.content().toString(Charset.forName("UTF-8")).trim();
@@ -107,9 +110,9 @@ public class MessageOutputChannel {
 			Map<String,List<String>> resHeaders = con.getHeaderFields();
 			setResponseHeader(resHeaders);
 			
-			//if(MMSConfiguration.logging)System.out.println("\nSending 'POST' request to URL : " + url);
-			//if(MMSConfiguration.logging)System.out.println("Post parameters : " + urlParameters);
-			//if(MMSConfiguration.logging)System.out.println("Response Code : " + responseCode);
+			if(MMSConfiguration.logging)System.out.println("\nSending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url);
+			if(MMSConfiguration.logging)System.out.println((httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters);
+			if(MMSConfiguration.logging)System.out.println("Response Code : " + responseCode);
 			BufferedReader in = new BufferedReader(
 			        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 			String inputLine;
@@ -122,7 +125,7 @@ public class MessageOutputChannel {
 			String ret = buf.toString();
 			return ret.getBytes();
 		}catch(Exception e){
-			//if(MMSConfiguration.logging)e.printStackTrace();
+			if(MMSConfiguration.logging)e.printStackTrace();
 			return "No Reply".getBytes();
 			
 		}

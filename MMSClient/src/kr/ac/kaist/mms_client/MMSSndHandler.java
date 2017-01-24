@@ -8,25 +8,20 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Iterator;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-//srcMRNL: "urn:mrn:imo:imo-no:1000007"
-//dstMRN:  "urn:mrn:smart-navi:device:tm-server"
+
 public class MMSSndHandler {
 	private static final String TAG = "MMSSndHandler";
 	private final String USER_AGENT = "MMSClient/0.1";
-	private String myMRN;
-	public  MMSSndHandler (String myMRN){
-		this.myMRN = myMRN;
-	}
-	static void callbacktype(String data){}
-	
-	public String sendPost(String dstMRN, String data) throws Exception {
-		return sendPost(dstMRN, "", data);
+	private String clientMRN;
+	MMSSndHandler (String clientMRN){
+		this.clientMRN = clientMRN;
 	}
 
-	public String sendPost(String dstMRN, String loc, String data) throws Exception {
+	String sendHttpPost(String dstMRN, String loc, String data, JSONObject headerField) throws Exception {
 
 		String url = "http://"+MMSConfiguration.MMSURL+"/"+loc; // MMS Server
 		URL obj = new URL(url);
@@ -37,16 +32,22 @@ public class MMSSndHandler {
 		con.setRequestProperty("User-Agent", USER_AGENT);
 		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-		con.setRequestProperty("srcMRN", myMRN);
+		con.setRequestProperty("srcMRN", clientMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
 		//con.addRequestProperty("Connection","keep-alive");
-		
+		if (headerField != null) {
+			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
+				String key = (String) keys.next();
+				String value = (String) headerField.get(key);
+				con.setRequestProperty(key, value);
+			}
+		}
 //		change the string data to json format
 		JSONObject jsonFrame = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("seq", "1");
-		jsonObject.put("srcMRN", myMRN);
+		jsonObject.put("srcMRN", clientMRN);
 		jsonObject.put("data", data);
 		jsonArray.add(jsonObject);
 		jsonFrame.put("payload", jsonArray);
@@ -85,8 +86,9 @@ public class MMSSndHandler {
 		if(MMSConfiguration.logging)System.out.println("response: " + response.toString());
 		return new String(response.toString().getBytes(), "utf-8");
 	}
+	
 	//OONI
-	public String sendPostFile(String dstMRN, String fileName) throws Exception {
+	String sendHttpPostFile(String dstMRN, String fileName, JSONObject headerField) throws Exception {
 
 		String url = "http://"+MMSConfiguration.MMSURL+"/get"; // MMS Server
 		URL obj = new URL(url);
@@ -97,8 +99,15 @@ public class MMSSndHandler {
 		con.setRequestProperty("User-Agent", USER_AGENT);
 		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-		con.setRequestProperty("srcMRN", myMRN);
+		con.setRequestProperty("srcMRN", clientMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
+		if (headerField != null) {
+			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
+				String key = (String) keys.next();
+				String value = (String) headerField.get(key);
+				con.setRequestProperty(key, value);
+			}
+		}
 		//con.addRequestProperty("Connection","keep-alive");
 		String urlParameters = fileName;
 
@@ -129,5 +138,64 @@ public class MMSSndHandler {
 		in.close();
 		return fileName + "is saved";
 	}
-	//OONI
+	//OONI end
+	
+	//HJH
+	String sendHttpGet(String dstMRN, String params, JSONObject headerField) throws Exception {
+
+		String url = "http://"+MMSConfiguration.MMSURL+"/"+params; // MMS Server
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+		
+		//add request header
+		con.setRequestMethod("GET");
+		con.setRequestProperty("User-Agent", USER_AGENT);
+		con.setRequestProperty("Accept-Charset", "UTF-8");
+		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+		con.setRequestProperty("srcMRN", clientMRN);
+		con.setRequestProperty("dstMRN", dstMRN);
+		if (headerField != null) {
+			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
+				String key = (String) keys.next();
+				String value = (String) headerField.get(key);
+				con.setRequestProperty(key, value);
+			}
+		}
+		//con.addRequestProperty("Connection","keep-alive");
+		
+		// Send get request
+		con.setDoOutput(true);
+		BufferedWriter wr = new BufferedWriter(
+				new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
+		wr.write("");
+		wr.flush();
+		wr.close();
+
+		int responseCode = con.getResponseCode();
+		if(MMSConfiguration.logging)System.out.println("\nSending 'GET' request to URL : " + url);
+		if(MMSConfiguration.logging)System.out.println("Response Code : " + responseCode);
+		
+		BufferedReader in = new BufferedReader(
+		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
+		
+		while ((inputLine = in.readLine()) != null) {
+			response.append(inputLine);
+		}
+		
+		in.close();
+		if(MMSConfiguration.logging)System.out.println("response: " + response.toString());
+		return new String(response.toString().getBytes(), "utf-8");
+	}
+	
+	
+	String sendHttpsPost(String dstMRN, String params, JSONObject headerField) throws Exception {
+		return null;
+	}
+	
+	String sendHttpsGet(String dstMRN, String params, JSONObject headerField) throws Exception {
+		return null;
+	}
+	//HJH end
 }

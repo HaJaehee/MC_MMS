@@ -23,7 +23,7 @@ public class MessageParsing {
 	private String uri;
 	private HttpMethod httpMethod;
 	
-	public MessageParsing(){
+	MessageParsing(){
 		srcIP = null;
 		srcMRN = null;
 		dstIP = null;
@@ -36,7 +36,7 @@ public class MessageParsing {
 		dstModel = 0;
 	}
 	
-	public void parsingMessage(ChannelHandlerContext ctx, FullHttpRequest req) {
+	void parsingMessage(ChannelHandlerContext ctx, FullHttpRequest req) {
 		InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 	    InetAddress inetaddress = socketAddress.getAddress();
 	    srcIP = inetaddress.getHostAddress(); // IP address of client
@@ -49,57 +49,57 @@ public class MessageParsing {
 		httpMethod = req.getMethod();
 	}
 	
-	public void parsingLocationInfo(FullHttpRequest req){
-		String locationInfo = req.content().toString(Charset.forName("UTF-8")).trim();
+	void parsingLocInfo(FullHttpRequest req){
+		String locInfo = req.content().toString(Charset.forName("UTF-8")).trim();
 		
-		srcPort = Integer.parseInt(locationInfo.split(":")[0]);
-		srcModel = Integer.parseInt(locationInfo.split(":")[1]);
+		srcPort = Integer.parseInt(locInfo.split(":")[0]);
+		srcModel = Integer.parseInt(locInfo.split(":")[1]);
 //		System.out.println(TAG + ":" + srcPort + "/" + srcModel);
 	}
 	
-	public void parsingDstInfo(String dstInfo){
+	void parsingDstInfo(String dstInfo){
 		dstIP = dstInfo.split(":")[0];
     	dstPort = Integer.parseInt(dstInfo.split(":")[1]);
     	dstModel = Integer.parseInt(dstInfo.split(":")[2]);
 	}
 	
-	public String getDestinationMRN() {
+	String getDstMRN() {
 		return dstMRN;
 	}
 
-	public String getSourceMRN() {
+	String getSrcMRN() {
 		return srcMRN;
 	}
 
-	public String getUri() {
+	String getUri() {
 		return uri;
 	}
 	
-	public HttpMethod getHttpMethod() {
+	HttpMethod getHttpMethod() {
 		return httpMethod;
 	}
 	
-	public String getDestinationIP() {
+	String getDstIP() {
 		return dstIP;
 	}
 	
-	public int getDestinationPort() {
+	int getDstPort() {
 		return dstPort;
 	}
 	
-	public int getDestinationModel() {
+	int getDstModel() {
 		return dstModel;
 	}
 	
-	public String getSourceIP(){
+	String getSrcIP(){
 		return srcIP;
 	}
 	
-	public int getSourcePort(){
+	int getSrcPort(){
 		return srcPort;
 	}
 	
-	public int getSoruceModel(){
+	int getSrcModel(){
 		return srcModel;
 	}
 }

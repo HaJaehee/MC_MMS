@@ -10,8 +10,8 @@ import io.netty.handler.logging.LoggingHandler;
 
 import java.util.function.Consumer;
 
-public class NettyStartupUtil {
-	public static void runServer(int port, ChannelHandler childHandler, Consumer<ServerBootstrap> block) throws Exception {
+class NettyStartupUtil {
+	static void runServer(int port, ChannelHandler childHandler, Consumer<ServerBootstrap> block) throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -29,11 +29,11 @@ public class NettyStartupUtil {
         }
     }
 
-    public static void runServer(int port, ChannelHandler childHandler) throws Exception {
+    static void runServer(int port, ChannelHandler childHandler) throws Exception {
         runServer(port, childHandler, b -> {});
     }
 
-    public static void runServer(int port, Consumer<ChannelPipeline> initializer) throws Exception {
+    static void runServer(int port, Consumer<ChannelPipeline> initializer) throws Exception {
         runServer(port, new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {

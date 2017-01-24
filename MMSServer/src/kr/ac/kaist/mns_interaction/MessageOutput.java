@@ -14,7 +14,7 @@ import kr.ac.kaist.mms_server.MMSConfiguration;
 
 public class MessageOutput {
 
-	public String sendToMNS(String request) {
+	String sendToMNS(String request) {
     	try{
 	    	//String modifiedSentence;
 	    	String returnedIP = null;

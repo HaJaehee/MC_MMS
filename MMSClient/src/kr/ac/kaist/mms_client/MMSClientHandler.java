@@ -5,93 +5,116 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 public class MMSClientHandler {
-	private rcvH rcvHdr;
-	private polH polHdr;
-	private sndH sndHdr;
-	private MIR mir;
-	private MSR msr;
-	private MSP msp;
-	private String myMRN;
-	private int myPort;
-	public interface resCallBack{
+	private RcvHandler rcvHandler = null;
+	private PollHandler pollHandler = null;
+	private SendHandler sendHandler = null;
+	private MIR mir = null;
+	private MSR msr = null;
+	private MSP msp = null;
+	private String clientMRN = "";
+	private int clientPort = 0;
+	private ResCallBack resCallBack = null;
+	private JSONObject headerField = null;
+	
+	public MMSClientHandler(String clientMRN) throws IOException{
+		this.sendHandler = new SendHandler(clientMRN);
+		this.clientMRN = clientMRN;
+	}
+	
+	public interface ResCallBack{
 		void callbackMethod(String data);
 	}
-	public interface reqCallBack{
+	public interface ReqCallBack{
 		String callbackMethod(String data);
 	}
-	private resCallBack myCallBack;
 	
-	public void setResCallBack(resCallBack callback){
-		this.myCallBack = callback;
-	}
-	//private reqCallBack myreqCallBack;
-	public void setReqCallBack(reqCallBack callback){
-		 if (this.rcvHdr != null)
-			 this.rcvHdr.mh.setReqCallBack(callback);
-		 if (this.polHdr != null)
-			 this.polHdr.ph.setReqCallBack(callback);
-		 if (this.mir != null)
-			 this.mir.mh.setReqCallBack(callback);
-		 if (this.msr != null)
-			 this.msr.mh.setReqCallBack(callback);
-		 if (this.msp != null)
-			 this.msp.mh.setReqCallBack(callback);
-	}
-	
-	public MMSClientHandler(String myMRN) throws IOException{
-		this.sndHdr = new sndH(myMRN);
-		this.myMRN = myMRN;
+	public void setResCallBack(ResCallBack callback){
+		this.resCallBack = callback;
 	}
 
-	public void setPolling (String destMRN, int interval) throws IOException
+	public void setReqCallBack(ReqCallBack callback){
+		 if (this.rcvHandler != null)
+			 this.rcvHandler.hrh.setReqCallBack(callback);
+		 if (this.pollHandler != null)
+			 this.pollHandler.ph.setReqCallBack(callback);
+		 if (this.mir != null)
+			 this.mir.hrh.setReqCallBack(callback);
+		 if (this.msr != null)
+			 this.msr.hrh.setReqCallBack(callback);
+		 if (this.msp != null)
+			 this.msp.hrh.setReqCallBack(callback);
+	}
+	
+	public void setPolling (String dstMRN, int interval) throws IOException
 	{
-		this.polHdr = new polH(myMRN, destMRN, interval);
+		this.pollHandler = new PollHandler(clientMRN, dstMRN, interval, headerField);
 	}
 	
 	public void setPort (int port) throws IOException
 	{
-		this.myPort = port;
-		this.rcvHdr = new rcvH(port);
+		this.clientPort = port;
+		this.rcvHandler = new RcvHandler(port);
 	}
 	
 	public void setMSR (int port) throws IOException
 	{
-		this.myPort = port;
+		this.clientPort = port;
 		this.msr = new MSR(port);
 	}
 	
 	
 	public void setMIR (int port) throws IOException
 	{
-		this.myPort = port;
+		this.clientPort = port;
 		this.mir = new MIR(port);
 	}
 	
 	public void setMSP (int port) throws IOException
 	{
-		this.myPort = port;
+		this.clientPort = port;
 		this.msp = new MSP(port);
 	}
 	
-	public String sendMSG(String dstMRN, String loc, String data) throws Exception{
-		return this.sndHdr.sendPost(dstMRN, loc, data);
+	//HJH
+	public void setMsgHeader(JSONObject headerField) throws Exception{
+		this.headerField = headerField;
 	}
 	
-	public String sendMSG(String dstMRN, String data) throws Exception{
-		return this.sndHdr.sendPost(dstMRN, data);
+	public String sendPostMsg(String dstMRN, String loc, String data) throws Exception{
+		return this.sendHandler.sendHttpPost(dstMRN, loc, data, headerField);
+	}
+	
+	public String sendPostMsg(String dstMRN, String data) throws Exception{
+		return this.sendHandler.sendHttpPost(dstMRN, "", data, headerField);
+	}
+	
+	//HJH
+	public String sendGetMsg(String dstMRN) throws Exception{
+		return this.sendHandler.sendHttpGet(dstMRN, "", headerField);
+	}
+	
+	//HJH
+	public String sendGetMsg(String dstMRN, String params) throws Exception{
+		return this.sendHandler.sendHttpGet(dstMRN, params, headerField);
 	}
 	
 	//OONI
 	public String requestFile(String dstMRN, String fileName) throws Exception{
-		return this.sndHdr.sendPostFile(dstMRN, fileName);
+		return this.sendHandler.sendHttpPostFile(dstMRN, fileName, headerField);
 	}
+	
+	
 	//OONI
-	class locUpdate implements Runnable{
+	@Deprecated
+	class LocUpdate implements Runnable{
 
 		private int MSGtype;
 		private boolean infiniteLoop;
-		public locUpdate(int MSGType, boolean infiniteLoop) {
+		public LocUpdate(int MSGType, boolean infiniteLoop) {
 			// TODO Auto-generated constructor stub
 			this.MSGtype = MSGType;
 			this.infiniteLoop = infiniteLoop;
@@ -105,7 +128,7 @@ public class MMSClientHandler {
 					
 					DatagramSocket dSock = new DatagramSocket();
 					InetAddress server = InetAddress.getByName(MMSConfiguration.CMURL);
-					byte[] data = ("location_update:"+ myMRN + "," + myPort + "," + MSGtype).getBytes();
+					byte[] data = ("location_update:"+ clientMRN + "," + clientPort + "," + MSGtype).getBytes();
 					DatagramPacket outPacket = new DatagramPacket(data, data.length, server, MMSConfiguration.CMPort);
 					dSock.send(outPacket);
 					
@@ -118,59 +141,51 @@ public class MMSClientHandler {
 			}
 						
 		}
-		
-	
 	}
-	class rcvH extends MMSRcvHandler{
-		public rcvH(int port) throws IOException {
+	
+	private class RcvHandler extends MMSRcvHandler{
+		RcvHandler(int port) throws IOException {
 			super(port);
-			Thread locationUpdate = new Thread(new locUpdate(2,true));
-			locationUpdate.start();
+
 		}
 	}
 	
-	class sndH extends MMSSndHandler{
-		
-		public sndH(String myMRN) {
-			super(myMRN);
+	private class SendHandler extends MMSSndHandler{
+		SendHandler(String clientMRN) {
+			super(clientMRN);
 		}
 	}
 	
-	class polH extends MMSRcvHandler{
-		public polH(String myMRN, String destMRN, int interval) throws IOException {
-			super(myMRN, destMRN, interval, myPort, 1);
-//			Thread locationUpdate = new Thread(new locUpdate(1, true));
-//			locationUpdate.start();
+	private class PollHandler extends MMSRcvHandler{
+		PollHandler(String clientMRN, String dstMRN, int interval, JSONObject headerField) throws IOException {
+			super(clientMRN, dstMRN, interval, clientPort, 1, headerField);
 		}
 	}
 	
-	class MSR extends MMSRcvHandler{
-		public MSR(int port) throws IOException {
+	private class MSR extends MMSRcvHandler{
+		MSR(int port) throws IOException {
 			super(port);
-			Thread locationUpdate = new Thread(new locUpdate(2, false));
-			locationUpdate.start();
+
 		}
 	}
 	
-	class MIR extends MMSRcvHandler{
-		public MIR(int port) throws IOException {
+	private class MIR extends MMSRcvHandler{
+		MIR(int port) throws IOException {
 			super(port);
-			Thread locationUpdate = new Thread(new locUpdate(2, false));
-			locationUpdate.start();
+
 		}
 	}
 	
-	class MSP extends MMSRcvHandler{
-		public MSP(int port) throws IOException {
+	private class MSP extends MMSRcvHandler{
+		MSP(int port) throws IOException {
 			super(port);
-			Thread locationUpdate = new Thread(new locUpdate(2, false));
-			locationUpdate.start();
+
 		}
 	}
 	
-	
-	public void LocUpdate () {
-		Thread locationUpdate = new Thread(new locUpdate(1, true));
+	@Deprecated
+	public void locUpdate () {
+		Thread locationUpdate = new Thread(new LocUpdate(1, true));
 		locationUpdate.start();
 	}
 	

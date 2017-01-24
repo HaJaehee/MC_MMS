@@ -5,21 +5,21 @@ public class MMSData {
 	private String srcMRN;
 	private String data;
 	
-	public MMSData (int seq, String srcMRN, String data) {
+	MMSData (int seq, String srcMRN, String data) {
 		this.sequence = seq;
 		this.srcMRN = srcMRN;
 		this.data = data;
 	}
 	
-	public int getSequence() {
+	int getSequence() {
 		return this.sequence;
 	}
 	
-	public String getSrcMRN() { 
+	String getSrcMRN() { 
 		return this.srcMRN;
 	}
 	
-	public String getData() {
+	String getData() {
 		return this.data;
 	}
 }

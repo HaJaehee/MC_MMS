@@ -11,11 +11,11 @@ public class MMSDataParser {
 	private static final String TAG = "MMSDataParser";
 	private JSONParser parser;
 	
-	public MMSDataParser () {
+	MMSDataParser () {
 		parser = new JSONParser();
 	}
 	
-	public ArrayList<MMSData> processParsing(String payload) {
+	ArrayList<MMSData> processParsing(String payload) {
 		ArrayList<MMSData> arrayList = new ArrayList<MMSData>();
 		
 		try{

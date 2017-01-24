@@ -6,15 +6,15 @@ import kr.ac.kaist.message_queue.MMSQueue;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 public class MessageTypeDecision {
-	public static final int POLLING = 1; // type is polling message 
-	public static final int RELAYINGTOSC = 2; // type is relaying to SC
-	public static final int RELAYINGTOSERVER = 3; // type is relaying to SR, IR or SP
-	public static final int UNKNOWNMRN = 4; // type is unknown MRN
-	public static final int UNKNOWNHTTPTYPE = 5; // type is unknown http type
+	static final int POLLING = 1; // type is polling message 
+	static final int RELAYINGTOSC = 2; // type is relaying to SC
+	static final int RELAYINGTOSERVER = 3; // type is relaying to SR, IR or SP
+	static final int UNKNOWNMRN = 4; // type is unknown MRN
+	static final int UNKNOWNHTTPTYPE = 5; // type is unknown http type
 	
-	public int doTypeDecision(MessageParsing parser, MessageCastingHandler mch) {
-		String srcMRN = parser.getSourceMRN();
-		String dstMRN = parser.getDestinationMRN();
+	int decideType(MessageParsing parser, MessageCastingHandler mch) {
+		String srcMRN = parser.getSrcMRN();
+		String dstMRN = parser.getDstMRN();
 		HttpMethod httpMethod = parser.getHttpMethod();
 		String uri = parser.getUri();
 		
@@ -30,7 +30,7 @@ public class MessageTypeDecision {
         		return UNKNOWNMRN;
 
         	parser.parsingDstInfo(dstInfo);
-        	int model = parser.getDestinationModel();
+        	int model = parser.getDstModel();
         	
 //        	model B (destination MSR, MIR, or MSP as servers)
         	if (model == 2)

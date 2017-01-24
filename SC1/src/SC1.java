@@ -32,7 +32,7 @@ public class SC1 {
 		int pollInterval = 1000;
 		ph.setPolling("urn:mrn:smart-navi:device:mms1",pollInterval);
 		//Request Callback from the request message
-		ph.setReqCallBack(new MMSClientHandler.reqCallBack() {
+		ph.setReqCallBack(new MMSClientHandler.ReqCallBack() {
 			@Override
 			public String callbackMethod(String message) {
 				System.out.println(message);
