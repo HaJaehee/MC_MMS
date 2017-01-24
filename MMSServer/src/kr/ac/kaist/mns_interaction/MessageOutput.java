@@ -49,15 +49,16 @@ public class MessageOutput {
 	    	
 	    	inFromCM.close();
 	    	
-	    	if (returnedIP.equals("No"))
+	    	if (returnedIP.equals("No")) {
 	    		return "No";
+	    	}
 	    	
 	    	returnedIP = returnedIP.substring(14);
 	    	
 	    	return returnedIP;
     	}
     	catch (Exception e) {
-    		e.printStackTrace();
+    		if(MMSConfiguration.logging)e.printStackTrace();
     		
 			return null;
 		}

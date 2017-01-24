@@ -13,7 +13,7 @@ public class PollingMessageHandling {
 		
 		try{
 			message = MMSQueue.getMessage(sourceMRN);
-		}catch(Exception e){
+		} catch (Exception e) {
 			message = "EMPTY".getBytes();
 		}
 		

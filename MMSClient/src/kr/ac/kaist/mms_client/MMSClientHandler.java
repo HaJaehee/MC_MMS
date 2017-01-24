@@ -37,16 +37,21 @@ public class MMSClientHandler {
 	}
 
 	public void setReqCallBack(ReqCallBack callback){
-		 if (this.rcvHandler != null)
+		 if (this.rcvHandler != null) {
 			 this.rcvHandler.hrh.setReqCallBack(callback);
-		 if (this.pollHandler != null)
+		 }
+		 if (this.pollHandler != null) {
 			 this.pollHandler.ph.setReqCallBack(callback);
-		 if (this.mir != null)
+		 }
+		 if (this.mir != null) {
 			 this.mir.hrh.setReqCallBack(callback);
-		 if (this.msr != null)
+		 }
+		 if (this.msr != null) {
 			 this.msr.hrh.setReqCallBack(callback);
-		 if (this.msp != null)
+		 }
+		 if (this.msp != null) {
 			 this.msp.hrh.setReqCallBack(callback);
+		 }
 	}
 	
 	public void setPolling (String dstMRN, int interval) throws IOException
@@ -137,7 +142,7 @@ public class MMSClientHandler {
 				
 			} catch (InterruptedException |  IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				if(MMSConfiguration.logging)e.printStackTrace();
 			}
 						
 		}

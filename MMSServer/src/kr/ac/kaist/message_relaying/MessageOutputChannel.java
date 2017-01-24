@@ -46,14 +46,15 @@ public class MessageOutputChannel {
     	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
     	if (isStoredHeader){
 			Set<String> resHeaderKeyset = storedHeader.keySet(); 
-			for (Iterator<String> resHeaderIterator = resHeaderKeyset.iterator();resHeaderIterator.hasNext();){
+			for (Iterator<String> resHeaderIterator = resHeaderKeyset.iterator();resHeaderIterator.hasNext();) {
 				String key = resHeaderIterator.next();
 				List<String> values = storedHeader.get(key);
-				for (Iterator<String> valueIterator = values.iterator();valueIterator.hasNext();){
+				for (Iterator<String> valueIterator = values.iterator();valueIterator.hasNext();) {
 					String value = valueIterator.next();
 					//System.out.println("key-value:  " + key + ", " + value);
-					if (key != null)
+					if (key != null) {
 						res.headers().set(key,value);
+					}
 				}
 			}
     	} else {
@@ -78,17 +79,17 @@ public class MessageOutputChannel {
 		
 		
 //		Setting HTTP method
-		if (httpMethod == httpMethod.POST){
+		if (httpMethod == httpMethod.POST) {
 			con.setRequestMethod("POST");
-		} else if (httpMethod == httpMethod.GET){
+		} else if (httpMethod == httpMethod.GET) {
 			con.setRequestMethod("GET");
 		}
 		
 //		Setting remaining headers
-		for (Iterator<Map.Entry<String, String>> htr = httpHeaders.iterator(); htr.hasNext();){
+		for (Iterator<Map.Entry<String, String>> htr = httpHeaders.iterator(); htr.hasNext();) {
 			Map.Entry<String, String> htrValue = htr.next();
 			//System.out.println(htrValue.getKey() + " " + htrValue.getValue());
-			if (!htrValue.getKey().equals("srcMRN") && !htrValue.getKey().equals("dstMRN")){
+			if (!htrValue.getKey().equals("srcMRN") && !htrValue.getKey().equals("dstMRN")) {
 				con.setRequestProperty(htrValue.getKey(), htrValue.getValue());
 			}
 		}
@@ -124,7 +125,7 @@ public class MessageOutputChannel {
 			in.close();
 			String ret = buf.toString();
 			return ret.getBytes();
-		}catch(Exception e){
+		} catch (Exception e) {
 			if(MMSConfiguration.logging)e.printStackTrace();
 			return "No Reply".getBytes();
 			

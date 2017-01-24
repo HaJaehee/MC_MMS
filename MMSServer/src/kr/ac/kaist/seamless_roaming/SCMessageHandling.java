@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 
 import io.netty.handler.codec.http.FullHttpRequest;
 import kr.ac.kaist.message_queue.MMSQueue;
+import kr.ac.kaist.mms_server.MMSConfiguration;
 
 public class SCMessageHandling {
 
@@ -11,7 +12,7 @@ public class SCMessageHandling {
 		try {
 			MMSQueue.putMessage(dstMRN, req);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			if(MMSConfiguration.logging)e.printStackTrace();
 		}
 	}
 }

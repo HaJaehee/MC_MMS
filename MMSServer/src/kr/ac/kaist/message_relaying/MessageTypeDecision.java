@@ -19,27 +19,28 @@ public class MessageTypeDecision {
 		String uri = parser.getUri();
 		
 //    	When polling
-    	if (httpMethod == HttpMethod.POST && uri.equals("/polling"))
+    	if (httpMethod == HttpMethod.POST && uri.equals("/polling")) {
     		return POLLING; 
+    	}
     	
 //    	When Relaying
-    	else if (httpMethod == HttpMethod.POST || httpMethod == HttpMethod.GET){
+    	else if (httpMethod == HttpMethod.POST || httpMethod == HttpMethod.GET) {
     		String dstInfo = mch.requestDstInfo(dstMRN);
     		
-        	if (dstInfo.equals("No"))
+        	if (dstInfo.equals("No")) {
         		return UNKNOWNMRN;
+        	}
 
         	parser.parsingDstInfo(dstInfo);
         	int model = parser.getDstModel();
         	
-//        	model B (destination MSR, MIR, or MSP as servers)
-        	if (model == 2)
+        	if (model == 2) {//model B (destination MSR, MIR, or MSP as servers)
         		return RELAYINGTOSERVER;
-//        	when model A, it puts the message into the queue
-        	else
+        	} else {//when model A, it puts the message into the queue
         		return RELAYINGTOSC;
-    	}
-    	else
+        	}
+    	} else {
     		return UNKNOWNHTTPTYPE;
+    	}
 	}
 }

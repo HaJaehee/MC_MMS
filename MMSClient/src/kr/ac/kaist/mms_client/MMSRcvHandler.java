@@ -149,7 +149,7 @@ public class MMSRcvHandler {
 	    			Thread.sleep(interval);
 	    			Poll();
     			}catch (Exception e){
-    				e.printStackTrace();
+    				if(MMSConfiguration.logging)e.printStackTrace();
     			}
     		}
     	}

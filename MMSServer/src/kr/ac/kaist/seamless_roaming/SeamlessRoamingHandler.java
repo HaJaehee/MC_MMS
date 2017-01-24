@@ -16,7 +16,7 @@ public class SeamlessRoamingHandler {
 	}
 	
 	private void initializeModule() {
-		 mih = new MNSInteractionHandler();
+		mih = new MNSInteractionHandler();
 	}
 	
 	private void initializeSubModule() {

@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+
 public class MMSDataParser {
 	private static final String TAG = "MMSDataParser";
 	private JSONParser parser;
@@ -30,9 +31,8 @@ public class MMSDataParser {
 				
 				arrayList.add(data);
 			}
-		}
-		catch (ParseException e) {
-			e.printStackTrace();
+		} catch (ParseException e) {
+			if(MMSConfiguration.logging)e.printStackTrace();
 		}
 		
 		return arrayList;

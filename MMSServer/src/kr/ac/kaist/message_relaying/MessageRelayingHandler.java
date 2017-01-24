@@ -5,6 +5,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
+import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 public class MessageRelayingHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
@@ -53,22 +54,18 @@ public class MessageRelayingHandler extends SimpleChannelInboundHandler<FullHttp
 			int srcModel = parser.getSrcModel();
 			
 			message = srh.processPollingMessage(srcMRN, srcIP, srcPort, srcModel);
-		}
-		else if (type == MessageTypeDecision.RELAYINGTOSC) {
+		} else if (type == MessageTypeDecision.RELAYINGTOSC) {
 			srh.putSCMessage(dstMRN, req);
     		message = "OK".getBytes();
-		}
-		else if (type == MessageTypeDecision.RELAYINGTOSERVER) {
+		} else if (type == MessageTypeDecision.RELAYINGTOSERVER) {
         	try {
 				message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod);
 			} catch (Exception e) {
-				e.printStackTrace();
+				if(MMSConfiguration.logging)e.printStackTrace();
 			}
-		}
-		else if (type == MessageTypeDecision.UNKNOWNMRN) {
+		} else if (type == MessageTypeDecision.UNKNOWNMRN) {
 			message = "No Device having that MRN".getBytes();
-		}
-		else if (type == MessageTypeDecision.UNKNOWNHTTPTYPE) {
+		} else if (type == MessageTypeDecision.UNKNOWNHTTPTYPE) {
 			message = "Unknown http type".getBytes();
 		}
 		

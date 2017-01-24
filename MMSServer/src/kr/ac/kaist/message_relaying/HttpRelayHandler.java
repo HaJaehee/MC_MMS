@@ -429,7 +429,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
 	}
 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
+    	if(MMSConfiguration.logging)cause.printStackTrace();
         ctx.close();
     }
 }

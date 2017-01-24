@@ -42,7 +42,7 @@ public class MMSServer {
 //			server.run(); 
 //		} catch (Exception e) {
 //			// TODO Auto-generated catch block
-//			e.printStackTrace();
+//			if(MMSConfiguration.logging)e.printStackTrace();
 //		} 
 //	}
 //}
