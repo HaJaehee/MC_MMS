@@ -19,10 +19,14 @@ First of all, please configure build path to .jar files in ./External_jars.<br/>
 
 
 ## Developing
-Jaehyun Park implemented MC_MMS Alpha Version.<br/>
+Jaehyun Park<br/>
 email: jae519@kaist.ac.kr<br/>
-Jaehee Ha and Haeun Kim are contributers. <br/>
-email: jaehee.ha@kaist.ac.kr, hukim@kaist.ac.kr <br/>
+Jaehee Ha<br/>
+email: jaehee.ha@kaist.ac.kr<br/>
+Haeun Kim<br/>
+email: hukim@kaist.ac.kr <br/>
+Jin Jeong<br/>
+email: jungst0001@kaist.ac.kr <br/>
 
 
 ### Tools
