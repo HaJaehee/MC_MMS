@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
-import com.kaist.MMSClient.MMSClientHandler;
-import com.kaist.MMSClient.MMSConfiguration;
+import kr.ac.kaist.mms_client.MMSClientHandler;
+import kr.ac.kaist.mms_client.MMSConfiguration;
 
 public class SC2 {
 	public static void main(String args[]) throws Exception{
@@ -9,14 +9,14 @@ public class SC2 {
 		//myMRN = args[0];
 		myMRN = "urn:mrn:imo:imo-no:1000007";
 		
-		//MMSConfiguration.MMSURL="127.0.0.1:8088";
-		//MMSConfiguration.CMURL="127.0.0.1";
+		MMSConfiguration.MMSURL="127.0.0.1:8088";
+		MMSConfiguration.CMURL="127.0.0.1";
 
 		//Service Consumer which can only send message
 		MMSClientHandler mh = new MMSClientHandler(myMRN);
 
 		for (int i = 0; i < 100;i++){
-			String a = mh.sendMSG("urn:mrn:smart-navi:device:tm-server", "¾È³ç hi hello " + i);
+			String a = mh.sendPostMsg("urn:mrn:smart-navi:device:tm-server", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
 		}
 		
