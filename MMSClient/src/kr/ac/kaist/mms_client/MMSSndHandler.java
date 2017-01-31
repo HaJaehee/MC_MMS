@@ -21,9 +21,19 @@ public class MMSSndHandler {
 		this.clientMRN = clientMRN;
 	}
 
-	String sendHttpPost(String dstMRN, String loc, String data, JSONObject headerField) throws Exception {
-
-		String url = "http://"+MMSConfiguration.MMSURL+"/"+loc; // MMS Server
+	String registerLocator(int port) throws Exception {
+		return sendHttpPost("urn:mrn:smart-navi:device:mms1", "/registering", port+":2", null);
+		
+	}
+	
+	String sendHttpPost(String dstMRN, String loc, String data, JSONObject headerField) throws Exception{
+		
+		String url = "http://"+MMSConfiguration.MMSURL; // MMS Server
+		if (loc.startsWith("/")) {
+			url += loc;
+		} else {
+			url += "/" + loc;
+		}
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
@@ -35,30 +45,38 @@ public class MMSSndHandler {
 		con.setRequestProperty("srcMRN", clientMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
 		//con.addRequestProperty("Connection","keep-alive");
+		
 		if (headerField != null) {
+			if(MMSConfiguration.logging)System.out.println("set headerfield");
 			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 				String key = (String) keys.next();
 				String value = (String) headerField.get(key);
+				if(MMSConfiguration.logging)System.out.println(key+":"+value);
 				con.setRequestProperty(key, value);
 			}
+		} 
+		
+		//load contents
+		String urlParameters;
+		if (!loc.equals("/registering")){
+			//		change the string data to json format
+			JSONObject jsonFrame = new JSONObject();
+			JSONArray jsonArray = new JSONArray();
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("seq", "1");
+			jsonObject.put("srcMRN", clientMRN);
+			jsonObject.put("data", data);
+			jsonArray.add(jsonObject);
+			jsonFrame.put("payload", jsonArray);
+			
+			String jsonPayload = jsonFrame.toJSONString();
+			
+			urlParameters = jsonPayload;
+		} else {
+			urlParameters = data;
 		}
-//		change the string data to json format
-		JSONObject jsonFrame = new JSONObject();
-		JSONArray jsonArray = new JSONArray();
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("seq", "1");
-		jsonObject.put("srcMRN", clientMRN);
-		jsonObject.put("data", data);
-		jsonArray.add(jsonObject);
-		jsonFrame.put("payload", jsonArray);
-		
-		String jsonPayload = jsonFrame.toJSONString();
-		
-//		String urlParameters = data;
-		String urlParameters = jsonPayload;
-//		System.out.println(TAG + ":" + jsonPayload);
+
 		if(MMSConfiguration.logging)System.out.println("urlParameters: "+urlParameters);
-		
 		
 		// Send post request
 		con.setDoOutput(true);
@@ -88,14 +106,20 @@ public class MMSSndHandler {
 	}
 	
 	//OONI
-	String sendHttpPostFile(String dstMRN, String fileName, JSONObject headerField) throws Exception {
+	String sendHttpGetFile(String dstMRN, String fileName, JSONObject headerField) throws Exception {
 
-		String url = "http://"+MMSConfiguration.MMSURL+"/get"; // MMS Server
+		String url = "http://"+MMSConfiguration.MMSURL; // MMS Server
+		if (fileName.startsWith("/")) {
+			url += fileName;
+		} else {
+			url += "/" + fileName;
+		}
 		URL obj = new URL(url);
+		
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
 		//add request header
-		con.setRequestMethod("POST");
+		con.setRequestMethod("GET");
 		con.setRequestProperty("User-Agent", USER_AGENT);
 		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
@@ -109,19 +133,19 @@ public class MMSSndHandler {
 			}
 		}
 		//con.addRequestProperty("Connection","keep-alive");
-		String urlParameters = fileName;
+		
 
 		// Send post request
 		con.setDoOutput(true);
 		BufferedWriter wr = new BufferedWriter(
 				new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
-		wr.write(urlParameters);
+		wr.write("");
 		wr.flush();
 		wr.close();
 
 		int responseCode = con.getResponseCode();
 		if(MMSConfiguration.logging)System.out.println("\nSending 'POST' request to URL : " + url);
-		if(MMSConfiguration.logging)System.out.println("Post parameters : " + urlParameters);
+		if(MMSConfiguration.logging)System.out.println("Post parameters : " + "");
 		if(MMSConfiguration.logging)System.out.println("Response Code : " + responseCode);
 		
 		BufferedReader in = new BufferedReader(
@@ -141,9 +165,26 @@ public class MMSSndHandler {
 	//OONI end
 	
 	//HJH
-	String sendHttpGet(String dstMRN, String params, JSONObject headerField) throws Exception {
+	String sendHttpGet(String dstMRN, String loc, String params, JSONObject headerField) throws Exception {
 
-		String url = "http://"+MMSConfiguration.MMSURL+"/"+params; // MMS Server
+		String url = "http://"+MMSConfiguration.MMSURL; // MMS Server
+		if (loc.startsWith("/")) {
+			url += loc;
+		} else {
+			url += "/" + loc;
+		}
+		
+		if (params != null) {
+			if (params.equals("")) {
+				
+			}
+			else if (params.startsWith("?")) {
+				url += params;
+			} else {
+				url += "?" + params;
+			}
+		}
+		
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		

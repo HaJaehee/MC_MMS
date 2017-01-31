@@ -21,9 +21,12 @@ public class MNSInteractionHandler {
 		return dstInfo;
 	}
 	
-	public void updateDstInfo(String dstMRN, String locator){
-		String msg = locatorUpdater.buildUpdate(dstMRN, locator);
+	public void updateClientInfo(String srcMRN, String srcIP, int srcPort, int srcModel){
+		String msg = locatorUpdater.buildUpdate(srcMRN, srcIP, srcPort, srcModel);
 		messageOutput.sendToMNS(msg);
 	}
 
+	public void registerClientInfo (String srcMRN, String srcIP, int srcPort, int srcModel){
+		updateClientInfo(srcMRN, srcIP, srcPort, srcModel);
+	}
 }

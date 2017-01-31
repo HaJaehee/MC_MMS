@@ -19,4 +19,8 @@ public class MessageCastingHandler {
 		
 		return dstInfo;
 	}
+	
+	public void registerClientInfo (String srcMRN, String srcIP, int srcPort, int srcModel){
+		mih.registerClientInfo (srcMRN, srcIP, srcPort, srcModel);
+	}
 }

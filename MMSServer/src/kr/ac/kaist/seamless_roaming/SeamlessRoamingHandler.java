@@ -28,7 +28,7 @@ public class SeamlessRoamingHandler {
 	public byte[] processPollingMessage(String srcMRN, String srcIP, int srcPort, int srcModel) {
 		byte[] message;
 		
-//		pmh.pushLocationInfo(mih, srcMRN, srcIP);
+		pmh.updateClientInfo(mih, srcMRN, srcIP, srcPort, srcModel);
 		message = pmh.getSCMessage(srcMRN);
 		
 //		System.out.println(TAG + ":" + srcMRN + "/" + srcIP + "/" + srcPort + "/" + srcModel);

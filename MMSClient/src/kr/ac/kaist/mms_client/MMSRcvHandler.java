@@ -17,9 +17,12 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -61,22 +64,20 @@ public class MMSRcvHandler {
     	
         @Override
         public void handle(HttpExchange t) throws IOException {
-        	InputStream in = t.getRequestBody();
+        	InputStream inB = t.getRequestBody();
+        	Map<String,List<String>> inH = t.getRequestHeaders();
             ByteArrayOutputStream _out = new ByteArrayOutputStream();
             byte[] buf = new byte[2048];
             int read = 0;
-            while ((read = in.read(buf)) != -1) {
+            while ((read = inB.read(buf)) != -1) {
                 _out.write(buf, 0, read);
             }
             if(MMSConfiguration.logging)System.out.println(new String( buf, Charset.forName("UTF-8") ));
             String receivedData = new String( buf, Charset.forName("UTF-8"));
             
-//            System.out.println("rcvhandler: " + receivedData);
-            
             ArrayList<MMSData> list = dataParser.processParsing(receivedData.trim());
             
-//            String response = this.processRequest(receivedData.trim());
-            String response = this.processRequest(list.get(0).getData());
+            String response = this.processRequest(inH, list.get(0).getData());
             
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
@@ -84,8 +85,9 @@ public class MMSRcvHandler {
             os.flush();
             os.close();
         }
-        private String processRequest(String data) {
-    		String ret = this.myReqCallBack.callbackMethod(data);
+        
+        private String processRequest(Map<String,List<String>> header, String data) {
+    		String ret = this.myReqCallBack.callbackMethod(header, data);
     		return ret;
     	}
     }
@@ -124,17 +126,17 @@ public class MMSRcvHandler {
 		private String clientMRN;
 		private String dstMRN;
 		private int clientPort;
-		private int msgType;
+		private int clientModel;
 		private MMSDataParser dataParser;
 		private JSONObject headerField;
 		MMSClientHandler.ReqCallBack myReqCallBack;
 		
-    	PollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int msgType, JSONObject headerField){
+    	PollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, JSONObject headerField){
     		this.interval = interval;
     		this.clientMRN = clientMRN;
     		this.dstMRN = dstMRN;
     		this.clientPort = clientPort;
-    		this.msgType = msgType;
+    		this.clientModel = clientModel;
     		this.dataParser = new MMSDataParser();
     		this.headerField = headerField;
     	}
@@ -158,7 +160,7 @@ public class MMSRcvHandler {
 			
 			String url = "http://"+MMSConfiguration.MMSURL+"/polling"; // MMS Server
 			URL obj = new URL(url);
-			String data = (clientPort + ":" + msgType); //To do: add geographical info, channel info, etc. 
+			String data = (clientPort + ":" + clientModel); //To do: add geographical info, channel info, etc. 
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			
 			//add request header
@@ -177,8 +179,6 @@ public class MMSRcvHandler {
 			}
 			String urlParameters = data;
 
-//			System.out.println("MMSRcvHandler, polling message");
-			
 			// Send post request
 			con.setDoOutput(true);
 			BufferedWriter wr = new BufferedWriter(
@@ -192,32 +192,33 @@ public class MMSRcvHandler {
 			if(MMSConfiguration.logging)System.out.println("Polling...");
 			if(MMSConfiguration.logging)System.out.println("Response Code : " + responseCode);
 			
-			BufferedReader in = new BufferedReader(
+			Map<String,List<String>> inH = con.getHeaderFields();
+			BufferedReader inB = new BufferedReader(
 			        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 			String inputLine;
 			
 			StringBuffer response = new StringBuffer();
-			while ((inputLine = in.readLine()) != null) {
+			while ((inputLine = inB.readLine()) != null) {
 				response.append(inputLine.trim() + "\n");
 			}
 			
 			
-			in.close();
+			inB.close();
 			
 			String res = response.toString();
 			if (!res.equals("EMPTY\n")){
 				ArrayList<MMSData> list = dataParser.processParsing(res);
 				
 				for(int i = 0; i < list.size(); i++) {
-					processRequest(list.get(i).getData());
+					processRequest(inH, list.get(i).getData());
 				}
 			} else {
 				//processRequest(res);
 			}
 		}
 		
-		private String processRequest(String data) {
-    		String ret = this.myReqCallBack.callbackMethod(data);
+		private String processRequest(Map<String,List<String>> header, String data) {
+    		String ret = this.myReqCallBack.callbackMethod(header, data);
     		return ret;
     	}
 	}

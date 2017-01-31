@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,10 +28,10 @@ public class MMSClientHandler {
 	}
 	
 	public interface ResCallBack{
-		void callbackMethod(String data);
+		void callbackMethod(Map<String,List<String>> header, String data);
 	}
 	public interface ReqCallBack{
-		String callbackMethod(String data);
+		String callbackMethod(Map<String,List<String>> header, String data);
 	}
 	
 	public void setResCallBack(ResCallBack callback){
@@ -63,12 +65,14 @@ public class MMSClientHandler {
 	{
 		this.clientPort = port;
 		this.rcvHandler = new RcvHandler(port);
+		String response = registerLocator(port);	
 	}
 	
 	public void setMSR (int port) throws IOException
 	{
 		this.clientPort = port;
 		this.msr = new MSR(port);
+		String response = registerLocator(port);
 	}
 	
 	
@@ -76,16 +80,29 @@ public class MMSClientHandler {
 	{
 		this.clientPort = port;
 		this.mir = new MIR(port);
+		String response = registerLocator(port);
 	}
 	
 	public void setMSP (int port) throws IOException
 	{
 		this.clientPort = port;
 		this.msp = new MSP(port);
+		String response = registerLocator(port);
+	}
+	
+	private String registerLocator(int port){
+		try {
+			return new MMSSndHandler(clientMRN).registerLocator(port);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if(MMSConfiguration.logging)e.printStackTrace();
+			return "";
+		}
 	}
 	
 	//HJH
 	public void setMsgHeader(JSONObject headerField) throws Exception{
+		if(MMSConfiguration.logging)System.out.println(headerField.toJSONString());
 		this.headerField = headerField;
 	}
 	
@@ -99,17 +116,17 @@ public class MMSClientHandler {
 	
 	//HJH
 	public String sendGetMsg(String dstMRN) throws Exception{
-		return this.sendHandler.sendHttpGet(dstMRN, "", headerField);
+		return this.sendHandler.sendHttpGet(dstMRN, "", "", headerField);
 	}
 	
 	//HJH
-	public String sendGetMsg(String dstMRN, String params) throws Exception{
-		return this.sendHandler.sendHttpGet(dstMRN, params, headerField);
+	public String sendGetMsg(String dstMRN, String loc, String params) throws Exception{
+		return this.sendHandler.sendHttpGet(dstMRN, loc, params, headerField);
 	}
 	
 	//OONI
 	public String requestFile(String dstMRN, String fileName) throws Exception{
-		return this.sendHandler.sendHttpPostFile(dstMRN, fileName, headerField);
+		return this.sendHandler.sendHttpGetFile(dstMRN, fileName, headerField);
 	}
 	
 	
@@ -148,6 +165,7 @@ public class MMSClientHandler {
 		}
 	}
 	
+	
 	private class RcvHandler extends MMSRcvHandler{
 		RcvHandler(int port) throws IOException {
 			super(port);
@@ -170,14 +188,12 @@ public class MMSClientHandler {
 	private class MSR extends MMSRcvHandler{
 		MSR(int port) throws IOException {
 			super(port);
-
 		}
 	}
 	
 	private class MIR extends MMSRcvHandler{
 		MIR(int port) throws IOException {
 			super(port);
-
 		}
 	}
 	

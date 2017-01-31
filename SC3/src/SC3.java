@@ -1,7 +1,6 @@
 import java.util.Scanner;
 
-import com.kaist.MMSClient.MMSClientHandler;
-import com.kaist.MMSClient.MMSConfiguration;
+import kr.ac.kaist.mms_client.MMSClientHandler;
 
 public class SC3 {
 	public static void main(String args[]) throws Exception{
@@ -13,26 +12,9 @@ public class SC3 {
 		//MMSConfiguration.CMURL="127.0.0.1";
 
 		//Service Consumer which can only send message
-		MMSClientHandler mh = new MMSClientHandler(myMRN);
+		MMSClientHandler ch = new MMSClientHandler(myMRN);
 		
-		String a = mh.sendMSG("urn:mrn:simple:simple:server", "HelloWorldServer/", "¾È³ç hi hello");
+		String a = ch.sendGetMsg("urn:mrn:simple:simple:server", "HelloWorldServer/", "¾È³ç hi hello");
 		System.out.println(a);
-		/*
-		("urn:mrn:imo:imo-no:1000007", "127.0.0.1:8901"); // SC
-		("urn:mrn:imo:imo-no:0100006", "127.0.0.1:8901"); // SC2
-	    ("urn:mrn:smart-navi:device:tm-server", "127.0.0.1:8902"); // SP
-	    ("urn:mrn:smart-navi:device:mir1", "127.0.0.1:8903"); // MIR
-	    ("urn:mrn:smart-navi:device:msr1", "127.0.0.1:8904"); // MSR
-	    ("urn:mrn:smart-navi:device:mms1", "127.0.0.1:8904"); // MMS
-	    ("urn:mrn:smart-navi:device:cm1", "127.0.0.1:8904"); // CM
-	    */
-
-		//file transferring
-		/*
-		String response = mh.requestFile("urn:mrn:smart-navi:device:tm-server", "test.xml");
-	    System.out.println("response from SC :" + response);
-	    response = mh.sendMSG("urn:mrn:smart-navi:device:tm-server", "hello, SC");
-		System.out.println("response from MSR :" + response);
-		*/
 	}
 }

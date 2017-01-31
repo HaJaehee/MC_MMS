@@ -52,10 +52,10 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
         	
         	
         	if(MMSConfiguration.logging)System.out.println("dstMRN: "  + dstMRN);
-        	if(MMSConfiguration.logging)System.out.println(req.getUri());
+        	if(MMSConfiguration.logging)System.out.println(req.uri());
         	
 //        	When polling
-        	if (req.getMethod() == HttpMethod.POST && req.getUri().equals("/polling")){
+        	if (req.getMethod() == HttpMethod.POST && req.uri().equals("/polling")){
         		//Queue
         		String srcMRN = req.headers().get("srcMRN");
         		try{
@@ -100,7 +100,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
 	        	
 	        	
 //	        	related to logging
-        	} else if (MMSConfiguration.logProviding && req.getMethod() == HttpMethod.GET && req.getUri().equals("/logs")){
+        	} else if (MMSConfiguration.logProviding && req.getMethod() == HttpMethod.GET && req.uri().equals("/logs")){
         		String status = getStatus();
         		
         		MMSLog.log = status + MMSLog.log;
@@ -110,7 +110,7 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
 
         		return;
         		
-        	} else if (MMSConfiguration.logProviding && req.getMethod() == HttpMethod.GET && req.getUri().equals("/status")){
+        	} else if (MMSConfiguration.logProviding && req.getMethod() == HttpMethod.GET && req.uri().equals("/status")){
         		String status = getStatus();
         		
         		byte[] msg = status.getBytes(Charset.forName("UTF-8"));
@@ -118,11 +118,11 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
         		
         		return;
         		
-        	}else if (MMSConfiguration.logProviding && req.getMethod() == HttpMethod.GET && req.getUri().equals("/cleanlogs")){ 
+        	}else if (MMSConfiguration.logProviding && req.getMethod() == HttpMethod.GET && req.uri().equals("/cleanlogs")){ 
         		MMSLog.log = "";
         		replyToSender(ctx, "OK".getBytes(Charset.forName("UTF-8")));
         		
-        	}else if (MMSConfiguration.logProviding && req.getMethod() == HttpMethod.GET && req.getUri().equals("/savelogs")){
+        	}else if (MMSConfiguration.logProviding && req.getMethod() == HttpMethod.GET && req.uri().equals("/savelogs")){
         		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
         		String logfile = "./log"+timeStamp+".txt";
         		BufferedWriter wr = new BufferedWriter(new FileWriter(logfile));
@@ -132,16 +132,16 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
         		wr.close();
         		replyToSender(ctx, "OK".getBytes(Charset.forName("UTF-8")));
         		
-        	}else if (MMSConfiguration.emptyQueue && req.getMethod() == HttpMethod.GET && req.getUri().equals("/emptyqueue")){ 
+        	}else if (MMSConfiguration.emptyQueue && req.getMethod() == HttpMethod.GET && req.uri().equals("/emptyqueue")){ 
         		MMSQueue.queue.clear();
         		replyToSender(ctx, "OK".getBytes(Charset.forName("UTF-8")));
         		
-        	}else if (MMSConfiguration.emptyCMDummy && req.getMethod() == HttpMethod.GET && req.getUri().equals("/emptycmdummy")){ 
+        	}else if (MMSConfiguration.emptyCMDummy && req.getMethod() == HttpMethod.GET && req.uri().equals("/emptycmdummy")){ 
         		emptyCM();
         		replyToSender(ctx, "OK".getBytes(Charset.forName("UTF-8")));
         		
-        	}else if (MMSConfiguration.removeEntryCMDummy && req.getMethod() == HttpMethod.GET && req.getUri().regionMatches(0, "/removeentrycm", 0, 14)){ 
-        		QueryStringDecoder qsd = new QueryStringDecoder(req.getUri(),Charset.forName("UTF-8"));
+        	}else if (MMSConfiguration.removeEntryCMDummy && req.getMethod() == HttpMethod.GET && req.uri().regionMatches(0, "/removeentrycm", 0, 14)){ 
+        		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
         		Map<String,List<String>> params = qsd.parameters();
         		if(MMSConfiguration.logging)System.out.println("remove mrn: " + params.get("mrn").get(0));
         		removeEntryCM(params.get("mrn").get(0));
@@ -329,8 +329,8 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
     
 //    to do relaying
     private byte[] sendPost(FullHttpRequest req, String IPAddress, int port) throws Exception { // 
-    	if(MMSConfiguration.logging)System.out.println("uri?:" + req.getUri());
-		String url = "http://" + IPAddress + ":" + port + req.getUri();
+    	if(MMSConfiguration.logging)System.out.println("uri?:" + req.uri());
+		String url = "http://" + IPAddress + ":" + port + req.uri();
 		if(MMSConfiguration.logging)System.out.println(url);
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -379,8 +379,8 @@ public class HttpRelayHandler extends SimpleChannelInboundHandler<FullHttpReques
 	}
     
     private byte[] sendGet(FullHttpRequest req, String IPAddress, int port) throws Exception { // 
-    	if(MMSConfiguration.logging)System.out.println("uri?:" + req.getUri());
-		String url = "http://" + IPAddress + ":" + port + req.getUri();
+    	if(MMSConfiguration.logging)System.out.println("uri?:" + req.uri());
+		String url = "http://" + IPAddress + ":" + port + req.uri();
 		if(MMSConfiguration.logging)System.out.println(url);
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
