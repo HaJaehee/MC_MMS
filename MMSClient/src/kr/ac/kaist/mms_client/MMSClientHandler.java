@@ -1,5 +1,21 @@
 package kr.ac.kaist.mms_client;
 
+/* -------------------------------------------------------- */
+/** 
+File name : MMSClientHandler.java
+	It provides APIs for MMS clients. 
+Author : Jaehyun Park (jae519@kaist.ac.kr)
+	Haeun Kim (hukim@kaist.ac.kr)
+	Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2016-12-31
+Version : 0.2.00
+Rev. history : 2017-02-01
+	Added setting header field features. 
+	Added locator registering features.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+*/
+/* -------------------------------------------------------- */
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;

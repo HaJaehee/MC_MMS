@@ -1,5 +1,19 @@
 package kr.ac.kaist.mms_client;
 
+/* -------------------------------------------------------- */
+/** 
+File name : MMSRcvHandler.java
+Author : Jaehyun Park (jae519@kaist.ac.kr)
+	Haeun Kim (hukim@kaist.ac.kr)
+	Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2016-12-31
+Version : 0.2.00
+Rev. history : 2017-02-01
+	Added setting header field features. 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+*/
+/* -------------------------------------------------------- */
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,16 +41,15 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
-
 public class MMSRcvHandler {
-	HttpReqHandler hrh;
+	HttpReqHandler hrh = null;
 	//OONI
-	FileReqHandler frh;
+	FileReqHandler frh = null;
 	//OONI
-	PollingHandler ph;
+	PollingHandler ph = null;
 	//HJH
 	private static final String USER_AGENT = "MMSClient/0.1";
-	private String clientMRN;
+	private String clientMRN = null;
 	
 	MMSRcvHandler(int port) throws IOException{
 		HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);

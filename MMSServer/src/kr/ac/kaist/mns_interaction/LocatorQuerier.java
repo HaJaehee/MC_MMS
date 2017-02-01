@@ -1,5 +1,16 @@
 package kr.ac.kaist.mns_interaction;
 
+/* -------------------------------------------------------- */
+/** 
+File name : LocatorQuerier.java
+	It builds a locator query.
+Author : Jaehyun Park (jae519@kaist.ac.kr)
+	Jin Jung (jungst0001@kaist.ac.kr)
+Creation Date : 2017-01-24
+Version : 0.2.00
+*/
+/* -------------------------------------------------------- */
+
 public class LocatorQuerier {
 
 	String buildQuery(String dstMRN){

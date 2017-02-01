@@ -1,12 +1,21 @@
 package kr.ac.kaist.mms_client;
 
+/* -------------------------------------------------------- */
+/** 
+File name : MMSDataParser.java
+Author : Jaehyun Park (jae519@kaist.ac.kr)
+	Jin Jung (jungst0001@kaist.ac.kr)
+Creation Date : 2017-01-24
+Version : 0.2.00
+*/
+/* -------------------------------------------------------- */
+
 import java.util.ArrayList;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 
 public class MMSDataParser {
 	private static final String TAG = "MMSDataParser";

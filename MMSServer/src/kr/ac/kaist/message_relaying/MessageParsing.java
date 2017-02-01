@@ -1,5 +1,16 @@
 package kr.ac.kaist.message_relaying;
 
+/* -------------------------------------------------------- */
+/** 
+File name : MessageParsing.java
+	It parses information of the message and saves it to variables. 
+Author : Jaehyun Park (jae519@kaist.ac.kr)
+	Jin Jung (jungst0001@kaist.ac.kr)
+Creation Date : 2017-01-24
+Version : 0.2.00
+*/
+/* -------------------------------------------------------- */
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
@@ -12,16 +23,16 @@ import io.netty.handler.codec.http.HttpMethod;
 public class MessageParsing {
 	private static final String TAG = "MessageParsing";
 	
-	private String srcIP;
-	private String srcMRN;
-	private String dstIP;
-	private String dstMRN;
-	private int srcPort;
-	private int dstPort;
-	private int srcModel;
-	private int dstModel;
-	private String uri;
-	private HttpMethod httpMethod;
+	private String srcIP = null;
+	private String srcMRN = null;
+	private String dstIP = null;
+	private String dstMRN = null;
+	private int srcPort = 0;
+	private int dstPort = 0;
+	private int srcModel = 0;
+	private int dstModel = 0;
+	private String uri = null;
+	private HttpMethod httpMethod = null;
 	
 	MessageParsing(){
 		srcIP = null;

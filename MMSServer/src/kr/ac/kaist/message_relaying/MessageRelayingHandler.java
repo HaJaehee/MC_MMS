@@ -1,5 +1,21 @@
 package kr.ac.kaist.message_relaying;
 
+/* -------------------------------------------------------- */
+/** 
+File name : MessageRelayingHandler.java
+	It relays messages from external components to destination in header field of the messages.
+Author : Jaehyun Park (jae519@kaist.ac.kr)
+	Jin Jung (jungst0001@kaist.ac.kr)
+	Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2017-01-24
+Version : 0.2.00
+Rev. history : 2017-02-01
+	Added log providing features.
+	Added locator registering features.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+*/
+/* -------------------------------------------------------- */
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -32,13 +48,13 @@ import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHttpRequest>{
 	private static final String TAG = "MessageRelayingHandler";
 	
-	private MessageParsing parser;
-	private MessageTypeDecision typeDecider;
-	private MessageInputChannel inputChannel;
-	private MessageOutputChannel outputChannel;
+	private MessageParsing parser = null;
+	private MessageTypeDecision typeDecider = null;
+	private MRH_MessageInputChannel inputChannel = null;
+	private MRH_MessageOutputChannel outputChannel = null;
 	
-	private SeamlessRoamingHandler srh;
-	private MessageCastingHandler mch;
+	private SeamlessRoamingHandler srh = null;
+	private MessageCastingHandler mch = null;
 	
 	public MessageRelayingHandler() {
 		super();
@@ -55,8 +71,8 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 	private void initializeSubModule() {
 		parser = new MessageParsing();
 		typeDecider = new MessageTypeDecision();
-		inputChannel = new MessageInputChannel();
-		outputChannel = new MessageOutputChannel();
+		inputChannel = new MRH_MessageInputChannel();
+		outputChannel = new MRH_MessageOutputChannel();
 	}
 
 	private void processRelaying(int type, ChannelHandlerContext ctx, FullHttpRequest req){
@@ -77,16 +93,16 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 			int srcModel = parser.getSrcModel();
 			
 			message = srh.processPollingMessage(srcMRN, srcIP, srcPort, srcModel);
-		} else if (type == MessageTypeDecision.RELAYINGTOSC) {
+		} else if (type == MessageTypeDecision.RELAYING_TO_SC) {
 			srh.putSCMessage(dstMRN, req);
     		message = "OK".getBytes();
-		} else if (type == MessageTypeDecision.RELAYINGTOSERVER) {
+		} else if (type == MessageTypeDecision.RELAYING_TO_SERVER) {
         	try {
 				message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod);
 			} catch (Exception e) {
 				if(MMSConfiguration.logging)e.printStackTrace();
 			}
-		} else if (type == MessageTypeDecision.REGISTERCLIENT) {
+		} else if (type == MessageTypeDecision.REGISTER_CLIENT) {
 			parser.parsingLocInfo(req);
 			
 			String srcIP = parser.getSrcIP();
@@ -127,7 +143,7 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 				// TODO Auto-generated catch block
 				if(MMSConfiguration.logging)e.printStackTrace();
 			}
-		} else if (type == MessageTypeDecision.SAVELOGS) {
+		} else if (type == MessageTypeDecision.SAVE_LOGS) {
     		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
     		String logfile = "./log"+timeStamp+".txt";
     		BufferedWriter wr;
@@ -142,10 +158,10 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 				if(MMSConfiguration.logging)e.printStackTrace();
 			}
     		message = "OK".getBytes(Charset.forName("UTF-8"));
-		} else if (type == MessageTypeDecision.EMPTYQUEUE) {
+		} else if (type == MessageTypeDecision.EMPTY_QUEUE) {
 			MMSQueue.queue.clear();
     		message = "OK".getBytes(Charset.forName("UTF-8"));
-		} else if (type == MessageTypeDecision.EMPTYCMDUMMY) {
+		} else if (type == MessageTypeDecision.EMPTY_CMDUMMY) {
     		try {
 				emptyCM();
 				message = "OK".getBytes(Charset.forName("UTF-8"));
@@ -156,7 +172,7 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 				// TODO Auto-generated catch block
 				if(MMSConfiguration.logging)e.printStackTrace();
 			}
-		} else if (type == MessageTypeDecision.REMOVECMENTRY) {
+		} else if (type == MessageTypeDecision.REMOVE_CM_ENTRY) {
     		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
     		if(MMSConfiguration.logging)System.out.println("remove mrn: " + params.get("mrn").get(0));
@@ -171,12 +187,12 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 				if(MMSConfiguration.logging)e.printStackTrace();
 			} 
 		}
-		else if (type == MessageTypeDecision.CLEANLOGS) {
+		else if (type == MessageTypeDecision.CLEAN_LOGS) {
     		MMSLog.log = "";
     		message = "OK".getBytes(Charset.forName("UTF-8"));
-		} else if (type == MessageTypeDecision.UNKNOWNMRN) {
+		} else if (type == MessageTypeDecision.UNKNOWN_MRN) {
 			message = "No Device having that MRN".getBytes();
-		} else if (type == MessageTypeDecision.UNKNOWNHTTPTYPE) {
+		} else if (type == MessageTypeDecision.UNKNOWN_HTTP_TYPE) {
 			message = "Unknown http type".getBytes();
 		}
 		

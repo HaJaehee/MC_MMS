@@ -1,5 +1,20 @@
 package kr.ac.kaist.message_relaying;
 
+/* -------------------------------------------------------- */
+/** 
+File name : MessageTypeDecision.java
+	It decides type of a message.
+Author : Jaehyun Park (jae519@kaist.ac.kr)
+	Jin Jung (jungst0001@kaist.ac.kr)
+Creation Date : 2017-01-24
+Version : 0.2.00
+Rev. history : 2017-02-01
+	Added log providing features.
+	Added locator registering features.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+*/
+/* -------------------------------------------------------- */
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -28,18 +43,18 @@ import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 public class MessageTypeDecision {
 	static final int POLLING = 1; // it means polling message 
-	static final int RELAYINGTOSC = 2; // it means relaying to SC
-	static final int RELAYINGTOSERVER = 3; // it means relaying to SR, IR or SP
-	static final int REGISTERCLIENT = 4; // it means registering MMS client 
-	static final int UNKNOWNMRN = 5; // it means unknown MRN
-	static final int UNKNOWNHTTPTYPE = 6; // it means unknown http type
+	static final int RELAYING_TO_SC = 2; // it means relaying to SC
+	static final int RELAYING_TO_SERVER = 3; // it means relaying to SR, IR or SP
+	static final int REGISTER_CLIENT = 4; // it means registering MMS client 
+	static final int UNKNOWN_MRN = 5; // it means unknown MRN
+	static final int UNKNOWN_HTTP_TYPE = 6; // it means unknown http type
 	static final int STATUS = 7;
 	static final int LOGS = 8;
-	static final int CLEANLOGS = 9;
-	static final int SAVELOGS = 10;
-	static final int EMPTYQUEUE = 11;
-	static final int EMPTYCMDUMMY = 12;
-	static final int REMOVECMENTRY = 13;
+	static final int CLEAN_LOGS = 9;
+	static final int SAVE_LOGS = 10;
+	static final int EMPTY_QUEUE = 11;
+	static final int EMPTY_CMDUMMY = 12;
+	static final int REMOVE_CM_ENTRY = 13;
 	
 	int decideType(MessageParsing parser, MessageCastingHandler mch) {
 		String srcMRN = parser.getSrcMRN();
@@ -54,7 +69,7 @@ public class MessageTypeDecision {
     	
 //		when registering
     	else if (httpMethod == httpMethod.POST && uri.equals("/registering")) {
-    		return REGISTERCLIENT;
+    		return REGISTER_CLIENT;
     	}
     	
 //		when logging
@@ -63,15 +78,15 @@ public class MessageTypeDecision {
     	} else if (MMSConfiguration.logProviding && httpMethod == HttpMethod.GET && uri.equals("/status")){
     		return STATUS;
     	} else if (MMSConfiguration.logProviding && httpMethod == HttpMethod.GET && uri.equals("/cleanlogs")){ 
-    		return CLEANLOGS;
+    		return CLEAN_LOGS;
     	} else if (MMSConfiguration.logProviding && httpMethod == HttpMethod.GET && uri.equals("/savelogs")){    		
-    		return SAVELOGS;
+    		return SAVE_LOGS;
     	} else if (MMSConfiguration.emptyQueue && httpMethod == HttpMethod.GET && uri.equals("/emptyqueue")){ 
-    		return EMPTYQUEUE;
+    		return EMPTY_QUEUE;
     	} else if (MMSConfiguration.emptyCMDummy && httpMethod == HttpMethod.GET && uri.equals("/emptycmdummy")){ 
-    		return EMPTYCMDUMMY;
+    		return EMPTY_CMDUMMY;
     	} else if (MMSConfiguration.removeEntryCMDummy && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/removecmentry", 0, 14)){ 
-    		return REMOVECMENTRY;
+    		return REMOVE_CM_ENTRY;
     	}
     	
 //    	When relaying
@@ -79,19 +94,19 @@ public class MessageTypeDecision {
     		String dstInfo = mch.requestDstInfo(dstMRN);
     		
         	if (dstInfo.equals("No")) {
-        		return UNKNOWNMRN;
+        		return UNKNOWN_MRN;
         	}
 
         	parser.parsingDstInfo(dstInfo);
         	int model = parser.getDstModel();
         	
         	if (model == 2) {//model B (destination MSR, MIR, or MSP as servers)
-        		return RELAYINGTOSERVER;
+        		return RELAYING_TO_SERVER;
         	} else {//when model A, it puts the message into the queue
-        		return RELAYINGTOSC;
+        		return RELAYING_TO_SC;
         	}
     	} else {
-    		return UNKNOWNHTTPTYPE;
+    		return UNKNOWN_HTTP_TYPE;
     	}
 	}
 	
