@@ -10,7 +10,7 @@ Version : 0.2.00
 /* -------------------------------------------------------- */
 
 public class MMSConfiguration {
-	public static final boolean LOGGING = true;
+	public static final boolean LOGGING = false;
 	public static final boolean LOG_PROVIDING = true;
 	public static final boolean EMPTY_QUEUE = true;
 	public static final boolean EMPTY_MNS_DUMMY = true;
