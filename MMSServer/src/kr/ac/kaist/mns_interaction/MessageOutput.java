@@ -51,6 +51,8 @@ public class MessageOutput {
 	    	
 	    	if (returnedIP.equals("No")) {
 	    		return "No";
+	    	} else if (returnedIP.equals("OK")) {
+	    		return "OK";
 	    	}
 	    	
 	    	returnedIP = returnedIP.substring(14);

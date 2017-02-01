@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -18,7 +20,7 @@ public class MMSClientHandler {
 	private String clientMRN = "";
 	private int clientPort = 0;
 	private ResCallBack resCallBack = null;
-	private JSONObject headerField = null;
+	private Map<String,String> headerField = null;
 	
 	public MMSClientHandler(String clientMRN) throws IOException{
 		this.sendHandler = new SendHandler(clientMRN);
@@ -26,10 +28,11 @@ public class MMSClientHandler {
 	}
 	
 	public interface ResCallBack{
-		void callbackMethod(String data);
+		void callbackMethod(Map<String,List<String>> headerField, String message);
 	}
+	
 	public interface ReqCallBack{
-		String callbackMethod(String data);
+		String callbackMethod(Map<String,List<String>> headerField, String message);
 	}
 	
 	public void setResCallBack(ResCallBack callback){
@@ -54,38 +57,52 @@ public class MMSClientHandler {
 		 }
 	}
 	
-	public void setPolling (String dstMRN, int interval) throws IOException
-	{
+	@Deprecated
+	public void setPolling (String dstMRN, int interval) throws IOException{
+		startPolling(dstMRN, interval);
+	}
+	
+	public void startPolling (String dstMRN, int interval) throws IOException{
 		this.pollHandler = new PollHandler(clientMRN, dstMRN, interval, headerField);
 	}
 	
-	public void setPort (int port) throws IOException
-	{
+	public void setPort (int port) throws IOException{
 		this.clientPort = port;
 		this.rcvHandler = new RcvHandler(port);
+		String response = registerLocator(port);	
 	}
 	
-	public void setMSR (int port) throws IOException
-	{
+	public void setMSR (int port) throws IOException{
 		this.clientPort = port;
 		this.msr = new MSR(port);
+		String response = registerLocator(port);
 	}
 	
 	
-	public void setMIR (int port) throws IOException
-	{
+	public void setMIR (int port) throws IOException{
 		this.clientPort = port;
 		this.mir = new MIR(port);
+		String response = registerLocator(port);
 	}
 	
-	public void setMSP (int port) throws IOException
-	{
+	public void setMSP (int port) throws IOException{
 		this.clientPort = port;
 		this.msp = new MSP(port);
+		String response = registerLocator(port);
+	}
+	
+	private String registerLocator(int port){
+		try {
+			return new MMSSndHandler(clientMRN).registerLocator(port);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if(MMSConfiguration.logging)e.printStackTrace();
+			return "";
+		}
 	}
 	
 	//HJH
-	public void setMsgHeader(JSONObject headerField) throws Exception{
+	public void setMsgHeader(Map<String,String> headerField) throws Exception{
 		this.headerField = headerField;
 	}
 	
@@ -99,17 +116,17 @@ public class MMSClientHandler {
 	
 	//HJH
 	public String sendGetMsg(String dstMRN) throws Exception{
-		return this.sendHandler.sendHttpGet(dstMRN, "", headerField);
+		return this.sendHandler.sendHttpGet(dstMRN, "", "", headerField);
 	}
 	
 	//HJH
-	public String sendGetMsg(String dstMRN, String params) throws Exception{
-		return this.sendHandler.sendHttpGet(dstMRN, params, headerField);
+	public String sendGetMsg(String dstMRN, String loc, String params) throws Exception{
+		return this.sendHandler.sendHttpGet(dstMRN, loc, params, headerField);
 	}
 	
 	//OONI
 	public String requestFile(String dstMRN, String fileName) throws Exception{
-		return this.sendHandler.sendHttpPostFile(dstMRN, fileName, headerField);
+		return this.sendHandler.sendHttpGetFile(dstMRN, fileName, headerField);
 	}
 	
 	
@@ -130,7 +147,7 @@ public class MMSClientHandler {
 			try {
 				do{
 					if(MMSConfiguration.logging)System.out.println("send location update");
-					
+
 					DatagramSocket dSock = new DatagramSocket();
 					InetAddress server = InetAddress.getByName(MMSConfiguration.CMURL);
 					byte[] data = ("location_update:"+ clientMRN + "," + clientPort + "," + MSGtype).getBytes();
@@ -148,6 +165,7 @@ public class MMSClientHandler {
 		}
 	}
 	
+	
 	private class RcvHandler extends MMSRcvHandler{
 		RcvHandler(int port) throws IOException {
 			super(port);
@@ -162,7 +180,7 @@ public class MMSClientHandler {
 	}
 	
 	private class PollHandler extends MMSRcvHandler{
-		PollHandler(String clientMRN, String dstMRN, int interval, JSONObject headerField) throws IOException {
+		PollHandler(String clientMRN, String dstMRN, int interval, Map<String, String> headerField) throws IOException {
 			super(clientMRN, dstMRN, interval, clientPort, 1, headerField);
 		}
 	}
@@ -170,14 +188,12 @@ public class MMSClientHandler {
 	private class MSR extends MMSRcvHandler{
 		MSR(int port) throws IOException {
 			super(port);
-
 		}
 	}
 	
 	private class MIR extends MMSRcvHandler{
 		MIR(int port) throws IOException {
 			super(port);
-
 		}
 	}
 	

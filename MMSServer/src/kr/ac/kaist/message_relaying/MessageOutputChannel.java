@@ -51,12 +51,14 @@ public class MessageOutputChannel {
 				List<String> values = storedHeader.get(key);
 				for (Iterator<String> valueIterator = values.iterator();valueIterator.hasNext();) {
 					String value = valueIterator.next();
-					//System.out.println("key-value:  " + key + ", " + value);
+					
 					if (key != null) {
 						res.headers().set(key,value);
 					}
 				}
 			}
+			isStoredHeader = false;
+			storedHeader = null;
     	} else {
     		res.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8");
     	}
@@ -70,8 +72,9 @@ public class MessageOutputChannel {
 	
 //  to do relaying
 	byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws Exception { // 
-	  	if(MMSConfiguration.logging)System.out.println("uri?:" + req.getUri());
-		String url = "http://" + IPAddress + ":" + port + req.getUri();
+	  	if(MMSConfiguration.logging)System.out.println("uri?:" + req.uri());
+	  	
+		String url = "http://" + IPAddress + ":" + port + req.uri();
 		if(MMSConfiguration.logging)System.out.println(url);
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -86,9 +89,9 @@ public class MessageOutputChannel {
 		}
 		
 //		Setting remaining headers
-		for (Iterator<Map.Entry<String, String>> htr = httpHeaders.iterator(); htr.hasNext();) {
+		for (Iterator<Map.Entry<String, String>> htr = httpHeaders.iteratorAsString(); htr.hasNext();) {
 			Map.Entry<String, String> htrValue = htr.next();
-			//System.out.println(htrValue.getKey() + " " + htrValue.getValue());
+			
 			if (!htrValue.getKey().equals("srcMRN") && !htrValue.getKey().equals("dstMRN")) {
 				con.setRequestProperty(htrValue.getKey(), htrValue.getValue());
 			}

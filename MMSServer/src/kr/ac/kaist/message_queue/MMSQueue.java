@@ -51,17 +51,13 @@ public class MMSQueue {
 				jsonResult.put("payload", jsonArray);
 				String newEntry = jsonResult.toJSONString();
 				
-//				System.out.println(TAG + ": " + newEntry);
 				queue.put(mrn, newEntry);
 			} catch (ParseException e) {
 				if(MMSConfiguration.logging)e.printStackTrace();
 			}
     		
     		if(MMSConfiguration.logging)System.out.println("queuing: " + ret);
-//    		String requestBytes = req.content().toString(Charset.forName("UTF-8")).trim();
-//    		String newEntry = ret + "\n" + requestBytes;
-//    		if(MMSConfiguration.logging)System.out.println("new Entry: " + newEntry);
-//    		queue.put(mrn, newEntry);
+
     	} else {
     		String requestBytes = req.content().toString(Charset.forName("UTF-8")).trim();
     		

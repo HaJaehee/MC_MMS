@@ -41,12 +41,11 @@ public class MessageParsing {
 	    InetAddress inetaddress = socketAddress.getAddress();
 	    srcIP = inetaddress.getHostAddress(); // IP address of client
 		
-//		System.out.println("MessageParsing/sourceIP:"+srcIP);
-		
+
 		srcMRN = req.headers().get("srcMRN");
 		dstMRN = req.headers().get("dstMRN");
-		uri = req.getUri();
-		httpMethod = req.getMethod();
+		uri = req.uri();
+		httpMethod = req.method();
 	}
 	
 	void parsingLocInfo(FullHttpRequest req){
@@ -54,7 +53,7 @@ public class MessageParsing {
 		
 		srcPort = Integer.parseInt(locInfo.split(":")[0]);
 		srcModel = Integer.parseInt(locInfo.split(":")[1]);
-//		System.out.println(TAG + ":" + srcPort + "/" + srcModel);
+
 	}
 	
 	void parsingDstInfo(String dstInfo){
