@@ -85,7 +85,7 @@ public class MessageTypeDecision {
     		return EMPTY_QUEUE;
     	} else if (MMSConfiguration.EMPTY_MNS_DUMMY && httpMethod == HttpMethod.GET && uri.equals("/emptymnsdummy")){ 
     		return EMPTY_MNSDummy;
-    	} else if (MMSConfiguration.REMOVE_ENTRY_MNS_DUMMY && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/removemnsentry", 0, 14)){ 
+    	} else if (MMSConfiguration.REMOVE_ENTRY_MNS_DUMMY && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/removemnsentry", 0, 15)){ 
     		return REMOVE_MNS_ENTRY;
     	}
     	
