@@ -32,35 +32,35 @@ public class MIH_MessageOutputChannel {
 	    	//String modifiedSentence;
 	    	String returnedIP = null;
 	    	
-	    	Socket CMSocket = new Socket("localhost", 1004);
+	    	Socket MNSSocket = new Socket("localhost", 1004);
 	    	
 	    	
-	    	BufferedWriter outToCM = new BufferedWriter(
-						new OutputStreamWriter(CMSocket.getOutputStream(),Charset.forName("UTF-8")));
+	    	BufferedWriter outToMNS = new BufferedWriter(
+						new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
 	    	
 	    	if(MMSConfiguration.LOGGING)System.out.println(request);
 	    	ServerSocket Sock = new ServerSocket(0);
 	    	int rplPort = Sock.getLocalPort();
 	    	if(MMSConfiguration.LOGGING)System.out.println("Reply port : "+rplPort);
-	    	outToCM.write(request+","+rplPort);
-	    	outToCM.flush();
-	    	outToCM.close();
-	    	CMSocket.close();
+	    	outToMNS.write(request+","+rplPort);
+	    	outToMNS.flush();
+	    	outToMNS.close();
+	    	MNSSocket.close();
 	    	
 	    	
 	    	Socket ReplySocket = Sock.accept();
-	    	BufferedReader inFromCM = new BufferedReader(
+	    	BufferedReader inFromMNS = new BufferedReader(
 	    			new InputStreamReader(ReplySocket.getInputStream(),Charset.forName("UTF-8")));
 			String inputLine;
 			StringBuffer response = new StringBuffer();
-			while ((inputLine = inFromCM.readLine()) != null) {
+			while ((inputLine = inFromMNS.readLine()) != null) {
 				response.append(inputLine.trim());
 			}
 			
 	    	returnedIP = response.toString();
 	    	if(MMSConfiguration.LOGGING)System.out.println("FROM SERVER: " + returnedIP);
 	    	
-	    	inFromCM.close();
+	    	inFromMNS.close();
 	    	
 	    	if (returnedIP.equals("No")) {
 	    		return "No";
@@ -68,7 +68,7 @@ public class MIH_MessageOutputChannel {
 	    		return "OK";
 	    	}
 	    	
-	    	returnedIP = returnedIP.substring(14);
+	    	returnedIP = returnedIP.substring(15);
 	    	
 	    	return returnedIP;
     	}
