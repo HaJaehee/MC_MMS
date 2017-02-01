@@ -28,7 +28,6 @@ email: hukim@kaist.ac.kr <br/>
 Jin Jeong<br/>
 email: jungst0001@kaist.ac.kr <br/>
 
-
 ### Tools
 Created with [Eclipse](https://www.eclipse.org)<br/>
 Used [The Netty Project](http://netty.io/)<br/>
