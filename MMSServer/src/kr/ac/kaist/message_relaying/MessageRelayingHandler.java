@@ -93,8 +93,13 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 			int srcPort = parser.getSrcPort();
 			int srcModel = parser.getSrcModel();
 			
-			mch.registerClientInfo(srcMRN, srcIP, srcPort, srcModel);
-			message = "Registering succeeded".getBytes();
+			String res = mch.registerClientInfo(srcMRN, srcIP, srcPort, srcModel);
+			if (res.equals("OK")){
+				message = "Registering succeeded".getBytes();
+			} else {
+				message = "Registering failed".getBytes();
+			}
+			
 		} else if (type == MessageTypeDecision.STATUS){
     		String status;
     		
