@@ -234,7 +234,7 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
   	inFromMNS.close();
   	if (dumpedMNS.equals("No"))
   		return "No MRN to IP mapping";
-  	dumpedMNS = dumpedMNS.substring(14);
+  	dumpedMNS = dumpedMNS.substring(15);
   	return dumpedMNS;
   }
   
