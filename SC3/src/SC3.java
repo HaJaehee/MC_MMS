@@ -24,7 +24,7 @@ public class SC3 {
 		//Service Consumer which can only send message
 		MMSClientHandler ch = new MMSClientHandler(myMRN);
 		
-		String a = ch.sendGetMsg("urn:mrn:simple:simple:server", "HelloWorldServer/", "¾È³ç hi hello");
+		String a = ch.sendGetMsg("urn:mrn:simple:simple:server", "HelloWorldServer/", "");
 		System.out.println(a);
 	}
 }
