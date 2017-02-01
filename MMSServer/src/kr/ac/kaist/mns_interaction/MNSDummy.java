@@ -115,7 +115,7 @@ public class MNSDummy {
               out.close();
               ReplySocket.close();
         	  
-          }else if (data.regionMatches(0, "Dump-CM:", 0, 8)){
+          }else if (data.regionMatches(0, "Dump-MNS:", 0, 9)){
 
         	  if(MMSConfiguration.LOGGING)System.out.println("MNSDummy:data: " + data);
         	  int rplPort = Integer.parseInt(data.split(",")[1]);
@@ -147,7 +147,7 @@ public class MNSDummy {
               out.close();
               ReplySocket.close();
               
-          }else if (data.equals("Empty-CM:") && MMSConfiguration.EMPTY_MNS_DUMMY){
+          }else if (data.equals("Empty-MNS:") && MMSConfiguration.EMPTY_MNS_DUMMY){
         	  MRNtoIP.clear();
         	  
         	  if(MMSConfiguration.LOGGING)System.out.println("MNSDummy:EMPTY");

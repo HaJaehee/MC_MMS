@@ -163,7 +163,7 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
     		message = "OK".getBytes(Charset.forName("UTF-8"));
 		} else if (type == MessageTypeDecision.EMPTY_MNSDummy) {
     		try {
-				emptyCM();
+				emptyMNS();
 				message = "OK".getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
@@ -172,12 +172,12 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 				// TODO Auto-generated catch block
 				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
-		} else if (type == MessageTypeDecision.REMOVE_CM_ENTRY) {
+		} else if (type == MessageTypeDecision.REMOVE_MNS_ENTRY) {
     		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
     		if(MMSConfiguration.LOGGING)System.out.println("remove mrn: " + params.get("mrn").get(0));
     		try {
-				removeEntryCM(params.get("mrn").get(0));
+				removeEntryMNS(params.get("mrn").get(0));
 				message = "OK".getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
@@ -199,73 +199,73 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 		outputChannel.replyToSender(ctx, message);
 	}
 	
-//  When LOGGING CM
-	private String dumpCM() throws UnknownHostException, IOException{ //
+//  When LOGGING MNS
+	private String dumpMNS() throws UnknownHostException, IOException{ //
   	
   	//String modifiedSentence;
-  	String dumpedCM = "";
+  	String dumpedMNS = "";
   	
-  	Socket CMSocket = new Socket("localhost", 1004);
+  	Socket MNSSocket = new Socket("localhost", 1004);
   	
-  	BufferedWriter outToCM = new BufferedWriter(
-					new OutputStreamWriter(CMSocket.getOutputStream(),Charset.forName("UTF-8")));
+  	BufferedWriter outToMNS = new BufferedWriter(
+					new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
   	
-  	if(MMSConfiguration.LOGGING)System.out.println("Dump-CM:");
+  	if(MMSConfiguration.LOGGING)System.out.println("Dump-MNS:");
   	ServerSocket Sock = new ServerSocket(0);
   	int rplPort = Sock.getLocalPort();
   	if(MMSConfiguration.LOGGING)System.out.println("Reply port : "+rplPort);
-  	outToCM.write("Dump-CM:"+","+rplPort);
-  	outToCM.flush();
-  	outToCM.close();
-  	CMSocket.close();
+  	outToMNS.write("Dump-MNS:"+","+rplPort);
+  	outToMNS.flush();
+  	outToMNS.close();
+  	MNSSocket.close();
   	
   	
   	Socket ReplySocket = Sock.accept();
-  	BufferedReader inFromCM = new BufferedReader(
+  	BufferedReader inFromMNS = new BufferedReader(
   			new InputStreamReader(ReplySocket.getInputStream(),Charset.forName("UTF-8")));
 		String inputLine;
 		StringBuffer response = new StringBuffer();
-		while ((inputLine = inFromCM.readLine()) != null) {
+		while ((inputLine = inFromMNS.readLine()) != null) {
 			response.append(inputLine.trim());
 		}
 		
-  	dumpedCM = response.toString();
-  	if(MMSConfiguration.LOGGING)System.out.println("Dumped CM: " + dumpedCM);
-  	inFromCM.close();
-  	if (dumpedCM.equals("No"))
+  	dumpedMNS = response.toString();
+  	if(MMSConfiguration.LOGGING)System.out.println("Dumped MNS: " + dumpedMNS);
+  	inFromMNS.close();
+  	if (dumpedMNS.equals("No"))
   		return "No MRN to IP mapping";
-  	dumpedCM = dumpedCM.substring(14);
-  	return dumpedCM;
+  	dumpedMNS = dumpedMNS.substring(14);
+  	return dumpedMNS;
   }
   
-  private void emptyCM() throws UnknownHostException, IOException{ //
+  private void emptyMNS() throws UnknownHostException, IOException{ //
 
-  	Socket CMSocket = new Socket("localhost", 1004);
+  	Socket MNSSocket = new Socket("localhost", 1004);
   	
-  	BufferedWriter outToCM = new BufferedWriter(
-					new OutputStreamWriter(CMSocket.getOutputStream(),Charset.forName("UTF-8")));
+  	BufferedWriter outToMNS = new BufferedWriter(
+					new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
   	
-  	if(MMSConfiguration.LOGGING)System.out.println("Empty-CM:");
-  	outToCM.write("Empty-CM:");
-  	outToCM.flush();
-  	outToCM.close();
-  	CMSocket.close();
+  	if(MMSConfiguration.LOGGING)System.out.println("Empty-MNS:");
+  	outToMNS.write("Empty-MNS:");
+  	outToMNS.flush();
+  	outToMNS.close();
+  	MNSSocket.close();
   	
   	return;
   }
   
-  private void removeEntryCM(String mrn) throws UnknownHostException, IOException{ //
+  private void removeEntryMNS(String mrn) throws UnknownHostException, IOException{ //
   	
-  	Socket CMSocket = new Socket("localhost", 1004);
+  	Socket MNSSocket = new Socket("localhost", 1004);
   	
-  	BufferedWriter outToCM = new BufferedWriter(
-					new OutputStreamWriter(CMSocket.getOutputStream(),Charset.forName("UTF-8")));
+  	BufferedWriter outToMNS = new BufferedWriter(
+					new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
   	
   	if(MMSConfiguration.LOGGING)System.out.println("Remove-Entry:"+mrn);
-  	outToCM.write("Remove-Entry:"+","+mrn);
-  	outToCM.flush();
-  	outToCM.close();
-  	CMSocket.close();
+  	outToMNS.write("Remove-Entry:"+","+mrn);
+  	outToMNS.flush();
+  	outToMNS.close();
+  	MNSSocket.close();
   	
   	return;
   }
@@ -287,8 +287,8 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 		}
 		status = status + "<br/>";
 
-		status = status + "CM Dummy:<br/>";
-		status = status + dumpCM() + "<br/>";
+		status = status + "MNS Dummy:<br/>";
+		status = status + dumpMNS() + "<br/>";
   	
   	return status;
   }
