@@ -29,11 +29,11 @@ public class SC2 {
 		Map<String, String> headerfield = new HashMap<String, String>();
 		headerfield.put("AccessToken", "1234567890");
 		ch.setMsgHeader(headerfield);
-		
+		/*
 		for (int i = 0; i < 10;i++){
 			String a = ch.sendPostMsg("urn:mrn:smart-navi:device:tm-server", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
-		}
+		}*/
 
 		
 		for (int i = 0; i < 10;i++){

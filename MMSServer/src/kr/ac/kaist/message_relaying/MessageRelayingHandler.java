@@ -262,7 +262,7 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 					new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
   	
   	if(MMSConfiguration.LOGGING)System.out.println("Remove-Entry:"+mrn);
-  	outToMNS.write("Remove-Entry:"+","+mrn);
+  	outToMNS.write("Remove-Entry:"+mrn);
   	outToMNS.flush();
   	outToMNS.close();
   	MNSSocket.close();
