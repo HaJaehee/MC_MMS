@@ -41,7 +41,7 @@ public class MMSDataParser {
 				arrayList.add(data);
 			}
 		} catch (ParseException e) {
-			if(MMSConfiguration.logging)e.printStackTrace();
+			if(MMSConfiguration.LOGGING)e.printStackTrace();
 		}
 		
 		return arrayList;

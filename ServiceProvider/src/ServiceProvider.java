@@ -11,7 +11,7 @@ File name : ServiceProvider.java
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2016-12-31
+Creation Date : 2016-12-03
 Version : 0.2.00
 Rev. history : 2017-02-01
 	Added header field features.
@@ -24,8 +24,7 @@ public class ServiceProvider {
 		String myMRN = "urn:mrn:smart-navi:device:tm-server";
 		int port = 8902;
 
-		MMSConfiguration.MMSURL="127.0.0.1:8088";
-		MMSConfiguration.CMURL="127.0.0.1";
+		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		
 		MMSClientHandler ch = new MMSClientHandler(myMRN);
 		ch.setMSP(port);

@@ -20,7 +20,7 @@ public class MMSServer {
 	private static final String TAG = "MMSServer";
 	
 	public static void main(String[] args) throws Exception{
-		if(MMSConfiguration.logging)System.out.println("[MMS Server] Now starting MMS HTTP server");
+		if(MMSConfiguration.LOGGING)System.out.println("[MMS Server] Now starting MMS HTTP server");
 		NettyStartupUtil.runServer(MMSConfiguration.HTTP_PORT, pipeline -> {
             pipeline.addLast(new HttpServerCodec());
             pipeline.addLast(new HttpObjectAggregator(19999));

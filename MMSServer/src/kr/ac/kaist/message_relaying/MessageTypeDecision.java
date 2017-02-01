@@ -53,7 +53,7 @@ public class MessageTypeDecision {
 	static final int CLEAN_LOGS = 9;
 	static final int SAVE_LOGS = 10;
 	static final int EMPTY_QUEUE = 11;
-	static final int EMPTY_CMDUMMY = 12;
+	static final int EMPTY_MNSDummy = 12;
 	static final int REMOVE_CM_ENTRY = 13;
 	
 	int decideType(MessageParsing parser, MessageCastingHandler mch) {
@@ -72,20 +72,20 @@ public class MessageTypeDecision {
     		return REGISTER_CLIENT;
     	}
     	
-//		when logging
-    	else if (MMSConfiguration.logProviding && httpMethod == HttpMethod.GET && uri.equals("/logs")){
+//		when LOGGING
+    	else if (MMSConfiguration.LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/logs")){
     		return LOGS;
-    	} else if (MMSConfiguration.logProviding && httpMethod == HttpMethod.GET && uri.equals("/status")){
+    	} else if (MMSConfiguration.LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/status")){
     		return STATUS;
-    	} else if (MMSConfiguration.logProviding && httpMethod == HttpMethod.GET && uri.equals("/cleanlogs")){ 
+    	} else if (MMSConfiguration.LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/cleanlogs")){ 
     		return CLEAN_LOGS;
-    	} else if (MMSConfiguration.logProviding && httpMethod == HttpMethod.GET && uri.equals("/savelogs")){    		
+    	} else if (MMSConfiguration.LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/savelogs")){    		
     		return SAVE_LOGS;
-    	} else if (MMSConfiguration.emptyQueue && httpMethod == HttpMethod.GET && uri.equals("/emptyqueue")){ 
+    	} else if (MMSConfiguration.EMPTY_QUEUE && httpMethod == HttpMethod.GET && uri.equals("/EMPTY_QUEUE")){ 
     		return EMPTY_QUEUE;
-    	} else if (MMSConfiguration.emptyCMDummy && httpMethod == HttpMethod.GET && uri.equals("/emptycmdummy")){ 
-    		return EMPTY_CMDUMMY;
-    	} else if (MMSConfiguration.removeEntryCMDummy && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/removecmentry", 0, 14)){ 
+    	} else if (MMSConfiguration.EMPTY_MNS_DUMMY && httpMethod == HttpMethod.GET && uri.equals("/EMPTY_MNS_DUMMY")){ 
+    		return EMPTY_MNSDummy;
+    	} else if (MMSConfiguration.REMOVE_ENTRY_MNS_DUMMY && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/removecmentry", 0, 14)){ 
     		return REMOVE_CM_ENTRY;
     	}
     	

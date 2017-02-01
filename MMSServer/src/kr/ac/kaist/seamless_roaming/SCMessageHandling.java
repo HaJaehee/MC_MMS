@@ -23,7 +23,7 @@ public class SCMessageHandling {
 		try {
 			MMSQueue.putMessage(dstMRN, req);
 		} catch (UnsupportedEncodingException e) {
-			if(MMSConfiguration.logging)e.printStackTrace();
+			if(MMSConfiguration.LOGGING)e.printStackTrace();
 		}
 	}
 }
