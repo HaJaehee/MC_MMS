@@ -7,7 +7,7 @@ Alpha Version 0.3.00 <br/>
 
 ## Features
 MMS Alpha Version<br/>
-Communication Manager Dummy<br/>
+Maritime Name System Dummy<br/>
 Service Consumer Dummy<br/>
 Service Provider Dummy<br/>
 Identity Registry Dummy<br/>

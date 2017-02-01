@@ -33,11 +33,11 @@ public class MMSQueue {
 	//}
 	
 	public static synchronized byte[] getMessage(String mrn) throws Exception{
-		if(MMSConfiguration.logging)System.out.println("get queue:" + mrn);
+		if(MMSConfiguration.LOGGING)System.out.println("get queue:" + mrn);
     	if (queue.containsKey(mrn)) {
     		String ret = queue.get(mrn).trim() + "\0";
     		queue.remove(mrn);
-    		if(MMSConfiguration.logging)System.out.println("dequeue" + ret);
+    		if(MMSConfiguration.LOGGING)System.out.println("dequeue" + ret);
     		return ret.getBytes(Charset.forName("UTF-8"));
     	} else {
     		throw new Exception("No entry");
@@ -65,10 +65,10 @@ public class MMSQueue {
 				
 				queue.put(mrn, newEntry);
 			} catch (ParseException e) {
-				if(MMSConfiguration.logging)e.printStackTrace();
+				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
     		
-    		if(MMSConfiguration.logging)System.out.println("queuing: " + ret);
+    		if(MMSConfiguration.LOGGING)System.out.println("queuing: " + ret);
 
     	} else {
     		String requestBytes = req.content().toString(Charset.forName("UTF-8")).trim();

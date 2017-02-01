@@ -24,8 +24,7 @@ public class SC5 {
 		//port = Integer.parseInt(args[1]);
 		int port = 8906;
 		
-		MMSConfiguration.MMSURL="127.0.0.1:8088";
-		MMSConfiguration.CMURL="127.0.0.1";
+		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 
 		MMSClientHandler ch = new MMSClientHandler(myMRN);
 		ch.setPort(port);

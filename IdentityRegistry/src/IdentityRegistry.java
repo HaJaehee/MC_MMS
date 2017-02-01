@@ -21,8 +21,7 @@ public class IdentityRegistry{
 		//myMRN = args[0];
 		//port = Integer.parseInt(args[1]);
 		
-		MMSConfiguration.MMSURL="127.0.0.1:8088";
-		MMSConfiguration.CMURL="127.0.0.1";
+		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		
 		MMSClientHandler ch = new MMSClientHandler(myMRN);
 		ch.setMIR(port);

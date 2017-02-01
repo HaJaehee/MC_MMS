@@ -7,7 +7,7 @@ File name : MMSClientHandler.java
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2016-12-31
+Creation Date : 2016-12-03
 Version : 0.2.00
 Rev. history : 2017-02-01
 	Added setting header field features. 
@@ -112,7 +112,7 @@ public class MMSClientHandler {
 			return new MMSSndHandler(clientMRN).registerLocator(port);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			if(MMSConfiguration.logging)e.printStackTrace();
+			if(MMSConfiguration.LOGGING)e.printStackTrace();
 			return "";
 		}
 	}
@@ -147,6 +147,7 @@ public class MMSClientHandler {
 	
 	
 	//OONI
+	/*
 	@Deprecated
 	class LocUpdate implements Runnable{
 
@@ -162,25 +163,25 @@ public class MMSClientHandler {
 			// TODO Auto-generated method stub
 			try {
 				do{
-					if(MMSConfiguration.logging)System.out.println("send location update");
+					if(MMSConfiguration.LOGGING)System.out.println("send location update");
 
 					DatagramSocket dSock = new DatagramSocket();
-					InetAddress server = InetAddress.getByName(MMSConfiguration.CMURL);
+					InetAddress server = InetAddress.getByName(MMSConfiguration.MNS_URL);
 					byte[] data = ("location_update:"+ clientMRN + "," + clientPort + "," + MSGtype).getBytes();
-					DatagramPacket outPacket = new DatagramPacket(data, data.length, server, MMSConfiguration.CMPort);
+					DatagramPacket outPacket = new DatagramPacket(data, data.length, server, MMSConfiguration.MNS_PORT);
 					dSock.send(outPacket);
 					
-					Thread.sleep(MMSConfiguration.locUpdateInterval);
+					Thread.sleep(MMSConfiguration.LOC_UPDATE_INTERVAL);
 				}while(infiniteLoop);
 				
 			} catch (InterruptedException |  IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.logging)e.printStackTrace();
+				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
 						
 		}
 	}
-	
+	*/
 	
 	private class RcvHandler extends MMSRcvHandler{
 		RcvHandler(int port) throws IOException {
@@ -220,11 +221,12 @@ public class MMSClientHandler {
 		}
 	}
 	
+	/*
 	@Deprecated
 	public void locUpdate () {
 		Thread locationUpdate = new Thread(new LocUpdate(1, true));
 		locationUpdate.start();
 	}
-	
+	*/
 }
 

@@ -100,7 +100,7 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
         	try {
 				message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod);
 			} catch (Exception e) {
-				if(MMSConfiguration.logging)e.printStackTrace();
+				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
 		} else if (type == MessageTypeDecision.REGISTER_CLIENT) {
 			parser.parsingLocInfo(req);
@@ -124,10 +124,10 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 				message = status.getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.logging)e.printStackTrace();
+				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.logging)e.printStackTrace();
+				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
 		} else if (type == MessageTypeDecision.LOGS) {
     		String status;
@@ -138,10 +138,10 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 	    		message = MMSLog.log.getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.logging)e.printStackTrace();
+				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.logging)e.printStackTrace();
+				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
 		} else if (type == MessageTypeDecision.SAVE_LOGS) {
     		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
@@ -155,36 +155,36 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 	    		wr.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.logging)e.printStackTrace();
+				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
     		message = "OK".getBytes(Charset.forName("UTF-8"));
 		} else if (type == MessageTypeDecision.EMPTY_QUEUE) {
 			MMSQueue.queue.clear();
     		message = "OK".getBytes(Charset.forName("UTF-8"));
-		} else if (type == MessageTypeDecision.EMPTY_CMDUMMY) {
+		} else if (type == MessageTypeDecision.EMPTY_MNSDummy) {
     		try {
 				emptyCM();
 				message = "OK".getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.logging)e.printStackTrace();
+				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.logging)e.printStackTrace();
+				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
 		} else if (type == MessageTypeDecision.REMOVE_CM_ENTRY) {
     		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
-    		if(MMSConfiguration.logging)System.out.println("remove mrn: " + params.get("mrn").get(0));
+    		if(MMSConfiguration.LOGGING)System.out.println("remove mrn: " + params.get("mrn").get(0));
     		try {
 				removeEntryCM(params.get("mrn").get(0));
 				message = "OK".getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.logging)e.printStackTrace();
+				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.logging)e.printStackTrace();
+				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			} 
 		}
 		else if (type == MessageTypeDecision.CLEAN_LOGS) {
@@ -199,7 +199,7 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 		outputChannel.replyToSender(ctx, message);
 	}
 	
-//  When logging CM
+//  When LOGGING CM
 	private String dumpCM() throws UnknownHostException, IOException{ //
   	
   	//String modifiedSentence;
@@ -210,10 +210,10 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
   	BufferedWriter outToCM = new BufferedWriter(
 					new OutputStreamWriter(CMSocket.getOutputStream(),Charset.forName("UTF-8")));
   	
-  	if(MMSConfiguration.logging)System.out.println("Dump-CM:");
+  	if(MMSConfiguration.LOGGING)System.out.println("Dump-CM:");
   	ServerSocket Sock = new ServerSocket(0);
   	int rplPort = Sock.getLocalPort();
-  	if(MMSConfiguration.logging)System.out.println("Reply port : "+rplPort);
+  	if(MMSConfiguration.LOGGING)System.out.println("Reply port : "+rplPort);
   	outToCM.write("Dump-CM:"+","+rplPort);
   	outToCM.flush();
   	outToCM.close();
@@ -230,7 +230,7 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 		}
 		
   	dumpedCM = response.toString();
-  	if(MMSConfiguration.logging)System.out.println("Dumped CM: " + dumpedCM);
+  	if(MMSConfiguration.LOGGING)System.out.println("Dumped CM: " + dumpedCM);
   	inFromCM.close();
   	if (dumpedCM.equals("No"))
   		return "No MRN to IP mapping";
@@ -245,7 +245,7 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
   	BufferedWriter outToCM = new BufferedWriter(
 					new OutputStreamWriter(CMSocket.getOutputStream(),Charset.forName("UTF-8")));
   	
-  	if(MMSConfiguration.logging)System.out.println("Empty-CM:");
+  	if(MMSConfiguration.LOGGING)System.out.println("Empty-CM:");
   	outToCM.write("Empty-CM:");
   	outToCM.flush();
   	outToCM.close();
@@ -261,7 +261,7 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
   	BufferedWriter outToCM = new BufferedWriter(
 					new OutputStreamWriter(CMSocket.getOutputStream(),Charset.forName("UTF-8")));
   	
-  	if(MMSConfiguration.logging)System.out.println("Remove-Entry:"+mrn);
+  	if(MMSConfiguration.LOGGING)System.out.println("Remove-Entry:"+mrn);
   	outToCM.write("Remove-Entry:"+","+mrn);
   	outToCM.flush();
   	outToCM.close();
@@ -297,7 +297,7 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
 		try{
-			if(MMSConfiguration.logging)System.out.println("Message received");
+			if(MMSConfiguration.LOGGING)System.out.println("Message received");
 			req.retain();
 			parser.parsingMessage(ctx, req);
 			

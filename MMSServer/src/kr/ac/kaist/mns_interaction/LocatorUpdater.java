@@ -19,7 +19,7 @@ public class LocatorUpdater {
 	
 	String buildUpdate(String MRN, String IP, int port, int model) {
 		String msg = "Location-Update:" + IP + "," + MRN + "," + Integer.toString(port) + "," + Integer.toString(model);
-		if(MMSConfiguration.logging)System.out.println(msg);
+		if(MMSConfiguration.LOGGING)System.out.println(msg);
 		return msg;
 	}
 }

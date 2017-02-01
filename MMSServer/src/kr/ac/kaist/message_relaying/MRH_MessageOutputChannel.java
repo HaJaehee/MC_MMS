@@ -83,10 +83,10 @@ public class MRH_MessageOutputChannel {
 	
 //  to do relaying
 	byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws Exception { // 
-	  	if(MMSConfiguration.logging)System.out.println("uri?:" + req.uri());
+	  	if(MMSConfiguration.LOGGING)System.out.println("uri?:" + req.uri());
 	  	
 		String url = "http://" + IPAddress + ":" + port + req.uri();
-		if(MMSConfiguration.logging)System.out.println(url);
+		if(MMSConfiguration.LOGGING)System.out.println(url);
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		HttpHeaders httpHeaders = req.headers();
@@ -125,9 +125,9 @@ public class MRH_MessageOutputChannel {
 			Map<String,List<String>> resHeaders = con.getHeaderFields();
 			setResponseHeader(resHeaders);
 			
-			if(MMSConfiguration.logging)System.out.println("\nSending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url);
-			if(MMSConfiguration.logging)System.out.println((httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters);
-			if(MMSConfiguration.logging)System.out.println("Response Code : " + responseCode);
+			if(MMSConfiguration.LOGGING)System.out.println("\nSending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url);
+			if(MMSConfiguration.LOGGING)System.out.println((httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters);
+			if(MMSConfiguration.LOGGING)System.out.println("Response Code : " + responseCode);
 			BufferedReader in = new BufferedReader(
 			        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 			String inputLine;
@@ -140,7 +140,7 @@ public class MRH_MessageOutputChannel {
 			String ret = buf.toString();
 			return ret.getBytes();
 		} catch (Exception e) {
-			if(MMSConfiguration.logging)e.printStackTrace();
+			if(MMSConfiguration.LOGGING)e.printStackTrace();
 			return "No Reply".getBytes();
 			
 		}

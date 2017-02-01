@@ -6,7 +6,7 @@ File name : MMSRcvHandler.java
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2016-12-31
+Creation Date : 2016-12-03
 Version : 0.2.00
 Rev. history : 2017-02-01
 	Added setting header field features. 
@@ -109,7 +109,7 @@ public class MMSRcvHandler {
     class FileReqHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
-        	if(MMSConfiguration.logging)System.out.println("File request");
+        	if(MMSConfiguration.LOGGING)System.out.println("File request");
         	InputStream in = t.getRequestBody();
             ByteArrayOutputStream _out = new ByteArrayOutputStream();
             byte[] buf = new byte[2048];
@@ -165,14 +165,14 @@ public class MMSRcvHandler {
 	    			Thread.sleep(interval);
 	    			Poll();
     			}catch (Exception e){
-    				if(MMSConfiguration.logging)e.printStackTrace();
+    				if(MMSConfiguration.LOGGING)e.printStackTrace();
     			}
     		}
     	}
     	
 		void Poll() throws Exception {
 			
-			String url = "http://"+MMSConfiguration.MMSURL+"/polling"; // MMS Server
+			String url = "http://"+MMSConfiguration.MMS_URL+"/polling"; // MMS Server
 			URL obj = new URL(url);
 			String data = (clientPort + ":" + clientModel); //To do: add geographical info, channel info, etc. 
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -202,9 +202,9 @@ public class MMSRcvHandler {
 			wr.close();
 
 			int responseCode = con.getResponseCode();
-			if(MMSConfiguration.logging)System.out.println("\nSending 'POST' request to URL : " + url);
-			if(MMSConfiguration.logging)System.out.println("Polling...");
-			if(MMSConfiguration.logging)System.out.println("Response Code : " + responseCode);
+			if(MMSConfiguration.LOGGING)System.out.println("\nSending 'POST' request to URL : " + url);
+			if(MMSConfiguration.LOGGING)System.out.println("Polling...");
+			if(MMSConfiguration.LOGGING)System.out.println("Response Code : " + responseCode);
 			
 			Map<String,List<String>> inH = con.getHeaderFields();
 			BufferedReader inB = new BufferedReader(

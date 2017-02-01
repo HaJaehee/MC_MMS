@@ -9,7 +9,7 @@ File name : SC4.java
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2016-12-31
+Creation Date : 2016-12-03
 Version : 0.2.00
 */
 /* -------------------------------------------------------- */
@@ -19,8 +19,7 @@ public class SC4 {
 		String myMRN = "urn:mrn:imo:imo-no:0141414";
 		//myMRN = args[0];
 		
-		MMSConfiguration.MMSURL="127.0.0.1:8088";
-		MMSConfiguration.CMURL="127.0.0.1";
+		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 
 		//Service Consumer which can only send message
 		MMSClientHandler ch = new MMSClientHandler(myMRN);

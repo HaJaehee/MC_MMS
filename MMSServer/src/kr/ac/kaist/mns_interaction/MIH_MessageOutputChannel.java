@@ -38,10 +38,10 @@ public class MIH_MessageOutputChannel {
 	    	BufferedWriter outToCM = new BufferedWriter(
 						new OutputStreamWriter(CMSocket.getOutputStream(),Charset.forName("UTF-8")));
 	    	
-	    	if(MMSConfiguration.logging)System.out.println(request);
+	    	if(MMSConfiguration.LOGGING)System.out.println(request);
 	    	ServerSocket Sock = new ServerSocket(0);
 	    	int rplPort = Sock.getLocalPort();
-	    	if(MMSConfiguration.logging)System.out.println("Reply port : "+rplPort);
+	    	if(MMSConfiguration.LOGGING)System.out.println("Reply port : "+rplPort);
 	    	outToCM.write(request+","+rplPort);
 	    	outToCM.flush();
 	    	outToCM.close();
@@ -58,7 +58,7 @@ public class MIH_MessageOutputChannel {
 			}
 			
 	    	returnedIP = response.toString();
-	    	if(MMSConfiguration.logging)System.out.println("FROM SERVER: " + returnedIP);
+	    	if(MMSConfiguration.LOGGING)System.out.println("FROM SERVER: " + returnedIP);
 	    	
 	    	inFromCM.close();
 	    	
@@ -73,7 +73,7 @@ public class MIH_MessageOutputChannel {
 	    	return returnedIP;
     	}
     	catch (Exception e) {
-    		if(MMSConfiguration.logging)e.printStackTrace();
+    		if(MMSConfiguration.LOGGING)e.printStackTrace();
     		
 			return null;
 		}
