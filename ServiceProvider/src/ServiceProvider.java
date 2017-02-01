@@ -27,7 +27,10 @@ public class ServiceProvider {
 						String key = iter.next();
 						System.out.println(key+":"+header.get(key).toString());
 					}
-					ch.sendPostMsg("urn:mrn:imo:imo-no:0100006", message);
+					System.out.println(message);
+					//it only forwards messages to sc having urn:mrn:imo:imo-no:0100006
+					String res = ch.sendPostMsg("urn:mrn:imo:imo-no:0100006", message);
+					System.out.println(res);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

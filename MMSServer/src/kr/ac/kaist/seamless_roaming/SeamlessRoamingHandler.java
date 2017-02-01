@@ -30,9 +30,7 @@ public class SeamlessRoamingHandler {
 		
 		pmh.updateClientInfo(mih, srcMRN, srcIP, srcPort, srcModel);
 		message = pmh.getSCMessage(srcMRN);
-		
-//		System.out.println(TAG + ":" + srcMRN + "/" + srcIP + "/" + srcPort + "/" + srcModel);
-		
+	
 		return message;
 	}
 	

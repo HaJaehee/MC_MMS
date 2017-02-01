@@ -1,8 +1,6 @@
 import java.util.List;
 import java.util.Map;
 
-import org.json.simple.JSONObject;
-
 import kr.ac.kaist.mms_client.MMSClientHandler;
 import kr.ac.kaist.mms_client.MMSConfiguration;
 
@@ -19,7 +17,7 @@ public class SC1 {
 		//Service Consumer cannot be HTTP server and should poll from MMS. 
 		MMSClientHandler ph = new MMSClientHandler(myMRN);
 		int pollInterval = 1000;
-		ph.setPolling("urn:mrn:smart-navi:device:mms1", pollInterval);
+		ph.startPolling("urn:mrn:smart-navi:device:mms1", pollInterval);
 		
 		//Request Callback from the request message
 		ph.setReqCallBack(new MMSClientHandler.ReqCallBack() {

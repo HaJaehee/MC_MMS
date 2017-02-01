@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,7 +27,7 @@ public class MMSSndHandler {
 		
 	}
 	
-	String sendHttpPost(String dstMRN, String loc, String data, JSONObject headerField) throws Exception{
+	String sendHttpPost(String dstMRN, String loc, String data, Map<String,String> headerField) throws Exception{
 		
 		String url = "http://"+MMSConfiguration.MMSURL; // MMS Server
 		if (loc.startsWith("/")) {
@@ -47,17 +48,18 @@ public class MMSSndHandler {
 		//con.addRequestProperty("Connection","keep-alive");
 		
 		if (headerField != null) {
-			if(MMSConfiguration.logging)System.out.println("set headerfield");
+			if(MMSConfiguration.logging)System.out.println("set headerfield[");
 			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 				String key = (String) keys.next();
 				String value = (String) headerField.get(key);
 				if(MMSConfiguration.logging)System.out.println(key+":"+value);
 				con.setRequestProperty(key, value);
 			}
+			if(MMSConfiguration.logging)System.out.println("]");
 		} 
 		
 		//load contents
-		String urlParameters;
+		String urlParameters = "";
 		if (!loc.equals("/registering")){
 			//		change the string data to json format
 			JSONObject jsonFrame = new JSONObject();
@@ -106,7 +108,7 @@ public class MMSSndHandler {
 	}
 	
 	//OONI
-	String sendHttpGetFile(String dstMRN, String fileName, JSONObject headerField) throws Exception {
+	String sendHttpGetFile(String dstMRN, String fileName, Map<String,String> headerField) throws Exception {
 
 		String url = "http://"+MMSConfiguration.MMSURL; // MMS Server
 		if (fileName.startsWith("/")) {
@@ -126,11 +128,13 @@ public class MMSSndHandler {
 		con.setRequestProperty("srcMRN", clientMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
 		if (headerField != null) {
+			if(MMSConfiguration.logging)System.out.println("set headerfield[");
 			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 				String key = (String) keys.next();
 				String value = (String) headerField.get(key);
 				con.setRequestProperty(key, value);
 			}
+			if(MMSConfiguration.logging)System.out.println("]");
 		}
 		//con.addRequestProperty("Connection","keep-alive");
 		
@@ -165,7 +169,7 @@ public class MMSSndHandler {
 	//OONI end
 	
 	//HJH
-	String sendHttpGet(String dstMRN, String loc, String params, JSONObject headerField) throws Exception {
+	String sendHttpGet(String dstMRN, String loc, String params, Map<String,String> headerField) throws Exception {
 
 		String url = "http://"+MMSConfiguration.MMSURL; // MMS Server
 		if (loc.startsWith("/")) {
@@ -196,11 +200,13 @@ public class MMSSndHandler {
 		con.setRequestProperty("srcMRN", clientMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
 		if (headerField != null) {
+			if(MMSConfiguration.logging)System.out.println("set headerfield[");
 			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 				String key = (String) keys.next();
 				String value = (String) headerField.get(key);
 				con.setRequestProperty(key, value);
 			}
+			if(MMSConfiguration.logging)System.out.println("]");
 		}
 		//con.addRequestProperty("Connection","keep-alive");
 		
@@ -231,11 +237,11 @@ public class MMSSndHandler {
 	}
 	
 	
-	String sendHttpsPost(String dstMRN, String params, JSONObject headerField) throws Exception {
+	String sendHttpsPost(String dstMRN, String params, Map<String,String> headerField) throws Exception {
 		return null;
 	}
 	
-	String sendHttpsGet(String dstMRN, String params, JSONObject headerField) throws Exception {
+	String sendHttpsGet(String dstMRN, String params, Map<String,String> headerField) throws Exception {
 		return null;
 	}
 	//HJH end

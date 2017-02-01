@@ -1,7 +1,7 @@
 package kr.ac.kaist.mms_server;
 
 public class MMSConfiguration {
-	public static final boolean logging = true;
+	public static final boolean logging = false;
 	public static final boolean logProviding = true;
 	public static final boolean emptyQueue = true;
 	public static final boolean emptyCMDummy = true;

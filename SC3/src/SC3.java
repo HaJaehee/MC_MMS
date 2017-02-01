@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-import kr.ac.kaist.mms_client.MMSClientHandler;
+import kr.ac.kaist.mms_client.*;
 
 public class SC3 {
 	public static void main(String args[]) throws Exception{
@@ -8,8 +8,8 @@ public class SC3 {
 		//myMRN = args[0];
 		myMRN = "urn:mrn:imo:imo-no:0010005";
 		
-		//MMSConfiguration.MMSURL="127.0.0.1:8088";
-		//MMSConfiguration.CMURL="127.0.0.1";
+		MMSConfiguration.MMSURL="127.0.0.1:8088";
+		MMSConfiguration.CMURL="127.0.0.1";
 
 		//Service Consumer which can only send message
 		MMSClientHandler ch = new MMSClientHandler(myMRN);

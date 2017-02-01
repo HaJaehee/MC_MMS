@@ -57,6 +57,8 @@ public class MessageOutputChannel {
 					}
 				}
 			}
+			isStoredHeader = false;
+			storedHeader = null;
     	} else {
     		res.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8");
     	}
@@ -87,7 +89,7 @@ public class MessageOutputChannel {
 		}
 		
 //		Setting remaining headers
-		for (Iterator<Map.Entry<String, String>> htr = httpHeaders.iterator(); htr.hasNext();) {
+		for (Iterator<Map.Entry<String, String>> htr = httpHeaders.iteratorAsString(); htr.hasNext();) {
 			Map.Entry<String, String> htrValue = htr.next();
 			
 			if (!htrValue.getKey().equals("srcMRN") && !htrValue.getKey().equals("dstMRN")) {

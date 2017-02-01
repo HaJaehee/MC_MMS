@@ -49,12 +49,12 @@ public class MMSRcvHandler {
         server.setExecutor(null); // creates a default executor
         server.start();
 	}
-	MMSRcvHandler(String clientMRN, String dstMRN, int interval, int clientPort, int msgType, JSONObject headerField) throws IOException{
+	MMSRcvHandler(String clientMRN, String dstMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
 		ph = new PollingHandler(clientMRN, dstMRN, interval, clientPort, msgType, headerField);
 		ph.start();
 	}
 	
-	static class HttpReqHandler implements HttpHandler {
+	class HttpReqHandler implements HttpHandler {
     	private MMSDataParser dataParser = new MMSDataParser();
     	MMSClientHandler.ReqCallBack myReqCallBack;
     	
@@ -72,13 +72,14 @@ public class MMSRcvHandler {
             while ((read = inB.read(buf)) != -1) {
                 _out.write(buf, 0, read);
             }
-            if(MMSConfiguration.logging)System.out.println(new String( buf, Charset.forName("UTF-8") ));
+            Iterator<String> iter = inH.keySet().iterator();
+			while (iter.hasNext()){
+				String key = iter.next();
+			}
             String receivedData = new String( buf, Charset.forName("UTF-8"));
             
             ArrayList<MMSData> list = dataParser.processParsing(receivedData.trim());
-            
             String response = this.processRequest(inH, list.get(0).getData());
-            
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
@@ -86,13 +87,13 @@ public class MMSRcvHandler {
             os.close();
         }
         
-        private String processRequest(Map<String,List<String>> header, String data) {
-    		String ret = this.myReqCallBack.callbackMethod(header, data);
+        private String processRequest(Map<String,List<String>> headerField, String message) {
+    		String ret = this.myReqCallBack.callbackMethod(headerField, message);
     		return ret;
     	}
     }
     //OONI
-    static class FileReqHandler implements HttpHandler {
+    class FileReqHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
         	if(MMSConfiguration.logging)System.out.println("File request");
@@ -121,17 +122,17 @@ public class MMSRcvHandler {
     //OONI end
  
     //HJH
-    static class PollingHandler extends Thread{
+    class PollingHandler extends Thread{
 		private int interval;
 		private String clientMRN;
 		private String dstMRN;
 		private int clientPort;
 		private int clientModel;
 		private MMSDataParser dataParser;
-		private JSONObject headerField;
+		private Map<String,String> headerField;
 		MMSClientHandler.ReqCallBack myReqCallBack;
 		
-    	PollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, JSONObject headerField){
+    	PollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
     		this.interval = interval;
     		this.clientMRN = clientMRN;
     		this.dstMRN = dstMRN;
@@ -217,8 +218,8 @@ public class MMSRcvHandler {
 			}
 		}
 		
-		private String processRequest(Map<String,List<String>> header, String data) {
-    		String ret = this.myReqCallBack.callbackMethod(header, data);
+		private String processRequest(Map<String,List<String>> headerField, String message) {
+    		String ret = this.myReqCallBack.callbackMethod(headerField, message);
     		return ret;
     	}
 	}

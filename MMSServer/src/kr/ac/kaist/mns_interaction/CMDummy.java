@@ -98,6 +98,15 @@ public class CMDummy {
         	  String[] data_sub = data.split(",");
         	  // data_sub = IP_address, MRN, Port
         	  MRNtoIP.put(data_sub[1], data_sub[0] + ":" + data_sub[2] + ":" + data_sub[3]);
+        	  int rplPort = Integer.parseInt(data_sub[4]);
+        	  Socket ReplySocket = new Socket("localhost",rplPort);
+        	  
+        	  BufferedWriter out = new BufferedWriter(
+    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
+        	  out.write("OK");
+              out.flush();
+              out.close();
+              ReplySocket.close();
         	  
           }else if (data.regionMatches(0, "Dump-CM:", 0, 8)){
 
