@@ -1,14 +1,18 @@
-/*
- * MMS Server Main.
- *  
- */
 package kr.ac.kaist.mms_server;
 
+/* -------------------------------------------------------- */
+/** 
+File name : MMSServer.java
+	It is executable class of MMS Server.
+Author : Jaehyun Park (jae519@kaist.ac.kr)
+Creation Date : 2017-01-24
+Version : 0.2.00
+*/
+/* -------------------------------------------------------- */
 
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
-import kr.ac.kaist.message_relaying.HttpRelayHandler;
-import kr.ac.kaist.message_relaying.MessageInputChannel;
+import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.MessageRelayingHandler;
 
 

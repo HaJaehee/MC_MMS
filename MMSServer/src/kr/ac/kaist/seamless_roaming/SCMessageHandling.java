@@ -1,5 +1,16 @@
 package kr.ac.kaist.seamless_roaming;
 
+/* -------------------------------------------------------- */
+/** 
+File name : SCMassageHandling.java
+	It puts messages to MMSQueue.
+Author : Jaehyun Park (jae519@kaist.ac.kr)
+	Jin Jung (jungst0001@kaist.ac.kr)
+Creation Date : 2017-01-24
+Version : 0.2.00
+*/
+/* -------------------------------------------------------- */
+
 import java.io.UnsupportedEncodingException;
 
 import io.netty.handler.codec.http.FullHttpRequest;

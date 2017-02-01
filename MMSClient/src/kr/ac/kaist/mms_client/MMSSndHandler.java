@@ -1,5 +1,20 @@
 package kr.ac.kaist.mms_client;
 
+/* -------------------------------------------------------- */
+/** 
+File name : MMSSndHandler.java
+Author : Jaehyun Park (jae519@kaist.ac.kr)
+	Haeun Kim (hukim@kaist.ac.kr)
+	Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2016-12-31
+Version : 0.2.00
+Rev. history : 2017-02-01
+	Added setting header field features. 
+	Added locator registering features.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+*/
+/* -------------------------------------------------------- */
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -17,7 +32,7 @@ import org.json.simple.JSONObject;
 public class MMSSndHandler {
 	private static final String TAG = "MMSSndHandler";
 	private final String USER_AGENT = "MMSClient/0.1";
-	private String clientMRN;
+	private String clientMRN = null;
 	MMSSndHandler (String clientMRN){
 		this.clientMRN = clientMRN;
 	}
