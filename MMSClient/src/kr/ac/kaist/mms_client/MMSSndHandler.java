@@ -52,7 +52,7 @@ public class MMSSndHandler {
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
-		//add reuqest header
+		//add request header
 		con.setRequestMethod("POST");
 		con.setRequestProperty("User-Agent", USER_AGENT);
 		con.setRequestProperty("Accept-Charset", "UTF-8");
