@@ -7,10 +7,11 @@ import kr.ac.kaist.mms_client.*;
 
 /* -------------------------------------------------------- */
 /** 
-File name : SC5.java
-	Service Consumer can be HTTP server and listen to port 'port'.
+File name : SC6.java
+	Service Provider can be HTTP server and listen to port 'port'.
+	SP can send text-based files
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2017-02-01
+Creation Date : 2017-02-14
 Version : 0.3.01
 */
 /* -------------------------------------------------------- */
