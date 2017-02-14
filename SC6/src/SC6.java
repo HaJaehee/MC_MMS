@@ -30,8 +30,10 @@ public class SC6 {
 		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 
 		MMSClientHandler ch = new MMSClientHandler(myMRN);
-		ch.setPort(port,fileDirectory,fileName);
-		//ch.setPort(port);
-		//ch.addFileContext(fileDirectory, fileName); //also possible method
+		ch.setPort(port,fileDirectory,fileName); //ch has a context '/get/test.xml'
+		/* It is not same with: 
+		* ch.setPort(port); //It sets default context as '/'
+		* ch.addFileContext(fileDirectory, fileName); //Finally ch has two context '/' and '/get/test.xml'
+	    */
 	}
 }

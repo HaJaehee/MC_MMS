@@ -112,13 +112,17 @@ public class MRH_MessageOutputChannel {
 		con.setRequestProperty("Content-Length", urlParameters.length() + "");
 		
 		
-		// Send post/get request
-		con.setDoOutput(true);
-		BufferedWriter wr = new BufferedWriter(
-				new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
-		wr.write(urlParameters);
-		wr.flush();
-		wr.close();
+		if (httpMethod == httpMethod.POST) {
+			// Send post request
+			con.setDoOutput(true);
+			BufferedWriter wr = new BufferedWriter(
+					new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
+			wr.write(urlParameters);
+			wr.flush();
+			wr.close();
+		} 
+		
+		// get request doesn't have http body
 		
 		try{
 			int responseCode = con.getResponseCode();

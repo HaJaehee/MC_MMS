@@ -51,7 +51,7 @@ public class MMSRcvHandler {
 	//OONI
 	PollingHandler ph = null;
 	//HJH
-	private static final String USER_AGENT = "MMSClient/0.1";
+	private static final String USER_AGENT = "MMSClient/0.3.01";
 	private String clientMRN = null;
 	
 	MMSRcvHandler(int port) throws IOException{
@@ -103,7 +103,7 @@ public class MMSRcvHandler {
 	
 	void addContext (String context) {
 		if (server == null) {
-			if(MMSConfiguration.LOGGING)System.out.println("Server is not created!");
+			System.out.println("Server is not created!");
 			return;			
 		}
 		if (hrh == null) {
@@ -118,7 +118,7 @@ public class MMSRcvHandler {
 	
 	void addFileContext (String fileDirectory, String fileName) {
 		if (server == null) {
-			if(MMSConfiguration.LOGGING)System.out.println("Server is not created!");
+			System.out.println("Server is not created!");
 			return;
 		}
 		if (frh == null) {
@@ -147,6 +147,9 @@ public class MMSRcvHandler {
     	
         @Override
         public void handle(HttpExchange t) throws IOException {
+        	URI uri = t.getRequestURI();
+        	String httpMethod = t.getRequestMethod();
+        	
         	InputStream inB = t.getRequestBody();
         	Map<String,List<String>> inH = t.getRequestHeaders();
             ByteArrayOutputStream _out = new ByteArrayOutputStream();
@@ -159,10 +162,21 @@ public class MMSRcvHandler {
 			while (iter.hasNext()){
 				String key = iter.next();
 			}
-            String receivedData = new String( buf, Charset.forName("UTF-8"));
+            String receivedData = new String( buf, Charset.forName("UTF-8")).trim();
             
-            ArrayList<MMSData> list = dataParser.processParsing(receivedData.trim());
-            String response = this.processRequest(inH, list.get(0).getData());
+            ArrayList<MMSData> list = null;
+            if (receivedData!=null&&!receivedData.equals("")) {
+            	list = dataParser.processParsing(receivedData);
+            }
+            
+            String httpBody = (list!=null)?list.get(0).getData():"";
+            httpBody = (httpBody.startsWith("{")||httpBody.startsWith("["))?httpBody:"\""+httpBody+"\"";
+            
+            String message = "{\"Request URI\":\""+uri.toString()+"\","+
+							"\"HTTP Method\":\""+httpMethod+"\","+
+							"\"HTTP Body\":"+httpBody+"}";
+            String response = this.processRequest(inH, message);
+            
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
@@ -203,14 +217,14 @@ public class MMSRcvHandler {
  
     //HJH
     class PollingHandler extends Thread{
-		private int interval;
-		private String clientMRN;
-		private String dstMRN;
-		private int clientPort;
-		private int clientModel;
-		private MMSDataParser dataParser;
-		private Map<String,String> headerField;
-		MMSClientHandler.Callback myReqCallback;
+		private int interval = 0;
+		private String clientMRN = null;
+		private String dstMRN = null;
+		private int clientPort = 0;
+		private int clientModel = 0;
+		private MMSDataParser dataParser = null;
+		private Map<String,String> headerField = null;
+		MMSClientHandler.Callback myCallback = null;
 		
     	PollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
     		this.interval = interval;
@@ -222,8 +236,8 @@ public class MMSRcvHandler {
     		this.headerField = headerField;
     	}
     	
-    	void setResCallback(MMSClientHandler.Callback callback){
-    		this.myReqCallback = callback;
+    	void setCallback(MMSClientHandler.Callback callback){
+    		this.myCallback = callback;
     	}
     	
     	public void run(){
@@ -299,7 +313,7 @@ public class MMSRcvHandler {
 		}
 		
 		private String processRequest(Map<String,List<String>> headerField, String message) {
-    		String ret = this.myReqCallback.callbackMethod(headerField, message);
+    		String ret = this.myCallback.callbackMethod(headerField, message);
     		return ret;
     	}
 	}
