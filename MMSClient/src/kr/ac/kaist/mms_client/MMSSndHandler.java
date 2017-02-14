@@ -154,13 +154,7 @@ public class MMSSndHandler {
 		//con.addRequestProperty("Connection","keep-alive");
 		
 
-		// Send post request
-		con.setDoOutput(true);
-		BufferedWriter wr = new BufferedWriter(
-				new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
-		wr.write("");
-		wr.flush();
-		wr.close();
+
 
 		int responseCode = con.getResponseCode();
 		if(MMSConfiguration.LOGGING)System.out.println("\nSending 'POST' request to URL : " + url);
@@ -224,14 +218,6 @@ public class MMSSndHandler {
 			if(MMSConfiguration.LOGGING)System.out.println("]");
 		}
 		//con.addRequestProperty("Connection","keep-alive");
-		
-		// Send get request
-		con.setDoOutput(true);
-		BufferedWriter wr = new BufferedWriter(
-				new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
-		wr.write("");
-		wr.flush();
-		wr.close();
 
 		int responseCode = con.getResponseCode();
 		if(MMSConfiguration.LOGGING)System.out.println("\nSending 'GET' request to URL : " + url);
