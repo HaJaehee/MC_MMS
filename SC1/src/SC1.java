@@ -28,7 +28,10 @@ public class SC1 {
 		
 		//Service Consumer cannot be HTTP server and should poll from MMS. 
 		MMSClientHandler ph = new MMSClientHandler(myMRN);
-
+		
+		int pollInterval = 1000;
+		ph.startPolling("urn:mrn:smart-navi:device:mms1", pollInterval);
+		
 		//Request Callback from the request message
 		ph.setCallback(new MMSClientHandler.Callback() {
 			
@@ -39,8 +42,6 @@ public class SC1 {
 				return "OK";
 			}
 		});
-		
-		int pollInterval = 1000;
-		ph.startPolling("urn:mrn:smart-navi:device:mms1", pollInterval);
+
 	}
 }

@@ -28,6 +28,7 @@ public class SC5 {
 
 		MMSClientHandler ch = new MMSClientHandler(myMRN);
 		ch.setPort(port);
+		
 		//Request Callback from the request message
 		ch.setCallback(new MMSClientHandler.Callback() {
 			
@@ -40,6 +41,7 @@ public class SC5 {
 					System.out.println(key+":"+headerField.get(key).toString());
 				}
 				System.out.println(message);
+				
 				return "OK";
 			}
 		});

@@ -45,22 +45,14 @@ public class MMSClientHandler {
 	
 
 	public void setCallback(Callback callback){
-		setResCallback(callback);
-		setReqCallback(callback);
-	}
-	
-	private void setResCallback(Callback callback){
-		 if (this.pollHandler != null) {
-			 this.pollHandler.ph.setResCallback(callback);
-		 }
-	}
-	
-	private void setReqCallback(Callback callback){
-		 if (this.rcvHandler != null && this.rcvHandler.hrh != null) {
+		if (this.rcvHandler != null && this.rcvHandler.hrh != null) {
 			 this.rcvHandler.hrh.setReqCallback(callback);
 		 }
+		if (this.pollHandler != null) {
+			 this.pollHandler.ph.setCallback(callback);
+		 }
 	}
-	
+
 	public void startPolling (String dstMRN, int interval) throws IOException{
 		this.pollHandler = new PollHandler(clientMRN, dstMRN, interval, headerField);
 	}

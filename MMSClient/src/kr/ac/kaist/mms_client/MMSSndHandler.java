@@ -31,7 +31,7 @@ import org.json.simple.JSONObject;
 
 public class MMSSndHandler {
 	private static final String TAG = "MMSSndHandler";
-	private final String USER_AGENT = "MMSClient/0.1";
+	private final String USER_AGENT = "MMSClient/0.3.01";
 	private String clientMRN = null;
 	MMSSndHandler (String clientMRN){
 		this.clientMRN = clientMRN;
