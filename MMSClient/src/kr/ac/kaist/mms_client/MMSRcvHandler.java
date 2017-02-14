@@ -11,6 +11,11 @@ Version : 0.3.01
 Rev. history : 2017-02-01
 	Added setting header field features. 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Rev. history : 2017-02-14
+	fixed http get request bugs
+	fixed http get file request bugs
+	added setting context features
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 

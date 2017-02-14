@@ -5,12 +5,15 @@ import kr.ac.kaist.mms_client.*;
 /* -------------------------------------------------------- */
 /** 
 File name : SC4.java
-	Service Consumer requests a file from MMS server.
+	Service Consumer requests a file from a Service Provider.
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
 Version : 0.3.01
+Rev. history : 2017-02-14
+	fixed http get file request bugs
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
