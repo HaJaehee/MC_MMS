@@ -7,7 +7,7 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
-Version : 0.2.00
+Version : 0.3.01
 Rev. history : 2017-02-01
 	Added setting header field features. 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
@@ -69,10 +69,10 @@ public class MMSRcvHandler {
 	
 	class HttpReqHandler implements HttpHandler {
     	private MMSDataParser dataParser = new MMSDataParser();
-    	MMSClientHandler.ReqCallBack myReqCallBack;
+    	MMSClientHandler.Callback myReqCallback;
     	
-    	public void setReqCallBack(MMSClientHandler.ReqCallBack callback){
-    		this.myReqCallBack = callback;
+    	public void setReqCallback(MMSClientHandler.Callback callback){
+    		this.myReqCallback = callback;
     	}
     	
         @Override
@@ -101,7 +101,7 @@ public class MMSRcvHandler {
         }
         
         private String processRequest(Map<String,List<String>> headerField, String message) {
-    		String ret = this.myReqCallBack.callbackMethod(headerField, message);
+    		String ret = this.myReqCallback.callbackMethod(headerField, message);
     		return ret;
     	}
     }
@@ -143,7 +143,7 @@ public class MMSRcvHandler {
 		private int clientModel;
 		private MMSDataParser dataParser;
 		private Map<String,String> headerField;
-		MMSClientHandler.ReqCallBack myReqCallBack;
+		MMSClientHandler.Callback myReqCallback;
 		
     	PollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
     		this.interval = interval;
@@ -155,8 +155,8 @@ public class MMSRcvHandler {
     		this.headerField = headerField;
     	}
     	
-    	void setReqCallBack(MMSClientHandler.ReqCallBack callback){
-    		this.myReqCallBack = callback;
+    	void setResCallback(MMSClientHandler.Callback callback){
+    		this.myReqCallback = callback;
     	}
     	
     	public void run(){
@@ -232,7 +232,7 @@ public class MMSRcvHandler {
 		}
 		
 		private String processRequest(Map<String,List<String>> headerField, String message) {
-    		String ret = this.myReqCallBack.callbackMethod(headerField, message);
+    		String ret = this.myReqCallback.callbackMethod(headerField, message);
     		return ret;
     	}
 	}

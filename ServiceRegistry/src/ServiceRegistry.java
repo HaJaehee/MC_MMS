@@ -9,7 +9,7 @@ import kr.ac.kaist.mms_client.*;
 File name : ServiceRegistry.java
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-02-01
-Version : 0.2.00
+Version : 0.3.01
 */
 /* -------------------------------------------------------- */
 
@@ -26,7 +26,7 @@ public class ServiceRegistry{
 		MMSClientHandler ch = new MMSClientHandler(myMRN);
 		ch.setMSR(port);
 		//Request Callback from the request message
-		ch.setReqCallBack(new MMSClientHandler.ReqCallBack() {
+		ch.setCallback(new MMSClientHandler.Callback() {
 			
 			//it is called when client receives a message
 			@Override

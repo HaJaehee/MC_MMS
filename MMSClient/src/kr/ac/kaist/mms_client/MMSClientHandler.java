@@ -8,7 +8,7 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
-Version : 0.2.00
+Version : 0.3.01
 Rev. history : 2017-02-01
 	Added setting header field features. 
 	Added locator registering features.
@@ -35,7 +35,6 @@ public class MMSClientHandler {
 	private MSP msp = null;
 	private String clientMRN = "";
 	private int clientPort = 0;
-	private ResCallBack resCallBack = null;
 	private Map<String,String> headerField = null;
 	
 	public MMSClientHandler(String clientMRN) throws IOException{
@@ -43,33 +42,34 @@ public class MMSClientHandler {
 		this.clientMRN = clientMRN;
 	}
 	
-	public interface ResCallBack{
-		void callbackMethod(Map<String,List<String>> headerField, String message);
-	}
-	
-	public interface ReqCallBack{
+	public interface Callback{
 		String callbackMethod(Map<String,List<String>> headerField, String message);
 	}
 	
-	public void setResCallBack(ResCallBack callback){
-		this.resCallBack = callback;
-	}
 
-	public void setReqCallBack(ReqCallBack callback){
-		 if (this.rcvHandler != null) {
-			 this.rcvHandler.hrh.setReqCallBack(callback);
-		 }
+	public void setCallback(Callback callback){
+		setResCallback(callback);
+		setReqCallback(callback);
+	}
+	
+	private void setResCallback(Callback callback){
 		 if (this.pollHandler != null) {
-			 this.pollHandler.ph.setReqCallBack(callback);
+			 this.pollHandler.ph.setResCallback(callback);
+		 }
+	}
+	
+	private void setReqCallback(Callback callback){
+		 if (this.rcvHandler != null) {
+			 this.rcvHandler.hrh.setReqCallback(callback);
 		 }
 		 if (this.mir != null) {
-			 this.mir.hrh.setReqCallBack(callback);
+			 this.mir.hrh.setReqCallback(callback);
 		 }
 		 if (this.msr != null) {
-			 this.msr.hrh.setReqCallBack(callback);
+			 this.msr.hrh.setReqCallback(callback);
 		 }
 		 if (this.msp != null) {
-			 this.msp.hrh.setReqCallBack(callback);
+			 this.msp.hrh.setReqCallback(callback);
 		 }
 	}
 	

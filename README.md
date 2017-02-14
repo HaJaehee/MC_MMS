@@ -1,8 +1,8 @@
 
 
 # MC_MMS
-Alpha Version 0.3.00 <br/>
-2017.2.1<br/>
+Alpha Version 0.3.01 <br/>
+2017.2.14<br/>
 
 
 ## Features

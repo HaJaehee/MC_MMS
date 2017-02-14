@@ -12,7 +12,7 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
-Version : 0.2.00
+Version : 0.3.01
 Rev. history : 2017-02-01
 	Added header field features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
@@ -28,7 +28,7 @@ public class ServiceProvider {
 		
 		MMSClientHandler ch = new MMSClientHandler(myMRN);
 		ch.setMSP(port);
-		ch.setReqCallBack(new MMSClientHandler.ReqCallBack() {
+		ch.setCallback(new MMSClientHandler.Callback() {
 			
 			//it is called when client receives a message
 			@Override
