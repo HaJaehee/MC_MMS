@@ -21,7 +21,7 @@ public class SC4 {
 		
 		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 
-		//Service Consumer which can only send message
+		//Service Consumer which request a file from server 
 		MMSClientHandler ch = new MMSClientHandler(myMRN);
 
 		//file transferring

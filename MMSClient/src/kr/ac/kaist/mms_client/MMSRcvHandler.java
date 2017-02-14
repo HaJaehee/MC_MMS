@@ -43,6 +43,8 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 public class MMSRcvHandler {
+	HttpServer server = null;
+	
 	HttpReqHandler hrh = null;
 	//OONI
 	FileReqHandler frh = null;
@@ -53,19 +55,86 @@ public class MMSRcvHandler {
 	private String clientMRN = null;
 	
 	MMSRcvHandler(int port) throws IOException{
-		HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+		server = HttpServer.create(new InetSocketAddress(port), 0);
 		hrh = new HttpReqHandler();
         server.createContext("/", hrh);
-        //OONI
-        frh = new FileReqHandler();
-        server.createContext("/get/test.xml", frh);
-        //OONI
+        if(MMSConfiguration.LOGGING)System.out.println("Context \"/\" is created");
         server.setExecutor(null); // creates a default executor
         server.start();
 	}
 	MMSRcvHandler(String clientMRN, String dstMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
 		ph = new PollingHandler(clientMRN, dstMRN, interval, clientPort, msgType, headerField);
+		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");
 		ph.start();
+	}
+	
+	MMSRcvHandler(int port, String context) throws IOException {
+		server = HttpServer.create(new InetSocketAddress(port), 0);
+		hrh = new HttpReqHandler();
+		if (!context.startsWith("/")){
+			context = "/" + context;
+		}
+		
+        server.createContext(context, hrh);
+        if(MMSConfiguration.LOGGING)System.out.println("Context \""+context+"\" is created");
+        server.setExecutor(null); // creates a default executor
+        server.start();
+	}
+	
+	MMSRcvHandler(int port, String fileDirectory, String fileName) throws IOException {
+		server = HttpServer.create(new InetSocketAddress(port), 0);
+        //OONI
+        frh = new FileReqHandler();
+        if (!fileDirectory.startsWith("/")){
+        	fileDirectory = "/" + fileDirectory;
+		}
+        if(!fileDirectory.endsWith("/")&&!fileName.startsWith("/")){
+        	fileName = "/" + fileName;
+        }
+        if(fileDirectory.endsWith("/")&&fileName.startsWith("/")){
+        	fileName = fileName.substring(1);
+        }
+        server.createContext(fileDirectory+fileName, frh);
+        if(MMSConfiguration.LOGGING)System.out.println("Context \""+fileDirectory+fileName+"\" is created");
+        //OONI
+        server.setExecutor(null); // creates a default executor
+        server.start();
+	}
+	
+	void addContext (String context) {
+		if (server == null) {
+			if(MMSConfiguration.LOGGING)System.out.println("Server is not created!");
+			return;			
+		}
+		if (hrh == null) {
+			hrh = new HttpReqHandler();
+		}
+		if (!context.startsWith("/")){
+			context = "/" + context;
+		}
+        server.createContext(context, hrh);
+        if(MMSConfiguration.LOGGING)System.out.println("Context \""+context+"\" is added");
+	}
+	
+	void addFileContext (String fileDirectory, String fileName) {
+		if (server == null) {
+			if(MMSConfiguration.LOGGING)System.out.println("Server is not created!");
+			return;
+		}
+		if (frh == null) {
+			frh = new FileReqHandler();
+		}
+        if (!fileDirectory.startsWith("/")){
+        	fileDirectory = "/" + fileDirectory;
+		}
+        if(!fileDirectory.endsWith("/")&&!fileName.startsWith("/")){
+        	fileName = "/" + fileName;
+        }
+        if(fileDirectory.endsWith("/")&&fileName.startsWith("/")){
+        	fileName = fileName.substring(1);
+        }
+        server.createContext(fileDirectory+fileName, frh);
+        if(MMSConfiguration.LOGGING)System.out.println("Context \""+fileDirectory+fileName+"\" is added");
 	}
 	
 	class HttpReqHandler implements HttpHandler {

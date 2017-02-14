@@ -45,11 +45,10 @@ public class MMSSndHandler {
 	String sendHttpPost(String dstMRN, String loc, String data, Map<String,String> headerField) throws Exception{
 		
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
-		if (loc.startsWith("/")) {
-			url += loc;
-		} else {
-			url += "/" + loc;
+		if (!loc.startsWith("/")) {
+			loc = "/" + loc;
 		}
+		url += loc;
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
@@ -126,12 +125,10 @@ public class MMSSndHandler {
 	String sendHttpGetFile(String dstMRN, String fileName, Map<String,String> headerField) throws Exception {
 
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
-		if (fileName.startsWith("/")) {
-			url += fileName;
-		} else {
+		if (!fileName.startsWith("/")) {
 			fileName = "/" + fileName;
-			url += fileName;
 		}
+		url += fileName;
 		URL obj = new URL(url);
 		
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -178,12 +175,10 @@ public class MMSSndHandler {
 	String sendHttpGet(String dstMRN, String loc, String params, Map<String,String> headerField) throws Exception {
 
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
-		if (loc.startsWith("/")) {
-			url += loc;
-		} else {
-			url += "/" + loc;
+		if (!loc.startsWith("/")) {
+			loc = "/" + loc;
 		}
-		
+		url += loc;
 		if (params != null) {
 			if (params.equals("")) {
 				

@@ -30,9 +30,6 @@ public class MMSClientHandler {
 	private RcvHandler rcvHandler = null;
 	private PollHandler pollHandler = null;
 	private SendHandler sendHandler = null;
-	private MIR mir = null;
-	private MSR msr = null;
-	private MSP msp = null;
 	private String clientMRN = "";
 	private int clientPort = 0;
 	private Map<String,String> headerField = null;
@@ -59,17 +56,8 @@ public class MMSClientHandler {
 	}
 	
 	private void setReqCallback(Callback callback){
-		 if (this.rcvHandler != null) {
+		 if (this.rcvHandler != null && this.rcvHandler.hrh != null) {
 			 this.rcvHandler.hrh.setReqCallback(callback);
-		 }
-		 if (this.mir != null) {
-			 this.mir.hrh.setReqCallback(callback);
-		 }
-		 if (this.msr != null) {
-			 this.msr.hrh.setReqCallback(callback);
-		 }
-		 if (this.msp != null) {
-			 this.msp.hrh.setReqCallback(callback);
 		 }
 	}
 	
@@ -88,23 +76,39 @@ public class MMSClientHandler {
 		String response = registerLocator(port);	
 	}
 	
+	@Deprecated
 	public void setMSR (int port) throws IOException{
-		this.clientPort = port;
-		this.msr = new MSR(port);
-		String response = registerLocator(port);
+		setPort (port);
 	}
 	
-	
+	@Deprecated
 	public void setMIR (int port) throws IOException{
-		this.clientPort = port;
-		this.mir = new MIR(port);
-		String response = registerLocator(port);
+		setPort (port);
 	}
 	
+	@Deprecated
 	public void setMSP (int port) throws IOException{
+		setPort (port);
+	}
+	
+	public void setPort (int port, String context) throws IOException{
 		this.clientPort = port;
-		this.msp = new MSP(port);
-		String response = registerLocator(port);
+		this.rcvHandler = new RcvHandler(port, context);
+		String response = registerLocator(port);	
+	}
+	
+	public void setPort (int port, String fileDirectory, String fileName) throws IOException {
+		this.clientPort = port;
+		this.rcvHandler = new RcvHandler(port, fileDirectory, fileName);
+		String response = registerLocator(port);	
+	}
+	
+	public void addContext (String context) {
+		this.rcvHandler.addContext(context);
+	}
+	
+	public void addFileContext (String fileDirectory, String fileName) {
+		this.rcvHandler.addFileContext(fileDirectory, fileName);
 	}
 	
 	private String registerLocator(int port){
@@ -186,7 +190,12 @@ public class MMSClientHandler {
 	private class RcvHandler extends MMSRcvHandler{
 		RcvHandler(int port) throws IOException {
 			super(port);
-
+		}
+		RcvHandler(int port, String context) throws IOException {
+			super(port, context);
+		}
+		RcvHandler(int port, String fileDirectory, String fileName) throws IOException {
+			super(port, fileDirectory, fileName);
 		}
 	}
 	
@@ -199,25 +208,6 @@ public class MMSClientHandler {
 	private class PollHandler extends MMSRcvHandler{
 		PollHandler(String clientMRN, String dstMRN, int interval, Map<String, String> headerField) throws IOException {
 			super(clientMRN, dstMRN, interval, clientPort, 1, headerField);
-		}
-	}
-	
-	private class MSR extends MMSRcvHandler{
-		MSR(int port) throws IOException {
-			super(port);
-		}
-	}
-	
-	private class MIR extends MMSRcvHandler{
-		MIR(int port) throws IOException {
-			super(port);
-		}
-	}
-	
-	private class MSP extends MMSRcvHandler{
-		MSP(int port) throws IOException {
-			super(port);
-
 		}
 	}
 	
