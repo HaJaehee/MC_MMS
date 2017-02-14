@@ -6,7 +6,7 @@ File name : MMSServer.java
 	It is executable class of MMS Server.
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 Creation Date : 2017-01-24
-Version : 0.2.00
+Version : 0.3.01
 */
 /* -------------------------------------------------------- */
 

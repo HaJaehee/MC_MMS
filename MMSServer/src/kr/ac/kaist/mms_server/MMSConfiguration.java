@@ -5,7 +5,7 @@ package kr.ac.kaist.mms_server;
 File name : MMSConfiguration.java
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-01-24
-Version : 0.2.00
+Version : 0.3.01
 */
 /* -------------------------------------------------------- */
 

@@ -7,7 +7,7 @@ File name : PollingMessageHandling.java
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jin Jung (jungst0001@kaist.ac.kr)
 Creation Date : 2017-01-24
-Version : 0.2.00
+Version : 0.3.01
 */
 /* -------------------------------------------------------- */
 

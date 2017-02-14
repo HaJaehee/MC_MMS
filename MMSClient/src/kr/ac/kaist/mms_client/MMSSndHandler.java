@@ -7,7 +7,7 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
-Version : 0.2.00
+Version : 0.3.01
 Rev. history : 2017-02-01
 	Added setting header field features. 
 	Added locator registering features.
@@ -45,11 +45,10 @@ public class MMSSndHandler {
 	String sendHttpPost(String dstMRN, String loc, String data, Map<String,String> headerField) throws Exception{
 		
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
-		if (loc.startsWith("/")) {
-			url += loc;
-		} else {
-			url += "/" + loc;
+		if (!loc.startsWith("/")) {
+			loc = "/" + loc;
 		}
+		url += loc;
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
@@ -118,7 +117,7 @@ public class MMSSndHandler {
 		}
 		
 		in.close();
-		if(MMSConfiguration.LOGGING)System.out.println("response: " + response.toString());
+		if(MMSConfiguration.LOGGING)System.out.println("Response: " + response.toString());
 		return new String(response.toString().getBytes(), "utf-8");
 	}
 	
@@ -126,11 +125,10 @@ public class MMSSndHandler {
 	String sendHttpGetFile(String dstMRN, String fileName, Map<String,String> headerField) throws Exception {
 
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
-		if (fileName.startsWith("/")) {
-			url += fileName;
-		} else {
-			url += "/" + fileName;
+		if (!fileName.startsWith("/")) {
+			fileName = "/" + fileName;
 		}
+		url += fileName;
 		URL obj = new URL(url);
 		
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -152,25 +150,15 @@ public class MMSSndHandler {
 			if(MMSConfiguration.LOGGING)System.out.println("]");
 		}
 		//con.addRequestProperty("Connection","keep-alive");
-		
-
-		// Send post request
-		con.setDoOutput(true);
-		BufferedWriter wr = new BufferedWriter(
-				new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
-		wr.write("");
-		wr.flush();
-		wr.close();
 
 		int responseCode = con.getResponseCode();
-		if(MMSConfiguration.LOGGING)System.out.println("\nSending 'POST' request to URL : " + url);
-		if(MMSConfiguration.LOGGING)System.out.println("Post parameters : " + "");
+		if(MMSConfiguration.LOGGING)System.out.println("\nSending 'GET' request to URL : " + url);
 		if(MMSConfiguration.LOGGING)System.out.println("Response Code : " + responseCode);
 		
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 		String inputLine;
-		BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
+		BufferedWriter out = new BufferedWriter(new FileWriter(System.getProperty("user.dir")+fileName));
 		
 		while ((inputLine = in.readLine()) != null) {
 			out.append(inputLine); out.newLine();
@@ -179,7 +167,7 @@ public class MMSSndHandler {
 		out.flush();
 		out.close();
 		in.close();
-		return fileName + "is saved";
+		return fileName + " is saved";
 	}
 	//OONI end
 	
@@ -187,12 +175,10 @@ public class MMSSndHandler {
 	String sendHttpGet(String dstMRN, String loc, String params, Map<String,String> headerField) throws Exception {
 
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
-		if (loc.startsWith("/")) {
-			url += loc;
-		} else {
-			url += "/" + loc;
+		if (!loc.startsWith("/")) {
+			loc = "/" + loc;
 		}
-		
+		url += loc;
 		if (params != null) {
 			if (params.equals("")) {
 				
@@ -224,14 +210,6 @@ public class MMSSndHandler {
 			if(MMSConfiguration.LOGGING)System.out.println("]");
 		}
 		//con.addRequestProperty("Connection","keep-alive");
-		
-		// Send get request
-		con.setDoOutput(true);
-		BufferedWriter wr = new BufferedWriter(
-				new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
-		wr.write("");
-		wr.flush();
-		wr.close();
 
 		int responseCode = con.getResponseCode();
 		if(MMSConfiguration.LOGGING)System.out.println("\nSending 'GET' request to URL : " + url);
@@ -247,7 +225,7 @@ public class MMSSndHandler {
 		}
 		
 		in.close();
-		if(MMSConfiguration.LOGGING)System.out.println("response: " + response.toString());
+		if(MMSConfiguration.LOGGING)System.out.println("Response: " + response.toString());
 		return new String(response.toString().getBytes(), "utf-8");
 	}
 	

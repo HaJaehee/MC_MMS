@@ -7,7 +7,7 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
-Version : 0.2.00
+Version : 0.3.01
 Rev. history : 2017-02-01
 	Added setting header field features. 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -42,6 +43,8 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 public class MMSRcvHandler {
+	HttpServer server = null;
+	
 	HttpReqHandler hrh = null;
 	//OONI
 	FileReqHandler frh = null;
@@ -52,27 +55,94 @@ public class MMSRcvHandler {
 	private String clientMRN = null;
 	
 	MMSRcvHandler(int port) throws IOException{
-		HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+		server = HttpServer.create(new InetSocketAddress(port), 0);
 		hrh = new HttpReqHandler();
         server.createContext("/", hrh);
-        //OONI
-        frh = new FileReqHandler();
-        server.createContext("/get", frh);
-        //OONI
+        if(MMSConfiguration.LOGGING)System.out.println("Context \"/\" is created");
         server.setExecutor(null); // creates a default executor
         server.start();
 	}
 	MMSRcvHandler(String clientMRN, String dstMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
 		ph = new PollingHandler(clientMRN, dstMRN, interval, clientPort, msgType, headerField);
+		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");
 		ph.start();
+	}
+	
+	MMSRcvHandler(int port, String context) throws IOException {
+		server = HttpServer.create(new InetSocketAddress(port), 0);
+		hrh = new HttpReqHandler();
+		if (!context.startsWith("/")){
+			context = "/" + context;
+		}
+		
+        server.createContext(context, hrh);
+        if(MMSConfiguration.LOGGING)System.out.println("Context \""+context+"\" is created");
+        server.setExecutor(null); // creates a default executor
+        server.start();
+	}
+	
+	MMSRcvHandler(int port, String fileDirectory, String fileName) throws IOException {
+		server = HttpServer.create(new InetSocketAddress(port), 0);
+        //OONI
+        frh = new FileReqHandler();
+        if (!fileDirectory.startsWith("/")){
+        	fileDirectory = "/" + fileDirectory;
+		}
+        if(!fileDirectory.endsWith("/")&&!fileName.startsWith("/")){
+        	fileName = "/" + fileName;
+        }
+        if(fileDirectory.endsWith("/")&&fileName.startsWith("/")){
+        	fileName = fileName.substring(1);
+        }
+        server.createContext(fileDirectory+fileName, frh);
+        if(MMSConfiguration.LOGGING)System.out.println("Context \""+fileDirectory+fileName+"\" is created");
+        //OONI
+        server.setExecutor(null); // creates a default executor
+        server.start();
+	}
+	
+	void addContext (String context) {
+		if (server == null) {
+			if(MMSConfiguration.LOGGING)System.out.println("Server is not created!");
+			return;			
+		}
+		if (hrh == null) {
+			hrh = new HttpReqHandler();
+		}
+		if (!context.startsWith("/")){
+			context = "/" + context;
+		}
+        server.createContext(context, hrh);
+        if(MMSConfiguration.LOGGING)System.out.println("Context \""+context+"\" is added");
+	}
+	
+	void addFileContext (String fileDirectory, String fileName) {
+		if (server == null) {
+			if(MMSConfiguration.LOGGING)System.out.println("Server is not created!");
+			return;
+		}
+		if (frh == null) {
+			frh = new FileReqHandler();
+		}
+        if (!fileDirectory.startsWith("/")){
+        	fileDirectory = "/" + fileDirectory;
+		}
+        if(!fileDirectory.endsWith("/")&&!fileName.startsWith("/")){
+        	fileName = "/" + fileName;
+        }
+        if(fileDirectory.endsWith("/")&&fileName.startsWith("/")){
+        	fileName = fileName.substring(1);
+        }
+        server.createContext(fileDirectory+fileName, frh);
+        if(MMSConfiguration.LOGGING)System.out.println("Context \""+fileDirectory+fileName+"\" is added");
 	}
 	
 	class HttpReqHandler implements HttpHandler {
     	private MMSDataParser dataParser = new MMSDataParser();
-    	MMSClientHandler.ReqCallBack myReqCallBack;
+    	MMSClientHandler.Callback myReqCallback;
     	
-    	public void setReqCallBack(MMSClientHandler.ReqCallBack callback){
-    		this.myReqCallBack = callback;
+    	public void setReqCallback(MMSClientHandler.Callback callback){
+    		this.myReqCallback = callback;
     	}
     	
         @Override
@@ -101,7 +171,7 @@ public class MMSRcvHandler {
         }
         
         private String processRequest(Map<String,List<String>> headerField, String message) {
-    		String ret = this.myReqCallBack.callbackMethod(headerField, message);
+    		String ret = this.myReqCallback.callbackMethod(headerField, message);
     		return ret;
     	}
     }
@@ -109,27 +179,24 @@ public class MMSRcvHandler {
     class FileReqHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
-        	if(MMSConfiguration.LOGGING)System.out.println("File request");
-        	InputStream in = t.getRequestBody();
-            ByteArrayOutputStream _out = new ByteArrayOutputStream();
-            byte[] buf = new byte[2048];
-            int read = 0;
-            while ((read = in.read(buf)) != -1) {
-                _out.write(buf, 0, read);
-            }
-            String fileName = new String( buf, Charset.forName("UTF-8"));
-            fileName = fileName.trim();
+        	URI uri = t.getRequestURI();
+        	String fileName = uri.toString();
+        	if(MMSConfiguration.LOGGING)System.out.println("File request: "+fileName);
+        	
+            fileName = System.getProperty("user.dir")+fileName.trim();
             File file = new File (fileName);
             byte [] bytearray  = new byte [(int)file.length()];
-            FileInputStream fis = new FileInputStream(file);
-            BufferedInputStream bis = new BufferedInputStream(fis);
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
             bis.read(bytearray, 0, bytearray.length);
+            
             // ok, we are ready to send the response.
             t.sendResponseHeaders(200, file.length());
             OutputStream os = t.getResponseBody();
             os.write(bytearray,0,bytearray.length);
             os.flush();
             os.close();
+            
+            bis.close();
         }
     }
     //OONI end
@@ -143,7 +210,7 @@ public class MMSRcvHandler {
 		private int clientModel;
 		private MMSDataParser dataParser;
 		private Map<String,String> headerField;
-		MMSClientHandler.ReqCallBack myReqCallBack;
+		MMSClientHandler.Callback myReqCallback;
 		
     	PollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
     		this.interval = interval;
@@ -155,8 +222,8 @@ public class MMSRcvHandler {
     		this.headerField = headerField;
     	}
     	
-    	void setReqCallBack(MMSClientHandler.ReqCallBack callback){
-    		this.myReqCallBack = callback;
+    	void setResCallback(MMSClientHandler.Callback callback){
+    		this.myReqCallback = callback;
     	}
     	
     	public void run(){
@@ -232,7 +299,7 @@ public class MMSRcvHandler {
 		}
 		
 		private String processRequest(Map<String,List<String>> headerField, String message) {
-    		String ret = this.myReqCallBack.callbackMethod(headerField, message);
+    		String ret = this.myReqCallback.callbackMethod(headerField, message);
     		return ret;
     	}
 	}

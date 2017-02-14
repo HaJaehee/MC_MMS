@@ -6,7 +6,7 @@ File name : MNSDummy.java
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-01-24
-Version : 0.2.00
+Version : 0.3.01
 Rev. history : 2017-02-01
 	Added locator registering features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)

@@ -12,7 +12,7 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
-Version : 0.2.00
+Version : 0.3.01
 Rev. history : 2017-02-01
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
@@ -28,11 +28,9 @@ public class SC1 {
 		
 		//Service Consumer cannot be HTTP server and should poll from MMS. 
 		MMSClientHandler ph = new MMSClientHandler(myMRN);
-		int pollInterval = 1000;
-		ph.startPolling("urn:mrn:smart-navi:device:mms1", pollInterval);
-		
+
 		//Request Callback from the request message
-		ph.setReqCallBack(new MMSClientHandler.ReqCallBack() {
+		ph.setCallback(new MMSClientHandler.Callback() {
 			
 			//it is called when client receives a message
 			@Override
@@ -42,5 +40,7 @@ public class SC1 {
 			}
 		});
 		
+		int pollInterval = 1000;
+		ph.startPolling("urn:mrn:smart-navi:device:mms1", pollInterval);
 	}
 }
