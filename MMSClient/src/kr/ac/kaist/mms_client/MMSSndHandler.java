@@ -118,7 +118,7 @@ public class MMSSndHandler {
 		}
 		
 		in.close();
-		if(MMSConfiguration.LOGGING)System.out.println("response: " + response.toString());
+		if(MMSConfiguration.LOGGING)System.out.println("Response: " + response.toString());
 		return new String(response.toString().getBytes(), "utf-8");
 	}
 	
@@ -129,7 +129,8 @@ public class MMSSndHandler {
 		if (fileName.startsWith("/")) {
 			url += fileName;
 		} else {
-			url += "/" + fileName;
+			fileName = "/" + fileName;
+			url += fileName;
 		}
 		URL obj = new URL(url);
 		
@@ -152,19 +153,15 @@ public class MMSSndHandler {
 			if(MMSConfiguration.LOGGING)System.out.println("]");
 		}
 		//con.addRequestProperty("Connection","keep-alive");
-		
-
-
 
 		int responseCode = con.getResponseCode();
-		if(MMSConfiguration.LOGGING)System.out.println("\nSending 'POST' request to URL : " + url);
-		if(MMSConfiguration.LOGGING)System.out.println("Post parameters : " + "");
+		if(MMSConfiguration.LOGGING)System.out.println("\nSending 'GET' request to URL : " + url);
 		if(MMSConfiguration.LOGGING)System.out.println("Response Code : " + responseCode);
 		
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 		String inputLine;
-		BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
+		BufferedWriter out = new BufferedWriter(new FileWriter(System.getProperty("user.dir")+fileName));
 		
 		while ((inputLine = in.readLine()) != null) {
 			out.append(inputLine); out.newLine();
@@ -173,7 +170,7 @@ public class MMSSndHandler {
 		out.flush();
 		out.close();
 		in.close();
-		return fileName + "is saved";
+		return fileName + " is saved";
 	}
 	//OONI end
 	
@@ -233,7 +230,7 @@ public class MMSSndHandler {
 		}
 		
 		in.close();
-		if(MMSConfiguration.LOGGING)System.out.println("response: " + response.toString());
+		if(MMSConfiguration.LOGGING)System.out.println("Response: " + response.toString());
 		return new String(response.toString().getBytes(), "utf-8");
 	}
 	

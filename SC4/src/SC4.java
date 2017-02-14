@@ -25,11 +25,8 @@ public class SC4 {
 		MMSClientHandler ch = new MMSClientHandler(myMRN);
 
 		//file transferring
-		/*
-		String response = ch.requestFile("urn:mrn:smart-navi:device:tm-server", "test.xml");
-	    System.out.println("response from SC :" + response);
-	    response = ch.sendPostMsg("urn:mrn:smart-navi:device:tm-server", "hello, SC");
-		System.out.println("response from MSR :" + response);
-		*/
+		String response = ch.requestFile("urn:mrn:imo:imo-no:0654321", "get/test.xml");
+	    System.out.println("Response from SC :" + response);
+		
 	}
 }

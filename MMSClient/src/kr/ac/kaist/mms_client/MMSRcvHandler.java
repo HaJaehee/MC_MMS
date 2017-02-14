@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class MMSRcvHandler {
         server.createContext("/", hrh);
         //OONI
         frh = new FileReqHandler();
-        server.createContext("/get", frh);
+        server.createContext("/get/test.xml", frh);
         //OONI
         server.setExecutor(null); // creates a default executor
         server.start();
@@ -109,27 +110,24 @@ public class MMSRcvHandler {
     class FileReqHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
-        	if(MMSConfiguration.LOGGING)System.out.println("File request");
-        	InputStream in = t.getRequestBody();
-            ByteArrayOutputStream _out = new ByteArrayOutputStream();
-            byte[] buf = new byte[2048];
-            int read = 0;
-            while ((read = in.read(buf)) != -1) {
-                _out.write(buf, 0, read);
-            }
-            String fileName = new String( buf, Charset.forName("UTF-8"));
-            fileName = fileName.trim();
+        	URI uri = t.getRequestURI();
+        	String fileName = uri.toString();
+        	if(MMSConfiguration.LOGGING)System.out.println("File request: "+fileName);
+        	
+            fileName = System.getProperty("user.dir")+fileName.trim();
             File file = new File (fileName);
             byte [] bytearray  = new byte [(int)file.length()];
-            FileInputStream fis = new FileInputStream(file);
-            BufferedInputStream bis = new BufferedInputStream(fis);
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
             bis.read(bytearray, 0, bytearray.length);
+            
             // ok, we are ready to send the response.
             t.sendResponseHeaders(200, file.length());
             OutputStream os = t.getResponseBody();
             os.write(bytearray,0,bytearray.length);
             os.flush();
             os.close();
+            
+            bis.close();
         }
     }
     //OONI end
