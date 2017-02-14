@@ -61,11 +61,6 @@ public class MMSClientHandler {
 		 }
 	}
 	
-	@Deprecated
-	public void setPolling (String dstMRN, int interval) throws IOException{
-		startPolling(dstMRN, interval);
-	}
-	
 	public void startPolling (String dstMRN, int interval) throws IOException{
 		this.pollHandler = new PollHandler(clientMRN, dstMRN, interval, headerField);
 	}
@@ -74,21 +69,6 @@ public class MMSClientHandler {
 		this.clientPort = port;
 		this.rcvHandler = new RcvHandler(port);
 		String response = registerLocator(port);	
-	}
-	
-	@Deprecated
-	public void setMSR (int port) throws IOException{
-		setPort (port);
-	}
-	
-	@Deprecated
-	public void setMIR (int port) throws IOException{
-		setPort (port);
-	}
-	
-	@Deprecated
-	public void setMSP (int port) throws IOException{
-		setPort (port);
 	}
 	
 	public void setPort (int port, String context) throws IOException{

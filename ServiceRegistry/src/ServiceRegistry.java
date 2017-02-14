@@ -24,7 +24,7 @@ public class ServiceRegistry{
 		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		
 		MMSClientHandler ch = new MMSClientHandler(myMRN);
-		ch.setMSR(port);
+		ch.setPort(port);
 		//Request Callback from the request message
 		ch.setCallback(new MMSClientHandler.Callback() {
 			
