@@ -24,7 +24,7 @@ public class MMSServer {
 		NettyStartupUtil.runServer(MMSConfiguration.HTTP_PORT, pipeline -> {
             pipeline.addLast(new HttpServerCodec());
             pipeline.addLast(new HttpObjectAggregator(19999));
-            pipeline.addLast(new MessageRelayingHandler());
+            pipeline.addLast(new MRH_MessageInputChannel());
         });
 	}
 }
