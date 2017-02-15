@@ -45,22 +45,24 @@ import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
-public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHttpRequest>{
+public class MessageRelayingHandler  {
 	private static final String TAG = "MessageRelayingHandler";
 	
 	private MessageParsing parser = null;
 	private MessageTypeDecision typeDecider = null;
-	private MRH_MessageInputChannel inputChannel = null;
 	private MRH_MessageOutputChannel outputChannel = null;
 	
 	private SeamlessRoamingHandler srh = null;
 	private MessageCastingHandler mch = null;
 	
-	public MessageRelayingHandler() {
-		super();
-		
+	public MessageRelayingHandler(ChannelHandlerContext ctx, FullHttpRequest req) {		
 		initializeModule();
 		initializeSubModule();
+		
+		parser.parsingMessage(ctx, req);
+		
+		int type = typeDecider.decideType(parser, mch);
+		processRelaying(type, ctx, req);
 	}
 	
 	private void initializeModule() {
@@ -71,7 +73,6 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
 	private void initializeSubModule() {
 		parser = new MessageParsing();
 		typeDecider = new MessageTypeDecision();
-		inputChannel = new MRH_MessageInputChannel();
 		outputChannel = new MRH_MessageOutputChannel();
 	}
 
@@ -292,19 +293,5 @@ public class MessageRelayingHandler  extends SimpleChannelInboundHandler<FullHtt
   	
   	return status;
   }
-  
-//	when coming http message
-	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
-		try{
-			if(MMSConfiguration.LOGGING)System.out.println("Message received");
-			req.retain();
-			parser.parsingMessage(ctx, req);
-			
-			int type = typeDecider.decideType(parser, mch);
-			processRelaying(type, ctx, req);
-		} finally {
-          req.release();
-      }
-	}
+ 
 }
