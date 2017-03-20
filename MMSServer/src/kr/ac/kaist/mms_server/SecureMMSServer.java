@@ -1,5 +1,7 @@
 package kr.ac.kaist.mms_server;
 
+import java.io.ByteArrayInputStream;
+
 /* -------------------------------------------------------- */
 /** 
 File name : SecureMMSServer.java
@@ -13,6 +15,7 @@ Version : 0.4.0
 
 import java.io.FileInputStream;
 import java.security.KeyStore;
+import java.security.Security;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -78,8 +81,9 @@ public final class SecureMMSServer {
 	    
 	    String pass = "lovesm13";
 	    
-	    ks.load(new FileInputStream(System.getProperty("user.dir")+"/mmskeystore.jks"), pass.toCharArray());
-	    final KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+	    ks.load(new ByteArrayInputStream(Base64Coder.decode(MMSKeystore.data)), pass.toCharArray());
+	    String algorithm = Security.getProperty("ssl.KeyManagerFactory.algorithm");
+	    final KeyManagerFactory kmf = KeyManagerFactory.getInstance(algorithm);
 	    kmf.init(ks, pass.toCharArray());
 	    KeyManager[] km = kmf.getKeyManagers();
 	
