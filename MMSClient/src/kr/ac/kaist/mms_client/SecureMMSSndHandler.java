@@ -47,8 +47,11 @@ public class SecureMMSSndHandler {
 	private static final String TAG = "MMSSndHandler";
 	private final String USER_AGENT = "MMSClient/0.4.0";
 	private String clientMRN = null;
+	private HostnameVerifier hv = null;
+	
 	SecureMMSSndHandler (String clientMRN){
 		this.clientMRN = clientMRN;
+		hv = getHV();
 	}
 
 	String registerLocator(int port) throws Exception {
@@ -57,56 +60,6 @@ public class SecureMMSSndHandler {
 	}
 	
 	String sendHttpsPost(String dstMRN, String loc, String data, Map<String,String> headerField) throws Exception{
-		
-		/*
-        // Configure SSL.
-        final SslContext sslCtx = SslContextBuilder.forClient()
-            .trustManager(InsecureTrustManagerFactory.INSTANCE).build();
-
-        EventLoopGroup group = new NioEventLoopGroup();
-        
-        Bootstrap b = new Bootstrap();
-        b.group(group)
-         .channel(NioSocketChannel.class)
-         .handler(new SecureMMSClientInitializer(sslCtx));
-
-        // Start the connection attempt.
-        Channel ch = b.connect(MMSConfiguration.MMS_HOST, MMSConfiguration.MMS_PORT).sync().channel();
-
-        // Read commands from the stdin.
-        ChannelFuture lastWriteFuture = null;*/
-		  // Create a trust manager that does not validate certificate chains
-        TrustManager[] trustAllCerts = new TrustManager[]{
-                new X509TrustManager() {
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                        return null;
-                    }
-
-                    public void checkClientTrusted(
-                            java.security.cert.X509Certificate[] certs, String authType) {
-                    }
-
-                    public void checkServerTrusted(
-                            java.security.cert.X509Certificate[] certs, String authType) {
-                    }
-                }
-        };
-  // Install the all-trusting trust manager
-        try {
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        } catch (Exception e) {
-            System.out.println("Error" + e);
-        }
-        
-        HostnameVerifier hv = new HostnameVerifier() {
-            public boolean verify(String urlHostName, SSLSession session) {
-                System.out.println("Warning: URL Host: " + urlHostName + " vs. "
-                        + session.getPeerHost());
-                return true;
-            }
-        };
         
 		String url = "https://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
@@ -116,10 +69,6 @@ public class SecureMMSSndHandler {
 		URL obj = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 		con.setHostnameVerifier(hv);
-		
-		/*con.getResponseCode();
-		con.getCipherSuite();
-		con.getServerCertificates();*/
 		
 		
 		//add request header
@@ -189,7 +138,7 @@ public class SecureMMSSndHandler {
 		in.close();
 		if(MMSConfiguration.LOGGING)System.out.println("Response: " + response.toString());
 		
-		//group.shutdownGracefully();
+		
 		
 		return new String(response.toString().getBytes(), "utf-8");
     } 
@@ -205,7 +154,8 @@ public class SecureMMSSndHandler {
 		URL obj = new URL(url);
 		
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-		Certificate[] certs = con.getServerCertificates();
+		con.setHostnameVerifier(hv);
+		
 		
 		//add request header
 		con.setRequestMethod("GET");
@@ -248,7 +198,7 @@ public class SecureMMSSndHandler {
 	//HJH
 	String sendHttpsGet(String dstMRN, String loc, String params, Map<String,String> headerField) throws Exception {
 
-		String url = "https://"+"google.com";//MMSConfiguration.MMS_URL; // MMS Server
+		String url = "https://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
 			loc = "/" + loc;
 		}
@@ -266,9 +216,7 @@ public class SecureMMSSndHandler {
 		
 		URL obj = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-		con.getResponseCode();
-		con.getCipherSuite();
-		con.getServerCertificates();
+		con.setHostnameVerifier(hv);
 		
 		//add request header
 		con.setRequestMethod("GET");
@@ -306,5 +254,43 @@ public class SecureMMSSndHandler {
 		return new String(response.toString().getBytes(), "utf-8");
 	}
 	
+	HostnameVerifier getHV (){
+		// Create a trust manager that does not validate certificate chains
+        TrustManager[] trustAllCerts = new TrustManager[]{
+            new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                public void checkClientTrusted(
+                    java.security.cert.X509Certificate[] certs, String authType) {
+                }
+
+                public void checkServerTrusted(
+                    java.security.cert.X509Certificate[] certs, String authType) {
+                }
+            }
+        };
+        // Install the all-trusting trust manager
+        try {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        } catch (Exception e) {
+        	if(MMSConfiguration.LOGGING)System.out.println("Error" + e);
+        }
+        
+        HostnameVerifier hv = new HostnameVerifier() {
+            public boolean verify(String urlHostName, SSLSession session) {
+            	if(MMSConfiguration.LOGGING)System.out.println("Warning: URL Host: " + urlHostName + " vs. "
+                        + session.getPeerHost());
+                return true;
+            }
+        };
+        
+        return hv;
+	}
+	
 	//HJH end
+	
 }

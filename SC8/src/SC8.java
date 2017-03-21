@@ -19,7 +19,7 @@ public class SC8 {
 		String myMRN = "urn:mrn:imo:imo-no:1000008";
 		//myMRN = args[0];
 
-		MMSConfiguration.MMS_URL="winsgkwogml.iptime.org:443";
+		//MMSConfiguration.MMS_URL="winsgkwogml.iptime.org:444";
 
 		//Service Consumer which can only send message
 		SecureMMSClientHandler sch = new SecureMMSClientHandler(myMRN);
@@ -34,13 +34,11 @@ public class SC8 {
 			//Thread.sleep(100);
 		}*/
 
-		/*
-		for (int i = 0; i < 1;i++){
+		
+		for (int i = 0; i < 10;i++){
 			String a = sch.sendPostMsg("urn:mrn:imo:imo-no:0000117", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
-		}*/
-		
-		String a = sch.sendGetMsg("urn:mrn:imo:imo-no:1000008");
-		System.out.println(a); 
+		}
+
 	}
 }

@@ -52,8 +52,6 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 public final class SecureMMSServer {
 
-    static final int PORT = Integer.parseInt(System.getProperty("port", "444"));
-
     public static void main(String[] args) throws Exception {
         
 	    //for information, not working
@@ -101,7 +99,7 @@ public final class SecureMMSServer {
              .handler(new LoggingHandler(LogLevel.INFO))
              .childHandler(new SecureMMSServerInitializer(sslCtx));
 
-            b.bind(PORT).sync().channel().closeFuture().sync();
+            b.bind(MMSConfiguration.HTTPS_PORT).sync().channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
