@@ -52,7 +52,7 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 public final class SecureMMSServer {
 
-    static final int PORT = Integer.parseInt(System.getProperty("port", "443"));
+    static final int PORT = Integer.parseInt(System.getProperty("port", "444"));
 
     public static void main(String[] args) throws Exception {
         
@@ -86,11 +86,11 @@ public final class SecureMMSServer {
 	    final KeyManagerFactory kmf = KeyManagerFactory.getInstance(algorithm);
 	    kmf.init(ks, pass.toCharArray());
 	    KeyManager[] km = kmf.getKeyManagers();
-	
-        //SelfSignedCertificate ssc = new SelfSignedCertificate();
-        //SslContext sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey())
-        //    .build();
-        SslContext sslCtx = SslContextBuilder.forServer(kmf).build();
+	    //Self Sign
+        SelfSignedCertificate ssc = new SelfSignedCertificate();
+        SslContext sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey())
+            .build();
+        //SslContext sslCtx = SslContextBuilder.forServer(kmf).build();
         
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
