@@ -32,10 +32,6 @@ public class SecureMMSClientHandler {
 	private int clientPort = 0;
 	private Map<String,String> headerField = null;
 	
-	
-	public SecureMMSClientHandler() 
-	{};
-	
 	public SecureMMSClientHandler(String clientMRN) throws IOException{
 		this.sendHandler = new SendHandler(clientMRN);
 		this.clientMRN = clientMRN;
@@ -59,19 +55,19 @@ public class SecureMMSClientHandler {
 		this.pollHandler = new PollHandler(clientMRN, dstMRN, interval, headerField);
 	}
 	
-	public void setPort (int port) throws IOException{
+	public void setPort (int port) throws Exception{
 		this.clientPort = port;
 		this.rcvHandler = new RcvHandler(port);
 		String response = registerLocator(port);	
 	}
 	
-	public void setPort (int port, String context) throws IOException{
+	public void setPort (int port, String context) throws Exception{
 		this.clientPort = port;
 		this.rcvHandler = new RcvHandler(port, context);
 		String response = registerLocator(port);	
 	}
 	
-	public void setPort (int port, String fileDirectory, String fileName) throws IOException {
+	public void setPort (int port, String fileDirectory, String fileName) throws Exception {
 		this.clientPort = port;
 		this.rcvHandler = new RcvHandler(port, fileDirectory, fileName);
 		String response = registerLocator(port);	
@@ -162,13 +158,13 @@ public class SecureMMSClientHandler {
 	*/
 	
 	private class RcvHandler extends SecureMMSRcvHandler{
-		RcvHandler(int port) throws IOException {
+		RcvHandler(int port) throws Exception {
 			super(port);
 		}
-		RcvHandler(int port, String context) throws IOException {
+		RcvHandler(int port, String context) throws Exception {
 			super(port, context);
 		}
-		RcvHandler(int port, String fileDirectory, String fileName) throws IOException {
+		RcvHandler(int port, String fileDirectory, String fileName) throws Exception {
 			super(port, fileDirectory, fileName);
 		}
 	}

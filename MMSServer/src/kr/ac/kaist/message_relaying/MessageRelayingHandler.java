@@ -99,7 +99,8 @@ public class MessageRelayingHandler  {
     		message = "OK".getBytes();
 		} else if (type == MessageTypeDecision.RELAYING_TO_SERVER) {
         	try {
-				message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod);
+				//message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod);
+        		message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod);
 			} catch (Exception e) {
 				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}

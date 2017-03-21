@@ -25,22 +25,37 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.TrustManagerFactory;
 
 import org.json.simple.JSONObject;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpsConfigurator;
+import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
+
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 public class SecureMMSRcvHandler {
 	HttpsServer server = null;
+	SSLContext sslContext = null;
 	
 	HttpsReqHandler hrh = null;
 	//OONI
@@ -51,8 +66,8 @@ public class SecureMMSRcvHandler {
 	private static final String USER_AGENT = "MMSClient/0.4.0";
 	private String clientMRN = null;
 	
-	SecureMMSRcvHandler(int port) throws IOException{
-		server = HttpsServer.create(new InetSocketAddress(port), 0);
+	SecureMMSRcvHandler(int port) throws Exception{
+		httpsServerConfigure(port);
 		hrh = new HttpsReqHandler();
         server.createContext("/", hrh);
         if(MMSConfiguration.LOGGING)System.out.println("Context \"/\" is created");
@@ -66,8 +81,8 @@ public class SecureMMSRcvHandler {
 		ph.start();
 	}
 	
-	SecureMMSRcvHandler(int port, String context) throws IOException {
-		server = HttpsServer.create(new InetSocketAddress(port), 0);
+	SecureMMSRcvHandler(int port, String context) throws Exception {
+		httpsServerConfigure(port);
 		hrh = new HttpsReqHandler();
 		if (!context.startsWith("/")){
 			context = "/" + context;
@@ -79,8 +94,8 @@ public class SecureMMSRcvHandler {
         server.start();
 	}
 	
-	SecureMMSRcvHandler(int port, String fileDirectory, String fileName) throws IOException {
-		server = HttpsServer.create(new InetSocketAddress(port), 0);
+	SecureMMSRcvHandler(int port, String fileDirectory, String fileName) throws Exception {
+		httpsServerConfigure(port);
         //OONI
         frh = new SecureFileReqHandler();
         if (!fileDirectory.startsWith("/")){
@@ -97,6 +112,53 @@ public class SecureMMSRcvHandler {
         //OONI
         server.setExecutor(null); // creates a default executor
         server.start();
+	}
+	
+	void httpsServerConfigure (int port) throws Exception{
+		
+		server = HttpsServer.create(new InetSocketAddress(port), 0);
+		sslContext = SSLContext.getInstance( "TLS" );
+
+		 // initialise the keystore
+	    char[] password = "lovesm13".toCharArray ();
+	    KeyStore ks = KeyStore.getInstance ( "JKS" );
+	    FileInputStream fis = new FileInputStream ( System.getProperty("user.dir")+"/testkey.jks" );
+	    ks.load ( fis, password );
+
+	    // setup the key manager factory
+	    KeyManagerFactory kmf = KeyManagerFactory.getInstance ( "SunX509" );
+	    kmf.init ( ks, password );
+
+	    // setup the trust manager factory
+	    TrustManagerFactory tmf = TrustManagerFactory.getInstance ( "SunX509" );
+	    tmf.init ( ks );
+
+	    // setup the HTTPS context and parameters
+	    sslContext.init ( kmf.getKeyManagers (), tmf.getTrustManagers (), null );
+	    server.setHttpsConfigurator ( new HttpsConfigurator( sslContext )
+	    {
+	        public void configure ( HttpsParameters params )
+	        {
+	            try
+	            {
+	                // initialise the SSL context
+	                SSLContext c = SSLContext.getDefault ();
+	                SSLEngine engine = c.createSSLEngine ();
+	                params.setNeedClientAuth ( false );
+	                params.setCipherSuites ( engine.getEnabledCipherSuites () );
+	                params.setProtocols ( engine.getEnabledProtocols () );
+
+	                // get the default parameters
+	                SSLParameters defaultSSLParameters = c.getDefaultSSLParameters ();
+	                params.setSSLParameters ( defaultSSLParameters );
+	            }
+	            catch ( Exception ex )
+	            {
+	                System.err.println( "Failed to create HTTPS port" );
+	            }
+	        }
+	    } );
+	    
 	}
 	
 	void addContext (String context) {
