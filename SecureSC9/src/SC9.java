@@ -8,7 +8,7 @@ import kr.ac.kaist.mms_client.SecureMMSClientHandler;
 /* -------------------------------------------------------- */
 /** 
 File name : SC9.java
-	Service Consumer cannot be HTTPS server and should poll from MMS by https. 
+	Service Consumer cannot be HTTPS server and should poll from MMS by HTTPS. 
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-03-21
 Version : 0.4.0
@@ -23,7 +23,7 @@ public class SC9 {
 
 		//MMSConfiguration.MMS_URL="winsgkwogml.iptime.org:444";
 		
-		//Service Consumer cannot be HTTPs server and should poll from MMS by https. 
+		//Service Consumer cannot be HTTPs server and should poll from MMS by HTTPS. 
 		SecureMMSClientHandler sph = new SecureMMSClientHandler(myMRN);
 		
 		int pollInterval = 1000;

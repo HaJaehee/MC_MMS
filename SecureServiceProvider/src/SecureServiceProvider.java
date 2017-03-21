@@ -10,7 +10,7 @@ import kr.ac.kaist.mms_client.*;
 /* -------------------------------------------------------- */
 /** 
 File name : SecureServiceProvider.java
-	HTTPS Service Provider only forwards messages to SC having urn:mrn:imo:imo-no:1000009 by https
+	HTTPS Service Provider only forwards messages to SC having urn:mrn:imo:imo-no:1000009 by HTTPS
 Author : 
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-03-21

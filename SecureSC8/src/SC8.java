@@ -7,7 +7,7 @@ import kr.ac.kaist.mms_client.SecureMMSClientHandler;
 /* -------------------------------------------------------- */
 /** 
 File name : SC8.java 
-	Service Consumer which can only send messages by https 
+	Service Consumer which can only send messages by HTTPS.
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-03-21
 Version : 0.4.0
