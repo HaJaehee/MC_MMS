@@ -54,7 +54,7 @@ public final class SecureMMSServer {
 
     public static void main(String[] args) throws Exception {
         
-	    //for information, not working
+	    // ----- for information, not working
 	    /*
 	    SSLContext serverContext = SSLContext.getInstance("TLS"); //from JDK 7 supports
 	    final KeyStore ks = KeyStore.getInstance("JKS");
@@ -73,8 +73,13 @@ public final class SecureMMSServer {
 	    sslengine.setUseClientMode(false);
 	    sslengine.setEnableSessionCreation(true);
 	    sslengine.setEnabledProtocols(sslengine.getSupportedProtocols());
-	    sslengine.setEnabledCipherSuites(sslengine.getSupportedCipherSuites());*/
+	    sslengine.setEnabledCipherSuites(sslengine.getSupportedCipherSuites());
+	    */   
+    	// ----- for information, not working
     	
+    	
+    	// ----- use keystore
+    	/*
 	    final KeyStore ks = KeyStore.getInstance("JKS");
 	    
 	    String pass = "lovesm13";
@@ -84,12 +89,17 @@ public final class SecureMMSServer {
 	    final KeyManagerFactory kmf = KeyManagerFactory.getInstance(algorithm);
 	    kmf.init(ks, pass.toCharArray());
 	    KeyManager[] km = kmf.getKeyManagers();
-	    //Self Sign
+	    SslContext sslCtx = SslContextBuilder.forServer(kmf).build();
+	    */
+	    // ----- use keystore
+	    
+	    
+	    // ----- self sign
         SelfSignedCertificate ssc = new SelfSignedCertificate();
         SslContext sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey())
             .build();
-        //SslContext sslCtx = SslContextBuilder.forServer(kmf).build();
-        
+	    // ----- self sign
+
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
