@@ -10,7 +10,9 @@ Version : 0.3.01
 /* -------------------------------------------------------- */
 
 public class MMSConfiguration {
-	public static String MMS_URL = "52.78.97.177:8088";
-	public static final boolean LOGGING = false;
+	public static String MMS_HOST = "winsgkwogml.iptime.org";
+	public static int MMS_PORT = 443;
+	public static String MMS_URL = MMS_HOST+":"+MMS_PORT;
+	public static final boolean LOGGING = true;
 	public static final int LOC_UPDATE_INTERVAL = 5000;
 }

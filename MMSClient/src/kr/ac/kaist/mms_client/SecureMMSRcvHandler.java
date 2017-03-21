@@ -2,20 +2,10 @@ package kr.ac.kaist.mms_client;
 
 /* -------------------------------------------------------- */
 /** 
-File name : MMSRcvHandler.java
-Author : Jaehyun Park (jae519@kaist.ac.kr)
-	Haeun Kim (hukim@kaist.ac.kr)
-	Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2016-12-03
-Version : 0.3.01
-Rev. history : 2017-02-01
-	Added setting header field features. 
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Rev. history : 2017-02-14
-	fixed http get request bugs
-	fixed http get file request bugs
-	added setting context features
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+File name : SecureMMSRcvHandler.java
+Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2017-03-21
+Version : 0.4.0
 */
 /* -------------------------------------------------------- */
 
@@ -40,43 +30,45 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import org.json.simple.JSONObject;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpsServer;
 
-public class MMSRcvHandler {
-	HttpServer server = null;
+public class SecureMMSRcvHandler {
+	HttpsServer server = null;
 	
-	HttpReqHandler hrh = null;
+	HttpsReqHandler hrh = null;
 	//OONI
-	FileReqHandler frh = null;
+	SecureFileReqHandler frh = null;
 	//OONI
-	PollingHandler ph = null;
+	SecurePollingHandler ph = null;
 	//HJH
-	private static final String USER_AGENT = "MMSClient/0.3.01";
+	private static final String USER_AGENT = "MMSClient/0.4.0";
 	private String clientMRN = null;
 	
-	MMSRcvHandler(int port) throws IOException{
-		server = HttpServer.create(new InetSocketAddress(port), 0);
-		hrh = new HttpReqHandler();
+	SecureMMSRcvHandler(int port) throws IOException{
+		server = HttpsServer.create(new InetSocketAddress(port), 0);
+		hrh = new HttpsReqHandler();
         server.createContext("/", hrh);
         if(MMSConfiguration.LOGGING)System.out.println("Context \"/\" is created");
         server.setExecutor(null); // creates a default executor
         server.start();
 	}
 	
-	MMSRcvHandler(String clientMRN, String dstMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
-		ph = new PollingHandler(clientMRN, dstMRN, interval, clientPort, msgType, headerField);
+	SecureMMSRcvHandler(String clientMRN, String dstMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
+		ph = new SecurePollingHandler(clientMRN, dstMRN, interval, clientPort, msgType, headerField);
 		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");
 		ph.start();
 	}
 	
-	MMSRcvHandler(int port, String context) throws IOException {
-		server = HttpServer.create(new InetSocketAddress(port), 0);
-		hrh = new HttpReqHandler();
+	SecureMMSRcvHandler(int port, String context) throws IOException {
+		server = HttpsServer.create(new InetSocketAddress(port), 0);
+		hrh = new HttpsReqHandler();
 		if (!context.startsWith("/")){
 			context = "/" + context;
 		}
@@ -87,10 +79,10 @@ public class MMSRcvHandler {
         server.start();
 	}
 	
-	MMSRcvHandler(int port, String fileDirectory, String fileName) throws IOException {
-		server = HttpServer.create(new InetSocketAddress(port), 0);
+	SecureMMSRcvHandler(int port, String fileDirectory, String fileName) throws IOException {
+		server = HttpsServer.create(new InetSocketAddress(port), 0);
         //OONI
-        frh = new FileReqHandler();
+        frh = new SecureFileReqHandler();
         if (!fileDirectory.startsWith("/")){
         	fileDirectory = "/" + fileDirectory;
 		}
@@ -113,7 +105,7 @@ public class MMSRcvHandler {
 			return;			
 		}
 		if (hrh == null) {
-			hrh = new HttpReqHandler();
+			hrh = new HttpsReqHandler();
 		}
 		if (!context.startsWith("/")){
 			context = "/" + context;
@@ -128,7 +120,7 @@ public class MMSRcvHandler {
 			return;
 		}
 		if (frh == null) {
-			frh = new FileReqHandler();
+			frh = new SecureFileReqHandler();
 		}
         if (!fileDirectory.startsWith("/")){
         	fileDirectory = "/" + fileDirectory;
@@ -143,11 +135,11 @@ public class MMSRcvHandler {
         if(MMSConfiguration.LOGGING)System.out.println("Context \""+fileDirectory+fileName+"\" is added");
 	}
 	
-	class HttpReqHandler implements HttpHandler {
+	class HttpsReqHandler implements HttpHandler {
     	private MMSDataParser dataParser = new MMSDataParser();
-    	MMSClientHandler.Callback myReqCallback;
+    	SecureMMSClientHandler.Callback myReqCallback;
     	
-    	public void setReqCallback(MMSClientHandler.Callback callback){
+    	public void setReqCallback(SecureMMSClientHandler.Callback callback){
     		this.myReqCallback = callback;
     	}
     	
@@ -196,7 +188,7 @@ public class MMSRcvHandler {
     	}
     }
     //OONI
-    class FileReqHandler implements HttpHandler {
+    class SecureFileReqHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
         	URI uri = t.getRequestURI();
@@ -222,7 +214,7 @@ public class MMSRcvHandler {
     //OONI end
  
     //HJH
-    class PollingHandler extends Thread{
+    class SecurePollingHandler extends Thread{
 		private int interval = 0;
 		private String clientMRN = null;
 		private String dstMRN = null;
@@ -230,9 +222,9 @@ public class MMSRcvHandler {
 		private int clientModel = 0;
 		private MMSDataParser dataParser = null;
 		private Map<String,String> headerField = null;
-		MMSClientHandler.Callback myCallback = null;
+		SecureMMSClientHandler.Callback myCallback = null;
 		
-    	PollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
+    	SecurePollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
     		this.interval = interval;
     		this.clientMRN = clientMRN;
     		this.dstMRN = dstMRN;
@@ -242,7 +234,7 @@ public class MMSRcvHandler {
     		this.headerField = headerField;
     	}
     	
-    	void setCallback(MMSClientHandler.Callback callback){
+    	void setCallback(SecureMMSClientHandler.Callback callback){
     		this.myCallback = callback;
     	}
     	
@@ -262,7 +254,7 @@ public class MMSRcvHandler {
 			String url = "http://"+MMSConfiguration.MMS_URL+"/polling"; // MMS Server
 			URL obj = new URL(url);
 			String data = (clientPort + ":" + clientModel); //To do: add geographical info, channel info, etc. 
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 			
 			//add request header
 			con.setRequestMethod("POST");

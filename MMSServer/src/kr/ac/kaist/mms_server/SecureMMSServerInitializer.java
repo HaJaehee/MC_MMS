@@ -10,9 +10,6 @@ Version : 0.4.0
 */
 /* -------------------------------------------------------- */
 
-
-import javax.net.ssl.SSLEngine;
-
 /*
  * Copyright 2012 The Netty Project
  *
@@ -32,14 +29,9 @@ import javax.net.ssl.SSLEngine;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslHandler;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 
 public class SecureMMSServerInitializer extends ChannelInitializer<SocketChannel> {
