@@ -111,9 +111,9 @@ public class MRH_MessageOutputChannel {
 		for (Iterator<Map.Entry<String, String>> htr = httpHeaders.iteratorAsString(); htr.hasNext();) {
 			Map.Entry<String, String> htrValue = htr.next();
 			
-			if (!htrValue.getKey().equals("srcMRN") && !htrValue.getKey().equals("dstMRN")) {
-				con.setRequestProperty(htrValue.getKey(), htrValue.getValue());
-			}
+			//if (!htrValue.getKey().equals("srcMRN") && !htrValue.getKey().equals("dstMRN")) {
+			con.setRequestProperty(htrValue.getKey(), htrValue.getValue());
+			//}
 		}
 
 		String urlParameters = req.content().toString(Charset.forName("UTF-8")).trim();
@@ -191,9 +191,9 @@ public class MRH_MessageOutputChannel {
 		for (Iterator<Map.Entry<String, String>> htr = httpHeaders.iteratorAsString(); htr.hasNext();) {
 			Map.Entry<String, String> htrValue = htr.next();
 			
-			if (!htrValue.getKey().equals("srcMRN") && !htrValue.getKey().equals("dstMRN")) {
-				con.setRequestProperty(htrValue.getKey(), htrValue.getValue());
-			}
+			//if (!htrValue.getKey().equals("srcMRN") && !htrValue.getKey().equals("dstMRN")) {
+			con.setRequestProperty(htrValue.getKey(), htrValue.getValue());
+			//}
 		}
 
 		String urlParameters = req.content().toString(Charset.forName("UTF-8")).trim();

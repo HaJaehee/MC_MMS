@@ -55,19 +55,19 @@ public class SecureMMSClientHandler {
 		this.pollHandler = new PollHandler(clientMRN, dstMRN, interval, headerField);
 	}
 	
-	public void setPort (int port) throws Exception{
+	public void setPort (int port, String jksDirectory, String jksPassword) throws Exception{
 		this.clientPort = port;
-		this.rcvHandler = new RcvHandler(port);
+		this.rcvHandler = new RcvHandler(port, jksDirectory, jksPassword);
 		String response = registerLocator(port);	
 	}
 	
-	public void setPort (int port, String context) throws Exception{
+	public void setPort (int port, String context, String jksDirectory, String jksPassword) throws Exception{
 		this.clientPort = port;
-		this.rcvHandler = new RcvHandler(port, context);
+		this.rcvHandler = new RcvHandler(port, context, jksDirectory, jksPassword);
 		String response = registerLocator(port);	
 	}
 	
-	public void setPort (int port, String fileDirectory, String fileName) throws Exception {
+	public void setPort (int port, String fileDirectory, String fileName, String jksDirectory, String jksPassword) throws Exception {
 		this.clientPort = port;
 		this.rcvHandler = new RcvHandler(port, fileDirectory, fileName);
 		String response = registerLocator(port);	
@@ -158,14 +158,14 @@ public class SecureMMSClientHandler {
 	*/
 	
 	private class RcvHandler extends SecureMMSRcvHandler{
-		RcvHandler(int port) throws Exception {
-			super(port);
+		RcvHandler(int port, String jksDirectory, String jksPassword) throws Exception {
+			super(port, jksDirectory, jksPassword);
 		}
-		RcvHandler(int port, String context) throws Exception {
-			super(port, context);
+		RcvHandler(int port, String context, String jksDirectory, String jksPassword) throws Exception {
+			super(port, context, jksDirectory, jksPassword);
 		}
-		RcvHandler(int port, String fileDirectory, String fileName) throws Exception {
-			super(port, fileDirectory, fileName);
+		RcvHandler(int port, String fileDirectory, String fileName, String jksDirectory, String jksPassword) throws Exception {
+			super(port, fileDirectory, fileName, jksDirectory, jksPassword);
 		}
 	}
 	

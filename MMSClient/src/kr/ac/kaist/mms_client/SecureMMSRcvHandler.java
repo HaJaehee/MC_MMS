@@ -70,8 +70,8 @@ public class SecureMMSRcvHandler {
 	private static final String USER_AGENT = "MMSClient/0.4.0";
 	private String clientMRN = null;
 	
-	SecureMMSRcvHandler(int port) throws Exception{
-		httpsServerConfigure(port);
+	SecureMMSRcvHandler(int port, String jksDirectory, String jksPassword) throws Exception{
+		httpsServerConfigure(port, jksDirectory, jksPassword);
 		hrh = new HttpsReqHandler();
         server.createContext("/", hrh);
         if(MMSConfiguration.LOGGING)System.out.println("Context \"/\" is created");
@@ -85,8 +85,8 @@ public class SecureMMSRcvHandler {
 		ph.start();
 	}
 	
-	SecureMMSRcvHandler(int port, String context) throws Exception {
-		httpsServerConfigure(port);
+	SecureMMSRcvHandler(int port, String context, String jksDirectory, String jksPassword) throws Exception {
+		httpsServerConfigure(port, jksDirectory, jksPassword);
 		hrh = new HttpsReqHandler();
 		if (!context.startsWith("/")){
 			context = "/" + context;
@@ -98,8 +98,8 @@ public class SecureMMSRcvHandler {
         server.start();
 	}
 	
-	SecureMMSRcvHandler(int port, String fileDirectory, String fileName) throws Exception {
-		httpsServerConfigure(port);
+	SecureMMSRcvHandler(int port, String fileDirectory, String fileName, String jksDirectory, String jksPassword) throws Exception {
+		httpsServerConfigure(port, jksDirectory, jksPassword);
         //OONI
         frh = new SecureFileReqHandler();
         if (!fileDirectory.startsWith("/")){
@@ -118,20 +118,21 @@ public class SecureMMSRcvHandler {
         server.start();
 	}
 	
-	void httpsServerConfigure (int port) throws Exception{
+	void httpsServerConfigure (int port, String jksDirectory, String jksPassword) throws Exception{
 		
 		server = HttpsServer.create(new InetSocketAddress(port), 0);
 		sslContext = SSLContext.getInstance( "TLS" );
 
 		 // initialise the keystore
-	    char[] password = "lovesm13".toCharArray ();
+	    char[] jksPwCharArr = jksPassword.toCharArray ();
 	    KeyStore ks = KeyStore.getInstance ( "JKS" );
-	    FileInputStream fis = new FileInputStream ( System.getProperty("user.dir")+"/testkey.jks" );
-	    ks.load ( fis, password );
+	    //FileInputStream fis = new FileInputStream ( System.getProperty("user.dir")+"/testkey.jks" );
+	    FileInputStream fis = new FileInputStream ( jksDirectory );
+	    ks.load ( fis, jksPwCharArr );
 
 	    // setup the key manager factory
 	    KeyManagerFactory kmf = KeyManagerFactory.getInstance ( "SunX509" );
-	    kmf.init ( ks, password );
+	    kmf.init ( ks, jksPwCharArr );
 
 	    // setup the trust manager factory
 	    TrustManagerFactory tmf = TrustManagerFactory.getInstance ( "SunX509" );
@@ -241,6 +242,7 @@ public class SecureMMSRcvHandler {
 							"\"HTTP Body\":"+httpBody+"}";
             String response = this.processRequest(inH, message);
             
+           
             t.sendResponseHeaders(200, response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());

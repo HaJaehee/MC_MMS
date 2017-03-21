@@ -24,11 +24,13 @@ public class SC7 {
 		//Service Consumer can be HTTP server and listen to port 'port'. 
 		//port = Integer.parseInt(args[1]);
 		int port = 8906;
+		String jksDirectory = System.getProperty("user.dir")+"/testkey.jks";
+		String jksPassword = "lovesm13";
 		
 		//MMSConfiguration.MMS_URL="winsgkwogml.iptime.org:444";
 
-		SecureMMSClientHandler sch = new SecureMMSClientHandler(myMRN);
-		sch.setPort(port);
+		SecureMMSClientHandler sch = new SecureMMSClientHandler(myMRN);	
+		sch.setPort(port, jksDirectory, jksPassword);
 		
 		//Request Callback from the request message
 		sch.setCallback(new SecureMMSClientHandler.Callback() {

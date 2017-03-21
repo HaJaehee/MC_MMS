@@ -22,11 +22,13 @@ public class SecureServiceProvider {
 	public static void main(String args[]) throws Exception{
 		String myMRN = "urn:mrn:smart-navi:device:secure-tm-server";
 		int port = 8902;
+		String jksDirectory = System.getProperty("user.dir")+"/testkey.jks";
+		String jksPassword = "lovesm13";
 
 		//MMSConfiguration.MMS_URL="winsgkwogml.iptime.org:444";
 		
 		SecureMMSClientHandler sch = new SecureMMSClientHandler(myMRN);
-		sch.setPort(port, "/forwarding"); //sch has a context '/forwarding'
+		sch.setPort(port, "/forwarding", jksDirectory, jksPassword); //sch has a context '/forwarding'
 		/* It is not same with:
 		 * sch.setPort(port); //It sets default context as '/'
 		 * sch.addContext("/forwarding"); //Finally sch has two context '/' and '/forwarding'
