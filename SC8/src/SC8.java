@@ -35,7 +35,7 @@ public class SC8 {
 		}*/
 
 		
-		for (int i = 0; i < 10;i++){
+		for (int i = 0; i < 1;i++){
 			String a = sch.sendPostMsg("urn:mrn:imo:imo-no:0000117", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
 		}
