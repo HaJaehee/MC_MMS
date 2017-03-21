@@ -33,12 +33,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import org.json.simple.JSONObject;
 
@@ -285,6 +289,7 @@ public class SecureMMSRcvHandler {
 		private MMSDataParser dataParser = null;
 		private Map<String,String> headerField = null;
 		SecureMMSClientHandler.Callback myCallback = null;
+		private HostnameVerifier hv = null;
 		
     	SecurePollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
     		this.interval = interval;
@@ -313,10 +318,13 @@ public class SecureMMSRcvHandler {
     	
 		void Poll() throws Exception {
 			
-			String url = "http://"+MMSConfiguration.MMS_URL+"/polling"; // MMS Server
+			hv = getHV();
+			
+			String url = "https://"+MMSConfiguration.MMS_URL+"/polling"; // MMS Server
 			URL obj = new URL(url);
 			String data = (clientPort + ":" + clientModel); //To do: add geographical info, channel info, etc. 
 			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+			con.setHostnameVerifier(hv);
 			
 			//add request header
 			con.setRequestMethod("POST");
@@ -376,6 +384,43 @@ public class SecureMMSRcvHandler {
     		String ret = this.myCallback.callbackMethod(headerField, message);
     		return ret;
     	}
+		
+		HostnameVerifier getHV (){
+			// Create a trust manager that does not validate certificate chains
+	        TrustManager[] trustAllCerts = new TrustManager[]{
+	            new X509TrustManager() {
+	                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+	                    return null;
+	                }
+
+	                public void checkClientTrusted(
+	                    java.security.cert.X509Certificate[] certs, String authType) {
+	                }
+
+	                public void checkServerTrusted(
+	                    java.security.cert.X509Certificate[] certs, String authType) {
+	                }
+	            }
+	        };
+	        // Install the all-trusting trust manager
+	        try {
+	            SSLContext sc = SSLContext.getInstance("SSL");
+	            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+	            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+	        } catch (Exception e) {
+	        	if(MMSConfiguration.LOGGING)System.out.println("Error" + e);
+	        }
+	        
+	        HostnameVerifier hv = new HostnameVerifier() {
+	            public boolean verify(String urlHostName, SSLSession session) {
+	            	if(MMSConfiguration.LOGGING)System.out.println("Warning: URL Host: " + urlHostName + " vs. "
+	                        + session.getPeerHost());
+	                return true;
+	            }
+	        };
+	        
+	        return hv;
+		}
 	}
     //HJH end
 }

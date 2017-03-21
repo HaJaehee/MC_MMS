@@ -19,7 +19,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 public class SC4 {
 	public static void main(String args[]) throws Exception{
-		String myMRN = "urn:mrn:imo:imo-no:0141414";
+		String myMRN = "urn:mrn:imo:imo-no:1000004";
 		//myMRN = args[0];
 		
 		MMSConfiguration.MMS_URL="127.0.0.1:8088";
@@ -28,7 +28,7 @@ public class SC4 {
 		MMSClientHandler ch = new MMSClientHandler(myMRN);
 
 		//file transferring
-		String response = ch.requestFile("urn:mrn:imo:imo-no:0654321", "get/test.xml");
+		String response = ch.requestFile("urn:mrn:imo:imo-no:1000006", "get/test.xml");
 	    System.out.println("Response from SC :" + response);
 	}
 }

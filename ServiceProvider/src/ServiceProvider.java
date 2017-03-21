@@ -10,7 +10,7 @@ import kr.ac.kaist.mms_client.*;
 /* -------------------------------------------------------- */
 /** 
 File name : ServiceProvider.java
-	Service Provider only forwards messages to SC having urn:mrn:imo:imo-no:0100006
+	Service Provider only forwards messages to SC having urn:mrn:imo:imo-no:1000001
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
@@ -50,8 +50,8 @@ public class ServiceProvider {
 					System.out.println(message);
 					JSONParser Jpar = new JSONParser();
 					String httpBody = (String)((JSONObject) Jpar.parse(message)).get("HTTP Body");
-					//it only forwards messages to sc having urn:mrn:imo:imo-no:0100006
-					String res = ch.sendPostMsg("urn:mrn:imo:imo-no:0100006", httpBody);
+					//it only forwards messages to sc having urn:mrn:imo:imo-no:1000001
+					String res = ch.sendPostMsg("urn:mrn:imo:imo-no:1000001", httpBody);
 					System.out.println(res);
 				} catch (Exception e) {
 					e.printStackTrace();

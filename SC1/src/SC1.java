@@ -20,7 +20,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 public class SC1 {
 	public static void main(String args[]) throws Exception{
-		String myMRN = "urn:mrn:imo:imo-no:0100006";
+		String myMRN = "urn:mrn:imo:imo-no:1000001";
 		//myMRN = args[0];
 		
 
