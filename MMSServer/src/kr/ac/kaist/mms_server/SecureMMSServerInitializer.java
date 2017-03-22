@@ -58,6 +58,6 @@ public class SecureMMSServerInitializer extends ChannelInitializer<SocketChannel
         pipeline.addLast(new HttpObjectAggregator(19999));
 
         // and then business logic.
-        pipeline.addLast(new MRH_MessageInputChannel());
+        pipeline.addLast(new MRH_MessageInputChannel("https"));
     }
 }

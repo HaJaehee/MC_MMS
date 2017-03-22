@@ -51,7 +51,7 @@ public class MMSServer {
 			//pipeline.addLast("ssl", new SslHandler(sslengine));
 			pipeline.addLast(new HttpServerCodec());
             pipeline.addLast(new HttpObjectAggregator(19999));
-            pipeline.addLast(new MRH_MessageInputChannel());
+            pipeline.addLast(new MRH_MessageInputChannel("http"));
         });
 	}
 }

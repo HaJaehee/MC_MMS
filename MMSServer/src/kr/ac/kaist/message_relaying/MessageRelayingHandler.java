@@ -55,9 +55,12 @@ public class MessageRelayingHandler  {
 	private SeamlessRoamingHandler srh = null;
 	private MessageCastingHandler mch = null;
 	
-	public MessageRelayingHandler(ChannelHandlerContext ctx, FullHttpRequest req) {		
+	private String protocol = "";
+	
+	public MessageRelayingHandler(ChannelHandlerContext ctx, FullHttpRequest req, String protocol) {		
 		initializeModule();
 		initializeSubModule();
+		this.protocol = protocol;
 		
 		parser.parsingMessage(ctx, req);
 		
@@ -99,8 +102,11 @@ public class MessageRelayingHandler  {
     		message = "OK".getBytes();
 		} else if (type == MessageTypeDecision.RELAYING_TO_SERVER) {
         	try {
-				//message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod);
-        		message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod);
+        		if (protocol.equals("http")) {
+				    message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod);
+        		} else { //protocol.equals("https")
+        			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod);
+        		}
 			} catch (Exception e) {
 				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
