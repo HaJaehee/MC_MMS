@@ -17,7 +17,7 @@ Version : 0.3.01
 
 public class SC5 {
 	public static void main(String args[]) throws Exception{
-		String myMRN = "urn:mrn:imo:imo-no:0000112";
+		String myMRN = "urn:mrn:imo:imo-no:1000005";
 		//myMRN = args[0];
 		
 		//Service Consumer can be HTTP server and listen to port 'port'. 

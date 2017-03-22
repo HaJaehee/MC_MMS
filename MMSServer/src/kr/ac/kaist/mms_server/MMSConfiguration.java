@@ -10,11 +10,12 @@ Version : 0.3.01
 /* -------------------------------------------------------- */
 
 public class MMSConfiguration {
-	public static final boolean LOGGING = false;
+	public static final boolean LOGGING = true;
 	public static final boolean LOG_PROVIDING = true;
 	public static final boolean EMPTY_QUEUE = true;
 	public static final boolean EMPTY_MNS_DUMMY = true;
 	public static final boolean REMOVE_ENTRY_MNS_DUMMY = true;
 	public static final int HTTP_PORT = 8088;
+	public static final int HTTPS_PORT = 444;
 	public static final int UDP_PORT = 8089;
 }

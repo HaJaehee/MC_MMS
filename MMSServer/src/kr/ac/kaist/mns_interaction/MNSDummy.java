@@ -32,26 +32,26 @@ public class MNSDummy {
        ServerSocket Sock = new ServerSocket(1004);
        System.out.println("MNSDummy: started");
 //       -------------Put MRN --> IP Information -------------
-//       MRNtoIP.put("urn:mrn:imo:imo-no:1000007", "127.0.0.1:8901:1"); // SC2
-//       MRNtoIP.put("urn:mrn:imo:imo-no:0100006", "127.0.0.1:8902:1"); // SC1
-//       MRNtoIP.put("urn:mrn:imo:imo-no:0010005", "127.0.0.1:8903:1"); // SC3
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000002", "127.0.0.1:8901:1"); // SC2
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000001", "127.0.0.1:8902:1"); // SC1
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000003", "127.0.0.1:8903:1"); // SC3
 //       MRNtoIP.put("urn:mrn:smart-navi:device:mir1", "127.0.0.1:8904:2"); // MIR
 //       MRNtoIP.put("urn:mrn:smart-navi:device:msr1", "127.0.0.1:8905:2"); // MSR
 //       MRNtoIP.put("urn:mrn:smart-navi:device:tm-server", "127.0.0.1:8902:2"); // SP2
-       MRNtoIP.put("urn:mrn:simple:simple:server", "143.248.57.72:8080:2");
+//       MRNtoIP.put("urn:mrn:simple:simple:server", "143.248.57.72:8080:2");
        
 //       MRNtoIP.put("urn:mrn:smart-navi:service:si-id:ocean-grid", "127.0.0.1:8910:2");
 //       MRNtoIP.put("urn:mrn:smart-navi:device:mir1", "52.78.97.177:8904:2");
 //       MRNtoIP.put("urn:mrn:smart-navi:service:si-id:text-messenger", "127.0.0.1:8909:2");
-//       MRNtoIP.put("urn:mrn:imo:imo-no:0100006", "143.248.57.72:0:1");
-//       MRNtoIP.put("urn:mrn:imo:imo-no:0010005", "223.62.215.216:0:1");
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000006", "143.248.57.72:0:1");
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000005", "223.62.215.216:0:1");
 //       MRNtoIP.put("urn:mrn:simple:simple:server", "143.248.57.72:8080:2");
 //       MRNtoIP.put("urn:mrn:smart-navi:device:chat-server", "52.78.97.177:8907:2");
 //       MRNtoIP.put("urn:mrn:smart-navi:device:msr1", "52.78.97.177:8921:2");
 //       MRNtoIP.put("urn:mrn:smart-navi:device:portal-server", "223.39.131.16:0:1");
 //       MRNtoIP.put("urn:mrn:imo:imo-no:1000007", "143.248.57.72:0:1");
 //       MRNtoIP.put("urn:mrn:smart-navi:device:og-server", "52.78.97.177:8920:2");
-//       MRNtoIP.put("urn:mrn:imo:imo-no:3030303", "218.158.173.219:0:1");
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000008", "218.158.173.219:0:1");
 //       MRNtoIP.put("urn:mrn:smart-navi:device:chat-server-kaist", "52.78.97.177:18902:2");
        
        

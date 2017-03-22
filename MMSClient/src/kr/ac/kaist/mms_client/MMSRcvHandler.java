@@ -67,6 +67,7 @@ public class MMSRcvHandler {
         server.setExecutor(null); // creates a default executor
         server.start();
 	}
+	
 	MMSRcvHandler(String clientMRN, String dstMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
 		ph = new PollingHandler(clientMRN, dstMRN, interval, clientPort, msgType, headerField);
 		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");

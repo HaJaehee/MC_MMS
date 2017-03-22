@@ -1,12 +1,13 @@
 
 
 # MC_MMS
-Alpha Version 0.3.01 <br/>
-2017.2.14<br/>
+Alpha Version 0.4.0 <br/>
+2017.3.21<br/>
 
 
 ## Features
 MMS Alpha Version<br/>
+Supports fully HTTPS communication<br/>
 Maritime Name System Dummy<br/>
 Service Consumer Dummy<br/>
 Service Provider Dummy<br/>
