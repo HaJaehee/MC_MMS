@@ -20,10 +20,6 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.FullHttpRequest;
-
 public class SecureMMSClientHandler {
 	private RcvHandler rcvHandler = null;
 	private PollHandler pollHandler = null;
