@@ -7,7 +7,10 @@ File name : MRH_MessageOutputChannel.java
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jin Jung (jungst0001@kaist.ac.kr)
 Creation Date : 2017-01-24
-Version : 0.3.01
+Version : 0.4.0
+Rev. history : 2017-03-22
+	Added secureSendMessage() method in order to handle HTTPS.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 

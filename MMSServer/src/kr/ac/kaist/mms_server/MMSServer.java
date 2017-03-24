@@ -9,9 +9,6 @@ Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 	Jaehyun Park (jae519@kaist.ac.kr)
 Creation Date : 2016-12-03
 Version : 0.3.01
-Rev. history : 2017-03-19
-	Added HTTPS features
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -48,7 +45,6 @@ public class MMSServer {
 
 		if(MMSConfiguration.LOGGING)System.out.println("[MMS Server] Now starting MMS HTTP server");
 		NettyStartupUtil.runServer(MMSConfiguration.HTTP_PORT, pipeline -> {   //runServer(int port, Consumer<ChannelPipeline> initializer)
-			//pipeline.addLast("ssl", new SslHandler(sslengine));
 			pipeline.addLast(new HttpServerCodec());
             pipeline.addLast(new HttpObjectAggregator(19999));
             pipeline.addLast(new MRH_MessageInputChannel("http"));

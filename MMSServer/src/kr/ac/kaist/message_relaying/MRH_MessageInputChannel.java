@@ -1,19 +1,23 @@
 package kr.ac.kaist.message_relaying;
 
-import java.net.InetAddress;
-
-import io.netty.channel.Channel;
-
 /* -------------------------------------------------------- */
 /** 
 File name : MRH_MessageInputChannel.java
 	
-Author : 
+Author : Jaehyun Park (jae519@kaist.ac.kr)
+	Jin Jung (jungst0001@kaist.ac.kr)
 Creation Date : 2017-01-24
-Version : 
+Version : 0.4.0
+Rev. history : 2017-03-22
+	Added SSL handler and modified MessageRelayingHandler in order to handle HTTPS functionalities.
+	Added member variable protocol in order to handle HTTPS.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+
+import java.net.InetAddress;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
