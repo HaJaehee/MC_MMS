@@ -53,6 +53,8 @@ import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 
+import kr.ac.kaist.mms_client.MMSRcvHandler.PollingHandler;
+
 public class SecureMMSRcvHandler {
 	HttpsServer server = null;
 	SSLContext sslContext = null;
@@ -75,8 +77,15 @@ public class SecureMMSRcvHandler {
         server.start();
 	}
 	
+	@Deprecated
 	SecureMMSRcvHandler(String clientMRN, String dstMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
 		ph = new SecurePollingHandler(clientMRN, dstMRN, interval, clientPort, msgType, headerField);
+		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");
+		ph.start();
+	}
+	
+	SecureMMSRcvHandler(String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
+		ph = new SecurePollingHandler(clientMRN, dstMRN, svcMRN, interval, clientPort, msgType, headerField);
 		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");
 		ph.start();
 	}
@@ -282,6 +291,7 @@ public class SecureMMSRcvHandler {
 		private int interval = 0;
 		private String clientMRN = null;
 		private String dstMRN = null;
+		private String svcMRN = null;
 		private int clientPort = 0;
 		private int clientModel = 0;
 		private MMSDataParser dataParser = null;
@@ -289,10 +299,22 @@ public class SecureMMSRcvHandler {
 		SecureMMSClientHandler.Callback myCallback = null;
 		private HostnameVerifier hv = null;
 		
+		@Deprecated
     	SecurePollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
     		this.interval = interval;
     		this.clientMRN = clientMRN;
     		this.dstMRN = dstMRN;
+    		this.clientPort = clientPort;
+    		this.clientModel = clientModel;
+    		this.dataParser = new MMSDataParser();
+    		this.headerField = headerField;
+    	}
+    	
+    	SecurePollingHandler (String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
+    		this.interval = interval;
+    		this.clientMRN = clientMRN;
+    		this.dstMRN = dstMRN;
+    		this.svcMRN = svcMRN;
     		this.clientPort = clientPort;
     		this.clientModel = clientModel;
     		this.dataParser = new MMSDataParser();
@@ -320,7 +342,12 @@ public class SecureMMSRcvHandler {
 			
 			String url = "https://"+MMSConfiguration.MMS_URL+"/polling"; // MMS Server
 			URL obj = new URL(url);
-			String data = (clientPort + ":" + clientModel); //To do: add geographical info, channel info, etc. 
+			String data;
+			if (svcMRN != null){
+				data = (clientPort + ":" + clientModel + ":" + svcMRN); //To do: add geographical info, channel info, etc. 
+			} else {
+				data = (clientPort + ":" + clientModel + ":");
+			}
 			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 			con.setHostnameVerifier(hv);
 			

@@ -7,6 +7,7 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
+
 Version : 0.3.01
 Rev. history : 2017-02-01
 	Added setting header field features. 
@@ -15,6 +16,10 @@ Rev. history : 2017-02-14
 	fixed http get request bugs
 	fixed http get file request bugs
 	added setting context features
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Version : 0.5.0
+Rev. history : 2017-04-20 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -68,8 +73,16 @@ public class MMSRcvHandler {
         server.start();
 	}
 	
+	@Deprecated
 	MMSRcvHandler(String clientMRN, String dstMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
 		ph = new PollingHandler(clientMRN, dstMRN, interval, clientPort, msgType, headerField);
+		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");
+		ph.start();
+	}
+	
+
+	MMSRcvHandler(String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
+		ph = new PollingHandler(clientMRN, dstMRN, svcMRN, interval, clientPort, msgType, headerField);
 		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");
 		ph.start();
 	}
@@ -226,16 +239,29 @@ public class MMSRcvHandler {
 		private int interval = 0;
 		private String clientMRN = null;
 		private String dstMRN = null;
+		private String svcMRN = null;
 		private int clientPort = 0;
 		private int clientModel = 0;
 		private MMSDataParser dataParser = null;
 		private Map<String,String> headerField = null;
 		MMSClientHandler.Callback myCallback = null;
 		
+		@Deprecated
     	PollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
     		this.interval = interval;
     		this.clientMRN = clientMRN;
     		this.dstMRN = dstMRN;
+    		this.clientPort = clientPort;
+    		this.clientModel = clientModel;
+    		this.dataParser = new MMSDataParser();
+    		this.headerField = headerField;
+    	}
+    	
+    	PollingHandler (String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
+    		this.interval = interval;
+    		this.clientMRN = clientMRN;
+    		this.dstMRN = dstMRN;
+    		this.svcMRN = svcMRN;
     		this.clientPort = clientPort;
     		this.clientModel = clientModel;
     		this.dataParser = new MMSDataParser();
@@ -261,7 +287,12 @@ public class MMSRcvHandler {
 			
 			String url = "http://"+MMSConfiguration.MMS_URL+"/polling"; // MMS Server
 			URL obj = new URL(url);
-			String data = (clientPort + ":" + clientModel); //To do: add geographical info, channel info, etc. 
+			String data;
+			if (svcMRN != null){
+				data = (clientPort + ":" + clientModel + ":" + svcMRN); //To do: add geographical info, channel info, etc. 
+			} else {
+				data = (clientPort + ":" + clientModel + ":");
+			}
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			
 			//add request header

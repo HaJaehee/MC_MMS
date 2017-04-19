@@ -16,6 +16,12 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2017-03-22
 	Added member variable protocol in order to handle HTTPS.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Version : 0.5.0
+Rev. history : 2017-04-20 
+	Long polling is enabled and Message Queue is implemented.
+	Deprecates some methods would not be used any more.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -98,11 +104,21 @@ public class MessageRelayingHandler  {
 			String srcIP = parser.getSrcIP();
 			int srcPort = parser.getSrcPort();
 			int srcModel = parser.getSrcModel();
+			String svcMRN = parser.getSvcMRN();
 			
-			message = srh.processPollingMessage(srcMRN, srcIP, srcPort, srcModel);
+			//@Deprecated
+			//message = srh.processPollingMessage(srcMRN, srcIP, srcPort, srcModel);
+			
+			srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, srcPort, srcModel, svcMRN);
+			
+			return;
 		} else if (type == MessageTypeDecision.RELAYING_TO_SC) {
-			srh.putSCMessage(dstMRN, req);
-    		message = "OK".getBytes();
+			
+			//@Deprecated
+			//srh.putSCMessage(dstMRN, req);
+			
+			srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
+    		message = "OK".getBytes(Charset.forName("UTF-8"));
 		} else if (type == MessageTypeDecision.RELAYING_TO_SERVER) {
         	try {
         		if (protocol.equals("http")) {
@@ -169,10 +185,10 @@ public class MessageRelayingHandler  {
 				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
     		message = "OK".getBytes(Charset.forName("UTF-8"));
-		} else if (type == MessageTypeDecision.EMPTY_QUEUE) {
+		} /*else if (type == MessageTypeDecision.EMPTY_QUEUE) {
 			MMSQueue.queue.clear();
     		message = "OK".getBytes(Charset.forName("UTF-8"));
-		} else if (type == MessageTypeDecision.EMPTY_MNSDummy) {
+		} */else if (type == MessageTypeDecision.EMPTY_MNSDummy) {
     		try {
 				emptyMNS();
 				message = "OK".getBytes(Charset.forName("UTF-8"));
@@ -285,6 +301,8 @@ public class MessageRelayingHandler  {
   	
 		String status = "";
 		
+		//@Deprecated
+		/*
 		HashMap<String, String> queue = MMSQueue.queue;
 		status = status + "Message Queue:<br/>";
 		Set<String> queueKeys = queue.keySet();
@@ -297,6 +315,7 @@ public class MessageRelayingHandler  {
 			status = status + key + "," + value + "<br/>"; 
 		}
 		status = status + "<br/>";
+		*/
 
 		status = status + "MNS Dummy:<br/>";
 		status = status + dumpMNS() + "<br/>";

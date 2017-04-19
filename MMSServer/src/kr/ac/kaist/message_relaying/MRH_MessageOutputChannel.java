@@ -62,7 +62,7 @@ public class MRH_MessageOutputChannel {
 		storedHeader = storingHeader;
 	}
 	
-	void replyToSender(ChannelHandlerContext ctx, byte[] data){
+	public void replyToSender(ChannelHandlerContext ctx, byte[] data){
     	ByteBuf textb = Unpooled.copiedBuffer(data);
     	long responseLen = data.length;
     	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);

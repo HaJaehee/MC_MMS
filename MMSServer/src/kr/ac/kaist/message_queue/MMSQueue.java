@@ -9,6 +9,11 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-01-24
 Version : 0.3.01
+
+Version : 0.5.0
+Rev. history : 2017-04-20 
+	Deprecated
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -24,14 +29,17 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+@Deprecated
 public class MMSQueue {
 	private static final String TAG = "MMSQueue";
 	
+	@Deprecated
 	public static HashMap<String, String> queue = new HashMap<String, String>();
 	
 	//public mmsQueue(){
 	//}
 	
+	@Deprecated
 	public static synchronized byte[] getMessage(String mrn) throws Exception{
 		if(MMSConfiguration.LOGGING)System.out.println("get queue:" + mrn);
     	if (queue.containsKey(mrn)) {
@@ -43,6 +51,8 @@ public class MMSQueue {
     		throw new Exception("No entry");
     	}
 	}
+	
+	@Deprecated
 	public static synchronized void putMessage(String mrn, FullHttpRequest req) throws UnsupportedEncodingException{
     	if (queue.containsKey(mrn)){
     		String ret = queue.get(mrn).trim();

@@ -26,8 +26,11 @@ public class SC9 {
 		//Service Consumer cannot be HTTPs server and should poll from MMS by HTTPS. 
 		SecureMMSClientHandler sph = new SecureMMSClientHandler(myMRN);
 		
-		int pollInterval = 1000;
-		sph.startPolling("urn:mrn:smart-navi:device:mms1", pollInterval);
+		int pollInterval = 1;
+		String dstMRN = "urn:mrn:smart-navi:device:mms1";
+		String svcMRN = "urn:mrn:smart-navi:device:secure-tm-server";
+		sph.startPolling(dstMRN, svcMRN, pollInterval);
+		
 		
 		//Request Callback from the request message
 		sph.setCallback(new SecureMMSClientHandler.Callback() {
