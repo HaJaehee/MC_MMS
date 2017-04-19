@@ -8,6 +8,10 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jin Jung (jungst0001@kaist.ac.kr)
 Creation Date : 2017-01-24
 Version : 0.3.01
+
+Version : 0.5.0
+Rev. history : 2017-04-20 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -20,6 +24,7 @@ import kr.ac.kaist.mms_server.MMSConfiguration;
 
 public class SCMessageHandling {
 
+	@Deprecated
 	void putSCMessage(String dstMRN, FullHttpRequest req){
 		try {
 			MMSQueue.putMessage(dstMRN, req);

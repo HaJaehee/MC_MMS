@@ -34,7 +34,7 @@ public class MessageQueueDequeue {
 	String dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN) {
 		
 		String queueName = srcMRN+"::"+svcMRN;
-		System.out.println(" [*] Queue name = "+queueName);
+		 if(MMSConfiguration.LOGGING)System.out.println(" [*] Queue name = "+queueName);
 		
 	    try {
 			ConnectionFactory factory = new ConnectionFactory();
@@ -64,7 +64,7 @@ public class MessageQueueDequeue {
 					channel.close();
 				} catch (TimeoutException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					 if(MMSConfiguration.LOGGING)e.printStackTrace();
 				}
 			    
 			  	}
@@ -73,10 +73,10 @@ public class MessageQueueDequeue {
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			 if(MMSConfiguration.LOGGING)e.printStackTrace();
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			 if(MMSConfiguration.LOGGING)e.printStackTrace();
 		}
 		
 		return null;

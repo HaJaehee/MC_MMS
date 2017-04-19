@@ -7,6 +7,7 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
+
 Version : 0.3.01
 Rev. history : 2017-02-01
 	Added setting header field features. 
@@ -15,6 +16,10 @@ Rev. history : 2017-02-14
 	fixed http get request bugs
 	fixed http get file request bugs
 	added setting context features
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Version : 0.5.0
+Rev. history : 2017-04-20 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -68,6 +73,7 @@ public class MMSRcvHandler {
         server.start();
 	}
 	
+	@Deprecated
 	MMSRcvHandler(String clientMRN, String dstMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
 		ph = new PollingHandler(clientMRN, dstMRN, interval, clientPort, msgType, headerField);
 		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");
@@ -240,6 +246,7 @@ public class MMSRcvHandler {
 		private Map<String,String> headerField = null;
 		MMSClientHandler.Callback myCallback = null;
 		
+		@Deprecated
     	PollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
     		this.interval = interval;
     		this.clientMRN = clientMRN;

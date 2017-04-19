@@ -11,12 +11,18 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
+
 Version : 0.3.01
 Rev. history : 2017-02-01 - Second Issue
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Version : 0.5.0
+Rev. history : 2017-04-20
+	Deprecated SC2
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
-
+@Deprecated
 public class SC2 {
 	public static void main(String args[]) throws Exception{
 		String myMRN = "urn:mrn:imo:imo-no:1000002";

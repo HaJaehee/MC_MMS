@@ -24,7 +24,7 @@ public class MessageQueueEnqueue {
 	void enqueueMessage(String srcMRN, String dstMRN, String message) {
 		
 		String queueName = dstMRN+"::"+srcMRN;
-		System.out.println(" [*] Queue name = "+queueName);
+		 if(MMSConfiguration.LOGGING)System.out.println(" [*] Queue name = "+queueName);
 		
 		try {
 			ConnectionFactory factory = new ConnectionFactory();
@@ -42,10 +42,10 @@ public class MessageQueueEnqueue {
 			connection.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			 if(MMSConfiguration.LOGGING)e.printStackTrace();
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			 if(MMSConfiguration.LOGGING)e.printStackTrace();
 		}
 	}
 }

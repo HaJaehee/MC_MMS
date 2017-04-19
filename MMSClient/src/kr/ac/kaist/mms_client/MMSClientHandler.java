@@ -8,6 +8,7 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
+
 Version : 0.3.01
 Rev. history : 2017-02-01
 	Added setting header field features. 
@@ -19,6 +20,9 @@ Rev. history : 2017-02-14
 	added setting context features
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Version : 0.5.0
+Rev. history : 2017-04-20 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -59,6 +63,7 @@ public class MMSClientHandler {
 		 }
 	}
 
+	@Deprecated
 	public void startPolling (String dstMRN, int interval) throws IOException{
 		this.pollHandler = new PollHandler(clientMRN, dstMRN, interval, headerField);
 	}
@@ -188,6 +193,7 @@ public class MMSClientHandler {
 	}
 	
 	private class PollHandler extends MMSRcvHandler{
+		@Deprecated
 		PollHandler(String clientMRN, String dstMRN, int interval, Map<String, String> headerField) throws IOException {
 			super(clientMRN, dstMRN, interval, clientPort, 1, headerField);
 		}

@@ -11,6 +11,10 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jin Jung (jungst0001@kaist.ac.kr)
 Creation Date : 2017-01-24
 Version : 0.3.01
+
+Version : 0.5.0
+Rev. history : 2017-04-20 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -43,6 +47,7 @@ public class SeamlessRoamingHandler {
 	}
 	
 //	poll SC message in queue
+	@Deprecated
 	public byte[] processPollingMessage(String srcMRN, String srcIP, int srcPort, int srcModel) {
 		byte[] message;
 		
@@ -62,6 +67,7 @@ public class SeamlessRoamingHandler {
 	
 	
 //	save SC message into queue
+	@Deprecated
 	public void putSCMessage(String dstMRN, FullHttpRequest req) {
 		scmh.putSCMessage(dstMRN, req);
 	}
