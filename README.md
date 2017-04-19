@@ -1,7 +1,7 @@
 
 
 # MC_MMS
-Alpha Version 0.5.0 <br/>
+Beta Version 0.5.0 <br/>
 2017.4.20<br/>
 
 
