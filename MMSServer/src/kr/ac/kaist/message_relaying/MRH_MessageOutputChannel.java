@@ -7,7 +7,10 @@ File name : MRH_MessageOutputChannel.java
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jin Jung (jungst0001@kaist.ac.kr)
 Creation Date : 2017-01-24
-Version : 0.3.01
+Version : 0.4.0
+Rev. history : 2017-03-22
+	Added secureSendMessage() method in order to handle HTTPS.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -23,6 +26,13 @@ import java.util.List;
 import java.util.Map;
 //import javax.swing.text.html.HTMLDocument.Iterator;
 import java.util.Set;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -45,13 +55,14 @@ public class MRH_MessageOutputChannel {
 	private final String USER_AGENT = "MMSClient/0.1";
 	private static Map<String,List<String>> storedHeader = null;
 	private static boolean isStoredHeader = false;
+	private HostnameVerifier hv = null;
 	
 	void setResponseHeader(Map<String, List<String>> storingHeader){
 		isStoredHeader = true;
 		storedHeader = storingHeader;
 	}
 	
-	void replyToSender(ChannelHandlerContext ctx, byte[] data){
+	public void replyToSender(ChannelHandlerContext ctx, byte[] data){
     	ByteBuf textb = Unpooled.copiedBuffer(data);
     	long responseLen = data.length;
     	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
@@ -103,9 +114,9 @@ public class MRH_MessageOutputChannel {
 		for (Iterator<Map.Entry<String, String>> htr = httpHeaders.iteratorAsString(); htr.hasNext();) {
 			Map.Entry<String, String> htrValue = htr.next();
 			
-			if (!htrValue.getKey().equals("srcMRN") && !htrValue.getKey().equals("dstMRN")) {
-				con.setRequestProperty(htrValue.getKey(), htrValue.getValue());
-			}
+			//if (!htrValue.getKey().equals("srcMRN") && !htrValue.getKey().equals("dstMRN")) {
+			con.setRequestProperty(htrValue.getKey(), htrValue.getValue());
+			//}
 		}
 
 		String urlParameters = req.content().toString(Charset.forName("UTF-8")).trim();
@@ -149,5 +160,122 @@ public class MRH_MessageOutputChannel {
 			
 		}
 			//return response.toString();	
+	}
+	
+	
+	
+	
+	
+//  to do secure relaying
+	byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws Exception { // 
+	  	if(MMSConfiguration.LOGGING)System.out.println("uri?:" + req.uri());
+	  	
+	  	hv = getHV();
+	  	
+		String url = "https://" + IPAddress + ":" + port + req.uri();
+		if(MMSConfiguration.LOGGING)System.out.println(url);
+		URL obj = new URL(url);
+		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+		if(MMSConfiguration.LOGGING)System.out.println("connection opened");
+		con.setHostnameVerifier(hv);
+		
+		HttpHeaders httpHeaders = req.headers();
+		
+		
+//		Setting HTTP method
+		if (httpMethod == httpMethod.POST) {
+			con.setRequestMethod("POST");
+		} else if (httpMethod == httpMethod.GET) {
+			con.setRequestMethod("GET");
+		}
+		
+		
+//		Setting remaining headers
+		for (Iterator<Map.Entry<String, String>> htr = httpHeaders.iteratorAsString(); htr.hasNext();) {
+			Map.Entry<String, String> htrValue = htr.next();
+			
+			//if (!htrValue.getKey().equals("srcMRN") && !htrValue.getKey().equals("dstMRN")) {
+			con.setRequestProperty(htrValue.getKey(), htrValue.getValue());
+			//}
+		}
+
+		String urlParameters = req.content().toString(Charset.forName("UTF-8")).trim();
+		con.setRequestProperty("Content-Length", urlParameters.length() + "");
+		
+		
+		if (httpMethod == httpMethod.POST) {
+			// Send post request
+			con.setDoOutput(true);
+			BufferedWriter wr = new BufferedWriter(
+					new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
+			wr.write(urlParameters);
+			wr.flush();
+			wr.close();
+		} 
+		
+		// get request doesn't have http body
+		
+		try{
+			int responseCode = con.getResponseCode();
+			Map<String,List<String>> resHeaders = con.getHeaderFields();
+			setResponseHeader(resHeaders);
+			
+			if(MMSConfiguration.LOGGING)System.out.println("\nSending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url);
+			if(MMSConfiguration.LOGGING)System.out.println((httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters);
+			if(MMSConfiguration.LOGGING)System.out.println("Response Code : " + responseCode);
+			BufferedReader in = new BufferedReader(
+			        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
+			String inputLine;
+			StringBuffer buf = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+				buf = buf.append(inputLine + "\n"); 
+			}
+
+			in.close();
+			String ret = buf.toString();
+			return ret.getBytes();
+		} catch (Exception e) {
+			if(MMSConfiguration.LOGGING)e.printStackTrace();
+			return "No Reply".getBytes();
+			
+		}
+			//return response.toString();	
+	}
+	
+	HostnameVerifier getHV (){
+		// Create a trust manager that does not validate certificate chains
+        TrustManager[] trustAllCerts = new TrustManager[]{
+            new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                public void checkClientTrusted(
+                    java.security.cert.X509Certificate[] certs, String authType) {
+                }
+
+                public void checkServerTrusted(
+                    java.security.cert.X509Certificate[] certs, String authType) {
+                }
+            }
+        };
+        // Install the all-trusting trust manager
+        try {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        } catch (Exception e) {
+        	if(MMSConfiguration.LOGGING)System.out.println("Error" + e);
+        }
+        
+        HostnameVerifier hv = new HostnameVerifier() {
+            public boolean verify(String urlHostName, SSLSession session) {
+            	if(MMSConfiguration.LOGGING)System.out.println("Warning: URL Host: " + urlHostName + " vs. "
+                        + session.getPeerHost());
+                return true;
+            }
+        };
+        
+        return hv;
 	}
 }

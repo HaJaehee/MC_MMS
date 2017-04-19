@@ -18,7 +18,7 @@ Version : 0.3.01
 
 public class SC6 {
 	public static void main(String args[]) throws Exception{
-		String myMRN = "urn:mrn:imo:imo-no:0654321";
+		String myMRN = "urn:mrn:imo:imo-no:1000006";
 		//myMRN = args[0];
 		
 		//Service Provider can be HTTP server and listen to port 'port'. 

@@ -16,7 +16,7 @@ Version : 0.3.01
 
 public class SC3 {
 	public static void main(String args[]) throws Exception{
-		String myMRN = "urn:mrn:imo:imo-no:0010005";
+		String myMRN = "urn:mrn:imo:imo-no:1000003";
 		//myMRN = args[0];
 
 		MMSConfiguration.MMS_URL="127.0.0.1:8088";

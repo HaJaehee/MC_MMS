@@ -8,6 +8,10 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jin Jung (jungst0001@kaist.ac.kr)
 Creation Date : 2017-01-24
 Version : 0.3.01
+
+Version : 0.5.0
+Rev. history : 2017-04-20 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -33,6 +37,7 @@ public class MessageParsing {
 	private int dstModel = 0;
 	private String uri = null;
 	private HttpMethod httpMethod = null;
+	private String svcMRN = null;
 	
 	MessageParsing(){
 		srcIP = null;
@@ -45,6 +50,7 @@ public class MessageParsing {
 		dstPort = 0;
 		srcModel = 0;
 		dstModel = 0;
+		svcMRN = null;
 	}
 	
 	void parsingMessage(ChannelHandlerContext ctx, FullHttpRequest req) {
@@ -62,15 +68,24 @@ public class MessageParsing {
 	void parsingLocInfo(FullHttpRequest req){
 		String locInfo = req.content().toString(Charset.forName("UTF-8")).trim();
 		
-		srcPort = Integer.parseInt(locInfo.split(":")[0]);
-		srcModel = Integer.parseInt(locInfo.split(":")[1]);
+		String[] locInforms = locInfo.split(":");
+		srcPort = Integer.parseInt(locInforms[0]);
+		srcModel = Integer.parseInt(locInforms[1]);
+		if (locInforms.length > 2) {
+			svcMRN = locInforms[2];
+			for ( int i = 3; i<locInforms.length; i++){
+				svcMRN += ":"+locInforms[i];
+			}
+		}
 
 	}
 	
 	void parsingDstInfo(String dstInfo){
-		dstIP = dstInfo.split(":")[0];
-    	dstPort = Integer.parseInt(dstInfo.split(":")[1]);
-    	dstModel = Integer.parseInt(dstInfo.split(":")[2]);
+		String[] dstInforms = dstInfo.split(":");
+		dstIP = dstInforms[0];
+    	dstPort = Integer.parseInt(dstInforms[1]);
+    	dstModel = Integer.parseInt(dstInforms[2]);
+    	
 	}
 	
 	String getDstMRN() {
@@ -111,5 +126,9 @@ public class MessageParsing {
 	
 	int getSrcModel(){
 		return srcModel;
+	}
+	
+	String getSvcMRN (){
+		return svcMRN;
 	}
 }
