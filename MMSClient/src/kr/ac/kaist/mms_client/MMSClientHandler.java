@@ -63,6 +63,10 @@ public class MMSClientHandler {
 		this.pollHandler = new PollHandler(clientMRN, dstMRN, interval, headerField);
 	}
 	
+	public void startPolling (String dstMRN, String svcMRN, int interval) throws IOException{
+		this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
+	}
+	
 	public void setPort (int port) throws IOException{
 		this.clientPort = port;
 		this.rcvHandler = new RcvHandler(port);
@@ -186,6 +190,10 @@ public class MMSClientHandler {
 	private class PollHandler extends MMSRcvHandler{
 		PollHandler(String clientMRN, String dstMRN, int interval, Map<String, String> headerField) throws IOException {
 			super(clientMRN, dstMRN, interval, clientPort, 1, headerField);
+		}
+		
+		PollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, Map<String, String> headerField) throws IOException {
+			super(clientMRN, dstMRN, svcMRN, interval, clientPort, 1, headerField);
 		}
 	}
 	

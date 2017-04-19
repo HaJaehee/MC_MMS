@@ -74,6 +74,13 @@ public class MMSRcvHandler {
 		ph.start();
 	}
 	
+
+	MMSRcvHandler(String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
+		ph = new PollingHandler(clientMRN, dstMRN, svcMRN, interval, clientPort, msgType, headerField);
+		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");
+		ph.start();
+	}
+	
 	MMSRcvHandler(int port, String context) throws IOException {
 		server = HttpServer.create(new InetSocketAddress(port), 0);
 		hrh = new HttpReqHandler();
@@ -226,6 +233,7 @@ public class MMSRcvHandler {
 		private int interval = 0;
 		private String clientMRN = null;
 		private String dstMRN = null;
+		private String svcMRN = null;
 		private int clientPort = 0;
 		private int clientModel = 0;
 		private MMSDataParser dataParser = null;
@@ -236,6 +244,17 @@ public class MMSRcvHandler {
     		this.interval = interval;
     		this.clientMRN = clientMRN;
     		this.dstMRN = dstMRN;
+    		this.clientPort = clientPort;
+    		this.clientModel = clientModel;
+    		this.dataParser = new MMSDataParser();
+    		this.headerField = headerField;
+    	}
+    	
+    	PollingHandler (String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
+    		this.interval = interval;
+    		this.clientMRN = clientMRN;
+    		this.dstMRN = dstMRN;
+    		this.svcMRN = svcMRN;
     		this.clientPort = clientPort;
     		this.clientModel = clientModel;
     		this.dataParser = new MMSDataParser();
@@ -261,7 +280,12 @@ public class MMSRcvHandler {
 			
 			String url = "http://"+MMSConfiguration.MMS_URL+"/polling"; // MMS Server
 			URL obj = new URL(url);
-			String data = (clientPort + ":" + clientModel); //To do: add geographical info, channel info, etc. 
+			String data;
+			if (svcMRN != null){
+				data = (clientPort + ":" + clientModel + ":" + svcMRN); //To do: add geographical info, channel info, etc. 
+			} else {
+				data = (clientPort + ":" + clientModel + ":");
+			}
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			
 			//add request header

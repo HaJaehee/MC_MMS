@@ -1,8 +1,8 @@
 
 
 # MC_MMS
-Alpha Version 0.4.0 <br/>
-2017.3.21<br/>
+Alpha Version 0.5.0 <br/>
+2017.4.20<br/>
 
 
 ## Features
@@ -39,7 +39,31 @@ version 2.0 (the "License"); you may not use this file except in compliance<br/>
 with the License. You may obtain a copy of the License at:<br/>
 <br/>
   http://www.apache.org/licenses/LICENSE-2.0<br/>
-
+  <br/>
+   <br/>
+Used [The Rabbit MQ] https://www.rabbitmq.com/mpl.html
+ Mozilla Public License.<br/>
+<br/>
+``The contents of this file are subject to the Mozilla Public License<br/>
+Version 1.1 (the "License"); you may not use this file except in<br/>
+compliance with the License. You may obtain a copy of the License at<br/>
+http://www.mozilla.org/MPL/<br/>
+<br/>
+Software distributed under the License is distributed on an "AS IS"<br/>
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the<br/>
+License for the specific language governing rights and limitations<br/>
+under the License.<br/>
+<br/>
+MC_MMS uses the Original Code of RabbitMQ.<br/>
+<br/>
+The Initial Developer of the Original Code is GoPivotal, Ltd.<br/>
+Copyright (c) 2007-2013 GoPivotal, Inc.  All Rights Reserved.''<br/>
+<br/>
+[NOTE: The text of this Exhibit A may differ slightly from the text of<br/>
+the notices in the Source Code files of the Original Code. You should<br/>
+use the text of this Exhibit A rather than the text found in the<br/>
+Original Code Source Code for Your Modifications.]<br/>
+<br/>
 
 ### Databases
 No<br/>

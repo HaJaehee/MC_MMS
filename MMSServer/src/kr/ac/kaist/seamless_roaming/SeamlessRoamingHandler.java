@@ -1,5 +1,7 @@
 package kr.ac.kaist.seamless_roaming;
 
+import io.netty.channel.ChannelHandlerContext;
+
 /* -------------------------------------------------------- */
 /** 
 File name : SeamlessRoamingHandler.java
@@ -13,6 +15,8 @@ Version : 0.3.01
 /* -------------------------------------------------------- */
 
 import io.netty.handler.codec.http.FullHttpRequest;
+import kr.ac.kaist.message_queue.MessageQueueManager;
+import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 
 public class SeamlessRoamingHandler {
@@ -21,6 +25,7 @@ public class SeamlessRoamingHandler {
 	private PollingMessageHandling pmh = null;
 	private SCMessageHandling scmh = null;
 	private MNSInteractionHandler mih = null;
+	private MessageQueueManager mqm = null;
 	
 	public SeamlessRoamingHandler() {
 		initializeModule();
@@ -29,6 +34,7 @@ public class SeamlessRoamingHandler {
 	
 	private void initializeModule() {
 		mih = new MNSInteractionHandler();
+		mqm = new MessageQueueManager();
 	}
 	
 	private void initializeSubModule() {
@@ -46,9 +52,22 @@ public class SeamlessRoamingHandler {
 		return message;
 	}
 	
+//	poll SC message in queue
+	public void processPollingMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String srcIP, int srcPort, int srcModel, String svcMRN) {
+		
+		pmh.updateClientInfo(mih, srcMRN, srcIP, srcPort, srcModel);
+		mqm.dequeueMessage(outputChannel, ctx, srcMRN, svcMRN);
+		
+	}
+	
 	
 //	save SC message into queue
 	public void putSCMessage(String dstMRN, FullHttpRequest req) {
 		scmh.putSCMessage(dstMRN, req);
+	}
+	
+//	save SC message into queue
+	public void putSCMessage(String srcMRN, String dstMRN, String message) {
+		scmh.putSCMessage(srcMRN, dstMRN, message);
 	}
 }

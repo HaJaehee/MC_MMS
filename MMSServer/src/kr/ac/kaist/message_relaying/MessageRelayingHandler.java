@@ -98,10 +98,17 @@ public class MessageRelayingHandler  {
 			String srcIP = parser.getSrcIP();
 			int srcPort = parser.getSrcPort();
 			int srcModel = parser.getSrcModel();
+			String svcMRN = parser.getSvcMRN();
 			
-			message = srh.processPollingMessage(srcMRN, srcIP, srcPort, srcModel);
+			//message = srh.processPollingMessage(srcMRN, srcIP, srcPort, srcModel);
+			srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, srcPort, srcModel, svcMRN);
+			
+			return;
 		} else if (type == MessageTypeDecision.RELAYING_TO_SC) {
-			srh.putSCMessage(dstMRN, req);
+			
+			//srh.putSCMessage(dstMRN, req);
+			
+			srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
     		message = "OK".getBytes();
 		} else if (type == MessageTypeDecision.RELAYING_TO_SERVER) {
         	try {
