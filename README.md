@@ -6,11 +6,12 @@ Beta Version 0.5.0 <br/>
 
 
 ## Features
-MMS Alpha Version<br/>
+MMS Beta Version<br/>
 Supports fully HTTPS communication<br/>
+Supports long polling<br/>
 Maritime Name System Dummy<br/>
-Service Consumer Dummy<br/>
-Service Provider Dummy<br/>
+Service Consumer Dummies<br/>
+Service Provider Dummies<br/>
 Identity Registry Dummy<br/>
 Service Registry Dummy<br/>
 
