@@ -63,12 +63,12 @@ public class MessageTypeDecision {
 		String uri = parser.getUri();
 		
 //    	When polling
-    	if (httpMethod == HttpMethod.POST && uri.equals("/polling")) {
+    	if (httpMethod == HttpMethod.POST && uri.equals("/polling") && dstMRN.equals(MMSConfiguration.MMS_MRN)) {
     		return POLLING; 
     	}
     	
 //		when registering
-    	else if (httpMethod == httpMethod.POST && uri.equals("/registering")) {
+    	else if (httpMethod == httpMethod.POST && uri.equals("/registering") && dstMRN.equals(MMSConfiguration.MMS_MRN)) {
     		return REGISTER_CLIENT;
     	}
     	
