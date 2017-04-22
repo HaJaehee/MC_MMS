@@ -56,7 +56,7 @@ public class MessageTypeDecision {
 	static final int EMPTY_MNSDummy = 12;
 	static final int REMOVE_MNS_ENTRY = 13;
 	
-	int decideType(MessageParsing parser, MessageCastingHandler mch) {
+	int decideType(MessageParser parser, MessageCastingHandler mch) {
 		String srcMRN = parser.getSrcMRN();
 		String dstMRN = parser.getDstMRN();
 		HttpMethod httpMethod = parser.getHttpMethod();
@@ -97,7 +97,7 @@ public class MessageTypeDecision {
         		return UNKNOWN_MRN;
         	}
 
-        	parser.parsingDstInfo(dstInfo);
+        	parser.parseDstInfo(dstInfo);
         	int model = parser.getDstModel();
         	
         	if (model == 2) {//model B (destination MSR, MIR, or MSP as servers)

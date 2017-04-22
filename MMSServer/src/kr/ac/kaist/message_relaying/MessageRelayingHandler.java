@@ -37,19 +37,14 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
-import kr.ac.kaist.message_queue.MMSQueue;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
@@ -57,7 +52,7 @@ import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 public class MessageRelayingHandler  {
 	private static final String TAG = "MessageRelayingHandler";
 	
-	private MessageParsing parser = null;
+	private MessageParser parser = null;
 	private MessageTypeDecision typeDecider = null;
 	private MRH_MessageOutputChannel outputChannel = null;
 	
@@ -71,7 +66,7 @@ public class MessageRelayingHandler  {
 		initializeSubModule();
 		this.protocol = protocol;
 		
-		parser.parsingMessage(ctx, req);
+		parser.parseMessage(ctx, req);
 		
 		int type = typeDecider.decideType(parser, mch);
 		processRelaying(type, ctx, req);
@@ -83,7 +78,7 @@ public class MessageRelayingHandler  {
 	}
 	
 	private void initializeSubModule() {
-		parser = new MessageParsing();
+		parser = new MessageParser();
 		typeDecider = new MessageTypeDecision();
 		outputChannel = new MRH_MessageOutputChannel();
 	}
@@ -99,7 +94,7 @@ public class MessageRelayingHandler  {
 		byte[] message = null;
 		
 		if (type == MessageTypeDecision.POLLING) {
-			parser.parsingLocInfo(req);
+			parser.parseLocInfo(req);
 			
 			String srcIP = parser.getSrcIP();
 			int srcPort = parser.getSrcPort();
@@ -130,7 +125,7 @@ public class MessageRelayingHandler  {
 				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
 		} else if (type == MessageTypeDecision.REGISTER_CLIENT) {
-			parser.parsingLocInfo(req);
+			parser.parseLocInfo(req);
 			
 			String srcIP = parser.getSrcIP();
 			int srcPort = parser.getSrcPort();
