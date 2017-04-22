@@ -22,7 +22,7 @@ import kr.ac.kaist.message_queue.MMSQueue;
 import kr.ac.kaist.message_queue.MessageQueueManager;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 
-public class SCMessageHandling {
+public class SCMessageHandler {
 
 	@Deprecated
 	void putSCMessage(String dstMRN, FullHttpRequest req){

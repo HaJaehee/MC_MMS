@@ -18,7 +18,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 import kr.ac.kaist.message_queue.MMSQueue;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 
-public class PollingMessageHandling {
+public class PollingMessageHandler {
 	
 	
 	void updateClientInfo(MNSInteractionHandler mih, String srcMRN, String srcIP, int srcPort, int srcModel) {

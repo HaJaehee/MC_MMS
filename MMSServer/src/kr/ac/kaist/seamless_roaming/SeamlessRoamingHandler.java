@@ -26,8 +26,8 @@ import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 public class SeamlessRoamingHandler {
 	private static final String TAG = "SeamlessRoamingHandler";
 	
-	private PollingMessageHandling pmh = null;
-	private SCMessageHandling scmh = null;
+	private PollingMessageHandler pmh = null;
+	private SCMessageHandler scmh = null;
 	private MNSInteractionHandler mih = null;
 	private MessageQueueManager mqm = null;
 	
@@ -42,8 +42,8 @@ public class SeamlessRoamingHandler {
 	}
 	
 	private void initializeSubModule() {
-		pmh = new PollingMessageHandling();
-		scmh = new SCMessageHandling();
+		pmh = new PollingMessageHandler();
+		scmh = new SCMessageHandler();
 	}
 	
 //	poll SC message in queue

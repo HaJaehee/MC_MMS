@@ -41,7 +41,7 @@ import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
-public class MessageTypeDecision {
+public class MessageTypeDecider {
 	static final int POLLING = 1; // it means polling message 
 	static final int RELAYING_TO_SC = 2; // it means relaying to SC
 	static final int RELAYING_TO_SERVER = 3; // it means relaying to SR, IR or SP

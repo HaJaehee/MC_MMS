@@ -53,7 +53,7 @@ public class MessageRelayingHandler  {
 	private static final String TAG = "MessageRelayingHandler";
 	
 	private MessageParser parser = null;
-	private MessageTypeDecision typeDecider = null;
+	private MessageTypeDecider typeDecider = null;
 	private MRH_MessageOutputChannel outputChannel = null;
 	
 	private SeamlessRoamingHandler srh = null;
@@ -79,7 +79,7 @@ public class MessageRelayingHandler  {
 	
 	private void initializeSubModule() {
 		parser = new MessageParser();
-		typeDecider = new MessageTypeDecision();
+		typeDecider = new MessageTypeDecider();
 		outputChannel = new MRH_MessageOutputChannel();
 	}
 
@@ -93,7 +93,7 @@ public class MessageRelayingHandler  {
 		
 		byte[] message = null;
 		
-		if (type == MessageTypeDecision.POLLING) {
+		if (type == MessageTypeDecider.POLLING) {
 			parser.parseLocInfo(req);
 			
 			String srcIP = parser.getSrcIP();
@@ -107,14 +107,14 @@ public class MessageRelayingHandler  {
 			srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, srcPort, srcModel, svcMRN);
 			
 			return;
-		} else if (type == MessageTypeDecision.RELAYING_TO_SC) {
+		} else if (type == MessageTypeDecider.RELAYING_TO_SC) {
 			
 			//@Deprecated
 			//srh.putSCMessage(dstMRN, req);
 			
 			srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
     		message = "OK".getBytes(Charset.forName("UTF-8"));
-		} else if (type == MessageTypeDecision.RELAYING_TO_SERVER) {
+		} else if (type == MessageTypeDecider.RELAYING_TO_SERVER) {
         	try {
         		if (protocol.equals("http")) {
 				    message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod);
@@ -124,7 +124,7 @@ public class MessageRelayingHandler  {
 			} catch (Exception e) {
 				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
-		} else if (type == MessageTypeDecision.REGISTER_CLIENT) {
+		} else if (type == MessageTypeDecider.REGISTER_CLIENT) {
 			parser.parseLocInfo(req);
 			
 			String srcIP = parser.getSrcIP();
@@ -138,7 +138,7 @@ public class MessageRelayingHandler  {
 				message = "Registering failed".getBytes();
 			}
 			
-		} else if (type == MessageTypeDecision.STATUS){
+		} else if (type == MessageTypeDecider.STATUS){
     		String status;
     		
 			try {
@@ -151,7 +151,7 @@ public class MessageRelayingHandler  {
 				// TODO Auto-generated catch block
 				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
-		} else if (type == MessageTypeDecision.LOGS) {
+		} else if (type == MessageTypeDecider.LOGS) {
     		String status;
 			try {
 				status = getStatus();
@@ -165,7 +165,7 @@ public class MessageRelayingHandler  {
 				// TODO Auto-generated catch block
 				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
-		} else if (type == MessageTypeDecision.SAVE_LOGS) {
+		} else if (type == MessageTypeDecider.SAVE_LOGS) {
     		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
     		String logfile = "./log"+timeStamp+".txt";
     		BufferedWriter wr;
@@ -183,7 +183,7 @@ public class MessageRelayingHandler  {
 		} /*else if (type == MessageTypeDecision.EMPTY_QUEUE) {
 			MMSQueue.queue.clear();
     		message = "OK".getBytes(Charset.forName("UTF-8"));
-		} */else if (type == MessageTypeDecision.EMPTY_MNSDummy) {
+		} */else if (type == MessageTypeDecider.EMPTY_MNSDummy) {
     		try {
 				emptyMNS();
 				message = "OK".getBytes(Charset.forName("UTF-8"));
@@ -194,7 +194,7 @@ public class MessageRelayingHandler  {
 				// TODO Auto-generated catch block
 				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
-		} else if (type == MessageTypeDecision.REMOVE_MNS_ENTRY) {
+		} else if (type == MessageTypeDecider.REMOVE_MNS_ENTRY) {
     		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
     		if(MMSConfiguration.LOGGING)System.out.println("remove mrn: " + params.get("mrn").get(0));
@@ -209,12 +209,12 @@ public class MessageRelayingHandler  {
 				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			} 
 		}
-		else if (type == MessageTypeDecision.CLEAN_LOGS) {
+		else if (type == MessageTypeDecider.CLEAN_LOGS) {
     		MMSLog.log = "";
     		message = "OK".getBytes(Charset.forName("UTF-8"));
-		} else if (type == MessageTypeDecision.UNKNOWN_MRN) {
+		} else if (type == MessageTypeDecider.UNKNOWN_MRN) {
 			message = "No Device having that MRN".getBytes();
-		} else if (type == MessageTypeDecision.UNKNOWN_HTTP_TYPE) {
+		} else if (type == MessageTypeDecider.UNKNOWN_HTTP_TYPE) {
 			message = "Unknown http type".getBytes();
 		}
 		
