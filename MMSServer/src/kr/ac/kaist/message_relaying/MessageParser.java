@@ -2,7 +2,7 @@ package kr.ac.kaist.message_relaying;
 
 /* -------------------------------------------------------- */
 /** 
-File name : MessageParsing.java
+File name : MessageParser.java
 	It parses information of the message and saves it to variables. 
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jin Jung (jungst0001@kaist.ac.kr)
@@ -24,8 +24,8 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 
-public class MessageParsing {
-	private static final String TAG = "MessageParsing";
+public class MessageParser {
+	private static final String TAG = "MessageParser";
 	
 	private String srcIP = null;
 	private String srcMRN = null;
@@ -39,7 +39,7 @@ public class MessageParsing {
 	private HttpMethod httpMethod = null;
 	private String svcMRN = null;
 	
-	MessageParsing(){
+	MessageParser(){
 		srcIP = null;
 		srcMRN = null;
 		dstIP = null;
@@ -53,7 +53,7 @@ public class MessageParsing {
 		svcMRN = null;
 	}
 	
-	void parsingMessage(ChannelHandlerContext ctx, FullHttpRequest req) {
+	void parseMessage(ChannelHandlerContext ctx, FullHttpRequest req) {
 		InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 	    InetAddress inetaddress = socketAddress.getAddress();
 	    srcIP = inetaddress.getHostAddress(); // IP address of client
@@ -65,7 +65,7 @@ public class MessageParsing {
 		httpMethod = req.method();
 	}
 	
-	void parsingLocInfo(FullHttpRequest req){
+	void parseLocInfo(FullHttpRequest req){
 		String locInfo = req.content().toString(Charset.forName("UTF-8")).trim();
 		
 		String[] locInforms = locInfo.split(":");
@@ -80,7 +80,7 @@ public class MessageParsing {
 
 	}
 	
-	void parsingDstInfo(String dstInfo){
+	void parseDstInfo(String dstInfo){
 		String[] dstInforms = dstInfo.split(":");
 		dstIP = dstInforms[0];
     	dstPort = Integer.parseInt(dstInforms[1]);

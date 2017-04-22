@@ -12,7 +12,7 @@ import kr.ac.kaist.mms_server.MMSConfiguration;
 
 /* -------------------------------------------------------- */
 /** 
-File name : MessageQueueEnqueue.java
+File name : MessageQueueEnqueuer.java
 	
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-04-19
@@ -20,7 +20,7 @@ Version : 0.5.0
 */
 /* -------------------------------------------------------- */
 
-public class MessageQueueEnqueue {
+public class MessageQueueEnqueuer {
 	void enqueueMessage(String srcMRN, String dstMRN, String message) {
 		
 		String queueName = dstMRN+"::"+srcMRN;

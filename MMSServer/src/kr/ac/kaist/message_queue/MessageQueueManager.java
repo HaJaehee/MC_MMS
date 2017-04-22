@@ -16,12 +16,12 @@ Version : 0.5.0
 
 public class MessageQueueManager {
 	public void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN ) {
-		MessageQueueDequeue mqd = new MessageQueueDequeue();
+		MessageQueueDequeuer mqd = new MessageQueueDequeuer();
 		mqd.dequeueMessage(outputChannel, ctx, srcMRN, svcMRN);
 	}
 	
 	public void enqueueMessage (String srcMRN, String dstMRN, String message) {
-		MessageQueueEnqueue mqe = new MessageQueueEnqueue();
+		MessageQueueEnqueuer mqe = new MessageQueueEnqueuer();
 		mqe.enqueueMessage(srcMRN, dstMRN, message);
 	}
 }
