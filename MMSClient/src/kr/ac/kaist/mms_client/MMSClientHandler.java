@@ -85,10 +85,10 @@ public class MMSClientHandler {
 		}
 	}
 
-	@Deprecated
-	public void startPolling (String dstMRN, int interval) throws IOException{
-		this.pollHandler = new PollHandler(clientMRN, dstMRN, interval, headerField);
-	}
+//	@Deprecated
+//	public void startPolling (String dstMRN, int interval) throws IOException{
+//		this.pollHandler = new PollHandler(clientMRN, dstMRN, interval, headerField);
+//	}
 	
 	public void startPolling (String dstMRN, String svcMRN, int interval) throws IOException{
 		this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
@@ -216,10 +216,10 @@ public class MMSClientHandler {
 	}
 	
 	private class PollHandler extends MMSRcvHandler{
-		@Deprecated
-		PollHandler(String clientMRN, String dstMRN, int interval, Map<String, String> headerField) throws IOException {
-			super(clientMRN, dstMRN, interval, clientPort, 1, headerField);
-		}
+//		@Deprecated
+//		PollHandler(String clientMRN, String dstMRN, int interval, Map<String, String> headerField) throws IOException {
+//			super(clientMRN, dstMRN, interval, clientPort, 1, headerField);
+//		}
 		
 		PollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, Map<String, String> headerField) throws IOException {
 			super(clientMRN, dstMRN, svcMRN, interval, clientPort, 1, headerField);

@@ -75,12 +75,12 @@ public class MMSRcvHandler {
         server.start();
 	}
 	
-	@Deprecated
-	MMSRcvHandler(String clientMRN, String dstMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
-		ph = new PollingHandler(clientMRN, dstMRN, interval, clientPort, msgType, headerField);
-		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");
-		ph.start();
-	}
+//	@Deprecated
+//	MMSRcvHandler(String clientMRN, String dstMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
+//		ph = new PollingHandler(clientMRN, dstMRN, interval, clientPort, msgType, headerField);
+//		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");
+//		ph.start();
+//	}
 	
 
 	MMSRcvHandler(String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
@@ -244,15 +244,15 @@ public class MMSRcvHandler {
 		private Map<String,String> headerField = null;
 		MMSClientHandler.PollingResponseCallback myCallback = null;
 		
-		@Deprecated
-    	PollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
-    		this.interval = interval;
-    		this.clientMRN = clientMRN;
-    		this.dstMRN = dstMRN;
-    		this.clientPort = clientPort;
-    		this.clientModel = clientModel;
-    		this.headerField = headerField;
-    	}
+//		@Deprecated
+//    	PollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
+//    		this.interval = interval;
+//    		this.clientMRN = clientMRN;
+//    		this.dstMRN = dstMRN;
+//    		this.clientPort = clientPort;
+//    		this.clientModel = clientModel;
+//    		this.headerField = headerField;
+//    	}
     	
     	PollingHandler (String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
     		this.interval = interval;
