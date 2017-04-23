@@ -79,12 +79,12 @@ public class SecureMMSRcvHandler {
         server.start();
 	}
 	
-	@Deprecated
-	SecureMMSRcvHandler(String clientMRN, String dstMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
-		ph = new SecurePollingHandler(clientMRN, dstMRN, interval, clientPort, msgType, headerField);
-		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");
-		ph.start();
-	}
+//	@Deprecated
+//	SecureMMSRcvHandler(String clientMRN, String dstMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
+//		ph = new SecurePollingHandler(clientMRN, dstMRN, interval, clientPort, msgType, headerField);
+//		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");
+//		ph.start();
+//	}
 	
 	SecureMMSRcvHandler(String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
 		ph = new SecurePollingHandler(clientMRN, dstMRN, svcMRN, interval, clientPort, msgType, headerField);
@@ -296,15 +296,15 @@ public class SecureMMSRcvHandler {
 		SecureMMSClientHandler.PollingResponseCallback myCallback = null;
 		private HostnameVerifier hv = null;
 		
-		@Deprecated
-    	SecurePollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
-    		this.interval = interval;
-    		this.clientMRN = clientMRN;
-    		this.dstMRN = dstMRN;
-    		this.clientPort = clientPort;
-    		this.clientModel = clientModel;
-    		this.headerField = headerField;
-    	}
+//		@Deprecated
+//    	SecurePollingHandler (String clientMRN, String dstMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
+//    		this.interval = interval;
+//    		this.clientMRN = clientMRN;
+//    		this.dstMRN = dstMRN;
+//    		this.clientPort = clientPort;
+//    		this.clientModel = clientModel;
+//    		this.headerField = headerField;
+//    	}
     	
     	SecurePollingHandler (String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
     		this.interval = interval;
