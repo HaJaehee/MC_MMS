@@ -40,7 +40,7 @@ public class SC5 {
 			}
 			
 			@Override
-			public String callbackMethod(Map<String,List<String>>  headerField, String message) {
+			public String respondToClient(Map<String,List<String>>  headerField, String message) {
 				Iterator<String> iter = headerField.keySet().iterator();
 				while (iter.hasNext()){
 					String key = iter.next();

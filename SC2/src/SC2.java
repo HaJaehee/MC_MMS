@@ -43,6 +43,11 @@ public class SC2 {
 			@Override
 			public void callbackMethod(Map<String, List<String>> headerField, String message) {
 				// TODO Auto-generated method stub
+				Iterator<String> iter = headerField.keySet().iterator();
+				while (iter.hasNext()){
+					String key = iter.next();
+					System.out.println(key+":"+headerField.get(key).toString());
+				}
 				System.out.println(message);
 			}
 			

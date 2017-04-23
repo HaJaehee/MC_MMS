@@ -251,7 +251,7 @@ public class SecureMMSRcvHandler {
         }
         
         private String processRequest(Map<String,List<String>> headerField, String message) {
-    		return this.myReqCallback.callbackMethod(headerField, message);
+    		return this.myReqCallback.respondToClient(headerField, message);
     	}
         
         private int setResponseCode() {
@@ -399,8 +399,8 @@ public class SecureMMSRcvHandler {
 			processResponse(inH, res);
 		}
 		
-		private String processResponse(Map<String,List<String>> headerField, String message) {
-    		return this.myCallback.callbackMethod(headerField, message);
+		private void processResponse(Map<String,List<String>> headerField, String message) {
+    		this.myCallback.callbackMethod(headerField, message);
     	}
 		
 		HostnameVerifier getHV (){

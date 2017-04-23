@@ -200,7 +200,7 @@ public class MMSRcvHandler {
         }
         
         private String processRequest(Map<String,List<String>> headerField, String message) {
-    		return this.myReqCallback.callbackMethod(headerField, message);
+    		return this.myReqCallback.respondToClient(headerField, message);
     	}
         
         private int setResponseCode() {
@@ -346,8 +346,8 @@ public class MMSRcvHandler {
 			
 		}
 		
-		private String receiveResponse(Map<String,List<String>> headerField, String message) {
-    		return this.myCallback.callbackMethod(headerField, message);
+		private void receiveResponse(Map<String,List<String>> headerField, String message) {
+    		this.myCallback.callbackMethod(headerField, message);
     	}
 		
 		private Map<String, List<String>> getModifiableMap (Map<String, List<String>> map) {

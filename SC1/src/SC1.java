@@ -43,10 +43,9 @@ public class SC1 {
 		ph.setPollingResponseCallback(new MMSClientHandler.PollingResponseCallback() {
 			
 			@Override
-			public String callbackMethod(Map<String, List<String>> headerField, String message) {
+			public void callbackMethod(Map<String, List<String>> headerField, String message) {
 				// TODO Auto-generated method stub
 				System.out.println(message);
-				return "OK";
 			}
 		});
 

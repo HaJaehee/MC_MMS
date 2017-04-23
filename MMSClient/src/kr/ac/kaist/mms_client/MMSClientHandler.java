@@ -50,10 +50,10 @@ public class MMSClientHandler {
 	}
 	
 	public interface PollingResponseCallback{
-		String callbackMethod(Map<String,List<String>> headerField, String message);
+		void callbackMethod(Map<String,List<String>> headerField, String message);
 	}
 	public interface RequestCallback{
-		String callbackMethod(Map<String,List<String>> headerField, String message);
+		String respondToClient(Map<String,List<String>> headerField, String message);
 		int setResponseCode();
 	}
 	

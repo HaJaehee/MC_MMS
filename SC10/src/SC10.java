@@ -36,7 +36,7 @@ public class SC10 {
 		ph.setPollingResponseCallback(new MMSClientHandler.PollingResponseCallback() {
 			
 			@Override
-			public String callbackMethod(Map<String, List<String>> headerField, String message) {
+			public void callbackMethod(Map<String, List<String>> headerField, String message) {
 				// TODO Auto-generated method stub
 				Iterator<String> iter = headerField.keySet().iterator();
 				while (iter.hasNext()){
@@ -44,7 +44,7 @@ public class SC10 {
 					System.out.println(key+":"+headerField.get(key).toString());
 				}
 				System.out.println(message);
-				return "OK";
+
 			}
 		});
 
