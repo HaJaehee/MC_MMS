@@ -1,3 +1,5 @@
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import kr.ac.kaist.mms_client.*;
@@ -24,7 +26,16 @@ public class SC3 {
 		//Service Consumer which can only send message
 		MMSClientHandler ch = new MMSClientHandler(myMRN);
 		
-		String a = ch.sendGetMsg("urn:mrn:simple:simple:server", "HelloWorldServer/", "");
-		System.out.println(a);
+		ch.setResponseCallback(new MMSClientHandler.ResponseCallback (){
+
+			@Override
+			public void callbackMethod(Map<String, List<String>> headerField, String message) {
+				// TODO Auto-generated method stub
+				System.out.println(message);
+			}
+			
+		});
+		
+		ch.sendGetMsg("urn:mrn:simple:simple:server", "HelloWorldServer/", "");
 	}
 }

@@ -23,8 +23,12 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -33,16 +37,21 @@ public class MMSSndHandler {
 	private static final String TAG = "MMSSndHandler";
 	private final String USER_AGENT = "MMSClient/0.3.01";
 	private String clientMRN = null;
+	private MMSClientHandler.ResponseCallback myCallback;
 	MMSSndHandler (String clientMRN){
 		this.clientMRN = clientMRN;
 	}
 
-	String registerLocator(int port) throws Exception {
-		return sendHttpPost("urn:mrn:smart-navi:device:mms1", "/registering", port+":2", null);
+	void registerLocator(int port) throws Exception {
+		sendHttpPost("urn:mrn:smart-navi:device:mms1", "/registering", port+":2", null);
 		
 	}
 	
-	String sendHttpPost(String dstMRN, String loc, String data, Map<String,String> headerField) throws Exception{
+	void setResponseCallback (MMSClientHandler.ResponseCallback callback){
+		this.myCallback = callback;
+	}
+	
+	void sendHttpPost(String dstMRN, String loc, String data, Map<String,String> headerField) throws Exception{
 		
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
@@ -73,24 +82,8 @@ public class MMSSndHandler {
 		} 
 		
 		//load contents
-		String urlParameters = "";
-		if (!loc.equals("/registering")){
-			//		change the string data to json format
-			JSONObject jsonFrame = new JSONObject();
-			JSONArray jsonArray = new JSONArray();
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("seq", "1");
-			jsonObject.put("srcMRN", clientMRN);
-			jsonObject.put("data", data);
-			jsonArray.add(jsonObject);
-			jsonFrame.put("payload", jsonArray);
-			
-			String jsonPayload = jsonFrame.toJSONString();
-			
-			urlParameters = jsonPayload;
-		} else {
-			urlParameters = data;
-		}
+		String urlParameters = data;
+		
 
 		if(MMSConfiguration.LOGGING)System.out.println("urlParameters: "+urlParameters);
 		
@@ -102,11 +95,18 @@ public class MMSSndHandler {
 		wr.flush();
 		wr.close();
 
+		Map<String,List<String>> inH = con.getHeaderFields();
+		inH = getModifiableMap(inH);
 		int responseCode = con.getResponseCode();
-		if(MMSConfiguration.LOGGING)System.out.println("\nSending 'POST' request to URL : " + url);
-		if(MMSConfiguration.LOGGING)System.out.println("Post parameters : " + urlParameters);
-		if(MMSConfiguration.LOGGING)System.out.println("Response Code : " + responseCode);
+		List<String> responseCodes = new ArrayList<String>();
+		responseCodes.add(responseCode+"");
+		inH.put("Response-code", responseCodes);
 		
+		if(MMSConfiguration.LOGGING){
+			System.out.println("\nSending 'POST' request to URL : " + url);
+			System.out.println("Post parameters : " + urlParameters);
+			System.out.println("Response Code : " + responseCode);
+		}
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 		String inputLine;
@@ -118,7 +118,9 @@ public class MMSSndHandler {
 		
 		in.close();
 		if(MMSConfiguration.LOGGING)System.out.println("Response: " + response.toString());
-		return new String(response.toString().getBytes(), "utf-8");
+		receiveResponse(inH, new String(response.toString().getBytes(), "utf-8"));
+		
+		return;
 	}
 	
 	//OONI
@@ -172,7 +174,7 @@ public class MMSSndHandler {
 	//OONI end
 	
 	//HJH
-	String sendHttpGet(String dstMRN, String loc, String params, Map<String,String> headerField) throws Exception {
+	void sendHttpGet(String dstMRN, String loc, String params, Map<String,String> headerField) throws Exception {
 
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
@@ -211,7 +213,13 @@ public class MMSSndHandler {
 		}
 		//con.addRequestProperty("Connection","keep-alive");
 
+		Map<String,List<String>> inH = con.getHeaderFields();
+		inH = getModifiableMap(inH);
 		int responseCode = con.getResponseCode();
+		List<String> responseCodes = new ArrayList<String>();
+		responseCodes.add(responseCode+"");
+		inH.put("Response-code", responseCodes);
+		
 		if(MMSConfiguration.LOGGING)System.out.println("\nSending 'GET' request to URL : " + url);
 		if(MMSConfiguration.LOGGING)System.out.println("Response Code : " + responseCode);
 		
@@ -224,18 +232,32 @@ public class MMSSndHandler {
 			response.append(inputLine);
 		}
 		
+		
+		
 		in.close();
 		if(MMSConfiguration.LOGGING)System.out.println("Response: " + response.toString());
-		return new String(response.toString().getBytes(), "utf-8");
+		
+		receiveResponse(inH, new String(response.toString().getBytes(), "utf-8"));
+		return;
 	}
 	
-	
-	String sendHttpsPost(String dstMRN, String params, Map<String,String> headerField) throws Exception {
-		return null;
+	void receiveResponse (Map<String,List<String>> headerField, String message) {
+		if (myCallback!=null){
+			myCallback.callbackMethod(headerField, message);
+		}
+		return;
 	}
 	
-	String sendHttpsGet(String dstMRN, String params, Map<String,String> headerField) throws Exception {
-		return null;
+	private Map<String, List<String>> getModifiableMap (Map<String, List<String>> map) {
+		Map<String, List<String>> ret = new HashMap<String, List<String>>();
+		Set<String> resHeaderKeyset = map.keySet(); 
+		for (Iterator<String> resHeaderIterator = resHeaderKeyset.iterator();resHeaderIterator.hasNext();) {
+			String key = resHeaderIterator.next();
+			List<String> values = map.get(key);
+			ret.put(key, values);
+		}
+	
+		return ret;
 	}
 	//HJH end
 }

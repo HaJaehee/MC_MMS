@@ -33,13 +33,12 @@ public class SC9 {
 		
 		
 		//Request Callback from the request message
-		sph.setCallback(new SecureMMSClientHandler.Callback() {
+		sph.setPollingResponseCallback(new SecureMMSClientHandler.PollingResponseCallback() {
 			
 			//it is called when client receives a message
 			@Override
-			public String callbackMethod(Map<String,List<String>>  headerField, String message) {
+			public void callbackMethod(Map<String,List<String>>  headerField, String message) {
 				System.out.println(message);
-				return "OK";
 			}
 		});
 

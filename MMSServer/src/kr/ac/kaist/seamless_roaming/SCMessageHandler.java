@@ -33,7 +33,7 @@ public class SCMessageHandler {
 		}
 	}
 	
-	void putSCMessage(String srcMRN, String dstMRN, String message){
+	void enqueueSCMessage(String srcMRN, String dstMRN, String message){
 		MessageQueueManager mqm = new MessageQueueManager();
 		mqm.enqueueMessage(srcMRN, dstMRN, message);
 	}

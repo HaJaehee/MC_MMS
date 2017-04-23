@@ -33,11 +33,17 @@ public class SC7 {
 		sch.setPort(port, jksDirectory, jksPassword);
 		
 		//Request Callback from the request message
-		sch.setCallback(new SecureMMSClientHandler.Callback() {
+		//it is called when client receives a message
+		sch.setRequestCallback(new SecureMMSClientHandler.RequestCallback() {
 			
-			//it is called when client receives a message
 			@Override
-			public String callbackMethod(Map<String,List<String>>  headerField, String message) {
+			public int setResponseCode() {
+				// TODO Auto-generated method stub
+				return 200;
+			}
+			
+			@Override
+			public String respondToClient(Map<String,List<String>>  headerField, String message) {
 				Iterator<String> iter = headerField.keySet().iterator();
 				while (iter.hasNext()){
 					String key = iter.next();

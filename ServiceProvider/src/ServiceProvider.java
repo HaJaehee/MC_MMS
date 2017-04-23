@@ -43,11 +43,18 @@ public class ServiceProvider {
 		 * ch.addContext("/forwarding"); //Finally ch has two context '/' and '/forwarding'
 		 */
 		
-		ch.setCallback(new MMSClientHandler.Callback() {
+		ch.setRequestCallback(new MMSClientHandler.RequestCallback() {
 			
+			@Override
+			public int setResponseCode() {
+				// TODO Auto-generated method stub
+				return 200;
+			}
+			
+
 			//it is called when client receives a message
 			@Override
-			public String callbackMethod(Map<String,List<String>> headerField, String message) {
+			public String respondToClient(Map<String,List<String>> headerField, String message) {
 				try {
 					Iterator<String> iter = headerField.keySet().iterator();
 					while (iter.hasNext()){
@@ -55,11 +62,16 @@ public class ServiceProvider {
 						System.out.println(key+":"+headerField.get(key).toString());
 					}
 					System.out.println(message);
-					JSONParser Jpar = new JSONParser();
-					String httpBody = (String)((JSONObject) Jpar.parse(message)).get("HTTP Body");
+					ch.setResponseCallback(new MMSClientHandler.ResponseCallback() {
+						
+						@Override
+						public void callbackMethod(Map<String, List<String>> headerField, String message) {
+							// TODO Auto-generated method stub
+							System.out.println(message);
+						}
+					});
 					//it only forwards messages to sc having urn:mrn:imo:imo-no:1000001
-					String res = ch.sendPostMsg("urn:mrn:imo:imo-no:1000001", httpBody);
-					System.out.println(res);
+					ch.sendPostMsg("urn:mrn:imo:imo-no:1000001", message);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

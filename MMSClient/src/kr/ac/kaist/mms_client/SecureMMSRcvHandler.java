@@ -29,9 +29,11 @@ import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -208,17 +210,20 @@ public class SecureMMSRcvHandler {
 	}
 	
 	class HttpsReqHandler implements HttpHandler {
-    	private MMSDataParser dataParser = new MMSDataParser();
-    	SecureMMSClientHandler.Callback myReqCallback;
+    	SecureMMSClientHandler.RequestCallback myReqCallback;
     	
-    	public void setReqCallback(SecureMMSClientHandler.Callback callback){
+       	public void setRequestCallback(SecureMMSClientHandler.RequestCallback callback){
     		this.myReqCallback = callback;
     	}
     	
         @Override
         public void handle(HttpExchange t) throws IOException {
         	URI uri = t.getRequestURI();
+        	List<String> uris = new ArrayList<String>();
+        	uris.add(uri.toString());
         	String httpMethod = t.getRequestMethod();
+        	List<String> httpMethods = new ArrayList<String>();
+        	httpMethods.add(httpMethod);
         	
         	InputStream inB = t.getRequestBody();
         	Map<String,List<String>> inH = t.getRequestHeaders();
@@ -228,27 +233,17 @@ public class SecureMMSRcvHandler {
             while ((read = inB.read(buf)) != -1) {
                 _out.write(buf, 0, read);
             }
-            Iterator<String> iter = inH.keySet().iterator();
-			while (iter.hasNext()){
-				String key = iter.next();
-			}
+            
             String receivedData = new String( buf, Charset.forName("UTF-8")).trim();
+
+            String message = receivedData;
+            inH.put("Http-method", httpMethods);
+            inH.put("Uri", uris);
             
-            ArrayList<MMSData> list = null;
-            if (receivedData!=null&&!receivedData.equals("")) {
-            	list = dataParser.processParsing(receivedData);
-            }
-            
-            String httpBody = (list!=null)?list.get(0).getData():"";
-            httpBody = (httpBody.startsWith("{")||httpBody.startsWith("["))?httpBody:"\""+httpBody+"\"";
-            
-            String message = "{\"Request URI\":\""+uri.toString()+"\","+
-							"\"HTTP Method\":\""+httpMethod+"\","+
-							"\"HTTP Body\":"+httpBody+"}";
             String response = this.processRequest(inH, message);
             
            
-            t.sendResponseHeaders(200, response.length());
+            t.sendResponseHeaders(setResponseCode(), response.length());
             OutputStream os = t.getResponseBody();
             os.write(response.getBytes());
             os.flush();
@@ -256,9 +251,12 @@ public class SecureMMSRcvHandler {
         }
         
         private String processRequest(Map<String,List<String>> headerField, String message) {
-    		String ret = this.myReqCallback.callbackMethod(headerField, message);
-    		return ret;
+    		return this.myReqCallback.respondToClient(headerField, message);
     	}
+        
+        private int setResponseCode() {
+        	return this.myReqCallback.setResponseCode();
+        }
     }
     //OONI
     class SecureFileReqHandler implements HttpHandler {
@@ -294,9 +292,8 @@ public class SecureMMSRcvHandler {
 		private String svcMRN = null;
 		private int clientPort = 0;
 		private int clientModel = 0;
-		private MMSDataParser dataParser = null;
 		private Map<String,String> headerField = null;
-		SecureMMSClientHandler.Callback myCallback = null;
+		SecureMMSClientHandler.PollingResponseCallback myCallback = null;
 		private HostnameVerifier hv = null;
 		
 		@Deprecated
@@ -306,7 +303,6 @@ public class SecureMMSRcvHandler {
     		this.dstMRN = dstMRN;
     		this.clientPort = clientPort;
     		this.clientModel = clientModel;
-    		this.dataParser = new MMSDataParser();
     		this.headerField = headerField;
     	}
     	
@@ -317,11 +313,10 @@ public class SecureMMSRcvHandler {
     		this.svcMRN = svcMRN;
     		this.clientPort = clientPort;
     		this.clientModel = clientModel;
-    		this.dataParser = new MMSDataParser();
     		this.headerField = headerField;
     	}
     	
-    	void setCallback(SecureMMSClientHandler.Callback callback){
+    	void setPollingResponseCallback(SecureMMSClientHandler.PollingResponseCallback callback){
     		this.myCallback = callback;
     	}
     	
@@ -376,11 +371,17 @@ public class SecureMMSRcvHandler {
 			wr.close();
 
 			int responseCode = con.getResponseCode();
-			if(MMSConfiguration.LOGGING)System.out.println("\nSending 'POST' request to URL : " + url);
-			if(MMSConfiguration.LOGGING)System.out.println("Polling...");
-			if(MMSConfiguration.LOGGING)System.out.println("Response Code : " + responseCode);
+			List<String> responseCodes = new ArrayList<String>();
+			responseCodes.add(responseCode+"");
+			if(MMSConfiguration.LOGGING){
+				System.out.println("\nSending 'POST' request to URL : " + url);
+				System.out.println("Polling...");
+				System.out.println("Response Code : " + responseCode);
+			}
 			
 			Map<String,List<String>> inH = con.getHeaderFields();
+			inH = getModifiableMap(inH);
+			inH.put("Response-code",responseCodes);
 			BufferedReader inB = new BufferedReader(
 			        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 			String inputLine;
@@ -393,21 +394,13 @@ public class SecureMMSRcvHandler {
 			
 			inB.close();
 			
-			String res = response.toString();
-			if (!res.equals("EMPTY\n")){
-				ArrayList<MMSData> list = dataParser.processParsing(res);
-				
-				for(int i = 0; i < list.size(); i++) {
-					processRequest(inH, list.get(i).getData());
-				}
-			} else {
-				//processRequest(res);
-			}
+			String res = response.toString();		
+
+			processResponse(inH, res);
 		}
 		
-		private String processRequest(Map<String,List<String>> headerField, String message) {
-    		String ret = this.myCallback.callbackMethod(headerField, message);
-    		return ret;
+		private void processResponse(Map<String,List<String>> headerField, String message) {
+    		this.myCallback.callbackMethod(headerField, message);
     	}
 		
 		HostnameVerifier getHV (){
@@ -445,6 +438,18 @@ public class SecureMMSRcvHandler {
 	        };
 	        
 	        return hv;
+		}
+		
+		private Map<String, List<String>> getModifiableMap (Map<String, List<String>> map) {
+			Map<String, List<String>> ret = new HashMap<String, List<String>>();
+			Set<String> resHeaderKeyset = map.keySet(); 
+			for (Iterator<String> resHeaderIterator = resHeaderKeyset.iterator();resHeaderIterator.hasNext();) {
+				String key = resHeaderIterator.next();
+				List<String> values = map.get(key);
+				ret.put(key, values);
+			}
+		
+			return ret;
 		}
 	}
     //HJH end

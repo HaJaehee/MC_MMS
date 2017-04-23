@@ -56,6 +56,7 @@ public class MRH_MessageOutputChannel {
 	private static Map<String,List<String>> storedHeader = null;
 	private static boolean isStoredHeader = false;
 	private HostnameVerifier hv = null;
+	private int responseCode = 200;
 	
 	void setResponseHeader(Map<String, List<String>> storingHeader){
 		isStoredHeader = true;
@@ -63,9 +64,11 @@ public class MRH_MessageOutputChannel {
 	}
 	
 	public void replyToSender(ChannelHandlerContext ctx, byte[] data){
+		
+		if(MMSConfiguration.LOGGING)System.out.println("Reply to sender");
     	ByteBuf textb = Unpooled.copiedBuffer(data);
     	long responseLen = data.length;
-    	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+    	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, getHttpResponseStatus(responseCode));
     	if (isStoredHeader){
 			Set<String> resHeaderKeyset = storedHeader.keySet(); 
 			for (Iterator<String> resHeaderIterator = resHeaderKeyset.iterator();resHeaderIterator.hasNext();) {
@@ -81,9 +84,11 @@ public class MRH_MessageOutputChannel {
 			}
 			isStoredHeader = false;
 			storedHeader = null;
+			
     	} else {
     		res.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8");
     	}
+    	
     	
     	HttpUtil.setContentLength(res, responseLen);
     	ctx.write(res);
@@ -136,13 +141,16 @@ public class MRH_MessageOutputChannel {
 		// get request doesn't have http body
 		
 		try{
-			int responseCode = con.getResponseCode();
+			responseCode = con.getResponseCode();
+		
 			Map<String,List<String>> resHeaders = con.getHeaderFields();
 			setResponseHeader(resHeaders);
 			
-			if(MMSConfiguration.LOGGING)System.out.println("\nSending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url);
-			if(MMSConfiguration.LOGGING)System.out.println((httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters);
-			if(MMSConfiguration.LOGGING)System.out.println("Response Code : " + responseCode);
+			if(MMSConfiguration.LOGGING) {	
+				System.out.println("\nSending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url);
+				System.out.println((httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters);
+				System.out.println("Response Code : " + responseCode);
+			}
 			BufferedReader in = new BufferedReader(
 			        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 			String inputLine;
@@ -216,13 +224,16 @@ public class MRH_MessageOutputChannel {
 		// get request doesn't have http body
 		
 		try{
-			int responseCode = con.getResponseCode();
+			responseCode = con.getResponseCode();
 			Map<String,List<String>> resHeaders = con.getHeaderFields();
 			setResponseHeader(resHeaders);
 			
-			if(MMSConfiguration.LOGGING)System.out.println("\nSending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url);
-			if(MMSConfiguration.LOGGING)System.out.println((httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters);
-			if(MMSConfiguration.LOGGING)System.out.println("Response Code : " + responseCode);
+			if(MMSConfiguration.LOGGING){
+				System.out.println("\nSending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url);
+				System.out.println((httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters);
+				System.out.println("Response Code : " + responseCode);
+			}
+		
 			BufferedReader in = new BufferedReader(
 			        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 			String inputLine;
@@ -277,5 +288,112 @@ public class MRH_MessageOutputChannel {
         };
         
         return hv;
+	}
+	
+	private HttpResponseStatus getHttpResponseStatus(int responseCode) {
+		switch (responseCode) {
+		case 200:
+			return HttpResponseStatus.OK;
+		case 301:
+			return HttpResponseStatus.MOVED_PERMANENTLY;
+		case 302:
+			return HttpResponseStatus.FOUND;
+		case 404:
+			return HttpResponseStatus.NOT_FOUND;
+		case 400:
+			return HttpResponseStatus.BAD_REQUEST;
+		case 401:
+			return HttpResponseStatus.UNAUTHORIZED;
+		case 403:
+			return HttpResponseStatus.FORBIDDEN;
+		case 405:
+			return HttpResponseStatus.METHOD_NOT_ALLOWED;
+		case 500:
+			return HttpResponseStatus.INTERNAL_SERVER_ERROR;
+		case 503:
+			return HttpResponseStatus.SERVICE_UNAVAILABLE;
+		case 504:
+			return HttpResponseStatus.GATEWAY_TIMEOUT;
+		case 505:
+			return HttpResponseStatus.HTTP_VERSION_NOT_SUPPORTED;
+		case 303:
+			return HttpResponseStatus.SEE_OTHER;
+		case 304:
+			return HttpResponseStatus.NOT_MODIFIED;
+		case 307:
+			return HttpResponseStatus.TEMPORARY_REDIRECT;
+		case 204:
+			return HttpResponseStatus.NO_CONTENT;
+		case 206:
+			return HttpResponseStatus.PARTIAL_CONTENT;
+		case 201:
+			return HttpResponseStatus.CREATED;
+		case 202:
+			return HttpResponseStatus.ACCEPTED;
+		case 203:
+			return HttpResponseStatus.NON_AUTHORITATIVE_INFORMATION;
+		case 205:
+			return HttpResponseStatus.RESET_CONTENT;
+		case 207:
+			return HttpResponseStatus.MULTI_STATUS;
+		case 300:
+			return HttpResponseStatus.MULTIPLE_CHOICES;
+		case 305:
+			return HttpResponseStatus.USE_PROXY;
+		case 402:
+			return HttpResponseStatus.PAYMENT_REQUIRED;
+		case 406:
+			return HttpResponseStatus.NOT_ACCEPTABLE;
+		case 407:
+			return HttpResponseStatus.PROXY_AUTHENTICATION_REQUIRED;
+		case 408:
+			return HttpResponseStatus.REQUEST_TIMEOUT;
+		case 409:
+			return HttpResponseStatus.CONFLICT;
+		case 410:
+			return HttpResponseStatus.GONE;
+		case 411:
+			return HttpResponseStatus.LENGTH_REQUIRED;
+		case 412:
+			return HttpResponseStatus.PRECONDITION_FAILED;
+		case 413:
+			return HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE;
+		case 414:
+			return HttpResponseStatus.REQUEST_URI_TOO_LONG;
+		case 415:
+			return HttpResponseStatus.UNSUPPORTED_MEDIA_TYPE;
+		case 416:
+			return HttpResponseStatus.REQUESTED_RANGE_NOT_SATISFIABLE;
+		case 417:
+			return HttpResponseStatus.EXPECTATION_FAILED;
+		case 422:
+			return HttpResponseStatus.UNPROCESSABLE_ENTITY;
+		case 423:
+			return HttpResponseStatus.LOCKED;
+		case 424:
+			return HttpResponseStatus.FAILED_DEPENDENCY;
+		case 426:
+			return HttpResponseStatus.UPGRADE_REQUIRED;
+		case 428:
+			return HttpResponseStatus.PRECONDITION_REQUIRED;
+		case 429:
+			return HttpResponseStatus.TOO_MANY_REQUESTS;
+		case 431:
+			return HttpResponseStatus.REQUEST_HEADER_FIELDS_TOO_LARGE;
+		case 501:
+			return HttpResponseStatus.NOT_IMPLEMENTED;
+		case 502:
+			return HttpResponseStatus.BAD_REQUEST;
+		case 506:
+			return HttpResponseStatus.VARIANT_ALSO_NEGOTIATES;
+		case 507:
+			return HttpResponseStatus.INSUFFICIENT_STORAGE;
+		case 510:
+			return HttpResponseStatus.NOT_EXTENDED;
+		case 511:
+			return HttpResponseStatus.NETWORK_AUTHENTICATION_REQUIRED;
+		default:
+			return HttpResponseStatus.BAD_REQUEST;
+		}
 	}
 }

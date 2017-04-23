@@ -39,14 +39,13 @@ public class SC1 {
 		int pollInterval = 1000;
 		ph.startPolling("urn:mrn:smart-navi:device:mms1", pollInterval);
 		
-		//Request Callback from the request message
-		ph.setCallback(new MMSClientHandler.Callback() {
+		//it is called when client receives a message
+		ph.setPollingResponseCallback(new MMSClientHandler.PollingResponseCallback() {
 			
-			//it is called when client receives a message
 			@Override
-			public String callbackMethod(Map<String,List<String>>  headerField, String message) {
+			public void callbackMethod(Map<String, List<String>> headerField, String message) {
+				// TODO Auto-generated method stub
 				System.out.println(message);
-				return "OK";
 			}
 		});
 
