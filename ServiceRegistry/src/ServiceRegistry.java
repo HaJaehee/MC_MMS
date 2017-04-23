@@ -26,7 +26,7 @@ public class ServiceRegistry{
 		MMSClientHandler ch = new MMSClientHandler(myMRN);
 		ch.setPort(port);
 		//Request Callback from the request message
-		ch.setCallback(new MMSClientHandler.Callback() {
+		ch.setRequestCallback(new MMSClientHandler.RequestCallback() {
 			
 			//it is called when client receives a message
 			@Override
@@ -38,6 +38,12 @@ public class ServiceRegistry{
 				}
 				System.out.println(message);
 				return "OK";
+			}
+
+			@Override
+			public int setResponseCode() {
+				// TODO Auto-generated method stub
+				return 200;
 			}
 		});
 	}

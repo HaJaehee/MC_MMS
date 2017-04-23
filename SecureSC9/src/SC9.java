@@ -33,7 +33,7 @@ public class SC9 {
 		
 		
 		//Request Callback from the request message
-		sph.setCallback(new SecureMMSClientHandler.Callback() {
+		sph.setPollingResponseCallback(new SecureMMSClientHandler.PollingResponseCallback() {
 			
 			//it is called when client receives a message
 			@Override

@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import kr.ac.kaist.mms_client.MMSClientHandler;
 import kr.ac.kaist.mms_client.MMSConfiguration;
@@ -26,15 +27,25 @@ public class SC11 {
 		headerfield.put("AccessToken", "1234567890");
 		ch.setMsgHeader(headerfield);
 		
+		ch.setResponseCallback(new MMSClientHandler.ResponseCallback (){
+
+			@Override
+			public void callbackMethod(Map<String, List<String>> headerField, String message) {
+				// TODO Auto-generated method stub
+				System.out.println(message);
+			}
+			
+		});
+		
 		
 		for (int i = 0; i < 100;i++){
-			String a = ch.sendPostMsg("urn:mrn:smart-navi:device:tm-server2", "/forwarding", "¾È³ç hi hello " + i);
+			ch.sendPostMsg("urn:mrn:smart-navi:device:tm-server2", "/forwarding", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
 		}
 
 		/*
 		for (int i = 0; i < 10;i++){
-			String a = ch.sendPostMsg("urn:mrn:imo:imo-no:1000005", "¾È³ç hi hello " + i);
+			ch.sendPostMsg("urn:mrn:imo:imo-no:1000005", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
 		}*/
 	}

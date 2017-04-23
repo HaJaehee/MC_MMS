@@ -56,7 +56,7 @@ public class MRH_MessageOutputChannel {
 	private static Map<String,List<String>> storedHeader = null;
 	private static boolean isStoredHeader = false;
 	private HostnameVerifier hv = null;
-	private int responseCode = 0;
+	private int responseCode = 200;
 	
 	void setResponseHeader(Map<String, List<String>> storingHeader){
 		isStoredHeader = true;
@@ -64,6 +64,8 @@ public class MRH_MessageOutputChannel {
 	}
 	
 	public void replyToSender(ChannelHandlerContext ctx, byte[] data){
+		
+		if(MMSConfiguration.LOGGING)System.out.println("Reply to sender");
     	ByteBuf textb = Unpooled.copiedBuffer(data);
     	long responseLen = data.length;
     	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, getHttpResponseStatus(responseCode));

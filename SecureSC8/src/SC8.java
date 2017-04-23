@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import kr.ac.kaist.mms_client.MMSConfiguration;
@@ -27,21 +28,29 @@ public class SC8 {
 		headerfield.put("AccessToken", "1234567890");
 		sch.setMsgHeader(headerfield);
 		
+		sch.setResponseCallback(new SecureMMSClientHandler.ResponseCallback() {
+			
+			@Override
+			public void callbackMethod(Map<String, List<String>> headerField, String message) {
+				// TODO Auto-generated method stub
+				System.out.println(message);
+			}
+		});
 		
 		for (int i = 0; i < 10;i++){
-			String a = sch.sendPostMsg("urn:mrn:smart-navi:device:secure-tm-server", "/forwarding", "¾È³ç hi hello " + i);
+			sch.sendPostMsg("urn:mrn:smart-navi:device:secure-tm-server", "/forwarding", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
 		}
 
 		/*
 		for (int i = 0; i < 10;i++){
-			String a = sch.sendPostMsg("urn:mrn:imo:imo-no:1000007", "¾È³ç hi hello " + i);
+			sch.sendPostMsg("urn:mrn:imo:imo-no:1000007", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
 		}*/
 
 		/*
 		for (int i = 0; i < 10;i++){
-			String a = sch.sendPostMsg("urn:mrn:imo:imo-no:1000009", "¾È³ç hi hello " + i);
+			sch.sendPostMsg("urn:mrn:imo:imo-no:1000009", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
 		}*/
 	}

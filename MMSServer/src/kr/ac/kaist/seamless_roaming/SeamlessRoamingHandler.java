@@ -29,7 +29,7 @@ public class SeamlessRoamingHandler {
 	private PollingMessageHandler pmh = null;
 	private SCMessageHandler scmh = null;
 	private MNSInteractionHandler mih = null;
-	private MessageQueueManager mqm = null;
+
 	
 	public SeamlessRoamingHandler() {
 		initializeModule();
@@ -38,7 +38,7 @@ public class SeamlessRoamingHandler {
 	
 	private void initializeModule() {
 		mih = new MNSInteractionHandler();
-		mqm = new MessageQueueManager();
+
 	}
 	
 	private void initializeSubModule() {
@@ -61,7 +61,7 @@ public class SeamlessRoamingHandler {
 	public void processPollingMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String srcIP, int srcPort, int srcModel, String svcMRN) {
 		
 		pmh.updateClientInfo(mih, srcMRN, srcIP, srcPort, srcModel);
-		mqm.dequeueMessage(outputChannel, ctx, srcMRN, svcMRN);
+		pmh.dequeueSCMessage(outputChannel, ctx, srcMRN, svcMRN);
 		
 	}
 	
@@ -74,6 +74,6 @@ public class SeamlessRoamingHandler {
 	
 //	save SC message into queue
 	public void putSCMessage(String srcMRN, String dstMRN, String message) {
-		scmh.putSCMessage(srcMRN, dstMRN, message);
+		scmh.enqueueSCMessage(srcMRN, dstMRN, message);
 	}
 }

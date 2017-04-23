@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import kr.ac.kaist.mms_client.*;
+import kr.ac.kaist.mms_client.MMSClientHandler.RequestCallback;
 
 /* -------------------------------------------------------- */
 /** 
@@ -31,7 +32,7 @@ public class ServiceProvider2 {
 		 * ch.addContext("/forwarding"); //Finally ch has two context '/' and '/forwarding'
 		 */
 		
-		ch.setCallback(new MMSClientHandler.Callback() {
+		ch.setRequestCallback(new MMSClientHandler.RequestCallback() {
 			
 			//it is called when client receives a message
 			@Override
@@ -42,16 +43,27 @@ public class ServiceProvider2 {
 						String key = iter.next();
 						System.out.println(key+":"+headerField.get(key).toString());
 					}
+					ch.setResponseCallback(new MMSClientHandler.ResponseCallback() {
+						
+						@Override
+						public void callbackMethod(Map<String, List<String>> headerField, String message) {
+							// TODO Auto-generated method stub
+							System.out.println(message);
+						}
+					});
 					System.out.println(message);
-					JSONParser Jpar = new JSONParser();
-					String httpBody = (String)((JSONObject) Jpar.parse(message)).get("HTTP Body");
 					//it only forwards messages to sc having urn:mrn:imo:imo-no:1000001
-					String res = ch.sendPostMsg("urn:mrn:imo:imo-no:1000010", httpBody);
-					System.out.println(res);
+					ch.sendPostMsg("urn:mrn:imo:imo-no:1000010", message);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				return "OK";
+			}
+
+			@Override
+			public int setResponseCode() {
+				// TODO Auto-generated method stub
+				return 200;
 			}
 		});
 	}

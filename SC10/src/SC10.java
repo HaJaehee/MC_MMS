@@ -1,3 +1,4 @@
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -31,12 +32,17 @@ public class SC10 {
 		int pollInterval = 1;
 		ph.startPolling(dstMRN, svcMRN, pollInterval);
 		
-		//Request Callback from the request message
-		ph.setCallback(new MMSClientHandler.Callback() {
+		//it is called when client receives a message
+		ph.setPollingResponseCallback(new MMSClientHandler.PollingResponseCallback() {
 			
-			//it is called when client receives a message
 			@Override
-			public String callbackMethod(Map<String,List<String>>  headerField, String message) {
+			public String callbackMethod(Map<String, List<String>> headerField, String message) {
+				// TODO Auto-generated method stub
+				Iterator<String> iter = headerField.keySet().iterator();
+				while (iter.hasNext()){
+					String key = iter.next();
+					System.out.println(key+":"+headerField.get(key).toString());
+				}
 				System.out.println(message);
 				return "OK";
 			}

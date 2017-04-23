@@ -34,7 +34,13 @@ public class SecureServiceProvider {
 		 * sch.addContext("/forwarding"); //Finally sch has two context '/' and '/forwarding'
 		 */
 		
-		sch.setCallback(new SecureMMSClientHandler.Callback() {
+		sch.setRequestCallback(new SecureMMSClientHandler.RequestCallback() {
+			
+			@Override
+			public int setResponseCode() {
+				// TODO Auto-generated method stub
+				return 200;
+			}
 			
 			//it is called when client receives a message
 			@Override
@@ -46,11 +52,17 @@ public class SecureServiceProvider {
 						System.out.println(key+":"+headerField.get(key).toString());
 					}
 					System.out.println(message);
-					JSONParser Jpar = new JSONParser();
-					String httpBody = (String)((JSONObject) Jpar.parse(message)).get("HTTP Body");
+						sch.setResponseCallback(new SecureMMSClientHandler.ResponseCallback() {
+						
+						@Override
+						public void callbackMethod(Map<String, List<String>> headerField, String message) {
+							// TODO Auto-generated method stub
+							System.out.println(message);
+						}
+					});
 					//it only forwards messages to sc having urn:mrn:imo:imo-no:1000009
-					String res = sch.sendPostMsg("urn:mrn:imo:imo-no:1000009", httpBody);
-					System.out.println(res);
+					sch.sendPostMsg("urn:mrn:imo:imo-no:1000009", message);
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

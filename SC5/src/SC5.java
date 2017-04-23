@@ -30,9 +30,15 @@ public class SC5 {
 		ch.setPort(port);
 		
 		//Request Callback from the request message
-		ch.setCallback(new MMSClientHandler.Callback() {
+		//it is called when client receives a message
+		ch.setRequestCallback(new MMSClientHandler.RequestCallback() {
 			
-			//it is called when client receives a message
+			@Override
+			public int setResponseCode() {
+				// TODO Auto-generated method stub
+				return 200;
+			}
+			
 			@Override
 			public String callbackMethod(Map<String,List<String>>  headerField, String message) {
 				Iterator<String> iter = headerField.keySet().iterator();

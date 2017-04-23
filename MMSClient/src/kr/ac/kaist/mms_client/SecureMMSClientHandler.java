@@ -24,6 +24,10 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import kr.ac.kaist.mms_client.MMSClientHandler.PollingResponseCallback;
+import kr.ac.kaist.mms_client.MMSClientHandler.RequestCallback;
+import kr.ac.kaist.mms_client.MMSClientHandler.ResponseCallback;
+
 public class SecureMMSClientHandler {
 	private RcvHandler rcvHandler = null;
 	private PollHandler pollHandler = null;
@@ -37,19 +41,43 @@ public class SecureMMSClientHandler {
 		this.clientMRN = clientMRN;
 	}
 	
-	public interface Callback{
+	public interface PollingResponseCallback{
 		String callbackMethod(Map<String,List<String>> headerField, String message);
 	}
+	public interface RequestCallback{
+		String callbackMethod(Map<String,List<String>> headerField, String message);
+		int setResponseCode();
+	}
 	
+	public interface ResponseCallback{
+		void callbackMethod(Map<String,List<String>> headerField, String message);
+	}
 
-	public void setCallback(Callback callback){
-		if (this.rcvHandler != null && this.rcvHandler.hrh != null) {
-			 this.rcvHandler.hrh.setReqCallback(callback);
-		 }
+
+	public void setPollingResponseCallback(PollingResponseCallback callback){
 		if (this.pollHandler != null) {
-			 this.pollHandler.ph.setCallback(callback);
+			 this.pollHandler.ph.setPollingResponseCallback(callback);
+		 } else {
+			 System.out.println("Failed! HTTP Polling handler is required! Do startPolling()!");
 		 }
 	}
+	
+	public void setRequestCallback (RequestCallback callback) {
+		if (this.rcvHandler != null && this.rcvHandler.hrh != null) {
+			 this.rcvHandler.hrh.setRequestCallback(callback);
+		 } else {
+			 System.out.println("Failed! HTTPS server is required! Do setPort()!");
+		 }
+	}
+	
+	public void setResponseCallback (ResponseCallback callback) {
+		if (this.sendHandler != null) {
+			this.sendHandler.setResponseCallback(callback);
+		} else {
+			System.out.println("Failed! HTTP client is required!");
+		}
+	}
+
 
 	@Deprecated
 	public void startPolling (String dstMRN, int interval) throws IOException{
@@ -63,19 +91,19 @@ public class SecureMMSClientHandler {
 	public void setPort (int port, String jksDirectory, String jksPassword) throws Exception{
 		this.clientPort = port;
 		this.rcvHandler = new RcvHandler(port, jksDirectory, jksPassword);
-		String response = registerLocator(port);	
+		registerLocator(port);	
 	}
 	
 	public void setPort (int port, String context, String jksDirectory, String jksPassword) throws Exception{
 		this.clientPort = port;
 		this.rcvHandler = new RcvHandler(port, context, jksDirectory, jksPassword);
-		String response = registerLocator(port);	
+		registerLocator(port);	
 	}
 	
 	public void setPort (int port, String fileDirectory, String fileName, String jksDirectory, String jksPassword) throws Exception {
 		this.clientPort = port;
 		this.rcvHandler = new RcvHandler(port, fileDirectory, fileName);
-		String response = registerLocator(port);	
+		registerLocator(port);	
 	}
 	
 	public void addContext (String context) {
@@ -86,13 +114,14 @@ public class SecureMMSClientHandler {
 		this.rcvHandler.addFileContext(fileDirectory, fileName);
 	}
 	
-	private String registerLocator(int port){
+	private void registerLocator(int port){
 		try {
-			return new SecureMMSSndHandler(clientMRN).registerLocator(port);
+			new SecureMMSSndHandler(clientMRN).registerLocator(port);
+			return;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			if(MMSConfiguration.LOGGING)e.printStackTrace();
-			return "";
+			return;
 		}
 	}
 	
@@ -101,22 +130,22 @@ public class SecureMMSClientHandler {
 		this.headerField = headerField;
 	}
 	
-	public String sendPostMsg(String dstMRN, String loc, String data) throws Exception{
-		return this.sendHandler.sendHttpsPost(dstMRN, loc, data, headerField);
+	public void sendPostMsg(String dstMRN, String loc, String data) throws Exception{
+		this.sendHandler.sendHttpsPost(dstMRN, loc, data, headerField);
 	}
 	
-	public String sendPostMsg(String dstMRN, String data) throws Exception{
-		return this.sendHandler.sendHttpsPost(dstMRN, "", data, headerField);
-	}
-	
-	//HJH
-	public String sendGetMsg(String dstMRN) throws Exception{
-		return this.sendHandler.sendHttpsGet(dstMRN, "", "", headerField);
+	public void sendPostMsg(String dstMRN, String data) throws Exception{
+		this.sendHandler.sendHttpsPost(dstMRN, "", data, headerField);
 	}
 	
 	//HJH
-	public String sendGetMsg(String dstMRN, String loc, String params) throws Exception{
-		return this.sendHandler.sendHttpsGet(dstMRN, loc, params, headerField);
+	public void sendGetMsg(String dstMRN) throws Exception{
+		this.sendHandler.sendHttpsGet(dstMRN, "", "", headerField);
+	}
+	
+	//HJH
+	public void sendGetMsg(String dstMRN, String loc, String params) throws Exception{
+		this.sendHandler.sendHttpsGet(dstMRN, loc, params, headerField);
 	}
 	
 	//OONI

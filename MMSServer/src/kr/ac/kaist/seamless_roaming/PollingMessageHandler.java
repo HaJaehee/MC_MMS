@@ -1,5 +1,7 @@
 package kr.ac.kaist.seamless_roaming;
 
+import io.netty.channel.ChannelHandlerContext;
+
 /* -------------------------------------------------------- */
 /** 
 File name : PollingMessageHandling.java
@@ -16,14 +18,26 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 import kr.ac.kaist.message_queue.MMSQueue;
+import kr.ac.kaist.message_queue.MessageQueueManager;
+import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 
 public class PollingMessageHandler {
 	
+	private MessageQueueManager mqm = null;
+	
+	public PollingMessageHandler() {
+		initializeModule();
+	}
+	
+	private void initializeModule() {
+		mqm = new MessageQueueManager();
+	}
 	
 	void updateClientInfo(MNSInteractionHandler mih, String srcMRN, String srcIP, int srcPort, int srcModel) {
 		mih.updateClientInfo(srcMRN, srcIP, srcPort, srcModel);
 	}
+	
 	@Deprecated
 	byte[] getSCMessage(String sourceMRN) {
 		byte[] message = null;
@@ -36,4 +50,9 @@ public class PollingMessageHandler {
 		
 		return message;
 	}
+	
+	void dequeueSCMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN){
+		mqm.dequeueMessage(outputChannel, ctx, srcMRN, svcMRN);
+	}
+	
 }
