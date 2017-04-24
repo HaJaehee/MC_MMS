@@ -287,8 +287,10 @@ public class SecureMMSSndHandler {
 	}
 	
 	void receiveResponse (Map<String,List<String>> headerField, String message) {
-		if (myCallback!=null){
+		try{
 			myCallback.callbackMethod(headerField, message);
+		} catch (NullPointerException e) {
+			System.out.println("NullPointerException : Have to set response callback interface! SecureMMSClientHandler.setResponseCallback()");
 		}
 		return;
 	}
