@@ -1,7 +1,5 @@
 package kr.ac.kaist.seamless_roaming;
 
-import io.netty.channel.ChannelHandlerContext;
-
 /* -------------------------------------------------------- */
 /** 
 File name : SeamlessRoamingHandler.java
@@ -12,14 +10,14 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 Creation Date : 2017-01-24
 Version : 0.3.01
 
-Version : 0.5.0
 Rev. history : 2017-04-20 
+Version : 0.5.0
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
-import kr.ac.kaist.message_queue.MessageQueueManager;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 

@@ -1,5 +1,12 @@
 package kr.ac.kaist.mms_server;
-
+/* -------------------------------------------------------- */
+/** 
+File name : KeystoreCoder.java
+Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2017-04-25
+Version : 0.5.0
+*/
+/* -------------------------------------------------------- */
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

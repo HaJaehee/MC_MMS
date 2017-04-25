@@ -16,19 +16,21 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
 
-Version : 0.3.01
 Rev. history : 2017-02-01
+Version : 0.3.01
 	Added header field features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history : 2017-04-20 
 Version : 0.5.0
-Rev. history : 2017-04-20
-	Deprecated ServiceProvider
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-25
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 */
 /* -------------------------------------------------------- */
-@Deprecated
+
 public class ServiceProvider {
 	public static void main(String args[]) throws Exception{
 		String myMRN = "urn:mrn:smart-navi:device:tm-server";
@@ -36,14 +38,19 @@ public class ServiceProvider {
 
 		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		
-		MMSClientHandler ch = new MMSClientHandler(myMRN);
-		ch.setPort(port, "/forwarding"); //ch has a context '/forwarding'
-		/* It is not same with:
-		 * ch.setPort(port); //It sets default context as '/'
-		 * ch.addContext("/forwarding"); //Finally ch has two context '/' and '/forwarding'
-		 */
-		
-		ch.setRequestCallback(new MMSClientHandler.RequestCallback() {
+		MMSClientHandler server = new MMSClientHandler(myMRN);
+		MMSClientHandler sender = new MMSClientHandler(myMRN);
+		sender.setSender(new MMSClientHandler.ResponseCallback() {
+			//Response Callback from the request message
+			@Override
+			public void callbackMethod(Map<String, List<String>> headerField, String message) {
+				// TODO Auto-generated method stub
+				System.out.println(message);
+			}
+		});
+		server.setServerPort(port, "/forwarding", new MMSClientHandler.RequestCallback() {
+			//Request Callback from the request message
+			//it is called when client receives a message
 			
 			@Override
 			public int setResponseCode() {
@@ -51,8 +58,6 @@ public class ServiceProvider {
 				return 200;
 			}
 			
-
-			//it is called when client receives a message
 			@Override
 			public String respondToClient(Map<String,List<String>> headerField, String message) {
 				try {
@@ -62,21 +67,19 @@ public class ServiceProvider {
 						System.out.println(key+":"+headerField.get(key).toString());
 					}
 					System.out.println(message);
-					ch.setResponseCallback(new MMSClientHandler.ResponseCallback() {
-						
-						@Override
-						public void callbackMethod(Map<String, List<String>> headerField, String message) {
-							// TODO Auto-generated method stub
-							System.out.println(message);
-						}
-					});
+
 					//it only forwards messages to sc having urn:mrn:imo:imo-no:1000001
-					ch.sendPostMsg("urn:mrn:imo:imo-no:1000001", message);
+					sender.sendPostMsg("urn:mrn:imo:imo-no:1000001", message);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				return "OK";
 			}
-		});
+		}); //server has a context '/forwarding'
+		/* It is not same with:
+		 * server.setPort(port); //It sets default context as '/'
+		 * server.addContext("/forwarding"); //Finally server has two context '/' and '/forwarding'
+		 */
+
 	}
 }

@@ -7,6 +7,7 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jin Jung (jungst0001@kaist.ac.kr)
 Creation Date : 2017-01-24
 Version : 0.3.01
+
 Rev. history : 2017-02-01
 	Added locator registering features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
@@ -15,12 +16,10 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 
 import kr.ac.kaist.mms_server.MMSConfiguration;

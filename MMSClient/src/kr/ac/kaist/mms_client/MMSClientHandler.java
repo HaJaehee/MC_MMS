@@ -9,32 +9,30 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
 
-Version : 0.3.01
 Rev. history : 2017-02-01
+Version : 0.3.01
 	Added setting header field features. 
 	Added locator registering features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 Rev. history : 2017-02-14
 	fixed http get request bugs
 	fixed http get file request bugs
 	added setting context features
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
-Version : 0.5.0
 Rev. history : 2017-04-20 
+Version : 0.5.0
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-25
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 public class MMSClientHandler {
 	private RcvHandler rcvHandler = null;
@@ -45,8 +43,10 @@ public class MMSClientHandler {
 	private Map<String,String> headerField = null;
 	
 	public MMSClientHandler(String clientMRN) throws IOException{
-		this.sendHandler = new SendHandler(clientMRN);
 		this.clientMRN = clientMRN;
+		rcvHandler = null;
+		pollHandler = null;
+		sendHandler = null;
 	}
 	
 	public interface PollingResponseCallback{
@@ -60,66 +60,87 @@ public class MMSClientHandler {
 	public interface ResponseCallback{
 		void callbackMethod(Map<String,List<String>> headerField, String message);
 	}
-
-	public void setPollingResponseCallback(PollingResponseCallback callback){
-		if (this.pollHandler != null) {
-			 this.pollHandler.ph.setPollingResponseCallback(callback);
-		 } else {
-			 System.out.println("Failed! Polling handler is required! Do startPolling()!");
-		 }
-	}
 	
-	public void setRequestCallback (RequestCallback callback) {
-		if (this.rcvHandler != null && this.rcvHandler.hrh != null) {
-			 this.rcvHandler.hrh.setRequestCallback(callback);
-		 } else {
-			 System.out.println("Failed! HTTP server is required! Do setPort()!");
-		 }
-	}
-	
-	public void setResponseCallback (ResponseCallback callback) {
+	public void startPolling (String dstMRN, String svcMRN, int interval, PollingResponseCallback callback) throws IOException{
 		if (this.sendHandler != null) {
-			this.sendHandler.setResponseCallback(callback);
+			System.out.println("Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
+		} else if (this.rcvHandler != null) {
+			System.out.println("Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
 		} else {
-			System.out.println("Failed! HTTP client is required!");
+			this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
+			this.pollHandler.ph.setPollingResponseCallback(callback);
+			this.pollHandler.ph.start();
 		}
 	}
-
-//	@Deprecated
-//	public void startPolling (String dstMRN, int interval) throws IOException{
-//		this.pollHandler = new PollHandler(clientMRN, dstMRN, interval, headerField);
-//	}
 	
-	public void startPolling (String dstMRN, String svcMRN, int interval) throws IOException{
-		this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
+	private boolean isErrorForSettingServerPort (){
+		if (this.sendHandler != null) {
+			System.out.println("Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
+			return true;
+		} else if (this.pollHandler != null) {
+			System.out.println("Failed! MMSClientHandler must have exactly one function! It already has done startPolling()");
+			return true;
+		}
+		return false;
 	}
 	
-	public void setPort (int port) throws IOException{
-		this.clientPort = port;
-		this.rcvHandler = new RcvHandler(port);
-		registerLocator(port);	
+	public void setServerPort (int port, RequestCallback callback) throws IOException{
+		if (!isErrorForSettingServerPort()){
+			this.rcvHandler = new RcvHandler(port);
+			setPortAndCallback(port, callback);
+		}
 	}
 	
-	public void setPort (int port, String context) throws IOException{
-		this.clientPort = port;
-		this.rcvHandler = new RcvHandler(port, context);
-		registerLocator(port);	
+	public void setServerPort (int port, String context, RequestCallback callback) throws IOException{
+		if (!isErrorForSettingServerPort()){
+			this.rcvHandler = new RcvHandler(port, context);
+			setPortAndCallback(port, callback);
+		}
 	}
 	
-	public void setPort (int port, String fileDirectory, String fileName) throws IOException {
+	public void setFileServerPort (int port, String fileDirectory, String fileName) throws IOException {
+		if (!isErrorForSettingServerPort()){
+			this.clientPort = port;
+			this.rcvHandler = new RcvHandler(port, fileDirectory, fileName);
+			registerLocator(port);	
+		}
+	}
+	
+	private void setPortAndCallback (int port, RequestCallback callback) {
 		this.clientPort = port;
-		this.rcvHandler = new RcvHandler(port, fileDirectory, fileName);
+		this.rcvHandler.hrh.setRequestCallback(callback);
 		registerLocator(port);	
 	}
 	
 	public void addContext (String context) {
-		this.rcvHandler.addContext(context);
+		if(this.rcvHandler != null) {
+			this.rcvHandler.addContext(context);
+		} else {
+			System.out.println("Failed! HTTP server is required! Do setServerPort()");
+		}
 	}
 	
 	public void addFileContext (String fileDirectory, String fileName) {
-		this.rcvHandler.addFileContext(fileDirectory, fileName);
+		if(this.rcvHandler != null) {
+			this.rcvHandler.addFileContext(fileDirectory, fileName);
+		} else {
+			System.out.println("Failed! HTTP file server is required! Do setFileServerPort()");
+		}
 	}
 	
+	public void setSender (ResponseCallback callback) {
+		if (this.rcvHandler != null) {
+			System.out.println("Failed! MMSClientHandler must have exactly one function! It already has done setServerPort()");
+		} else if (this.pollHandler != null) {
+			System.out.println("Failed! MMSClientHandler must have exactly one function! It already has done startPolling()");
+		} else {
+			this.sendHandler = new SendHandler(clientMRN);
+			this.sendHandler.setResponseCallback(callback);
+		}
+		
+	}
+	
+	@Deprecated
 	private void registerLocator(int port){
 		try {
 			new MMSSndHandler(clientMRN).registerLocator(port);
@@ -137,65 +158,48 @@ public class MMSClientHandler {
 	}
 	
 	public void sendPostMsg(String dstMRN, String loc, String data) throws Exception{
-		this.sendHandler.sendHttpPost(dstMRN, loc, data, headerField);
+		if (this.sendHandler == null) {
+			System.out.println("Failed! HTTP client is required! Do setSender()");
+		} else {
+			this.sendHandler.sendHttpPost(dstMRN, loc, data, headerField);
+		}
 	}
 	
 	public void sendPostMsg(String dstMRN, String data) throws Exception{
-		this.sendHandler.sendHttpPost(dstMRN, "", data, headerField);
+		if (this.sendHandler == null) {
+			System.out.println("Failed! HTTP client is required! Do setSender()");
+		} else {
+			this.sendHandler.sendHttpPost(dstMRN, "", data, headerField);
+		}
 	}
 	
 	//HJH
 	public void sendGetMsg(String dstMRN) throws Exception{
-		this.sendHandler.sendHttpGet(dstMRN, "", "", headerField);
+		if (this.sendHandler == null) {
+			System.out.println("Failed! HTTP client is required! Do setSender()");
+		} else {
+			this.sendHandler.sendHttpGet(dstMRN, "", "", headerField);
+		}
 	}
 	
 	//HJH
 	public void sendGetMsg(String dstMRN, String loc, String params) throws Exception{
-		this.sendHandler.sendHttpGet(dstMRN, loc, params, headerField);
+		if (this.sendHandler == null) {
+			System.out.println("Failed! HTTP client is required! Do setSender()");
+		} else {
+			this.sendHandler.sendHttpGet(dstMRN, loc, params, headerField);
+		}
 	}
 	
 	//OONI
 	public String requestFile(String dstMRN, String fileName) throws Exception{
-		return this.sendHandler.sendHttpGetFile(dstMRN, fileName, headerField);
-	}
-	
-	
-	//OONI
-	/*
-	@Deprecated
-	class LocUpdate implements Runnable{
-
-		private int MSGtype;
-		private boolean infiniteLoop;
-		public LocUpdate(int MSGType, boolean infiniteLoop) {
-			// TODO Auto-generated constructor stub
-			this.MSGtype = MSGType;
-			this.infiniteLoop = infiniteLoop;
-		}	
-		@Override
-		public void run() {
-			// TODO Auto-generated method stub
-			try {
-				do{
-					if(MMSConfiguration.LOGGING)System.out.println("send location update");
-
-					DatagramSocket dSock = new DatagramSocket();
-					InetAddress server = InetAddress.getByName(MMSConfiguration.MNS_URL);
-					byte[] data = ("location_update:"+ clientMRN + "," + clientPort + "," + MSGtype).getBytes();
-					DatagramPacket outPacket = new DatagramPacket(data, data.length, server, MMSConfiguration.MNS_PORT);
-					dSock.send(outPacket);
-					
-					Thread.sleep(MMSConfiguration.LOC_UPDATE_INTERVAL);
-				}while(infiniteLoop);
-				
-			} catch (InterruptedException |  IOException e) {
-				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING)e.printStackTrace();
-			}
-						
+		if (this.sendHandler == null) {
+			System.out.println("Failed! HTTP client is required! Do setSender()");
+			return null;
+		} else {
+			return this.sendHandler.sendHttpGetFile(dstMRN, fileName, headerField);
 		}
 	}
-	*/
 	
 	private class RcvHandler extends MMSRcvHandler{
 		RcvHandler(int port) throws IOException {
@@ -215,23 +219,13 @@ public class MMSClientHandler {
 		}
 	}
 	
-	private class PollHandler extends MMSRcvHandler{
-//		@Deprecated
-//		PollHandler(String clientMRN, String dstMRN, int interval, Map<String, String> headerField) throws IOException {
-//			super(clientMRN, dstMRN, interval, clientPort, 1, headerField);
-//		}
-		
+	private class PollHandler extends MMSPollHandler{
+
 		PollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, Map<String, String> headerField) throws IOException {
 			super(clientMRN, dstMRN, svcMRN, interval, clientPort, 1, headerField);
 		}
 	}
 	
-	/*
-	@Deprecated
-	public void locUpdate () {
-		Thread locationUpdate = new Thread(new LocUpdate(1, true));
-		locationUpdate.start();
-	}
-	*/
+
 }
 

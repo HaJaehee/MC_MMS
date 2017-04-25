@@ -1,7 +1,5 @@
 package kr.ac.kaist.mms_server;
 
-
-
 /* -------------------------------------------------------- */
 /** 
 File name : SecureMMSServer.java
@@ -11,17 +9,6 @@ Creation Date : 2017-03-20
 Version : 0.4.0
 */
 /* -------------------------------------------------------- */
-
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.security.KeyStore;
-import java.security.Security;
-
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.TrustManagerFactory;
 
 /*
  * Copyright 2012 The Netty Project
@@ -102,13 +89,14 @@ public final class SecureMMSServer {
 
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
+        if(MMSConfiguration.LOGGING)System.out.println("[MMS Server] Now starting MMS HTTPS server");
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
              .channel(NioServerSocketChannel.class)
              .handler(new LoggingHandler(LogLevel.INFO))
              .childHandler(new SecureMMSServerInitializer(sslCtx));
-
+            System.err.println("Ready for 0.0.0.0:" + MMSConfiguration.HTTPS_PORT);
             b.bind(MMSConfiguration.HTTPS_PORT).sync().channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();

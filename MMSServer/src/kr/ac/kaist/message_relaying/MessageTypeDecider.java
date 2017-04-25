@@ -8,38 +8,22 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jin Jung (jungst0001@kaist.ac.kr)
 Creation Date : 2017-01-24
 Version : 0.3.01
+
 Rev. history : 2017-02-01
 	Added log providing features.
 	Added locator registering features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-25 
+Version : 0.5.0
+	Revised class name from MessageTypeDecision to MessageTypeDecider.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.QueryStringDecoder;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
-import kr.ac.kaist.message_queue.MMSQueue;
 import kr.ac.kaist.mms_server.MMSConfiguration;
-import kr.ac.kaist.mms_server.MMSLog;
-import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 public class MessageTypeDecider {
 	static final int POLLING = 1; // it means polling message 

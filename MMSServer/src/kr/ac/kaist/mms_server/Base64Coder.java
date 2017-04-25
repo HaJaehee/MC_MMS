@@ -28,6 +28,7 @@ package kr.ac.kaist.mms_server;
 * @author
 *    Christian d'Heureuse, Inventec Informatik AG, Zurich, Switzerland, www.source-code.biz
 */
+
 public class Base64Coder {
 
 // The line separator string of the operating system.

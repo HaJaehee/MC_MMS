@@ -14,17 +14,20 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
 
-Version : 0.3.01
 Rev. history : 2017-02-01 - Second Issue
+Version : 0.3.01
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history : 2017-04-20 
 Version : 0.5.0
-Rev. history : 2017-04-20
-	Deprecated SC2
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-25
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
-@Deprecated
+
 public class SC2 {
 	public static void main(String args[]) throws Exception{
 		String myMRN = "urn:mrn:imo:imo-no:1000002";
@@ -33,13 +36,13 @@ public class SC2 {
 		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 
 		//Service Consumer which can only send message
-		MMSClientHandler ch = new MMSClientHandler(myMRN);
+		MMSClientHandler sender = new MMSClientHandler(myMRN);
 		Map<String, String> headerfield = new HashMap<String, String>();
 		headerfield.put("AccessToken", "1234567890");
-		ch.setMsgHeader(headerfield);
+		sender.setMsgHeader(headerfield);
 		
-		ch.setResponseCallback(new MMSClientHandler.ResponseCallback (){
-
+		sender.setSender(new MMSClientHandler.ResponseCallback (){
+			//Response Callback from the request message
 			@Override
 			public void callbackMethod(Map<String, List<String>> headerField, String message) {
 				// TODO Auto-generated method stub
@@ -55,13 +58,13 @@ public class SC2 {
 		
 		/*
 		for (int i = 0; i < 10;i++){
-			ch.sendPostMsg("urn:mrn:smart-navi:device:tm-server", "/forwarding", "¾È³ç hi hello " + i);
+			sender.sendPostMsg("urn:mrn:smart-navi:device:tm-server", "/forwarding", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
 		}*/
 
 		
 		for (int i = 0; i < 10;i++){
-			ch.sendPostMsg("urn:mrn:imo:imo-no:1000005", "¾È³ç hi hello " + i);
+			sender.sendPostMsg("urn:mrn:imo:imo-no:1000005", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
 		}
 	}

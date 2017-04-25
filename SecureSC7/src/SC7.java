@@ -13,6 +13,13 @@ File name : SC7.java
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-02-01
 Version : 0.4.0
+
+Rev. history : 2017-04-20 
+Version : 0.5.0
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-25
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -30,11 +37,9 @@ public class SC7 {
 		//MMSConfiguration.MMS_URL="winsgkwogml.iptime.org:444";
 
 		SecureMMSClientHandler sch = new SecureMMSClientHandler(myMRN);	
-		sch.setPort(port, jksDirectory, jksPassword);
-		
-		//Request Callback from the request message
-		//it is called when client receives a message
-		sch.setRequestCallback(new SecureMMSClientHandler.RequestCallback() {
+		sch.setServerPort(port, jksDirectory, jksPassword, new SecureMMSClientHandler.RequestCallback() {
+			//Request Callback from the request message
+			//it is called when client receives a message
 			
 			@Override
 			public int setResponseCode() {
@@ -54,5 +59,7 @@ public class SC7 {
 				return "OK";
 			}
 		});
+
+
 	}
 }

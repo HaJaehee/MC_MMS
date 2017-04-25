@@ -1,3 +1,5 @@
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import kr.ac.kaist.mms_client.*;
@@ -10,9 +12,17 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
-Version : 0.3.01
+
 Rev. history : 2017-02-14
+Version : 0.3.01
 	fixed http get file request bugs
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-20 
+Version : 0.5.0
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-25
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -25,10 +35,18 @@ public class SC4 {
 		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 
 		//Service Consumer which request a file from server 
-		MMSClientHandler ch = new MMSClientHandler(myMRN);
-
+		MMSClientHandler sender = new MMSClientHandler(myMRN);
+		sender.setSender(new MMSClientHandler.ResponseCallback (){
+			//Response Callback from the request message
+			@Override
+			public void callbackMethod(Map<String, List<String>> headerField, String message) {
+				// TODO Auto-generated method stub
+				System.out.println(message);
+			}
+			
+		});
 		//file transferring
-		String response = ch.requestFile("urn:mrn:imo:imo-no:1000006", "get/test.xml");
+		String response = sender.requestFile("urn:mrn:imo:imo-no:1000006", "get/test.xml");
 	    System.out.println("Response from SC :" + response);
 	}
 }

@@ -1,7 +1,6 @@
 package kr.ac.kaist.message_queue;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.FullHttpRequest;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 
 /* -------------------------------------------------------- */

@@ -11,10 +11,16 @@ import kr.ac.kaist.mms_client.*;
 /** 
 File name : SecureServiceProvider.java
 	HTTPS Service Provider only forwards messages to SC having urn:mrn:imo:imo-no:1000009 by HTTPS
-Author : 
-	Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-03-21
 Version : 0.4.0
+
+Rev. history : 2017-04-20 
+Version : 0.5.0
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-25
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -27,14 +33,17 @@ public class SecureServiceProvider {
 
 		//MMSConfiguration.MMS_URL="winsgkwogml.iptime.org:444";
 		
-		SecureMMSClientHandler sch = new SecureMMSClientHandler(myMRN);
-		sch.setPort(port, "/forwarding", jksDirectory, jksPassword); //sch has a context '/forwarding'
-		/* It is not same with:
-		 * sch.setPort(port); //It sets default context as '/'
-		 * sch.addContext("/forwarding"); //Finally sch has two context '/' and '/forwarding'
-		 */
-		
-		sch.setRequestCallback(new SecureMMSClientHandler.RequestCallback() {
+		SecureMMSClientHandler server = new SecureMMSClientHandler(myMRN);
+		SecureMMSClientHandler sender = new SecureMMSClientHandler(myMRN);
+		sender.setSender(new SecureMMSClientHandler.ResponseCallback() {
+			//Response Callback from the request message
+			@Override
+			public void callbackMethod(Map<String, List<String>> headerField, String message) {
+				// TODO Auto-generated method stub
+				System.out.println(message);
+			}
+		});
+		server.setServerPort(port, "/forwarding", jksDirectory, jksPassword, new SecureMMSClientHandler.RequestCallback() {
 			
 			@Override
 			public int setResponseCode() {
@@ -52,22 +61,19 @@ public class SecureServiceProvider {
 						System.out.println(key+":"+headerField.get(key).toString());
 					}
 					System.out.println(message);
-						sch.setResponseCallback(new SecureMMSClientHandler.ResponseCallback() {
-						
-						@Override
-						public void callbackMethod(Map<String, List<String>> headerField, String message) {
-							// TODO Auto-generated method stub
-							System.out.println(message);
-						}
-					});
+
 					//it only forwards messages to sc having urn:mrn:imo:imo-no:1000009
-					sch.sendPostMsg("urn:mrn:imo:imo-no:1000009", message);
+					sender.sendPostMsg("urn:mrn:imo:imo-no:1000009", message);
 
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				return "OK";
 			}
-		});
+		}); //sch has a context '/forwarding'
+		/* It is not same with:
+		 * sch.setPort(port); //It sets default context as '/'
+		 * sch.addContext("/forwarding"); //Finally sch has two context '/' and '/forwarding'
+		 */
 	}
 }

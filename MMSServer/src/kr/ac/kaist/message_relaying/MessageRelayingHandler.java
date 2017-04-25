@@ -9,16 +9,18 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-01-24
 Version : 0.4.0
+
 Rev. history : 2017-02-01
 	Added log providing features.
 	Added locator registering features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 Rev. history : 2017-03-22
 	Added member variable protocol in order to handle HTTPS.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
-Version : 0.5.0
 Rev. history : 2017-04-20 
+Version : 0.5.0
 	Long polling is enabled and Message Queue is implemented.
 	Deprecates some methods would not be used any more.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
