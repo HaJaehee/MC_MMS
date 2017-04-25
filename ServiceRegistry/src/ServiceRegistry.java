@@ -10,6 +10,13 @@ File name : ServiceRegistry.java
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-02-01
 Version : 0.3.01
+
+Rev. history : 2017-04-20 
+Version : 0.5.0
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-25
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -23,11 +30,9 @@ public class ServiceRegistry{
 
 		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		
-		MMSClientHandler ch = new MMSClientHandler(myMRN);
-		ch.setPort(port);
-		//Request Callback from the request message
-		ch.setRequestCallback(new MMSClientHandler.RequestCallback() {
-			
+		MMSClientHandler server = new MMSClientHandler(myMRN);
+		server.setServerPort(port, new MMSClientHandler.RequestCallback() {
+			//Request Callback from the request message
 			//it is called when client receives a message
 			@Override
 			public String respondToClient(Map<String,List<String>>  headerField, String message) {

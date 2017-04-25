@@ -13,6 +13,13 @@ File name : SC6.java
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-02-14
 Version : 0.3.01
+
+Rev. history : 2017-04-20 
+Version : 0.5.0
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-25
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -30,11 +37,11 @@ public class SC6 {
 		
 		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 
-		MMSClientHandler ch = new MMSClientHandler(myMRN);
-		ch.setPort(port,fileDirectory,fileName); //ch has a context '/get/test.xml'
+		MMSClientHandler server = new MMSClientHandler(myMRN);
+		server.setFileServerPort(port,fileDirectory,fileName); //server has a context '/get/test.xml'
 		/* It is not same with: 
-		* ch.setPort(port); //It sets default context as '/'
-		* ch.addFileContext(fileDirectory, fileName); //Finally ch has two context '/' and '/get/test.xml'
+		* server.setPort(port); //It sets default context as '/'
+		* server.addFileContext(fileDirectory, fileName); //Finally server has two context '/' and '/get/test.xml'
 	    */
 	}
 }

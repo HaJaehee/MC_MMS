@@ -6,6 +6,13 @@ File name : SecureMMSSndHandler.java
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-03-21
 Version : 0.4.0
+
+Rev. history : 2017-04-20 
+Version : 0.5.0
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-25
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -14,10 +21,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,17 +33,13 @@ import java.util.Set;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.TrustManager;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.io.*;
-import java.net.*;
 import javax.net.ssl.*;
 
 public class SecureMMSSndHandler {
 	private static final String TAG = "MMSSndHandler";
-	private final String USER_AGENT = "MMSClient/0.4.0";
+	private final String USER_AGENT = "MMSClient/0.5.0";
 	private String clientMRN = null;
+	private boolean isRgstLoc = false;
 	private SecureMMSClientHandler.ResponseCallback myCallback;
 	private HostnameVerifier hv = null;
 	
@@ -51,10 +52,10 @@ public class SecureMMSSndHandler {
 		this.myCallback = callback;
 	}
 	
-	
+	@Deprecated
 	void registerLocator(int port) throws Exception {
+		isRgstLoc = true;
 		sendHttpsPost("urn:mrn:smart-navi:device:mms1", "/registering", port+":2", null);
-		
 	}
 	
 	void sendHttpsPost(String dstMRN, String loc, String data, Map<String,String> headerField) throws Exception{
@@ -287,12 +288,16 @@ public class SecureMMSSndHandler {
 	}
 	
 	void receiveResponse (Map<String,List<String>> headerField, String message) {
-		try{
-			myCallback.callbackMethod(headerField, message);
-		} catch (NullPointerException e) {
-			System.out.println("NullPointerException : Have to set response callback interface! SecureMMSClientHandler.setResponseCallback()");
+		
+		if (!isRgstLoc){
+			isRgstLoc = false;
+			try{
+				myCallback.callbackMethod(headerField, message);
+			} catch (NullPointerException e) {
+				System.out.println("NullPointerException : Have to set response callback interface! SecureMMSClientHandler.setSender()");
+			}
+			return;
 		}
-		return;
 	}
 	
 	private Map<String, List<String>> getModifiableMap (Map<String, List<String>> map) {

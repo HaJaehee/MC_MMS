@@ -1,7 +1,6 @@
 package kr.ac.kaist.message_queue;
 
 import java.io.IOException;
-import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
 import com.rabbitmq.client.AMQP;
@@ -11,10 +10,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.GetResponse;
-
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.FullHttpRequest;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 

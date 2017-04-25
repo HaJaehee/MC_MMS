@@ -12,6 +12,13 @@ File name : SC8.java
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-03-21
 Version : 0.4.0
+
+Rev. history : 2017-04-20 
+Version : 0.5.0
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-25
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -23,13 +30,13 @@ public class SC8 {
 		//MMSConfiguration.MMS_URL="winsgkwogml.iptime.org:444";
 
 		//Service Consumer which can only send message
-		SecureMMSClientHandler sch = new SecureMMSClientHandler(myMRN);
+		SecureMMSClientHandler sender = new SecureMMSClientHandler(myMRN);
 		Map<String, String> headerfield = new HashMap<String, String>();
 		headerfield.put("AccessToken", "1234567890");
-		sch.setMsgHeader(headerfield);
+		sender.setMsgHeader(headerfield);
 		
-		sch.setResponseCallback(new SecureMMSClientHandler.ResponseCallback() {
-			
+		sender.setSender(new SecureMMSClientHandler.ResponseCallback() {
+			//Response Callback from the request message
 			@Override
 			public void callbackMethod(Map<String, List<String>> headerField, String message) {
 				// TODO Auto-generated method stub
@@ -38,19 +45,19 @@ public class SC8 {
 		});
 		
 		for (int i = 0; i < 10;i++){
-			sch.sendPostMsg("urn:mrn:smart-navi:device:secure-tm-server", "/forwarding", "¾È³ç hi hello " + i);
+			sender.sendPostMsg("urn:mrn:smart-navi:device:secure-tm-server", "/forwarding", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
 		}
 
 		/*
 		for (int i = 0; i < 10;i++){
-			sch.sendPostMsg("urn:mrn:imo:imo-no:1000007", "¾È³ç hi hello " + i);
+			sender.sendPostMsg("urn:mrn:imo:imo-no:1000007", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
 		}*/
 
 		/*
 		for (int i = 0; i < 10;i++){
-			sch.sendPostMsg("urn:mrn:imo:imo-no:1000009", "¾È³ç hi hello " + i);
+			sender.sendPostMsg("urn:mrn:imo:imo-no:1000009", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
 		}*/
 	}

@@ -12,6 +12,13 @@ File name : SC9.java
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-03-21
 Version : 0.4.0
+
+Rev. history : 2017-04-20 
+Version : 0.5.0
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-25
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -29,18 +36,13 @@ public class SC9 {
 		int pollInterval = 1;
 		String dstMRN = "urn:mrn:smart-navi:device:mms1";
 		String svcMRN = "urn:mrn:smart-navi:device:secure-tm-server";
-		sph.startPolling(dstMRN, svcMRN, pollInterval);
-		
-		
-		//Request Callback from the request message
-		sph.setPollingResponseCallback(new SecureMMSClientHandler.PollingResponseCallback() {
-			
+		sph.startPolling(dstMRN, svcMRN, pollInterval, new SecureMMSClientHandler.PollingResponseCallback() {
+			//Response Callback from the polling message
 			//it is called when client receives a message
 			@Override
 			public void callbackMethod(Map<String,List<String>>  headerField, String message) {
 				System.out.println(message);
 			}
 		});
-
 	}
 }

@@ -8,9 +8,17 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2016-12-03
 Version : 0.3.01
+
 Rev. history : 2017-02-01
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 	Added setting header field features. 
 	Added locator registering features.
+
+Rev. history : 2017-04-20 
+Version : 0.5.0
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-25
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -30,21 +38,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 public class MMSSndHandler {
 	private static final String TAG = "MMSSndHandler";
-	private final String USER_AGENT = "MMSClient/0.3.01";
+	private final String USER_AGENT = "MMSClient/0.5.0";
 	private String clientMRN = null;
+	private boolean isRgstLoc = false;
 	private MMSClientHandler.ResponseCallback myCallback;
 	MMSSndHandler (String clientMRN){
 		this.clientMRN = clientMRN;
 	}
 
+	@Deprecated
 	void registerLocator(int port) throws Exception {
+		isRgstLoc = true;
 		sendHttpPost("urn:mrn:smart-navi:device:mms1", "/registering", port+":2", null);
-		
 	}
 	
 	void setResponseCallback (MMSClientHandler.ResponseCallback callback){
@@ -52,7 +59,6 @@ public class MMSSndHandler {
 	}
 	
 	void sendHttpPost(String dstMRN, String loc, String data, Map<String,String> headerField) throws Exception{
-		
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
 			loc = "/" + loc;
@@ -242,13 +248,15 @@ public class MMSSndHandler {
 	}
 	
 	void receiveResponse (Map<String,List<String>> headerField, String message) {
-		
-		try {
-			myCallback.callbackMethod(headerField, message);
-		} catch (NullPointerException e) {
-			System.out.println("NullPointerException : Have to set response callback interface! MMSClientHandler.setResponseCallback()");
+		if (!isRgstLoc) {
+			isRgstLoc = false;
+			try {
+				myCallback.callbackMethod(headerField, message);
+			} catch (NullPointerException e) {
+				System.out.println("NullPointerException : Have to set response callback interface! MMSClientHandler.setSender()");
+			}
 		}
-		
+			
 		return;
 	}
 	

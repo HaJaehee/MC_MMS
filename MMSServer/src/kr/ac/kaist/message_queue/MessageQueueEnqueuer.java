@@ -1,7 +1,6 @@
 package kr.ac.kaist.message_queue;
 
 import java.io.IOException;
-import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
 import com.rabbitmq.client.Channel;
