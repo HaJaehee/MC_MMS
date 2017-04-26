@@ -25,8 +25,6 @@ Jaehyun Park<br/>
 email: jae519@kaist.ac.kr<br/>
 Jaehee Ha<br/>
 email: jaehee.ha@kaist.ac.kr<br/>
-Haeun Kim<br/>
-email: hukim@kaist.ac.kr <br/>
 Jin Jeong<br/>
 email: jungst0001@kaist.ac.kr <br/>
 
@@ -42,7 +40,7 @@ with the License. You may obtain a copy of the License at:<br/>
   http://www.apache.org/licenses/LICENSE-2.0<br/>
   <br/>
    <br/>
-Used [The Rabbit MQ] https://www.rabbitmq.com/mpl.html
+Used [The Rabbit MQ] https://www.rabbitmq.com/mpl.html<br/>
  Mozilla Public License.<br/>
 <br/>
 ``The contents of this file are subject to the Mozilla Public License<br/>
