@@ -17,6 +17,10 @@ File name : MessageQueueEnqueuer.java
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-04-19
 Version : 0.5.0 
+
+Rev. history : 2017-04-27
+Version : 0.5.1
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
