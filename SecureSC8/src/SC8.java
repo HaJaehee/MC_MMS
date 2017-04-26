@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,11 @@ public class SC8 {
 			@Override
 			public void callbackMethod(Map<String, List<String>> headerField, String message) {
 				// TODO Auto-generated method stub
+				Iterator<String> iter = headerField.keySet().iterator();
+				while (iter.hasNext()){
+					String key = iter.next();
+					System.out.println(key+":"+headerField.get(key).toString());
+				}
 				System.out.println(message);
 			}
 		});
