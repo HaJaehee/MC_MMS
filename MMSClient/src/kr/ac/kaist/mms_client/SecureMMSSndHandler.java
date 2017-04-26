@@ -35,7 +35,7 @@ import javax.net.ssl.TrustManager;
 
 import javax.net.ssl.*;
 
-public class SecureMMSSndHandler {
+class SecureMMSSndHandler {
 	private static final String TAG = "[SecureMMSSndHandler] ";
 	private final String USER_AGENT = "MMSClient/0.5.0";
 	private String clientMRN = null;

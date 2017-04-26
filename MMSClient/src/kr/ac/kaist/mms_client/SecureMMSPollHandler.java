@@ -31,7 +31,7 @@ Version : 0.5.0
 */
 /* -------------------------------------------------------- */
 
-public class SecureMMSPollHandler {
+class SecureMMSPollHandler {
 
 	SecurePollingHandler ph = null;
 	//HJH

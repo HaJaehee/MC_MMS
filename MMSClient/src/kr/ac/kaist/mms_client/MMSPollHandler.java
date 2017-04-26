@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class MMSPollHandler {
+class MMSPollHandler {
 	PollHandler ph = null;
 	//HJH
 	private static final String USER_AGENT = "MMSClient/0.5.0";

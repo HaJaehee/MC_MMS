@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MMSSndHandler {
+class MMSSndHandler {
 	
 	private static final String TAG = "[MMSSndHandler] ";
 	private final String USER_AGENT = "MMSClient/0.5.0";
