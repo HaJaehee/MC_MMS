@@ -1,12 +1,13 @@
 
 
 # MC_MMS
-Beta Version 0.5.0 <br/>
-2017.4.20<br/>
+Beta Version 0.5.1 <br/>
+2017.4.27<br/>
 
 
 ## Features
 MMS Beta Version<br/>
+Supports fully relaying HTTP(S) messages based on ID<br/>
 Supports fully HTTPS communication<br/>
 Supports long polling<br/>
 Maritime Name System Dummy<br/>
@@ -30,8 +31,8 @@ Jin Jeong<br/>
 email: jungst0001@kaist.ac.kr <br/>
 
 ### Tools
-Created with [Eclipse](https://www.eclipse.org)<br/>
-Used [The Netty Project](http://netty.io/)<br/>
+Created with [Eclipse](https://www.eclipse.org) https://www.eclipse.org<br/>
+Used [The Netty Project](http://netty.io/) http://netty.io/<br/>
 Copyright 2014 The Netty Project<br/>
 <br/>
 The Netty Project licenses this file to you under the Apache License,<br/>
@@ -41,7 +42,7 @@ with the License. You may obtain a copy of the License at:<br/>
   http://www.apache.org/licenses/LICENSE-2.0<br/>
   <br/>
    <br/>
-Used [The Rabbit MQ] https://www.rabbitmq.com/mpl.html<br/>
+Used [The Rabbit MQ](https://www.rabbitmq.com/mpl.html) https://www.rabbitmq.com/mpl.html<br/>
  Mozilla Public License.<br/>
 <br/>
 ``The contents of this file are subject to the Mozilla Public License<br/>
