@@ -24,6 +24,8 @@ import java.util.Set;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 
 public class MNSDummy {
+	
+	private static final String TAG = "[MNSDummy] ";
 	//All MRN to IP Mapping is in hashmap 
 	private static HashMap<String, String> MRNtoIP = new HashMap<String, String>();
 	
@@ -61,7 +63,7 @@ public class MNSDummy {
        while(true)
        {
           Socket connectionSocket = Sock.accept();
-          if(MMSConfiguration.LOGGING)System.out.println("MNSDummy: packet incomming");
+          if(MMSConfiguration.LOGGING)System.out.println(TAG+"MNSDummy: packet incomming");
           
           BufferedReader dataReceived =
              new BufferedReader(new InputStreamReader(connectionSocket.getInputStream(),Charset.forName("UTF-8")));
@@ -72,7 +74,7 @@ public class MNSDummy {
         	  buf.append(inputLine.trim());
           }
           String data = buf.toString();
-          if(MMSConfiguration.LOGGING)System.out.println(data);
+          if(MMSConfiguration.LOGGING)System.out.println(TAG+data);
           
           String dataToReply = "MNSDummy-Reply:";
        
@@ -81,15 +83,15 @@ public class MNSDummy {
         	  data = data.substring(12);
         	  int rplPort = Integer.parseInt(data.split(",")[1]);
         	  data = data.split(",")[0];
-        	  if(MMSConfiguration.LOGGING)System.out.println("MNSDummy:data: " + data);
+        	  if(MMSConfiguration.LOGGING)System.out.println(TAG+"MNSDummy:data: " + data);
         	  if (MRNtoIP.containsKey(data))
         		  dataToReply += MRNtoIP.get(data);
         	  else{
-        		  if(MMSConfiguration.LOGGING)System.out.println("No MRN to IP Mapping");
+        		  if(MMSConfiguration.LOGGING)System.out.println(TAG+"No MRN to IP Mapping");
         	  	  dataToReply = "No";
         	  }
-        	  if(MMSConfiguration.LOGGING)System.out.println(dataToReply);
-        	  if(MMSConfiguration.LOGGING)System.out.println("MNSDummy:END");
+        	  if(MMSConfiguration.LOGGING)System.out.println(TAG+dataToReply);
+        	  if(MMSConfiguration.LOGGING)System.out.println(TAG+"MNSDummy:END");
               
         	  Socket ReplySocket = new Socket("localhost",rplPort);
         	  
@@ -102,7 +104,7 @@ public class MNSDummy {
               
           }else if (data.regionMatches(0, "Location-Update:", 0, 16)){
         	  data = data.substring(16);
-        	  if(MMSConfiguration.LOGGING)System.out.println("MNSDummy:data: " + data);
+        	  if(MMSConfiguration.LOGGING)System.out.println(TAG+"MNSDummy:data: " + data);
         	  String[] data_sub = data.split(",");
         	  // data_sub = IP_address, MRN, Port
         	  MRNtoIP.put(data_sub[1], data_sub[0] + ":" + data_sub[2] + ":" + data_sub[3]);
@@ -118,7 +120,7 @@ public class MNSDummy {
         	  
           }else if (data.regionMatches(0, "Dump-MNS:", 0, 9)){
 
-        	  if(MMSConfiguration.LOGGING)System.out.println("MNSDummy:data: " + data);
+        	  if(MMSConfiguration.LOGGING)System.out.println(TAG+"MNSDummy:data: " + data);
         	  int rplPort = Integer.parseInt(data.split(",")[1]);
         	  
         	  Set<String> keys = MRNtoIP.keySet();
@@ -133,11 +135,11 @@ public class MNSDummy {
         		  }while(keysIter.hasNext());
         	  }
         	  else{
-        		  if(MMSConfiguration.LOGGING)System.out.println("No MRN to IP Mapping");
+        		  if(MMSConfiguration.LOGGING)System.out.println(TAG+"No MRN to IP Mapping");
         	  	  dataToReply = "No";
         	  }
-        	  if(MMSConfiguration.LOGGING)System.out.println(dataToReply);
-        	  if(MMSConfiguration.LOGGING)System.out.println("MNSDummy:END");
+        	  if(MMSConfiguration.LOGGING)System.out.println(TAG+dataToReply);
+        	  if(MMSConfiguration.LOGGING)System.out.println(TAG+"MNSDummy:END");
               
         	  Socket ReplySocket = new Socket("localhost",rplPort);
         	  
@@ -151,15 +153,15 @@ public class MNSDummy {
           }else if (data.equals("Empty-MNS:") && MMSConfiguration.EMPTY_MNS_DUMMY){
         	  MRNtoIP.clear();
         	  
-        	  if(MMSConfiguration.LOGGING)System.out.println("MNSDummy:EMPTY");
-        	  if(MMSConfiguration.LOGGING)System.out.println("MNSDummy:END");
+        	  if(MMSConfiguration.LOGGING)System.out.println(TAG+"MNSDummy:EMPTY");
+        	  if(MMSConfiguration.LOGGING)System.out.println(TAG+"MNSDummy:END");
               
           }else if (data.regionMatches(0, "Remove-Entry:", 0, 13) && MMSConfiguration.REMOVE_ENTRY_MNS_DUMMY){
         	  String mrn = data.substring(13);
         	  MRNtoIP.remove(mrn);
 
-        	  if(MMSConfiguration.LOGGING)System.out.println("MNSDummy:REMOVE "+mrn);
-        	  if(MMSConfiguration.LOGGING)System.out.println("MNSDummy:END");
+        	  if(MMSConfiguration.LOGGING)System.out.println(TAG+"MNSDummy:REMOVE "+mrn);
+        	  if(MMSConfiguration.LOGGING)System.out.println(TAG+"MNSDummy:END");
           }      
        }
     }

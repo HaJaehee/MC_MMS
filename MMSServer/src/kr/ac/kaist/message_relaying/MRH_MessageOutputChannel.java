@@ -53,7 +53,9 @@ import io.netty.handler.codec.http.LastHttpContent;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 
 public class MRH_MessageOutputChannel {
-	private final String USER_AGENT = "MMSClient/0.1";
+	
+	private static final String TAG = "[MRH_MessageOutputChannel] ";
+	private final String USER_AGENT = "MMSClient/0.5.0";
 	private static Map<String,List<String>> storedHeader = null;
 	private static boolean isStoredHeader = false;
 	private HostnameVerifier hv = null;
@@ -66,8 +68,9 @@ public class MRH_MessageOutputChannel {
 	
 	public void replyToSender(ChannelHandlerContext ctx, byte[] data){
 		
-		if(MMSConfiguration.LOGGING)System.out.println("Reply to sender");
+		
     	ByteBuf textb = Unpooled.copiedBuffer(data);
+    	if(MMSConfiguration.LOGGING)System.out.println(TAG+":Reply to sender\n");
     	long responseLen = data.length;
     	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, getHttpResponseStatus(responseCode));
     	if (isStoredHeader){
@@ -100,10 +103,10 @@ public class MRH_MessageOutputChannel {
 	
 //  to do relaying
 	byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws Exception { // 
-	  	if(MMSConfiguration.LOGGING)System.out.println("uri?:" + req.uri());
+	  	if(MMSConfiguration.LOGGING)System.out.println(TAG+"uri?:" + req.uri());
 	  	
 		String url = "http://" + IPAddress + ":" + port + req.uri();
-		if(MMSConfiguration.LOGGING)System.out.println(url);
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+url);
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		HttpHeaders httpHeaders = req.headers();
@@ -148,9 +151,9 @@ public class MRH_MessageOutputChannel {
 			setResponseHeader(resHeaders);
 			
 			if(MMSConfiguration.LOGGING) {	
-				System.out.println("\nSending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url);
-				System.out.println((httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters);
-				System.out.println("Response Code : " + responseCode);
+				System.out.println("\n"+TAG+"Sending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url);
+				System.out.println(TAG+(httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters);
+				System.out.println(TAG+"Response Code : " + responseCode);
 			}
 			BufferedReader in = new BufferedReader(
 			        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
@@ -177,15 +180,15 @@ public class MRH_MessageOutputChannel {
 	
 //  to do secure relaying
 	byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws Exception { // 
-	  	if(MMSConfiguration.LOGGING)System.out.println("uri?:" + req.uri());
+	  	if(MMSConfiguration.LOGGING)System.out.println(TAG+"uri?:" + req.uri());
 	  	
 	  	hv = getHV();
 	  	
 		String url = "https://" + IPAddress + ":" + port + req.uri();
-		if(MMSConfiguration.LOGGING)System.out.println(url);
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+url);
 		URL obj = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-		if(MMSConfiguration.LOGGING)System.out.println("connection opened");
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"connection opened");
 		con.setHostnameVerifier(hv);
 		
 		HttpHeaders httpHeaders = req.headers();
@@ -230,9 +233,9 @@ public class MRH_MessageOutputChannel {
 			setResponseHeader(resHeaders);
 			
 			if(MMSConfiguration.LOGGING){
-				System.out.println("\nSending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url);
-				System.out.println((httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters);
-				System.out.println("Response Code : " + responseCode);
+				System.out.println("\n"+TAG+"Sending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url);
+				System.out.println(TAG+(httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters);
+				System.out.println(TAG+"Response Code : " + responseCode);
 			}
 		
 			BufferedReader in = new BufferedReader(
@@ -277,12 +280,12 @@ public class MRH_MessageOutputChannel {
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (Exception e) {
-        	if(MMSConfiguration.LOGGING)System.out.println("Error" + e);
+        	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Error" + e);
         }
         
         HostnameVerifier hv = new HostnameVerifier() {
             public boolean verify(String urlHostName, SSLSession session) {
-            	if(MMSConfiguration.LOGGING)System.out.println("Warning: URL Host: " + urlHostName + " vs. "
+            	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Warning: URL Host: " + urlHostName + " vs. "
                         + session.getPeerHost());
                 return true;
             }

@@ -22,7 +22,7 @@ import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 
 public class SeamlessRoamingHandler {
-	private static final String TAG = "SeamlessRoamingHandler";
+	private static final String TAG = "[SeamlessRoamingHandler] ";
 	
 	private PollingMessageHandler pmh = null;
 	private SCMessageHandler scmh = null;

@@ -30,7 +30,7 @@ package kr.ac.kaist.mms_server;
 */
 
 public class Base64Coder {
-
+	private static final String TAG = "[Base64Coder] ";
 // The line separator string of the operating system.
 private static final String systemLineSeparator = System.getProperty("line.separator");
 

@@ -19,6 +19,7 @@ import io.netty.handler.logging.LoggingHandler;
 import java.util.function.Consumer;
 
 class NettyStartupUtil {
+	private static final String TAG = "[NettyStartupUtil] ";
 	static void runServer(int port, ChannelHandler childHandler, Consumer<ServerBootstrap> block) throws Exception {
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();

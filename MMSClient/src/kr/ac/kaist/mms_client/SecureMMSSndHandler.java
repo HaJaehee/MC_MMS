@@ -36,7 +36,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.*;
 
 public class SecureMMSSndHandler {
-	private static final String TAG = "MMSSndHandler";
+	private static final String TAG = "[SecureMMSSndHandler] ";
 	private final String USER_AGENT = "MMSClient/0.5.0";
 	private String clientMRN = null;
 	private boolean isRgstLoc = false;
@@ -80,7 +80,7 @@ public class SecureMMSSndHandler {
 		//con.addRequestProperty("Connection","keep-alive");
 		
 		if (headerField != null) {
-			if(MMSConfiguration.LOGGING)System.out.println("set headerfield[");
+			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
 			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 				String key = (String) keys.next();
 				String value = (String) headerField.get(key);
@@ -94,7 +94,7 @@ public class SecureMMSSndHandler {
 		String urlParameters = data;
 		
 
-		if(MMSConfiguration.LOGGING)System.out.println("urlParameters: "+urlParameters);
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"urlParameters: "+urlParameters);
 		
 		// Send post request
 		con.setDoOutput(true);
@@ -111,9 +111,9 @@ public class SecureMMSSndHandler {
 		responseCodes.add(responseCode+"");
 		inH.put("Response-code", responseCodes);
 		if(MMSConfiguration.LOGGING){
-			System.out.println("\nSending 'POST' request to URL : " + url);
-			System.out.println("Post parameters : " + urlParameters);
-			System.out.println("Response Code : " + responseCode);
+			System.out.println("\n"+TAG+"Sending 'POST' request to URL : " + url);
+			System.out.println(TAG+"Post parameters : " + urlParameters);
+			System.out.println(TAG+"Response Code : " + responseCode);
 		}
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
@@ -125,7 +125,7 @@ public class SecureMMSSndHandler {
 		}
 		
 		in.close();
-		if(MMSConfiguration.LOGGING)System.out.println("Response: " + response.toString());
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response: " + response.toString() + "\n");
 		
 		
 		
@@ -155,7 +155,7 @@ public class SecureMMSSndHandler {
 		con.setRequestProperty("srcMRN", clientMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
 		if (headerField != null) {
-			if(MMSConfiguration.LOGGING)System.out.println("set headerfield[");
+			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
 			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 				String key = (String) keys.next();
 				String value = (String) headerField.get(key);
@@ -166,8 +166,8 @@ public class SecureMMSSndHandler {
 		//con.addRequestProperty("Connection","keep-alive");
 
 		int responseCode = con.getResponseCode();
-		if(MMSConfiguration.LOGGING)System.out.println("\nSending 'GET' request to URL : " + url);
-		if(MMSConfiguration.LOGGING)System.out.println("Response Code : " + responseCode);
+		if(MMSConfiguration.LOGGING)System.out.println("\n"+TAG+"Sending 'GET' request to URL : " + url);
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response Code : " + responseCode + "\n");
 		
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
@@ -216,7 +216,7 @@ public class SecureMMSSndHandler {
 		con.setRequestProperty("srcMRN", clientMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
 		if (headerField != null) {
-			if(MMSConfiguration.LOGGING)System.out.println("set headerfield[");
+			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
 			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 				String key = (String) keys.next();
 				String value = (String) headerField.get(key);
@@ -232,8 +232,8 @@ public class SecureMMSSndHandler {
 		List<String> responseCodes = new ArrayList<String>();
 		responseCodes.add(responseCode+"");
 		inH.put("Response-code", responseCodes);
-		if(MMSConfiguration.LOGGING)System.out.println("\nSending 'GET' request to URL : " + url);
-		if(MMSConfiguration.LOGGING)System.out.println("Response Code : " + responseCode);
+		if(MMSConfiguration.LOGGING)System.out.println("\n"+TAG+"Sending 'GET' request to URL : " + url);
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response Code : " + responseCode);
 		
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
@@ -245,7 +245,7 @@ public class SecureMMSSndHandler {
 		}
 		
 		in.close();
-		if(MMSConfiguration.LOGGING)System.out.println("Response: " + response.toString());
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response: " + response.toString() + "\n");
 		receiveResponse(inH, new String(response.toString().getBytes(), "utf-8"));
 		return;
 	}
@@ -273,12 +273,12 @@ public class SecureMMSSndHandler {
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (Exception e) {
-        	if(MMSConfiguration.LOGGING)System.out.println("Error" + e);
+        	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Error" + e);
         }
         
         HostnameVerifier hv = new HostnameVerifier() {
             public boolean verify(String urlHostName, SSLSession session) {
-            	if(MMSConfiguration.LOGGING)System.out.println("Warning: URL Host: " + urlHostName + " vs. "
+            	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Warning: URL Host: " + urlHostName + " vs. "
                         + session.getPeerHost());
                 return true;
             }
@@ -294,7 +294,7 @@ public class SecureMMSSndHandler {
 			try{
 				myCallback.callbackMethod(headerField, message);
 			} catch (NullPointerException e) {
-				System.out.println("NullPointerException : Have to set response callback interface! SecureMMSClientHandler.setSender()");
+				System.out.println(TAG+"NullPointerException : Have to set response callback interface! SecureMMSClientHandler.setSender()");
 			}
 			return;
 		}

@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 public class SecureMMSClientHandler {
+	
+	private static final String TAG = "[SecureMMSClientHandler] ";
 	private RcvHandler rcvHandler = null;
 	private PollHandler pollHandler = null;
 	private SendHandler sendHandler = null;
@@ -51,9 +53,9 @@ public class SecureMMSClientHandler {
 
 	public void startPolling (String dstMRN, String svcMRN, int interval, PollingResponseCallback callback) throws IOException{
 		if (this.sendHandler != null) {
-			System.out.println("Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
+			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
 		} else if (this.rcvHandler != null) {
-			System.out.println("Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
+			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
 		} else {
 			this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
 			this.pollHandler.ph.setPollingResponseCallback(callback);
@@ -63,10 +65,10 @@ public class SecureMMSClientHandler {
 	
 	private boolean isErrorForSettingServerPort (){
 		if (this.sendHandler != null) {
-			System.out.println("Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
+			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
 			return true;
 		} else if (this.pollHandler != null) {
-			System.out.println("Failed! MMSClientHandler must have exactly one function! It already has done startPolling()");
+			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done startPolling()");
 			return true;
 		}
 		return false;
@@ -105,15 +107,15 @@ public class SecureMMSClientHandler {
 		if(this.rcvHandler != null) {
 			this.rcvHandler.addFileContext(fileDirectory, fileName);
 		} else {
-			System.out.println("Failed! HTTP file server is required! Do setFileServerPort()");
+			System.out.println(TAG+"Failed! HTTP file server is required! Do setFileServerPort()");
 		}
 	}
 	
 	public void setSender (ResponseCallback callback) {
 		if (this.rcvHandler != null) {
-			System.out.println("Failed! MMSClientHandler must have exactly one function! It already has done setServerPort()");
+			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort()");
 		} else if (this.pollHandler != null) {
-			System.out.println("Failed! MMSClientHandler must have exactly one function! It already has done startPolling()");
+			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done startPolling()");
 		} else {
 			this.sendHandler = new SendHandler(clientMRN);
 			this.sendHandler.setResponseCallback(callback);
@@ -147,7 +149,7 @@ public class SecureMMSClientHandler {
 	
 	public void sendPostMsg(String dstMRN, String loc, String data) throws Exception{
 		if (this.sendHandler == null) {
-			System.out.println("Failed! HTTP client is required! Do setSender()");
+			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
 		} else {
 			this.sendHandler.sendHttpsPost(dstMRN, loc, data, headerField);
 		}
@@ -155,7 +157,7 @@ public class SecureMMSClientHandler {
 	
 	public void sendPostMsg(String dstMRN, String data) throws Exception{
 		if (this.sendHandler == null) {
-			System.out.println("Failed! HTTP client is required! Do setSender()");
+			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
 		} else {
 			this.sendHandler.sendHttpsPost(dstMRN, "", data, headerField);
 		}
@@ -164,7 +166,7 @@ public class SecureMMSClientHandler {
 	//HJH
 	public void sendGetMsg(String dstMRN) throws Exception{
 		if (this.sendHandler == null) {
-			System.out.println("Failed! HTTP client is required! Do setSender()");
+			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
 		} else {
 			this.sendHandler.sendHttpsGet(dstMRN, "", "", headerField);
 		}
@@ -173,7 +175,7 @@ public class SecureMMSClientHandler {
 	//HJH
 	public void sendGetMsg(String dstMRN, String loc, String params) throws Exception{
 		if (this.sendHandler == null) {
-			System.out.println("Failed! HTTP client is required! Do setSender()");
+			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
 		} else {
 			this.sendHandler.sendHttpsGet(dstMRN, loc, params, headerField);
 		}
@@ -182,7 +184,7 @@ public class SecureMMSClientHandler {
 	//OONI
 	public String requestFile(String dstMRN, String fileName) throws Exception{
 		if (this.sendHandler == null) {
-			System.out.println("Failed! HTTP client is required! Do setSender()");
+			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
 			return null;
 		} else {
 			return this.sendHandler.sendHttpsGetFile(dstMRN, fileName, headerField);

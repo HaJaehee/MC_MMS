@@ -20,10 +20,13 @@ Version : 0.5.0
 /* -------------------------------------------------------- */
 
 public class MessageQueueEnqueuer {
+	
+	private static final String TAG = "[MessageQueueEnqueuer] ";
+	
 	void enqueueMessage(String srcMRN, String dstMRN, String message) {
 		
 		String queueName = dstMRN+"::"+srcMRN;
-		 if(MMSConfiguration.LOGGING)System.out.println(" [*] Queue name = "+queueName);
+		 if(MMSConfiguration.LOGGING)System.out.println(TAG+" [*] Queue name = "+queueName);
 		
 		try {
 			ConnectionFactory factory = new ConnectionFactory();
@@ -32,10 +35,10 @@ public class MessageQueueEnqueuer {
 			Channel channel;
 			
 			channel = connection.createChannel();
-			channel.queueDeclare(queueName, false, false, false, null);
+			channel.queueDeclare(queueName, true, false, false, null);
 			
 			channel.basicPublish("", queueName, null, message.getBytes("UTF-8"));
-			if(MMSConfiguration.LOGGING)System.out.println(" [x] Sent '" + message + "'");
+			if(MMSConfiguration.LOGGING)System.out.println(TAG+" [x] Sent '" + message + "'");
 			
 			channel.close();
 			connection.close();

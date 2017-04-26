@@ -31,7 +31,7 @@ import org.json.simple.parser.ParseException;
 
 @Deprecated
 public class MMSQueue {
-	private static final String TAG = "MMSQueue";
+	private static final String TAG = "[MMSQueue] ";
 	
 	@Deprecated
 	public static HashMap<String, String> queue = new HashMap<String, String>();
@@ -41,11 +41,11 @@ public class MMSQueue {
 	
 	@Deprecated
 	public static synchronized byte[] getMessage(String mrn) throws Exception{
-		if(MMSConfiguration.LOGGING)System.out.println("get queue:" + mrn);
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"get queue:" + mrn);
     	if (queue.containsKey(mrn)) {
     		String ret = queue.get(mrn).trim() + "\0";
     		queue.remove(mrn);
-    		if(MMSConfiguration.LOGGING)System.out.println("dequeue" + ret);
+    		if(MMSConfiguration.LOGGING)System.out.println(TAG+"dequeue" + ret);
     		return ret.getBytes(Charset.forName("UTF-8"));
     	} else {
     		throw new Exception("No entry");
@@ -78,7 +78,7 @@ public class MMSQueue {
 				if(MMSConfiguration.LOGGING)e.printStackTrace();
 			}
     		
-    		if(MMSConfiguration.LOGGING)System.out.println("queuing: " + ret);
+    		if(MMSConfiguration.LOGGING)System.out.println(TAG+"queuing: " + ret);
 
     	} else {
     		String requestBytes = req.content().toString(Charset.forName("UTF-8")).trim();

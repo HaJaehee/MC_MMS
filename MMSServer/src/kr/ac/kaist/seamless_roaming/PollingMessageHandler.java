@@ -21,7 +21,9 @@ import kr.ac.kaist.message_queue.MessageQueueManager;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 
+
 public class PollingMessageHandler {
+	private static final String TAG = "[PollingMessageHandler] ";
 	
 	private MessageQueueManager mqm = null;
 	

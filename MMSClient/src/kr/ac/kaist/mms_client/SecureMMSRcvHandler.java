@@ -48,6 +48,7 @@ public class SecureMMSRcvHandler {
 	SecureFileReqHandler frh = null;
 	//OONI
 
+	private static final String TAG = "[SecureMMSRcvHandler] ";
 	private static final String USER_AGENT = "MMSClient/0.5.0";
 	private String clientMRN = null;
 	
@@ -55,7 +56,7 @@ public class SecureMMSRcvHandler {
 		httpsServerConfigure(port, jksDirectory, jksPassword);
 		hrh = new HttpsReqHandler();
         server.createContext("/", hrh);
-        if(MMSConfiguration.LOGGING)System.out.println("Context \"/\" is created");
+        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \"/\" is created");
         server.setExecutor(null); // creates a default executor
         server.start();
 	}
@@ -68,7 +69,7 @@ public class SecureMMSRcvHandler {
 		}
 		
         server.createContext(context, hrh);
-        if(MMSConfiguration.LOGGING)System.out.println("Context \""+context+"\" is created");
+        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+context+"\" is created");
         server.setExecutor(null); // creates a default executor
         server.start();
 	}
@@ -87,7 +88,7 @@ public class SecureMMSRcvHandler {
         	fileName = fileName.substring(1);
         }
         server.createContext(fileDirectory+fileName, frh);
-        if(MMSConfiguration.LOGGING)System.out.println("Context \""+fileDirectory+fileName+"\" is created");
+        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is created");
         //OONI
         server.setExecutor(null); // creates a default executor
         server.start();
@@ -143,7 +144,7 @@ public class SecureMMSRcvHandler {
 	
 	void addContext (String context) {
 		if (server == null) {
-			System.out.println("Server is not created!");
+			System.out.println(TAG+"Server is not created!");
 			return;			
 		}
 		if (hrh == null) {
@@ -153,12 +154,12 @@ public class SecureMMSRcvHandler {
 			context = "/" + context;
 		}
         server.createContext(context, hrh);
-        if(MMSConfiguration.LOGGING)System.out.println("Context \""+context+"\" is added");
+        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+context+"\" is added");
 	}
 	
 	void addFileContext (String fileDirectory, String fileName) {
 		if (server == null) {
-			System.out.println("Server is not created!");
+			System.out.println(TAG+"Server is not created!");
 			return;
 		}
 		if (frh == null) {
@@ -174,7 +175,7 @@ public class SecureMMSRcvHandler {
         	fileName = fileName.substring(1);
         }
         server.createContext(fileDirectory+fileName, frh);
-        if(MMSConfiguration.LOGGING)System.out.println("Context \""+fileDirectory+fileName+"\" is added");
+        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is added");
 	}
 	
 	class HttpsReqHandler implements HttpHandler {
@@ -232,7 +233,7 @@ public class SecureMMSRcvHandler {
         public void handle(HttpExchange t) throws IOException {
         	URI uri = t.getRequestURI();
         	String fileName = uri.toString();
-        	if(MMSConfiguration.LOGGING)System.out.println("File request: "+fileName);
+        	if(MMSConfiguration.LOGGING)System.out.println(TAG+"File request: "+fileName);
         	
             fileName = System.getProperty("user.dir")+fileName.trim();
             File file = new File (fileName);

@@ -20,6 +20,8 @@ import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 
 public class MessageCastingHandler {
 	
+	private static final String TAG = "[MessageCastingHandler] ";
+	
 	private MNSInteractionHandler mih = null;
 	
 	public MessageCastingHandler() {

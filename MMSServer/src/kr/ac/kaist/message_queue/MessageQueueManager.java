@@ -14,6 +14,9 @@ Version : 0.5.0
 /* -------------------------------------------------------- */
 
 public class MessageQueueManager {
+	
+	private static final String TAG = "[MessageQueueManager] ";
+	
 	public void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN ) {
 		MessageQueueDequeuer mqd = new MessageQueueDequeuer();
 		mqd.dequeueMessage(outputChannel, ctx, srcMRN, svcMRN);

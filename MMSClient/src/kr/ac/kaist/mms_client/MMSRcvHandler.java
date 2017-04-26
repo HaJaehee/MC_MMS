@@ -55,13 +55,14 @@ public class MMSRcvHandler {
 	FileReqHandler frh = null;
 	//OONI
 	private static final String USER_AGENT = "MMSClient/0.5.0";
+	private static final String TAG = "[MMSRcvHandler] ";
 	private String clientMRN = null;
 	
 	MMSRcvHandler(int port) throws IOException{
 		server = HttpServer.create(new InetSocketAddress(port), 0);
 		hrh = new HttpReqHandler();
         server.createContext("/", hrh);
-        if(MMSConfiguration.LOGGING)System.out.println("Context \"/\" is created");
+        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \"/\" is created");
         server.setExecutor(null); // creates a default executor
         server.start();
 	}
@@ -74,7 +75,7 @@ public class MMSRcvHandler {
 		}
 		
         server.createContext(context, hrh);
-        if(MMSConfiguration.LOGGING)System.out.println("Context \""+context+"\" is created");
+        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+context+"\" is created");
         server.setExecutor(null); // creates a default executor
         server.start();
 	}
@@ -93,7 +94,7 @@ public class MMSRcvHandler {
         	fileName = fileName.substring(1);
         }
         server.createContext(fileDirectory+fileName, frh);
-        if(MMSConfiguration.LOGGING)System.out.println("Context \""+fileDirectory+fileName+"\" is created");
+        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is created");
         //OONI
         server.setExecutor(null); // creates a default executor
         server.start();
@@ -101,7 +102,7 @@ public class MMSRcvHandler {
 	
 	void addContext (String context) {
 		if (server == null) {
-			System.out.println("Server is not created!");
+			System.out.println(TAG+"Server is not created!");
 			return;			
 		}
 		if (hrh == null) {
@@ -111,12 +112,12 @@ public class MMSRcvHandler {
 			context = "/" + context;
 		}
         server.createContext(context, hrh);
-        if(MMSConfiguration.LOGGING)System.out.println("Context \""+context+"\" is added");
+        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+context+"\" is added");
 	}
 	
 	void addFileContext (String fileDirectory, String fileName) {
 		if (server == null) {
-			System.out.println("Server is not created!");
+			System.out.println(TAG+"Server is not created!");
 			return;
 		}
 		if (frh == null) {
@@ -132,7 +133,7 @@ public class MMSRcvHandler {
         	fileName = fileName.substring(1);
         }
         server.createContext(fileDirectory+fileName, frh);
-        if(MMSConfiguration.LOGGING)System.out.println("Context \""+fileDirectory+fileName+"\" is added");
+        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is added");
 	}
 	
 	class HttpReqHandler implements HttpHandler {
@@ -190,7 +191,7 @@ public class MMSRcvHandler {
         public void handle(HttpExchange t) throws IOException {
         	URI uri = t.getRequestURI();
         	String fileName = uri.toString();
-        	if(MMSConfiguration.LOGGING)System.out.println("File request: "+fileName);
+        	if(MMSConfiguration.LOGGING)System.out.println(TAG+"File request: "+fileName);
         	
             fileName = System.getProperty("user.dir")+fileName.trim();
             File file = new File (fileName);
