@@ -32,6 +32,8 @@ import kr.ac.kaist.mms_server.MMSConfiguration;
 
 public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHttpRequest>{
 	
+	private static final String TAG = "[MRH_MessageInputChannel] ";
+	
 	private String protocol = "";
 	
 	public MRH_MessageInputChannel(String protocol) {
@@ -45,7 +47,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		try{
 			req.retain();
 			
-			if(MMSConfiguration.LOGGING)System.out.println("Message received");
+			if(MMSConfiguration.LOGGING)System.out.println("\n"+TAG+"Message received");
 			new MessageRelayingHandler(ctx, req, protocol);
 		} finally {
           req.release();

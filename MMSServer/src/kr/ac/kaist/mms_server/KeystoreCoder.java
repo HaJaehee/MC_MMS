@@ -15,12 +15,12 @@ import java.io.IOException;
 import one.utils.jre.OneUtilsJre;
 
 public class KeystoreCoder {
-	
+	private static final String TAG = "[KeystoreCoder] ";
 	public static void main(String[] args) {
 		 final File original = new File(System.getProperty("user.dir")+"/mykeystore.jks");
 		    
 		 try {
-			System.out.println(Base64Coder.encode(OneUtilsJre.toByteArray(new FileInputStream(original))));
+			System.out.println(TAG+Base64Coder.encode(OneUtilsJre.toByteArray(new FileInputStream(original))));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

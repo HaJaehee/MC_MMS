@@ -25,7 +25,7 @@ import java.nio.charset.Charset;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 
 public class MIH_MessageOutputChannel {
-
+	private static final String TAG = "[MIH_MessageOutputChannel] ";
 	String sendToMNS(String request) {
     	try{
 	    	//String modifiedSentence;
@@ -37,10 +37,10 @@ public class MIH_MessageOutputChannel {
 	    	BufferedWriter outToMNS = new BufferedWriter(
 						new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
 	    	
-	    	if(MMSConfiguration.LOGGING)System.out.println(request);
+	    	if(MMSConfiguration.LOGGING)System.out.println(TAG+request);
 	    	ServerSocket Sock = new ServerSocket(0);
 	    	int rplPort = Sock.getLocalPort();
-	    	if(MMSConfiguration.LOGGING)System.out.println("Reply port : "+rplPort);
+	    	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Reply port : "+rplPort);
 	    	outToMNS.write(request+","+rplPort);
 	    	outToMNS.flush();
 	    	outToMNS.close();
@@ -57,7 +57,7 @@ public class MIH_MessageOutputChannel {
 			}
 			
 	    	returnedIP = response.toString();
-	    	if(MMSConfiguration.LOGGING)System.out.println("FROM SERVER: " + returnedIP);
+	    	if(MMSConfiguration.LOGGING)System.out.println(TAG+"FROM SERVER: " + returnedIP);
 	    	
 	    	inFromMNS.close();
 	    	

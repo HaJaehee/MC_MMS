@@ -35,12 +35,13 @@ class SecureMMSPollHandler {
 
 	SecurePollingHandler ph = null;
 	//HJH
+	private static final String TAG = "[SecureMMSPollHandler] ";
 	private static final String USER_AGENT = "MMSClient/0.5.0";
 	private String clientMRN = null;
 	
 	SecureMMSPollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
 		ph = new SecurePollingHandler(clientMRN, dstMRN, svcMRN, interval, clientPort, msgType, headerField);
-		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Polling handler is created");
 	}
 	
     //HJH
@@ -123,9 +124,9 @@ class SecureMMSPollHandler {
 			List<String> responseCodes = new ArrayList<String>();
 			responseCodes.add(responseCode+"");
 			if(MMSConfiguration.LOGGING){
-				System.out.println("\nSending 'POST' request to URL : " + url);
-				System.out.println("Polling...");
-				System.out.println("Response Code : " + responseCode);
+				System.out.println("\n"+TAG+"Sending 'POST' request to URL : " + url);
+				System.out.println(TAG+"Polling...");
+				System.out.println(TAG+"Response Code : " + responseCode);
 			}
 			
 			Map<String,List<String>> inH = con.getHeaderFields();
@@ -175,12 +176,12 @@ class SecureMMSPollHandler {
 	            sc.init(null, trustAllCerts, new java.security.SecureRandom());
 	            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 	        } catch (Exception e) {
-	        	if(MMSConfiguration.LOGGING)System.out.println("Error" + e);
+	        	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Error" + e);
 	        }
 	        
 	        HostnameVerifier hv = new HostnameVerifier() {
 	            public boolean verify(String urlHostName, SSLSession session) {
-	            	if(MMSConfiguration.LOGGING)System.out.println("Warning: URL Host: " + urlHostName + " vs. "
+	            	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Warning: URL Host: " + urlHostName + " vs. "
 	                        + session.getPeerHost());
 	                return true;
 	            }

@@ -52,8 +52,8 @@ import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 public class MessageRelayingHandler  {
-	private static final String TAG = "MessageRelayingHandler";
-	
+	private static final String TAG = "[MessageRelayingHandler] ";
+
 	private MessageParser parser = null;
 	private MessageTypeDecider typeDecider = null;
 	private MRH_MessageOutputChannel outputChannel = null;
@@ -92,6 +92,7 @@ public class MessageRelayingHandler  {
 		String uri = parser.getUri();
 		String dstIP = parser.getDstIP();
 		int dstPort = parser.getDstPort();
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+req.content().toString(Charset.forName("UTF-8")).trim());
 		
 		byte[] message = null;
 		
@@ -199,7 +200,7 @@ public class MessageRelayingHandler  {
 		} else if (type == MessageTypeDecider.REMOVE_MNS_ENTRY) {
     		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
-    		if(MMSConfiguration.LOGGING)System.out.println("remove mrn: " + params.get("mrn").get(0));
+    		if(MMSConfiguration.LOGGING)System.out.println(TAG+"remove mrn: " + params.get("mrn").get(0));
     		try {
 				removeEntryMNS(params.get("mrn").get(0));
 				message = "OK".getBytes(Charset.forName("UTF-8"));
@@ -212,6 +213,8 @@ public class MessageRelayingHandler  {
 			} 
 		}
 		else if (type == MessageTypeDecider.CLEAN_LOGS) {
+    		MMSLog.MNSLog = "";
+    		MMSLog.queueLog = "";
     		MMSLog.log = "";
     		message = "OK".getBytes(Charset.forName("UTF-8"));
 		} else if (type == MessageTypeDecider.UNKNOWN_MRN) {
@@ -234,10 +237,10 @@ public class MessageRelayingHandler  {
   	BufferedWriter outToMNS = new BufferedWriter(
 					new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
   	
-  	if(MMSConfiguration.LOGGING)System.out.println("Dump-MNS:");
+  	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Dump-MNS:");
   	ServerSocket Sock = new ServerSocket(0);
   	int rplPort = Sock.getLocalPort();
-  	if(MMSConfiguration.LOGGING)System.out.println("Reply port : "+rplPort);
+  	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Reply port : "+rplPort);
   	outToMNS.write("Dump-MNS:"+","+rplPort);
   	outToMNS.flush();
   	outToMNS.close();
@@ -254,7 +257,7 @@ public class MessageRelayingHandler  {
 		}
 		
   	dumpedMNS = response.toString();
-  	if(MMSConfiguration.LOGGING)System.out.println("Dumped MNS: " + dumpedMNS);
+  	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Dumped MNS: " + dumpedMNS);
   	inFromMNS.close();
   	if (dumpedMNS.equals("No"))
   		return "No MRN to IP mapping";
@@ -269,7 +272,7 @@ public class MessageRelayingHandler  {
   	BufferedWriter outToMNS = new BufferedWriter(
 					new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
   	
-  	if(MMSConfiguration.LOGGING)System.out.println("Empty-MNS:");
+  	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Empty-MNS:");
   	outToMNS.write("Empty-MNS:");
   	outToMNS.flush();
   	outToMNS.close();
@@ -285,7 +288,7 @@ public class MessageRelayingHandler  {
   	BufferedWriter outToMNS = new BufferedWriter(
 					new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
   	
-  	if(MMSConfiguration.LOGGING)System.out.println("Remove-Entry:"+mrn);
+  	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Remove-Entry:"+mrn);
   	outToMNS.write("Remove-Entry:"+mrn);
   	outToMNS.flush();
   	outToMNS.close();
@@ -313,9 +316,12 @@ public class MessageRelayingHandler  {
 		}
 		status = status + "<br/>";
 		*/
+		
+		status += "MMS Queue log:<br/>";
+		status += MMSLog.queueLog + "<br/>";
 
-		status = status + "MNS Dummy:<br/>";
-		status = status + dumpMNS() + "<br/>";
+		status += "MNS Dummy:<br/>";
+		status += dumpMNS() + "<br/>";
   	
   	return status;
   }

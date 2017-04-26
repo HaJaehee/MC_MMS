@@ -10,6 +10,7 @@ Version : 0.3.01
 /* -------------------------------------------------------- */
 
 public class MMSConfiguration {
+	private static final String TAG = "[MMSConfiguration] ";
 	public static final boolean LOGGING = true;
 	public static final boolean LOG_PROVIDING = true;
 	public static final boolean EMPTY_QUEUE = true;

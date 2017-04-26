@@ -16,7 +16,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 public class MNSInteractionHandler {
-	private static final String TAG = "MNSInteractionHandler";
+	private static final String TAG = "[MNSInteractionHandler] ";
 
 	private LocatorUpdater locatorUpdater = null;
 	private LocatorQuerier locatorQuerier = null;

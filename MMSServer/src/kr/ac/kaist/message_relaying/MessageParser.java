@@ -24,7 +24,7 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 
 public class MessageParser {
-	private static final String TAG = "MessageParser";
+	private static final String TAG = "[MessageParser] ";
 	
 	private String srcIP = null;
 	private String srcMRN = null;

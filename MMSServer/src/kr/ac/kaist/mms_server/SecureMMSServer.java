@@ -38,6 +38,7 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 
 public final class SecureMMSServer {
+	private static final String TAG = "[SecureMMSServer] ";
 
     public static void main(String[] args) throws Exception {
         
@@ -89,7 +90,7 @@ public final class SecureMMSServer {
 
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-        if(MMSConfiguration.LOGGING)System.out.println("[MMS Server] Now starting MMS HTTPS server");
+        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Now starting MMS HTTPS server");
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)

@@ -39,7 +39,8 @@ import java.util.Map;
 import java.util.Set;
 
 class MMSSndHandler {
-	private static final String TAG = "MMSSndHandler";
+	
+	private static final String TAG = "[MMSSndHandler] ";
 	private final String USER_AGENT = "MMSClient/0.5.0";
 	private String clientMRN = null;
 	private boolean isRgstLoc = false;
@@ -77,7 +78,7 @@ class MMSSndHandler {
 		//con.addRequestProperty("Connection","keep-alive");
 		
 		if (headerField != null) {
-			if(MMSConfiguration.LOGGING)System.out.println("set headerfield[");
+			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
 			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 				String key = (String) keys.next();
 				String value = (String) headerField.get(key);
@@ -91,12 +92,14 @@ class MMSSndHandler {
 		String urlParameters = data;
 		
 
-		if(MMSConfiguration.LOGGING)System.out.println("urlParameters: "+urlParameters);
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"urlParameters: "+urlParameters);
 		
 		// Send post request
 		con.setDoOutput(true);
 		BufferedWriter wr = new BufferedWriter(
 				new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
+		
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Trying to send message");
 		wr.write(urlParameters);
 		wr.flush();
 		wr.close();
@@ -109,9 +112,9 @@ class MMSSndHandler {
 		inH.put("Response-code", responseCodes);
 		
 		if(MMSConfiguration.LOGGING){
-			System.out.println("\nSending 'POST' request to URL : " + url);
-			System.out.println("Post parameters : " + urlParameters);
-			System.out.println("Response Code : " + responseCode);
+			System.out.println("\n"+TAG+"Sending 'POST' request to URL : " + url);
+			System.out.println(TAG+"Post parameters : " + urlParameters);
+			System.out.println(TAG+"Response Code : " + responseCode);
 		}
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
@@ -123,8 +126,8 @@ class MMSSndHandler {
 		}
 		
 		in.close();
-		if(MMSConfiguration.LOGGING)System.out.println("Response: " + response.toString());
-		receiveResponse(inH, new String(response.toString().getBytes(), "utf-8"));
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response: " + response.toString() + "\n");
+		receiveResponse(inH, response.toString());
 		
 		return;
 	}
@@ -149,7 +152,7 @@ class MMSSndHandler {
 		con.setRequestProperty("srcMRN", clientMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
 		if (headerField != null) {
-			if(MMSConfiguration.LOGGING)System.out.println("set headerfield[");
+			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
 			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 				String key = (String) keys.next();
 				String value = (String) headerField.get(key);
@@ -160,8 +163,8 @@ class MMSSndHandler {
 		//con.addRequestProperty("Connection","keep-alive");
 
 		int responseCode = con.getResponseCode();
-		if(MMSConfiguration.LOGGING)System.out.println("\nSending 'GET' request to URL : " + url);
-		if(MMSConfiguration.LOGGING)System.out.println("Response Code : " + responseCode);
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"\nSending 'GET' request to URL : " + url);
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response Code : " + responseCode + "\n");
 		
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
@@ -209,7 +212,7 @@ class MMSSndHandler {
 		con.setRequestProperty("srcMRN", clientMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
 		if (headerField != null) {
-			if(MMSConfiguration.LOGGING)System.out.println("set headerfield[");
+			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
 			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 				String key = (String) keys.next();
 				String value = (String) headerField.get(key);
@@ -226,8 +229,8 @@ class MMSSndHandler {
 		responseCodes.add(responseCode+"");
 		inH.put("Response-code", responseCodes);
 		
-		if(MMSConfiguration.LOGGING)System.out.println("\nSending 'GET' request to URL : " + url);
-		if(MMSConfiguration.LOGGING)System.out.println("Response Code : " + responseCode);
+		if(MMSConfiguration.LOGGING)System.out.println("\n"+TAG+"Sending 'GET' request to URL : " + url);
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response Code : " + responseCode);
 		
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
@@ -241,9 +244,9 @@ class MMSSndHandler {
 		
 		
 		in.close();
-		if(MMSConfiguration.LOGGING)System.out.println("Response: " + response.toString());
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response: " + response.toString() + "\n");
 		
-		receiveResponse(inH, new String(response.toString().getBytes(), "utf-8"));
+		receiveResponse(inH, response.toString());
 		return;
 	}
 	
@@ -253,7 +256,7 @@ class MMSSndHandler {
 			try {
 				myCallback.callbackMethod(headerField, message);
 			} catch (NullPointerException e) {
-				System.out.println("NullPointerException : Have to set response callback interface! MMSClientHandler.setSender()");
+				System.out.println(TAG+"NullPointerException : Have to set response callback interface! MMSClientHandler.setSender()");
 			}
 		}
 			

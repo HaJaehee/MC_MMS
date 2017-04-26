@@ -29,11 +29,12 @@ class MMSPollHandler {
 	PollHandler ph = null;
 	//HJH
 	private static final String USER_AGENT = "MMSClient/0.5.0";
+	private static final String TAG = "[MMSPollHandler] ";
 	private String clientMRN = null;
 	
 	MMSPollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
 		ph = new PollHandler(clientMRN, dstMRN, svcMRN, interval, clientPort, msgType, headerField);
-		if(MMSConfiguration.LOGGING)System.out.println("Polling handler is created");
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Polling handler is created");
 	}
 	
 	//HJH
@@ -113,9 +114,9 @@ class MMSPollHandler {
 			List<String> responseCodes = new ArrayList<String>();
 			responseCodes.add(responseCode+"");
 			if(MMSConfiguration.LOGGING){
-				System.out.println("\nSending 'POST' request to URL : " + url);
-				System.out.println("Polling...");
-				System.out.println("Response Code : " + responseCode);
+				System.out.println("\n"+TAG+"Sending 'POST' request to URL : " + url);
+				System.out.println(TAG+"Polling...");
+				System.out.println(TAG+"Response Code : " + responseCode);
 			}
 			
 			Map<String,List<String>> inH = con.getHeaderFields();

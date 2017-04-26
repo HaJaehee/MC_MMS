@@ -46,7 +46,7 @@ public class SC1 {
 			@Override
 			public void callbackMethod(Map<String, List<String>> headerField, String message) {
 				// TODO Auto-generated method stub
-				System.out.println(message);
+				System.out.print(message);
 			}
 		});
 	}
