@@ -21,6 +21,7 @@ Service Registry Dummy<br/>
 First of all, configure build path to .jar files in ./External_jars.<br/>
 Install [rabbitmq](https://www.rabbitmq.com/#getstarted) https://www.rabbitmq.com/#getstarted <br/>
 Install [erlang otp](https://www.erlang.org/downloads) https://www.erlang.org/downloads <br/>
+See also [MC_Chat_Service_Example](https://github.com/HaJaehee/MC_Chat_Service_Example) https://github.com/HaJaehee/MC_Chat_Service_Example <br/>
 
 ## Developing
 Jaehyun Park<br/>
