@@ -107,14 +107,25 @@ class MessageQueueDequeuer extends Thread{
 			QueueingConsumer consumer = new QueueingConsumer(channel);
 			channel.basicConsume(queueName, false, consumer);
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-			outputChannel.replyToSender(ctx, delivery.getBody());
-			String message = new String(delivery.getBody(), "UTF-8");
-			MMSLog.queueLog += TAG+queueName +"<br/>"+ "[Message] "+message +"<br/>";
-		    if(MMSConfiguration.LOGGING) {
-		    	System.out.println(TAG+" [x] Received '" + message + "'");
-		    	System.out.print(TAG+"\""+message+"\"");
-		    }
-			channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+			if(!ctx.isRemoved()){
+				String message = new String(delivery.getBody(), "UTF-8");
+				MMSLog.queueLog += TAG+queueName +"<br/>"+ "[Message] "+message +"<br/>";
+			    if(MMSConfiguration.LOGGING) {
+			    	System.out.println(TAG+" [x] Received '" + message + "'");
+			    	System.out.print(TAG+"\'"+message+"\'");
+			    }
+			    outputChannel.replyToSender(ctx, delivery.getBody());
+				channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+			} else {
+				String message = new String(delivery.getBody(), "UTF-8");
+				if(MMSConfiguration.LOGGING) {
+					System.out.println(TAG+" [x] Received '" + message + "'");
+					System.out.println(TAG+" [x] MRH_MessageOutputChannel disconnected");
+			    	System.out.println(TAG+" [x] Requeue '" + message + "'");
+			    }
+				channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
+			}
+			
 			channel.close();
 			connection.close();
 			//Enroll a delivery listener to the queue channel in order to get a message from the queue.
@@ -135,6 +146,8 @@ class MessageQueueDequeuer extends Thread{
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			if(MMSConfiguration.LOGGING)e.printStackTrace();
+		} finally {
+			this.interrupt();
 		}
 		
 		
