@@ -8,6 +8,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
 import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.MMSLog;
 
 /* -------------------------------------------------------- */
 /** 
@@ -27,6 +28,7 @@ class MessageQueueEnqueuer {
 		
 		String queueName = dstMRN+"::"+srcMRN;
 		 if(MMSConfiguration.LOGGING)System.out.println(TAG+" [*] Queue name = "+queueName);
+		 MMSLog.queueLog += TAG+queueName +"<br/>"+ "[Message] " + message +"<br/>";
 		
 		try {
 			ConnectionFactory factory = new ConnectionFactory();

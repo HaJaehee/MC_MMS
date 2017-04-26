@@ -213,6 +213,8 @@ public class MessageRelayingHandler  {
 			} 
 		}
 		else if (type == MessageTypeDecider.CLEAN_LOGS) {
+    		MMSLog.MNSLog = "";
+    		MMSLog.queueLog = "";
     		MMSLog.log = "";
     		message = "OK".getBytes(Charset.forName("UTF-8"));
 		} else if (type == MessageTypeDecider.UNKNOWN_MRN) {
@@ -314,9 +316,12 @@ public class MessageRelayingHandler  {
 		}
 		status = status + "<br/>";
 		*/
+		
+		status += "MMS Queue log:<br/>";
+		status += MMSLog.queueLog + "<br/>";
 
-		status = status + "MNS Dummy:<br/>";
-		status = status + dumpMNS() + "<br/>";
+		status += "MNS Dummy:<br/>";
+		status += dumpMNS() + "<br/>";
   	
   	return status;
   }

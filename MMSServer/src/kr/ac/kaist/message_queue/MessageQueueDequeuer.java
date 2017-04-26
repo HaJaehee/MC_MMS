@@ -18,6 +18,7 @@ import com.rabbitmq.client.ShutdownSignalException;
 import io.netty.channel.ChannelHandlerContext;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.MMSLog;
 
 /* -------------------------------------------------------- */
 /** 
@@ -107,8 +108,9 @@ class MessageQueueDequeuer extends Thread{
 			channel.basicConsume(queueName, false, consumer);
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 			outputChannel.replyToSender(ctx, delivery.getBody());
+			String message = new String(delivery.getBody(), "UTF-8");
+			MMSLog.queueLog += TAG+queueName +"<br/>"+ "[Message] "+message +"<br/>";
 		    if(MMSConfiguration.LOGGING) {
-		    	String message = new String(delivery.getBody(), "UTF-8");
 		    	System.out.println(TAG+" [x] Received '" + message + "'");
 		    	System.out.print(TAG+"\""+message+"\"");
 		    }
