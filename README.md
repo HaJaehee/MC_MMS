@@ -17,8 +17,9 @@ Service Registry Dummy<br/>
 
 
 ## Usage
-First of all, please configure build path to .jar files in ./External_jars.<br/>
-
+First of all, configure build path to .jar files in ./External_jars.<br/>
+Install [rabbitmq](https://www.rabbitmq.com/#getstarted) https://www.rabbitmq.com/#getstarted <br/>
+Install [erlang otp](https://www.erlang.org/downloads) https://www.erlang.org/downloads <br/>
 
 ## Developing
 Jaehyun Park<br/>
