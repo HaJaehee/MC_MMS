@@ -30,7 +30,7 @@ class NettyStartupUtil {
             b.childHandler(childHandler);
             block.accept(b);
             Channel ch = b.bind(port).sync().channel();
-            System.err.println("Ready for 0.0.0.0:" + port);
+            System.err.println( TAG + "Ready for 0.0.0.0:" + port);
             ch.closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();

@@ -14,6 +14,6 @@ public class MMSConfiguration {
 	public static String MMS_HOST = "127.0.0.1";
 	public static int MMS_PORT = 444; //HTTPS port : 444, HTTP port : 8088
 	public static String MMS_URL = MMS_HOST+":"+MMS_PORT;
-	public static final boolean LOGGING = true;
+	public static final boolean LOGGING = false;
 	public static final int LOC_UPDATE_INTERVAL = 5000;
 }

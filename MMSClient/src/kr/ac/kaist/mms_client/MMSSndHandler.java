@@ -98,6 +98,8 @@ class MMSSndHandler {
 		con.setDoOutput(true);
 		BufferedWriter wr = new BufferedWriter(
 				new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
+		
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Trying to send message");
 		wr.write(urlParameters);
 		wr.flush();
 		wr.close();
@@ -125,7 +127,7 @@ class MMSSndHandler {
 		
 		in.close();
 		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response: " + response.toString() + "\n");
-		receiveResponse(inH, new String(response.toString().getBytes(), "utf-8"));
+		receiveResponse(inH, response.toString());
 		
 		return;
 	}
@@ -244,7 +246,7 @@ class MMSSndHandler {
 		in.close();
 		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response: " + response.toString() + "\n");
 		
-		receiveResponse(inH, new String(response.toString().getBytes(), "utf-8"));
+		receiveResponse(inH, response.toString());
 		return;
 	}
 	

@@ -19,7 +19,7 @@ Version : 0.5.0
 */
 /* -------------------------------------------------------- */
 
-public class MessageQueueEnqueuer {
+class MessageQueueEnqueuer {
 	
 	private static final String TAG = "[MessageQueueEnqueuer] ";
 	

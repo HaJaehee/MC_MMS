@@ -33,7 +33,7 @@ public class MNSDummy {
     {
        
        ServerSocket Sock = new ServerSocket(1004);
-       System.out.println("MNSDummy: started");
+       System.out.println(TAG+"MNSDummy started");
 //       -------------Put MRN --> IP Information -------------
 //       MRNtoIP.put("urn:mrn:imo:imo-no:1000002", "127.0.0.1:8901:1"); // SC2
 //       MRNtoIP.put("urn:mrn:imo:imo-no:1000001", "127.0.0.1:8902:1"); // SC1

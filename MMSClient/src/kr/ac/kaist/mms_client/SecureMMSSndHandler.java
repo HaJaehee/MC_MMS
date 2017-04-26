@@ -129,7 +129,7 @@ class SecureMMSSndHandler {
 		
 		
 		
-		receiveResponse(inH, new String(response.toString().getBytes(), "utf-8"));
+		receiveResponse(inH, response.toString());
 		return;
     } 
 	
@@ -246,7 +246,7 @@ class SecureMMSSndHandler {
 		
 		in.close();
 		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response: " + response.toString() + "\n");
-		receiveResponse(inH, new String(response.toString().getBytes(), "utf-8"));
+		receiveResponse(inH, response.toString());
 		return;
 	}
 	

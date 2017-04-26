@@ -33,15 +33,33 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 
-public class MessageQueueDequeuer {
+class MessageQueueDequeuer extends Thread{
 	
 	private static final String TAG = "[MessageQueueDequeuer] ";
 	
-	String dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN) {
+	private String queueName = null;
+	private MRH_MessageOutputChannel outputChannel = null;
+	private ChannelHandlerContext ctx = null;
+	
+	void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN) {
+		
+		this.queueName = srcMRN+"::"+svcMRN;
+		this.outputChannel = outputChannel;
+		this.ctx = ctx;
 		
 		
-		String queueName = srcMRN+"::"+svcMRN;
-		 if(MMSConfiguration.LOGGING)System.out.println(TAG+" [*] Queue name = "+queueName);
+		this.start();
+
+	
+		return;
+	}
+	
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		super.run();
+		
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+" [*] Queue name = "+queueName);
 		
 	    try {
 			ConnectionFactory factory = new ConnectionFactory();
@@ -117,7 +135,7 @@ public class MessageQueueDequeuer {
 			if(MMSConfiguration.LOGGING)e.printStackTrace();
 		}
 		
-		return null;
+		
 	}
 
 }
