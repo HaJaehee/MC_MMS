@@ -10,6 +10,7 @@ MMS Beta Version<br/>
 Supports fully relaying HTTP(S) messages based on ID<br/>
 Supports fully HTTPS communication<br/>
 Supports long polling<br/>
+Supports saving logs automatically<br/>
 Maritime Name System Dummy<br/>
 Service Consumer Dummies<br/>
 Service Provider Dummies<br/>
