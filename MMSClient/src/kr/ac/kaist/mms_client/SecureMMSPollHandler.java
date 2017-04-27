@@ -21,7 +21,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-
 /* -------------------------------------------------------- */
 /** 
 File name : SecureMMSPollHandler.java
@@ -76,7 +75,11 @@ class SecureMMSPollHandler {
 	    			Thread.sleep(interval);
 	    			Poll();
     			}catch (Exception e){
-    				if(MMSConfiguration.LOGGING)e.printStackTrace();
+    				if(MMSConfiguration.LOGGING){
+						System.out.print(TAG);
+						e.printStackTrace();
+					}
+					
     			}
     		}
     	}

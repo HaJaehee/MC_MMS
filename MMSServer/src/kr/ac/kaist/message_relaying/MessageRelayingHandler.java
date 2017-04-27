@@ -106,6 +106,7 @@ public class MessageRelayingHandler  {
 			
 			//@Deprecated
 			//message = srh.processPollingMessage(srcMRN, srcIP, srcPort, srcModel);
+			MMSLog.nMsgWaitingPollClnt++;
 			
 			srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, srcPort, srcModel, svcMRN);
 			
@@ -125,7 +126,11 @@ public class MessageRelayingHandler  {
         			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod);
         		}
 			} catch (Exception e) {
-				if(MMSConfiguration.LOGGING)e.printStackTrace();
+				if(MMSConfiguration.LOGGING){
+					System.out.print(TAG);
+					e.printStackTrace();
+				}
+				
 			}
 		} else if (type == MessageTypeDecider.REGISTER_CLIENT) {
 			parser.parseLocInfo(req);
@@ -145,32 +150,48 @@ public class MessageRelayingHandler  {
     		String status;
     		
 			try {
-				status = getStatus();
+				status = MMSLog.getStatus();
 				message = status.getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING)e.printStackTrace();
+				if(MMSConfiguration.LOGGING){
+					System.out.print(TAG);
+					e.printStackTrace();
+				}
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING)e.printStackTrace();
+				if(MMSConfiguration.LOGGING){
+					System.out.print(TAG);
+					e.printStackTrace();
+				}
+				
 			}
 		} else if (type == MessageTypeDecider.LOGS) {
     		String status;
 			try {
-				status = getStatus();
+				status = MMSLog.getStatus();
 				MMSLog.log = status + MMSLog.log;
 	    		
 	    		message = MMSLog.log.getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING)e.printStackTrace();
+				if(MMSConfiguration.LOGGING){
+					System.out.print(TAG);
+					e.printStackTrace();
+				}
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING)e.printStackTrace();
+				if(MMSConfiguration.LOGGING){
+					System.out.print(TAG);
+					e.printStackTrace();
+				}
+				
 			}
 		} else if (type == MessageTypeDecider.SAVE_LOGS) {
     		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-    		String logfile = "./log"+timeStamp+".txt";
+    		String logfile = "./log_"+timeStamp+".txt";
     		BufferedWriter wr;
 			try {
 				wr = new BufferedWriter(new FileWriter(logfile));
@@ -180,7 +201,11 @@ public class MessageRelayingHandler  {
 	    		wr.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING)e.printStackTrace();
+				if(MMSConfiguration.LOGGING){
+					System.out.print(TAG);
+					e.printStackTrace();
+				}
+				
 			}
     		message = "OK".getBytes(Charset.forName("UTF-8"));
 		} /*else if (type == MessageTypeDecision.EMPTY_QUEUE) {
@@ -192,10 +217,18 @@ public class MessageRelayingHandler  {
 				message = "OK".getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING)e.printStackTrace();
+				if(MMSConfiguration.LOGGING){
+					System.out.print(TAG);
+					e.printStackTrace();
+				}
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING)e.printStackTrace();
+				if(MMSConfiguration.LOGGING){
+					System.out.print(TAG);
+					e.printStackTrace();
+				}
+				
 			}
 		} else if (type == MessageTypeDecider.REMOVE_MNS_ENTRY) {
     		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
@@ -206,10 +239,18 @@ public class MessageRelayingHandler  {
 				message = "OK".getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING)e.printStackTrace();
+				if(MMSConfiguration.LOGGING){
+					System.out.print(TAG);
+					e.printStackTrace();
+				}
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING)e.printStackTrace();
+				if(MMSConfiguration.LOGGING){
+					System.out.print(TAG);
+					e.printStackTrace();
+				}
+				
 			} 
 		}
 		else if (type == MessageTypeDecider.CLEAN_LOGS) {
@@ -227,7 +268,7 @@ public class MessageRelayingHandler  {
 	}
 	
 //  When LOGGING MNS
-	private String dumpMNS() throws UnknownHostException, IOException{ //
+	public static String dumpMNS() throws UnknownHostException, IOException{ //
   	
   	//String modifiedSentence;
   	String dumpedMNS = "";
@@ -297,33 +338,6 @@ public class MessageRelayingHandler  {
   	return;
   }
   
-  private String getStatus ()  throws UnknownHostException, IOException{
-  	
-		String status = "";
-		
-		//@Deprecated
-		/*
-		HashMap<String, String> queue = MMSQueue.queue;
-		status = status + "Message Queue:<br/>";
-		Set<String> queueKeys = queue.keySet();
-		Iterator<String> queueKeysIter = queueKeys.iterator();
-		while (queueKeysIter.hasNext() ){
-			String key = queueKeysIter.next();
-			if (key==null)
-				continue;
-			String value = queue.get(key);
-			status = status + key + "," + value + "<br/>"; 
-		}
-		status = status + "<br/>";
-		*/
-		
-		status += "MMS Queue log:<br/>";
-		status += MMSLog.queueLog + "<br/>";
 
-		status += "MNS Dummy:<br/>";
-		status += dumpMNS() + "<br/>";
-  	
-  	return status;
-  }
  
 }

@@ -43,12 +43,14 @@ class MessageQueueDequeuer extends Thread{
 	private static final String TAG = "[MessageQueueDequeuer] ";
 	
 	private String queueName = null;
+	private String srcMRN = null;
 	private MRH_MessageOutputChannel outputChannel = null;
 	private ChannelHandlerContext ctx = null;
 	
 	void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN) {
 		
 		this.queueName = srcMRN+"::"+svcMRN;
+		this.srcMRN = srcMRN;
 		this.outputChannel = outputChannel;
 		this.ctx = ctx;
 		
@@ -113,15 +115,19 @@ class MessageQueueDequeuer extends Thread{
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 			if(!ctx.isRemoved()){
 				String message = new String(delivery.getBody(), "UTF-8");
-				MMSLog.queueLog += TAG+queueName +"<br/>"+ "[Message] "+message +"<br/>";
+				MMSLog.queueLog += TAG+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>";
 			    if(MMSConfiguration.LOGGING) {
 			    	System.out.println(TAG+" [x] Received '" + message + "'");
 			    	System.out.print(TAG+"\'"+message+"\'");
 			    }
+			    MMSLog.nMsgWaitingPollClnt--;
 			    outputChannel.replyToSender(ctx, delivery.getBody());
 				channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 			} else {
 				String message = new String(delivery.getBody(), "UTF-8");
+				MMSLog.queueLog += TAG+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>";
+				MMSLog.queueLog += TAG+srcMRN+" is disconnected<br/>";
+				MMSLog.queueLog += "　　　　[Requeue] "+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>";
 				if(MMSConfiguration.LOGGING) {
 					System.out.println(TAG+" [x] Received '" + message + "'");
 					System.out.println(TAG+" [x] MRH_MessageOutputChannel disconnected");
@@ -137,19 +143,39 @@ class MessageQueueDequeuer extends Thread{
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			 if(MMSConfiguration.LOGGING)e.printStackTrace();
+			if(MMSConfiguration.LOGGING){
+				System.out.print(TAG);
+				e.printStackTrace();
+			}
+			
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
-			 if(MMSConfiguration.LOGGING)e.printStackTrace();
+			if(MMSConfiguration.LOGGING){
+				System.out.print(TAG);
+				e.printStackTrace();
+			}
+			
 		} catch (ShutdownSignalException e) {
 			// TODO Auto-generated catch block
-			if(MMSConfiguration.LOGGING)e.printStackTrace();
+			if(MMSConfiguration.LOGGING){
+				System.out.print(TAG);
+				e.printStackTrace();
+			}
+			
 		} catch (ConsumerCancelledException e) {
 			// TODO Auto-generated catch block
-			if(MMSConfiguration.LOGGING)e.printStackTrace();
+			if(MMSConfiguration.LOGGING){
+				System.out.print(TAG);
+				e.printStackTrace();
+			}
+			
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			if(MMSConfiguration.LOGGING)e.printStackTrace();
+			if(MMSConfiguration.LOGGING){
+				System.out.print(TAG);
+				e.printStackTrace();
+			}
+			
 		} finally {
 			this.interrupt();
 		}

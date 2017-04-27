@@ -29,6 +29,7 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.MMSLog;
 
 public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHttpRequest>{
 	
@@ -82,7 +83,11 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
+    	MMSLog.nMsgWaitingPollClnt--;
+    	if(MMSConfiguration.LOGGING){
+			System.out.print(TAG);
+			cause.printStackTrace();
+		}
         ctx.close();
     }
 }

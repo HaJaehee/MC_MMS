@@ -75,7 +75,11 @@ public class MMSQueue {
 				
 				queue.put(mrn, newEntry);
 			} catch (ParseException e) {
-				if(MMSConfiguration.LOGGING)e.printStackTrace();
+				if(MMSConfiguration.LOGGING){
+					System.out.print(TAG);
+					e.printStackTrace();
+				}
+				
 			}
     		
     		if(MMSConfiguration.LOGGING)System.out.println(TAG+"queuing: " + ret);

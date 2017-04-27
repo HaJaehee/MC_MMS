@@ -72,7 +72,10 @@ public class MIH_MessageOutputChannel {
 	    	return returnedIP;
     	}
     	catch (Exception e) {
-    		if(MMSConfiguration.LOGGING)e.printStackTrace();
+    		if(MMSConfiguration.LOGGING){
+				System.out.print(TAG);
+				e.printStackTrace();
+			}
     		
 			return null;
 		}
