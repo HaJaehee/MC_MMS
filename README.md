@@ -1,7 +1,7 @@
 
 
 # MC_MMS
-Beta Version 0.5.1 <br/>
+Beta Version 0.5.2 <br/>
 2017.4.27<br/>
 
 
