@@ -167,7 +167,10 @@ public class MRH_MessageOutputChannel {
 			String ret = buf.toString();
 			return ret.getBytes();
 		} catch (Exception e) {
-			if(MMSConfiguration.LOGGING)e.printStackTrace();
+			if(MMSConfiguration.LOGGING){
+				System.out.print(TAG);
+				e.printStackTrace();
+			}
 			return "No Reply".getBytes();
 			
 		}
@@ -250,7 +253,10 @@ public class MRH_MessageOutputChannel {
 			String ret = buf.toString();
 			return ret.getBytes();
 		} catch (Exception e) {
-			if(MMSConfiguration.LOGGING)e.printStackTrace();
+			if(MMSConfiguration.LOGGING){
+				System.out.print(TAG);
+				e.printStackTrace();
+			}
 			return "No Reply".getBytes();
 			
 		}

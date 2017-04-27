@@ -32,8 +32,8 @@ class MessageQueueEnqueuer {
 		
 		String queueName = dstMRN+"::"+srcMRN;
 		 if(MMSConfiguration.LOGGING)System.out.println(TAG+" [*] Queue name = "+queueName);
-		 MMSLog.queueLog += TAG+queueName +"<br/>"+ "[Message] " + message +"<br/>";
-		
+		 MMSLog.queueLog += TAG+queueName +"<br/>"+ "　　　　[Message] " + message +"<br/>";
+		 
 		try {
 			ConnectionFactory factory = new ConnectionFactory();
 			factory.setHost("localhost");
@@ -50,10 +50,18 @@ class MessageQueueEnqueuer {
 			connection.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			 if(MMSConfiguration.LOGGING)e.printStackTrace();
+			if(MMSConfiguration.LOGGING){
+				System.out.print(TAG);
+				e.printStackTrace();
+			}
+			
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
-			 if(MMSConfiguration.LOGGING)e.printStackTrace();
+			if(MMSConfiguration.LOGGING){
+				System.out.print(TAG);
+				e.printStackTrace();
+			}
+			
 		}
 	}
 }

@@ -9,6 +9,11 @@ Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 	Jaehyun Park (jae519@kaist.ac.kr)
 Creation Date : 2016-12-03
 Version : 0.3.01
+
+Rev. history : 2017-04-27
+Version : 0.5.2
+	Added MMSStatusAutoSaver thread starting code
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr) 
 */
 /* -------------------------------------------------------- */
 
@@ -21,13 +26,18 @@ public class MMSServer {
 	private static final String TAG = "[MMSServer] ";
 	
 	public static void main(String[] args) throws Exception{
-
+		
+		new SecureMMSServer().runServer();
+		new MMSStatusAutoSaver();
+		
 		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Now starting MMS HTTP server");
 		NettyStartupUtil.runServer(MMSConfiguration.HTTP_PORT, pipeline -> {   //runServer(int port, Consumer<ChannelPipeline> initializer)
 			pipeline.addLast(new HttpServerCodec());
             pipeline.addLast(new HttpObjectAggregator(19999));
             pipeline.addLast(new MRH_MessageInputChannel("http"));
         });
+		
+		
 	}
 }
 

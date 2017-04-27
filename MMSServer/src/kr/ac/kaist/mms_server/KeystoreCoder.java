@@ -23,10 +23,16 @@ public class KeystoreCoder {
 			System.out.println(TAG+Base64Coder.encode(OneUtilsJre.toByteArray(new FileInputStream(original))));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if(MMSConfiguration.LOGGING){
+				System.out.print(TAG);
+				e.printStackTrace();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if(MMSConfiguration.LOGGING){
+				System.out.print(TAG);
+				e.printStackTrace();
+			}
 		}
 
 	}

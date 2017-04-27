@@ -6,6 +6,11 @@ File name : MMSConfiguration.java
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-01-24
 Version : 0.3.01
+
+Rev. history : 2017-04-27
+Version : 0.5.2
+	Added AUTO_SAVE_STATUS, SAVE_STATUS_INTERVAL
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr) 
 */
 /* -------------------------------------------------------- */
 
@@ -20,4 +25,6 @@ public class MMSConfiguration {
 	public static final int HTTPS_PORT = 444;
 	public static final int UDP_PORT = 8089;
 	public static final String MMS_MRN = "urn:mrn:smart-navi:device:mms1";
+	public static final boolean AUTO_SAVE_STATUS = true;
+	public static final long SAVE_STATUS_INTERVAL = 300000;
 }

@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 class MMSPollHandler {
 	PollHandler ph = null;
 	//HJH
@@ -69,7 +68,11 @@ class MMSPollHandler {
 	    			Thread.sleep(interval);
 	    			Poll();
     			}catch (Exception e){
-    				if(MMSConfiguration.LOGGING)e.printStackTrace();
+    				if(MMSConfiguration.LOGGING){
+						System.out.print(TAG);
+						e.printStackTrace();
+					}
+					
     			}
     		}
     	}

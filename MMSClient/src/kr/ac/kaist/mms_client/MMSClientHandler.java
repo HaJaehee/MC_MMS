@@ -154,7 +154,11 @@ public class MMSClientHandler {
 			return;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			if(MMSConfiguration.LOGGING)e.printStackTrace();
+			if(MMSConfiguration.LOGGING){
+				System.out.print(TAG);
+				e.printStackTrace();
+			}
+			
 			return;
 		}
 	}

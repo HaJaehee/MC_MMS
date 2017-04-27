@@ -1,5 +1,9 @@
 package kr.ac.kaist.mms_server;
 
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.SSLException;
+
 /* -------------------------------------------------------- */
 /** 
 File name : SecureMMSServer.java
@@ -37,11 +41,18 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 
-public final class SecureMMSServer {
+public final class SecureMMSServer extends Thread {
 	private static final String TAG = "[SecureMMSServer] ";
 
-    public static void main(String[] args) throws Exception {
-        
+	
+	public void runServer() {
+		// TODO Auto-generated method stub
+		this.start();
+	}
+	
+	@Override
+    public void run() {
+        super.run();
 	    // ----- for information, not working
 	    /*
 	    SSLContext serverContext = SSLContext.getInstance("TLS"); //from JDK 7 supports
@@ -82,26 +93,42 @@ public final class SecureMMSServer {
 	    // ----- use keystore
 	    
 	    
-	    // ----- self sign
-        SelfSignedCertificate ssc = new SelfSignedCertificate();
-        SslContext sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey())
-            .build();
-	    // ----- self sign
-
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
-        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Now starting MMS HTTPS server");
-        try {
-            ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup)
-             .channel(NioServerSocketChannel.class)
-             .handler(new LoggingHandler(LogLevel.INFO))
-             .childHandler(new SecureMMSServerInitializer(sslCtx));
-            System.err.println("Ready for 0.0.0.0:" + MMSConfiguration.HTTPS_PORT);
-            b.bind(MMSConfiguration.HTTPS_PORT).sync().channel().closeFuture().sync();
-        } finally {
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
-        }
+	 
+       
+		try {
+			
+			// ----- self sign
+			SelfSignedCertificate ssc = new SelfSignedCertificate();
+			SslContext sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey())
+			            .build();
+			// ----- self sign
+			
+			
+	        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+	        EventLoopGroup workerGroup = new NioEventLoopGroup();
+	        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Now starting MMS HTTPS server");
+	        try {
+	            ServerBootstrap b = new ServerBootstrap();
+	            b.group(bossGroup, workerGroup)
+	             .channel(NioServerSocketChannel.class)
+	             .handler(new LoggingHandler(LogLevel.INFO))
+	             .childHandler(new SecureMMSServerInitializer(sslCtx));
+	            System.err.println("Ready for 0.0.0.0:" + MMSConfiguration.HTTPS_PORT);
+	            b.bind(MMSConfiguration.HTTPS_PORT).sync().channel().closeFuture().sync();
+	        } catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	            bossGroup.shutdownGracefully();
+	            workerGroup.shutdownGracefully();
+	        }
+			
+		} catch (CertificateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SSLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
     }
 }

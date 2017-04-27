@@ -1,7 +1,7 @@
 
 
 # MC_MMS
-Beta Version 0.5.1 <br/>
+Beta Version 0.5.2 <br/>
 2017.4.27<br/>
 
 
@@ -10,6 +10,8 @@ MMS Beta Version<br/>
 Supports fully relaying HTTP(S) messages based on ID<br/>
 Supports fully HTTPS communication<br/>
 Supports long polling<br/>
+Supports saving logs automatically<br/>
+Supports maintaining long polling client session<br/>
 Maritime Name System Dummy<br/>
 Service Consumer Dummies<br/>
 Service Provider Dummies<br/>
