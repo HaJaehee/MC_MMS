@@ -27,7 +27,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-04-29
 Version : 0.5.3
-	Added system log features
+	Added session id and system log features
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -102,13 +102,13 @@ public class MessageRelayingHandler  {
 		int dstPort = parser.getDstPort();
 		if(MMSConfiguration.CONSOLE_LOGGING){
 			System.out.println(TAG+"SessionID="+this.SESSION_ID+",srcMRN="+srcMRN+",dstMRN="+dstMRN);
-			System.out.println(TAG+req.content().toString(Charset.forName("UTF-8")).trim());
+			//System.out.println(TAG+req.content().toString(Charset.forName("UTF-8")).trim());
 		}
 		
 		
 		if(MMSConfiguration.SYSTEM_LOGGING){
 			MMSLog.systemLog.append(TAG+"SessionID="+this.SESSION_ID+",srcMRN="+srcMRN+",dstMRN="+dstMRN+"\n");
-			MMSLog.systemLog.append(TAG+req.content().toString(Charset.forName("UTF-8")).trim()+"\n");
+			//MMSLog.systemLog.append(TAG+req.content().toString(Charset.forName("UTF-8")).trim()+"\n");
 		}
 		
 		
