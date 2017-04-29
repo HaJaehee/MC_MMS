@@ -27,7 +27,7 @@ import java.util.Map;
 
 public class SecureMMSClientHandler {
 	
-	private static final String TAG = "[SecureMMSClientHandler] ";
+	private String TAG = "[SecureMMSClientHandler] ";
 	private RcvHandler rcvHandler = null;
 	private PollHandler pollHandler = null;
 	private SendHandler sendHandler = null;

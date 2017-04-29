@@ -55,7 +55,7 @@ class MMSRcvHandler {
 	FileReqHandler frh = null;
 	//OONI
 	private static final String USER_AGENT = "MMSClient/0.5.0";
-	private static final String TAG = "[MMSRcvHandler] ";
+	private String TAG = "[MMSRcvHandler";
 	private String clientMRN = null;
 	
 	MMSRcvHandler(int port) throws IOException{

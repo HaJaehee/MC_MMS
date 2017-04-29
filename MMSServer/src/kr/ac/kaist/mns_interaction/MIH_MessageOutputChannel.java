@@ -23,9 +23,18 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 
 import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.MMSLog;
 
-public class MIH_MessageOutputChannel {
-	private static final String TAG = "[MIH_MessageOutputChannel] ";
+class MIH_MessageOutputChannel {
+	private String TAG = "[MIH_MessageOutputChannel:";
+	private int SESSION_ID = 0;
+	
+	MIH_MessageOutputChannel(int sessionId) {
+		// TODO Auto-generated constructor stub
+		this.SESSION_ID = sessionId;
+		this.TAG += this.SESSION_ID + "] ";
+	}
+	
 	String sendToMNS(String request) {
     	try{
 	    	//String modifiedSentence;
@@ -37,10 +46,12 @@ public class MIH_MessageOutputChannel {
 	    	BufferedWriter outToMNS = new BufferedWriter(
 						new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
 	    	
-	    	if(MMSConfiguration.LOGGING)System.out.println(TAG+request);
+	    	if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+request);
+	    	if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+request+"\n");
 	    	ServerSocket Sock = new ServerSocket(0);
 	    	int rplPort = Sock.getLocalPort();
-	    	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Reply port : "+rplPort);
+	    	if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Reply port : "+rplPort);
+	    	if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Reply port : "+rplPort+"\n");
 	    	outToMNS.write(request+","+rplPort);
 	    	outToMNS.flush();
 	    	outToMNS.close();
@@ -57,7 +68,8 @@ public class MIH_MessageOutputChannel {
 			}
 			
 	    	returnedIP = response.toString();
-	    	if(MMSConfiguration.LOGGING)System.out.println(TAG+"FROM SERVER: " + returnedIP);
+	    	if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"FROM SERVER: " + returnedIP);
+	    	if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"FROM SERVER: " + returnedIP+"\n");
 	    	
 	    	inFromMNS.close();
 	    	
@@ -72,10 +84,13 @@ public class MIH_MessageOutputChannel {
 	    	return returnedIP;
     	}
     	catch (Exception e) {
-    		if(MMSConfiguration.LOGGING){
+    		if(MMSConfiguration.CONSOLE_LOGGING){
 				System.out.print(TAG);
 				e.printStackTrace();
 			}
+    		if(MMSConfiguration.SYSTEM_LOGGING){
+    			MMSLog.systemLog.append(TAG+"Exception\n");
+    		}
     		
 			return null;
 		}

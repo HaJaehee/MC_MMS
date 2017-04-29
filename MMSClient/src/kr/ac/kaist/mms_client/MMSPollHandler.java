@@ -28,7 +28,7 @@ class MMSPollHandler {
 	PollHandler ph = null;
 	//HJH
 	private static final String USER_AGENT = "MMSClient/0.5.0";
-	private static final String TAG = "[MMSPollHandler] ";
+	private String TAG = "[MMSPollHandler] ";
 	private String clientMRN = null;
 	
 	MMSPollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{

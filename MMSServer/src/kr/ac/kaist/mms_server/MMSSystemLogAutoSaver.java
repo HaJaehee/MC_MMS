@@ -2,11 +2,11 @@ package kr.ac.kaist.mms_server;
 
 /* -------------------------------------------------------- */
 /** 
-File name : MMSStatusAutoSaver.java
+File name : MMSSystemLogAutoSaver.java
 	
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-04-27
-Version : 0.5.2
+Version : 0.5.3
 */
 /* -------------------------------------------------------- */
 
@@ -19,12 +19,12 @@ import java.util.Calendar;
 
 import kr.ac.kaist.message_relaying.MessageRelayingHandler;
 
-public class MMSStatusAutoSaver extends Thread{
-	private String TAG = "[MMSStatusAutoSaver] ";
+public class MMSSystemLogAutoSaver extends Thread {
+	private String TAG = "[MMSSystemLogAutoSaver] ";
 	
-	public MMSStatusAutoSaver() {
+	public MMSSystemLogAutoSaver() {
 		// TODO Auto-generated constructor stub
-		if (MMSConfiguration.AUTO_SAVE_STATUS) {
+		if (MMSConfiguration.AUTO_SAVE_SYSTEM_LOG) {
 			this.start();
 		}
 	}
@@ -43,46 +43,24 @@ public class MMSStatusAutoSaver extends Thread{
 				MMSLog.systemLog.append(TAG+"InterruptedException\n");
 			}
 		}
-		while (MMSConfiguration.AUTO_SAVE_STATUS) {
-			do {
-				try{
-					MMSLog.dumpMNS();
-					break;
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					try {
-						if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"MNS Dummy is not running");
-						if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"MNS Dummy is not running\n");
-						Thread.sleep(10000);
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						if(MMSConfiguration.CONSOLE_LOGGING){
-							System.out.print(TAG);
-							e1.printStackTrace();
-						}
-						if(MMSConfiguration.SYSTEM_LOGGING){
-							MMSLog.systemLog.append(TAG+"InterruptedException\n");
-						}
-					}
-				}
-			} while (MMSConfiguration.AUTO_SAVE_STATUS);
-			while (MMSConfiguration.AUTO_SAVE_STATUS) {
+		while (MMSConfiguration.AUTO_SAVE_SYSTEM_LOG) {
+			while (MMSConfiguration.AUTO_SAVE_SYSTEM_LOG) {
 				try {
-					String status = MMSLog.getStatusForSAS().replaceAll("<br/>","\n");
+					
 					
 		    		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-		    		String logfile = "./auto_save_"+timeStamp+".txt";
+		    		String logfile = "./sys_log_"+timeStamp+".txt";
 		    		BufferedWriter wr;
 					
 					wr = new BufferedWriter(new FileWriter(logfile));
-		    		wr.write(status);
+		    		wr.write(MMSLog.systemLog.toString());
 		    		wr.flush();
 		    		wr.close();
-		    		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Status saved");
-		    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Status saved\n");
+		    		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"System log saved");
+		    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"System log saved\n");
 					
-		    		MMSLog.queueLogForSAS.setLength(0);
-		    		Thread.sleep(MMSConfiguration.SAVE_STATUS_INTERVAL);
+		    		MMSLog.systemLog.setLength(0);
+		    		Thread.sleep(MMSConfiguration.SAVE_SYSTEM_LOG_INTERVAL);
 				} catch (UnknownHostException e) {
 					// TODO Auto-generated catch block
 					if(MMSConfiguration.CONSOLE_LOGGING){
@@ -112,7 +90,6 @@ public class MMSStatusAutoSaver extends Thread{
 					if(MMSConfiguration.SYSTEM_LOGGING){
 						MMSLog.systemLog.append(TAG+"InterruptedException\n");
 					}
-					
 				}
 				
 				

@@ -17,10 +17,16 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 import kr.ac.kaist.mms_server.MMSConfiguration;
 
 public class LocatorUpdater {
-	private static final String TAG = "[LocatorUpdater] ";
+	private String TAG = "[LocatorUpdater: ";
+	private int SESSION_ID = 0;
+	
+	LocatorUpdater (int sessionId){
+		this.SESSION_ID = sessionId;
+		this.TAG += this.SESSION_ID+"] ";
+	}
 	String buildUpdate(String MRN, String IP, int port, int model) {
 		String msg = "Location-Update:" + IP + "," + MRN + "," + Integer.toString(port) + "," + Integer.toString(model);
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+msg);
+		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+msg);
 		return msg;
 	}
 }

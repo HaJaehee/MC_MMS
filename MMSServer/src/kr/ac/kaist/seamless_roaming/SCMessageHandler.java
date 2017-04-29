@@ -22,14 +22,21 @@ import kr.ac.kaist.message_queue.MMSQueue;
 import kr.ac.kaist.message_queue.MessageQueueManager;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 
-public class SCMessageHandler {
-	private static final String TAG = "[SCMessageHandler] ";
+class SCMessageHandler {
+	private String TAG = "[SCMessageHandler:";
+	private int SESSION_ID = 0;
+	
+	SCMessageHandler (int sessionId) {
+		this.SESSION_ID = sessionId;
+		this.TAG += SESSION_ID + "] ";
+	}
+	
 	@Deprecated
 	void putSCMessage(String dstMRN, FullHttpRequest req){
 		try {
 			MMSQueue.putMessage(dstMRN, req);
 		} catch (UnsupportedEncodingException e) {
-			if(MMSConfiguration.LOGGING){
+			if(MMSConfiguration.CONSOLE_LOGGING){
 				System.out.print(TAG);
 				e.printStackTrace();
 			}
@@ -37,7 +44,7 @@ public class SCMessageHandler {
 	}
 	
 	void enqueueSCMessage(String srcMRN, String dstMRN, String message){
-		MessageQueueManager mqm = new MessageQueueManager();
+		MessageQueueManager mqm = new MessageQueueManager(this.SESSION_ID);
 		mqm.enqueueMessage(srcMRN, dstMRN, message);
 	}
 }

@@ -34,7 +34,7 @@ class SecureMMSPollHandler {
 
 	SecurePollingHandler ph = null;
 	//HJH
-	private static final String TAG = "[SecureMMSPollHandler] ";
+	private String TAG = "[SecureMMSPollHandler] ";
 	private static final String USER_AGENT = "MMSClient/0.5.0";
 	private String clientMRN = null;
 	

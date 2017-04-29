@@ -22,26 +22,30 @@ import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 
 public class SeamlessRoamingHandler {
-	private static final String TAG = "[SeamlessRoamingHandler] ";
+	private String TAG = "[SeamlessRoamingHandler:";
+	private int SESSION_ID = 0;
 	
 	private PollingMessageHandler pmh = null;
 	private SCMessageHandler scmh = null;
 	private MNSInteractionHandler mih = null;
 
 	
-	public SeamlessRoamingHandler() {
+	public SeamlessRoamingHandler(int sessionId) {
+		this.SESSION_ID = sessionId;
+		this.TAG += SESSION_ID + "] ";
+		
 		initializeModule();
 		initializeSubModule();
 	}
 	
 	private void initializeModule() {
-		mih = new MNSInteractionHandler();
+		mih = new MNSInteractionHandler(this.SESSION_ID);
 
 	}
 	
 	private void initializeSubModule() {
-		pmh = new PollingMessageHandler();
-		scmh = new SCMessageHandler();
+		pmh = new PollingMessageHandler(this.SESSION_ID);
+		scmh = new SCMessageHandler(this.SESSION_ID);
 	}
 	
 //	poll SC message in queue
