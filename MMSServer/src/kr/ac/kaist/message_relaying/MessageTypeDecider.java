@@ -18,6 +18,11 @@ Rev. history : 2017-04-25
 Version : 0.5.0
 	Revised class name from MessageTypeDecision to MessageTypeDecider.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-29
+Version : 0.5.3
+	Added system log features
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -25,9 +30,10 @@ import io.netty.handler.codec.http.HttpMethod;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 
-public class MessageTypeDecider {
+class MessageTypeDecider {
 	
-	private static final String TAG = "[MessageTypeDecider] ";
+	private String TAG = "[MessageTypeDecider:";
+	private int SESSION_ID = 0;
 	
 	static final int POLLING = 1; // it means polling message 
 	static final int RELAYING_TO_SC = 2; // it means relaying to SC
@@ -42,6 +48,12 @@ public class MessageTypeDecider {
 	static final int EMPTY_QUEUE = 11;
 	static final int EMPTY_MNSDummy = 12;
 	static final int REMOVE_MNS_ENTRY = 13;
+	
+	MessageTypeDecider(int sessionId) {
+		this.SESSION_ID = sessionId;
+		this.TAG += SESSION_ID + "] ";
+		// TODO Auto-generated constructor stub
+	}
 	
 	int decideType(MessageParser parser, MessageCastingHandler mch) {
 		String srcMRN = parser.getSrcMRN();
@@ -59,14 +71,14 @@ public class MessageTypeDecider {
     		return REGISTER_CLIENT;
     	}
     	
-//		when LOGGING
-    	else if (MMSConfiguration.LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/logs")){
+//		when CONSOLE_LOGGING
+    	else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/logs")){
     		return LOGS;
-    	} else if (MMSConfiguration.LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/status")){
+    	} else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/status")){
     		return STATUS;
-    	} else if (MMSConfiguration.LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/cleanlogs")){ 
+    	} else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/cleanlogs")){ 
     		return CLEAN_LOGS;
-    	} else if (MMSConfiguration.LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/savelogs")){    		
+    	} else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/savelogs")){    		
     		return SAVE_LOGS;
     	} else if (MMSConfiguration.EMPTY_QUEUE && httpMethod == HttpMethod.GET && uri.equals("/emptyqueue")){ 
     		return EMPTY_QUEUE;

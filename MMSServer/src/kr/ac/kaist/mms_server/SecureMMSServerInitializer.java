@@ -20,7 +20,7 @@ import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 
 public class SecureMMSServerInitializer extends ChannelInitializer<SocketChannel> {
 
-	private static final String TAG = "[SecureMMSServerInitializer] ";
+	private String TAG = "[SecureMMSServerInitializer] ";
     private final SslContext sslCtx;
 
     public SecureMMSServerInitializer(SslContext sslCtx) {

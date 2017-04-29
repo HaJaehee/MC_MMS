@@ -16,17 +16,25 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 public class MNSInteractionHandler {
-	private static final String TAG = "[MNSInteractionHandler] ";
-
+	private String TAG = "[MNSInteractionHandler:";
+	private int SESSION_ID = 0;
 	private LocatorUpdater locatorUpdater = null;
 	private LocatorQuerier locatorQuerier = null;
 	private MIH_MessageOutputChannel messageOutput = null;
 	
-	public MNSInteractionHandler() {
-		locatorQuerier = new LocatorQuerier();
-		locatorUpdater = new LocatorUpdater();
-		messageOutput = new MIH_MessageOutputChannel();
+	public MNSInteractionHandler(int sessionId) {
+		this.SESSION_ID = sessionId;
+		this.TAG += SESSION_ID + "] ";
+		
+		initializeModule();
 	}
+	
+	private void initializeModule(){
+		locatorQuerier = new LocatorQuerier();
+		locatorUpdater = new LocatorUpdater(this.SESSION_ID);
+		messageOutput = new MIH_MessageOutputChannel(this.SESSION_ID);
+	}
+	
 	
 	public String requestDstInfo(String dstMRN) {
 		String msg = locatorQuerier.buildQuery(dstMRN);

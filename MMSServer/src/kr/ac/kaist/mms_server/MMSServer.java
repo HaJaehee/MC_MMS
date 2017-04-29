@@ -23,14 +23,17 @@ import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 
 
 public class MMSServer {
-	private static final String TAG = "[MMSServer] ";
+	private static String TAG = "[MMSServer] ";
 	
 	public static void main(String[] args) throws Exception{
 		
+		
 		new SecureMMSServer().runServer();
 		new MMSStatusAutoSaver();
+		new MMSSystemLogAutoSaver();
 		
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Now starting MMS HTTP server");
+		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Now starting MMS HTTP server");
+		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Now starting MMS HTTP server\n");
 		NettyStartupUtil.runServer(MMSConfiguration.HTTP_PORT, pipeline -> {   //runServer(int port, Consumer<ChannelPipeline> initializer)
 			pipeline.addLast(new HttpServerCodec());
             pipeline.addLast(new HttpObjectAggregator(19999));

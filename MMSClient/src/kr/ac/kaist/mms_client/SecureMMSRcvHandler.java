@@ -48,7 +48,7 @@ class SecureMMSRcvHandler {
 	SecureFileReqHandler frh = null;
 	//OONI
 
-	private static final String TAG = "[SecureMMSRcvHandler] ";
+	private String TAG = "[SecureMMSRcvHandler] ";
 	private static final String USER_AGENT = "MMSClient/0.5.0";
 	private String clientMRN = null;
 	

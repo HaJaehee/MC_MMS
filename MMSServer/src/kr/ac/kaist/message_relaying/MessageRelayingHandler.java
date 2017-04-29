@@ -24,6 +24,11 @@ Version : 0.5.0
 	Long polling is enabled and Message Queue is implemented.
 	Deprecates some methods would not be used any more.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-29
+Version : 0.5.3
+	Added system log features
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -52,7 +57,8 @@ import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 public class MessageRelayingHandler  {
-	private static final String TAG = "[MessageRelayingHandler] ";
+	private String TAG = "[MessageRelayingHandler:";
+	private int SESSION_ID = 0;
 
 	private MessageParser parser = null;
 	private MessageTypeDecider typeDecider = null;
@@ -63,11 +69,13 @@ public class MessageRelayingHandler  {
 	
 	private String protocol = "";
 	
-	public MessageRelayingHandler(ChannelHandlerContext ctx, FullHttpRequest req, String protocol) {		
+	public MessageRelayingHandler(ChannelHandlerContext ctx, FullHttpRequest req, String protocol, int sessionId) {		
+		this.protocol = protocol;
+		this.SESSION_ID = sessionId;
+		this.TAG += SESSION_ID + "] ";
+		
 		initializeModule();
 		initializeSubModule();
-		this.protocol = protocol;
-		
 		parser.parseMessage(ctx, req);
 		
 		int type = typeDecider.decideType(parser, mch);
@@ -75,14 +83,14 @@ public class MessageRelayingHandler  {
 	}
 	
 	private void initializeModule() {
-		srh = new SeamlessRoamingHandler();
-		mch = new MessageCastingHandler();
+		srh = new SeamlessRoamingHandler(this.SESSION_ID);
+		mch = new MessageCastingHandler(this.SESSION_ID);
 	}
 	
 	private void initializeSubModule() {
-		parser = new MessageParser();
-		typeDecider = new MessageTypeDecider();
-		outputChannel = new MRH_MessageOutputChannel();
+		parser = new MessageParser(this.SESSION_ID);
+		typeDecider = new MessageTypeDecider(this.SESSION_ID);
+		outputChannel = new MRH_MessageOutputChannel(this.SESSION_ID);
 	}
 
 	private void processRelaying(int type, ChannelHandlerContext ctx, FullHttpRequest req){
@@ -92,7 +100,18 @@ public class MessageRelayingHandler  {
 		String uri = parser.getUri();
 		String dstIP = parser.getDstIP();
 		int dstPort = parser.getDstPort();
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+req.content().toString(Charset.forName("UTF-8")).trim());
+		if(MMSConfiguration.CONSOLE_LOGGING){
+			System.out.println(TAG+"SessionID="+this.SESSION_ID+",srcMRN="+srcMRN+",dstMRN="+dstMRN);
+			System.out.println(TAG+req.content().toString(Charset.forName("UTF-8")).trim());
+		}
+		
+		
+		if(MMSConfiguration.SYSTEM_LOGGING){
+			MMSLog.systemLog.append(TAG+"SessionID="+this.SESSION_ID+",srcMRN="+srcMRN+",dstMRN="+dstMRN+"\n");
+			MMSLog.systemLog.append(TAG+req.content().toString(Charset.forName("UTF-8")).trim()+"\n");
+		}
+		
+		
 		
 		byte[] message = null;
 		
@@ -126,9 +145,12 @@ public class MessageRelayingHandler  {
         			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod);
         		}
 			} catch (Exception e) {
-				if(MMSConfiguration.LOGGING){
+				if(MMSConfiguration.CONSOLE_LOGGING){
 					System.out.print(TAG);
 					e.printStackTrace();
+				}
+				if(MMSConfiguration.SYSTEM_LOGGING){
+					MMSLog.systemLog.append(TAG+"Exception\n");
 				}
 				
 			}
@@ -154,16 +176,22 @@ public class MessageRelayingHandler  {
 				message = status.getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING){
+				if(MMSConfiguration.CONSOLE_LOGGING){
 					System.out.print(TAG);
 					e.printStackTrace();
+				}
+				if(MMSConfiguration.SYSTEM_LOGGING){
+					MMSLog.systemLog.append(TAG+"UnknownHostException\n");
 				}
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING){
+				if(MMSConfiguration.CONSOLE_LOGGING){
 					System.out.print(TAG);
 					e.printStackTrace();
+				}
+				if(MMSConfiguration.SYSTEM_LOGGING){
+					MMSLog.systemLog.append(TAG+"IOException\n");
 				}
 				
 			}
@@ -176,18 +204,23 @@ public class MessageRelayingHandler  {
 	    		message = MMSLog.log.getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING){
+				if(MMSConfiguration.CONSOLE_LOGGING){
 					System.out.print(TAG);
 					e.printStackTrace();
+				}
+				if(MMSConfiguration.SYSTEM_LOGGING){
+					MMSLog.systemLog.append(TAG+"UnknownHostException\n");
 				}
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING){
+				if(MMSConfiguration.CONSOLE_LOGGING){
 					System.out.print(TAG);
 					e.printStackTrace();
 				}
-				
+				if(MMSConfiguration.SYSTEM_LOGGING){
+					MMSLog.systemLog.append(TAG+"IOException\n");
+				}
 			}
 		} else if (type == MessageTypeDecider.SAVE_LOGS) {
     		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
@@ -201,11 +234,13 @@ public class MessageRelayingHandler  {
 	    		wr.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING){
+				if(MMSConfiguration.CONSOLE_LOGGING){
 					System.out.print(TAG);
 					e.printStackTrace();
 				}
-				
+				if(MMSConfiguration.SYSTEM_LOGGING){
+					MMSLog.systemLog.append(TAG+"IOException\n");
+				}
 			}
     		message = "OK".getBytes(Charset.forName("UTF-8"));
 		} /*else if (type == MessageTypeDecision.EMPTY_QUEUE) {
@@ -217,45 +252,58 @@ public class MessageRelayingHandler  {
 				message = "OK".getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING){
+				if(MMSConfiguration.CONSOLE_LOGGING){
 					System.out.print(TAG);
 					e.printStackTrace();
+				}
+				if(MMSConfiguration.SYSTEM_LOGGING){
+					MMSLog.systemLog.append(TAG+"UnknownHostException\n");
 				}
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING){
+				if(MMSConfiguration.CONSOLE_LOGGING){
 					System.out.print(TAG);
 					e.printStackTrace();
+				}
+				if(MMSConfiguration.SYSTEM_LOGGING){
+					MMSLog.systemLog.append(TAG+"IOException\n");
 				}
 				
 			}
 		} else if (type == MessageTypeDecider.REMOVE_MNS_ENTRY) {
     		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
-    		if(MMSConfiguration.LOGGING)System.out.println(TAG+"remove mrn: " + params.get("mrn").get(0));
+    		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"remove mrn: " + params.get("mrn").get(0));
+    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"remove mrn: " + params.get("mrn").get(0)+"\n");
     		try {
 				removeEntryMNS(params.get("mrn").get(0));
 				message = "OK".getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING){
+				if(MMSConfiguration.CONSOLE_LOGGING){
 					System.out.print(TAG);
 					e.printStackTrace();
+				}
+				if(MMSConfiguration.SYSTEM_LOGGING){
+					MMSLog.systemLog.append(TAG+"UnknownHostException\n");
 				}
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				if(MMSConfiguration.LOGGING){
+				if(MMSConfiguration.CONSOLE_LOGGING){
 					System.out.print(TAG);
 					e.printStackTrace();
+				}
+				if(MMSConfiguration.SYSTEM_LOGGING){
+					MMSLog.systemLog.append(TAG+"IOException\n");
 				}
 				
 			} 
 		}
 		else if (type == MessageTypeDecider.CLEAN_LOGS) {
     		MMSLog.MNSLog = "";
-    		MMSLog.queueLog = "";
+    		MMSLog.queueLogForClient.setLength(0);
     		MMSLog.log = "";
     		message = "OK".getBytes(Charset.forName("UTF-8"));
 		} else if (type == MessageTypeDecider.UNKNOWN_MRN) {
@@ -267,44 +315,7 @@ public class MessageRelayingHandler  {
 		outputChannel.replyToSender(ctx, message);
 	}
 	
-//  When LOGGING MNS
-	public static String dumpMNS() throws UnknownHostException, IOException{ //
-  	
-  	//String modifiedSentence;
-  	String dumpedMNS = "";
-  	
-  	Socket MNSSocket = new Socket("localhost", 1004);
-  	
-  	BufferedWriter outToMNS = new BufferedWriter(
-					new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
-  	
-  	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Dump-MNS:");
-  	ServerSocket Sock = new ServerSocket(0);
-  	int rplPort = Sock.getLocalPort();
-  	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Reply port : "+rplPort);
-  	outToMNS.write("Dump-MNS:"+","+rplPort);
-  	outToMNS.flush();
-  	outToMNS.close();
-  	MNSSocket.close();
-  	
-  	
-  	Socket ReplySocket = Sock.accept();
-  	BufferedReader inFromMNS = new BufferedReader(
-  			new InputStreamReader(ReplySocket.getInputStream(),Charset.forName("UTF-8")));
-		String inputLine;
-		StringBuffer response = new StringBuffer();
-		while ((inputLine = inFromMNS.readLine()) != null) {
-			response.append(inputLine.trim());
-		}
-		
-  	dumpedMNS = response.toString();
-  	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Dumped MNS: " + dumpedMNS);
-  	inFromMNS.close();
-  	if (dumpedMNS.equals("No"))
-  		return "No MRN to IP mapping";
-  	dumpedMNS = dumpedMNS.substring(15);
-  	return dumpedMNS;
-  }
+
   
   private void emptyMNS() throws UnknownHostException, IOException{ //
 
@@ -313,7 +324,8 @@ public class MessageRelayingHandler  {
   	BufferedWriter outToMNS = new BufferedWriter(
 					new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
   	
-  	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Empty-MNS:");
+  	if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Empty-MNS");
+  	if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Empty-MNS\n");
   	outToMNS.write("Empty-MNS:");
   	outToMNS.flush();
   	outToMNS.close();
@@ -329,7 +341,8 @@ public class MessageRelayingHandler  {
   	BufferedWriter outToMNS = new BufferedWriter(
 					new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
   	
-  	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Remove-Entry:"+mrn);
+  	if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Remove-Entry:"+mrn);
+  	if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Remove-Entry:"+mrn+"\n");
   	outToMNS.write("Remove-Entry:"+mrn);
   	outToMNS.flush();
   	outToMNS.close();

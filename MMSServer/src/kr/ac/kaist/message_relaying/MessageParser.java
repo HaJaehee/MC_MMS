@@ -24,8 +24,8 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 
 public class MessageParser {
-	private static final String TAG = "[MessageParser] ";
-	
+	private String TAG = "[MessageParser:";
+	private int SESSION_ID = 0;
 	private String srcIP = null;
 	private String srcMRN = null;
 	private String dstIP = null;
@@ -38,7 +38,10 @@ public class MessageParser {
 	private HttpMethod httpMethod = null;
 	private String svcMRN = null;
 	
-	MessageParser(){
+	MessageParser(int sessionId){
+		this.SESSION_ID = sessionId;
+		this.TAG += SESSION_ID + "] ";
+		
 		srcIP = null;
 		srcMRN = null;
 		dstIP = null;

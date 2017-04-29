@@ -22,17 +22,20 @@ import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 
 
-public class PollingMessageHandler {
-	private static final String TAG = "[PollingMessageHandler] ";
-	
+class PollingMessageHandler {
+	private String TAG = "[PollingMessageHandler:";
+	private int SESSION_ID = 0;
 	private MessageQueueManager mqm = null;
 	
-	public PollingMessageHandler() {
+	public PollingMessageHandler(int sessionId) {
+		this.SESSION_ID = sessionId;
+		this.TAG += SESSION_ID + "] ";
+		
 		initializeModule();
 	}
 	
 	private void initializeModule() {
-		mqm = new MessageQueueManager();
+		mqm = new MessageQueueManager(this.SESSION_ID);
 	}
 	
 	void updateClientInfo(MNSInteractionHandler mih, String srcMRN, String srcIP, int srcPort, int srcModel) {

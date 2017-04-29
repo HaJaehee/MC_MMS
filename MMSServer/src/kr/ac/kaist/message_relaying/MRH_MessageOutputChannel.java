@@ -12,6 +12,11 @@ Version : 0.4.0
 Rev. history : 2017-03-22
 	Added secureSendMessage() method in order to handle HTTPS.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-29
+Version : 0.5.3
+	Added system log features
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -51,15 +56,23 @@ import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
 import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.MMSLog;
 
 public class MRH_MessageOutputChannel {
 	
-	private static final String TAG = "[MRH_MessageOutputChannel] ";
+	private String TAG = "[MRH_MessageOutputChannel:";
+	private int SESSION_ID = 0;
 	private final String USER_AGENT = "MMSClient/0.5.0";
 	private static Map<String,List<String>> storedHeader = null;
 	private static boolean isStoredHeader = false;
 	private HostnameVerifier hv = null;
 	private int responseCode = 200;
+	
+	MRH_MessageOutputChannel(int sessionId) {
+		// TODO Auto-generated constructor stub
+		this.SESSION_ID = sessionId;
+		this.TAG += SESSION_ID + "] ";
+	}
 	
 	void setResponseHeader(Map<String, List<String>> storingHeader){
 		isStoredHeader = true;
@@ -70,7 +83,8 @@ public class MRH_MessageOutputChannel {
 		
 		
     	ByteBuf textb = Unpooled.copiedBuffer(data);
-    	if(MMSConfiguration.LOGGING)System.out.println(TAG+":Reply to sender\n");
+    	if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Reply to sender\n");
+    	if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Reply to sender\n\n");
     	long responseLen = data.length;
     	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, getHttpResponseStatus(responseCode));
     	if (isStoredHeader){
@@ -103,10 +117,13 @@ public class MRH_MessageOutputChannel {
 	
 //  to do relaying
 	byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws Exception { // 
-	  	if(MMSConfiguration.LOGGING)System.out.println(TAG+"uri?:" + req.uri());
+	  	if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"uri?:" + req.uri());
+	  	if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"uri?:" + req.uri()+"\n");
 	  	
 		String url = "http://" + IPAddress + ":" + port + req.uri();
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+url);
+		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+url);
+		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+url+"\n");
+		
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		HttpHeaders httpHeaders = req.headers();
@@ -150,11 +167,17 @@ public class MRH_MessageOutputChannel {
 			Map<String,List<String>> resHeaders = con.getHeaderFields();
 			setResponseHeader(resHeaders);
 			
-			if(MMSConfiguration.LOGGING) {	
+			if(MMSConfiguration.CONSOLE_LOGGING) {	
 				System.out.println("\n"+TAG+"Sending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url);
 				System.out.println(TAG+(httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters);
 				System.out.println(TAG+"Response Code : " + responseCode);
 			}
+			if(MMSConfiguration.SYSTEM_LOGGING) {
+				MMSLog.systemLog.append("\n"+TAG+"Sending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url+"\n");
+				MMSLog.systemLog.append(TAG+(httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters+"\n");
+				MMSLog.systemLog.append(TAG+"Response Code : " + responseCode+"\n");
+			}
+			
 			BufferedReader in = new BufferedReader(
 			        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 			String inputLine;
@@ -167,10 +190,14 @@ public class MRH_MessageOutputChannel {
 			String ret = buf.toString();
 			return ret.getBytes();
 		} catch (Exception e) {
-			if(MMSConfiguration.LOGGING){
+			if(MMSConfiguration.CONSOLE_LOGGING){
 				System.out.print(TAG);
 				e.printStackTrace();
 			}
+			if(MMSConfiguration.SYSTEM_LOGGING){
+				MMSLog.systemLog.append(TAG+"Exception\n");
+			}
+			
 			return "No Reply".getBytes();
 			
 		}
@@ -183,15 +210,18 @@ public class MRH_MessageOutputChannel {
 	
 //  to do secure relaying
 	byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws Exception { // 
-	  	if(MMSConfiguration.LOGGING)System.out.println(TAG+"uri?:" + req.uri());
+	  	if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"uri?:" + req.uri());
+	  	if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"uri?:" + req.uri()+"\n");
 	  	
 	  	hv = getHV();
 	  	
 		String url = "https://" + IPAddress + ":" + port + req.uri();
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+url);
+		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+url);
+		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+url+"\n");
 		URL obj = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"connection opened");
+		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"connection opened");
+		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"connection opened\n");
 		con.setHostnameVerifier(hv);
 		
 		HttpHeaders httpHeaders = req.headers();
@@ -235,10 +265,15 @@ public class MRH_MessageOutputChannel {
 			Map<String,List<String>> resHeaders = con.getHeaderFields();
 			setResponseHeader(resHeaders);
 			
-			if(MMSConfiguration.LOGGING){
+			if(MMSConfiguration.CONSOLE_LOGGING){
 				System.out.println("\n"+TAG+"Sending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url);
 				System.out.println(TAG+(httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters);
 				System.out.println(TAG+"Response Code : " + responseCode);
+			}
+			if(MMSConfiguration.SYSTEM_LOGGING){
+				MMSLog.systemLog.append("\n"+TAG+"Sending '"+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url+"\n");
+				MMSLog.systemLog.append(TAG+(httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters+"\n");
+				MMSLog.systemLog.append(TAG+"Response Code : " + responseCode+"\n");
 			}
 		
 			BufferedReader in = new BufferedReader(
@@ -253,9 +288,12 @@ public class MRH_MessageOutputChannel {
 			String ret = buf.toString();
 			return ret.getBytes();
 		} catch (Exception e) {
-			if(MMSConfiguration.LOGGING){
+			if(MMSConfiguration.CONSOLE_LOGGING){
 				System.out.print(TAG);
 				e.printStackTrace();
+			}
+			if(MMSConfiguration.SYSTEM_LOGGING){
+				MMSLog.systemLog.append(TAG+"Exception\n");
 			}
 			return "No Reply".getBytes();
 			
@@ -286,13 +324,18 @@ public class MRH_MessageOutputChannel {
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (Exception e) {
-        	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Error" + e);
+        	if(MMSConfiguration.CONSOLE_LOGGING){
+        		System.out.println(TAG);
+        		e.printStackTrace();
+        	}
         }
         
         HostnameVerifier hv = new HostnameVerifier() {
             public boolean verify(String urlHostName, SSLSession session) {
-            	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Warning: URL Host: " + urlHostName + " vs. "
+            	if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Warning: URL Host: " + urlHostName + " vs. "
                         + session.getPeerHost());
+            	if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Warning: URL Host: " + urlHostName + " vs. "
+                        + session.getPeerHost()+"\n");
                 return true;
             }
         };

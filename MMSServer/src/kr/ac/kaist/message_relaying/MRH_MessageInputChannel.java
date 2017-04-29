@@ -13,11 +13,18 @@ Rev. history : 2017-03-22
 	Added SSL handler and modified MessageRelayingHandler in order to handle HTTPS functionalities.
 	Added member variable protocol in order to handle HTTPS.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-29
+Version : 0.5.3
+	Added system log features
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 
 import java.net.InetAddress;
+import java.util.Random;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -33,12 +40,16 @@ import kr.ac.kaist.mms_server.MMSLog;
 
 public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHttpRequest>{
 	
-	private static final String TAG = "[MRH_MessageInputChannel] ";
+	private String TAG = "[MRH_MessageInputChannel:";
+	private int SESSION_ID = 0;
+	private Random rd = new Random();
 	
 	private String protocol = "";
 	
 	public MRH_MessageInputChannel(String protocol) {
 		super();
+		this.SESSION_ID = rd.nextInt( Integer.MAX_VALUE );
+		this.TAG += SESSION_ID + "] ";
 		this.protocol = protocol;
 	}
 	
@@ -48,8 +59,9 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		try{
 			req.retain();
 			
-			if(MMSConfiguration.LOGGING)System.out.println("\n"+TAG+"Message received");
-			new MessageRelayingHandler(ctx, req, protocol);
+			if(MMSConfiguration.CONSOLE_LOGGING)System.out.println("\n"+TAG+"Message received");
+			if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append("\n"+TAG+"Message received\n");
+			new MessageRelayingHandler(ctx, req, protocol, SESSION_ID);
 		} finally {
           req.release();
       }
@@ -84,9 +96,12 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
     	MMSLog.nMsgWaitingPollClnt--;
-    	if(MMSConfiguration.LOGGING){
+    	if(MMSConfiguration.CONSOLE_LOGGING){
 			System.out.print(TAG);
 			cause.printStackTrace();
+		}
+    	if(MMSConfiguration.SYSTEM_LOGGING){
+			MMSLog.systemLog.append(TAG+cause.getMessage()+"\n");
 		}
         ctx.close();
     }

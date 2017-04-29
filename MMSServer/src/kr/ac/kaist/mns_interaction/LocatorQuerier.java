@@ -12,7 +12,8 @@ Version : 0.3.01
 /* -------------------------------------------------------- */
 
 public class LocatorQuerier {
-	private static final String TAG = "[LocatorQuerier] ";
+	private String TAG = "[LocatorQuerier] ";
+	
 	String buildQuery(String dstMRN){
 		
 		String msg = "MRN-Request:" + dstMRN;

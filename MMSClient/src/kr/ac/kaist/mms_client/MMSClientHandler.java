@@ -40,7 +40,7 @@ import java.util.Map;
 
 public class MMSClientHandler {
 	
-	private static final String TAG = "[MMSClientHandler] ";
+	private String TAG = "[MMSClientHandler] ";
 	
 	private RcvHandler rcvHandler = null;
 	private PollHandler pollHandler = null;

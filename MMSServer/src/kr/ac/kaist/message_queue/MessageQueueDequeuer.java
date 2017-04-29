@@ -1,5 +1,28 @@
 package kr.ac.kaist.message_queue;
 
+
+/* -------------------------------------------------------- */
+/** 
+File name : MessageQueueDequeuer.java
+	
+Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2017-04-19
+Version : 0.5.0 
+
+Rev. history : 2017-04-26 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-27
+Version : 0.5.1
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-04-29
+Version : 0.5.3
+	Added system log features
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+*/
+/* -------------------------------------------------------- */
+
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
@@ -20,32 +43,22 @@ import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 
-/* -------------------------------------------------------- */
-/** 
-File name : MessageQueueDequeuer.java
-	
-Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2017-04-19
-Version : 0.5.0 
-
-Rev. history : 2017-04-26 
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-04-27
-Version : 0.5.1
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-*/
-/* -------------------------------------------------------- */
 
 
 class MessageQueueDequeuer extends Thread{
 	
-	private static final String TAG = "[MessageQueueDequeuer] ";
+	private String TAG = "[MessageQueueDequeuer:";
+	private int SESSION_ID = 0;
 	
 	private String queueName = null;
 	private String srcMRN = null;
 	private MRH_MessageOutputChannel outputChannel = null;
 	private ChannelHandlerContext ctx = null;
+	
+	MessageQueueDequeuer (int sessionId) {
+		this.SESSION_ID = sessionId;
+		this.TAG += SESSION_ID + "] ";
+	}
 	
 	void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN) {
 		
@@ -66,7 +79,8 @@ class MessageQueueDequeuer extends Thread{
 		// TODO Auto-generated method stub
 		super.run();
 		
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+" [*] Queue name = "+queueName);
+		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+" Queue name = "+queueName);
+		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+" Queue name = "+queueName+"\n");
 		
 	    try {
 			ConnectionFactory factory = new ConnectionFactory();
@@ -74,7 +88,8 @@ class MessageQueueDequeuer extends Thread{
 			Connection connection = factory.newConnection();
 			Channel channel = connection.createChannel();
 			channel.queueDeclare(queueName, true, false, false, null);
-			if(MMSConfiguration.LOGGING)System.out.println(TAG+" [*] Waiting for messages. To exit press CTRL+C");
+			if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+" Waiting for messages. To exit press CTRL+C");
+			if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+" Waiting for messages. To exit press CTRL+C\n");
 			
 			//Busy waiting
 //			GetResponse res = null;
@@ -82,7 +97,7 @@ class MessageQueueDequeuer extends Thread{
 //				res = channel.basicGet(queueName, true);
 //				if (res != null){
 //					String message = new String(res.getBody(), "UTF-8");
-//					if(MMSConfiguration.LOGGING)System.out.println(TAG+" [x] Received '" + message + "'");
+//					if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+" [x] Received '" + message + "'");
 //					outputChannel.replyToSender(ctx, res.getBody());
 //				}
 //			}
@@ -98,8 +113,8 @@ class MessageQueueDequeuer extends Thread{
 //			                             AMQP.BasicProperties properties, byte[] body) {
 //				 
 //				String message = new String(body, "UTF-8");
-//			    if(MMSConfiguration.LOGGING)System.out.println(TAG+" [x] Received '" + message + "'");
-//			    if(MMSConfiguration.LOGGING)System.out.print(TAG+"\""+message+"\"");
+//			    if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+" [x] Received '" + message + "'");
+//			    if(MMSConfiguration.CONSOLE_LOGGING)System.out.print(TAG+"\""+message+"\"");
 //			    outputChannel.replyToSender(ctx, body);		  
 //			  	}
 //			};
@@ -115,24 +130,38 @@ class MessageQueueDequeuer extends Thread{
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 			if(!ctx.isRemoved()){
 				String message = new String(delivery.getBody(), "UTF-8");
-				MMSLog.queueLog += TAG+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>";
-			    if(MMSConfiguration.LOGGING) {
-			    	System.out.println(TAG+" [x] Received '" + message + "'");
-			    	System.out.print(TAG+"\'"+message+"\'");
+				MMSLog.queueLogForClient.append(TAG+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>");
+				MMSLog.queueLogForSAS.append(TAG+queueName +"\n"+ "　　　　[Message] "+message +"\n");
+			    if(MMSConfiguration.CONSOLE_LOGGING) {
+			    	System.out.println(TAG+" Received '" + message + "'");
+			    	System.out.print(TAG+"'"+message+"'\n");
+			    }
+			    
+			    if(MMSConfiguration.SYSTEM_LOGGING) {
+			    	MMSLog.systemLog.append(TAG+" Received '" + message + "'\n");
+			    	MMSLog.systemLog.append(TAG+"'"+message+"'\n");
 			    }
 			    MMSLog.nMsgWaitingPollClnt--;
 			    outputChannel.replyToSender(ctx, delivery.getBody());
 				channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 			} else {
 				String message = new String(delivery.getBody(), "UTF-8");
-				MMSLog.queueLog += TAG+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>";
-				MMSLog.queueLog += TAG+srcMRN+" is disconnected<br/>";
-				MMSLog.queueLog += "　　　　[Requeue] "+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>";
-				if(MMSConfiguration.LOGGING) {
-					System.out.println(TAG+" [x] Received '" + message + "'");
-					System.out.println(TAG+" [x] MRH_MessageOutputChannel disconnected");
-			    	System.out.println(TAG+" [x] Requeue '" + message + "'");
+				MMSLog.queueLogForClient.append(TAG+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>");
+				MMSLog.queueLogForClient.append(TAG+srcMRN+" is disconnected<br/>");
+				MMSLog.queueLogForClient.append("　　　　[Requeue] "+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>");
+				MMSLog.queueLogForSAS.append(TAG+queueName +"\n"+ "　　　　[Message] "+message +"\n");
+				MMSLog.queueLogForSAS.append(TAG+srcMRN+" is disconnected<br/>");
+				MMSLog.queueLogForSAS.append("　　　　[Requeue] "+queueName +"\n"+ "　　　　[Message] "+message +"\n");
+				if(MMSConfiguration.CONSOLE_LOGGING) {
+					System.out.println(TAG+" Received '" + message + "'");
+					System.out.println(TAG+" MRH_MessageOutputChannel disconnected");
+			    	System.out.println(TAG+" Requeue '" + message + "'");
 			    }
+				if(MMSConfiguration.SYSTEM_LOGGING) {
+					MMSLog.systemLog.append(TAG+" Received '" + message + "'\n");
+					MMSLog.systemLog.append(TAG+" MRH_MessageOutputChannel disconnected\n");
+					MMSLog.systemLog.append(TAG+" Requeue '" + message + "'\n");
+				}
 				channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
 			}
 			
@@ -143,37 +172,52 @@ class MessageQueueDequeuer extends Thread{
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			if(MMSConfiguration.LOGGING){
+			if(MMSConfiguration.CONSOLE_LOGGING){
 				System.out.print(TAG);
 				e.printStackTrace();
+			}
+			if(MMSConfiguration.SYSTEM_LOGGING){
+				MMSLog.systemLog.append(TAG+"IOException\n");
 			}
 			
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
-			if(MMSConfiguration.LOGGING){
+			if(MMSConfiguration.CONSOLE_LOGGING){
 				System.out.print(TAG);
 				e.printStackTrace();
+			}
+			if(MMSConfiguration.SYSTEM_LOGGING){
+				MMSLog.systemLog.append(TAG+"TimeoutException\n");
 			}
 			
 		} catch (ShutdownSignalException e) {
 			// TODO Auto-generated catch block
-			if(MMSConfiguration.LOGGING){
+			if(MMSConfiguration.CONSOLE_LOGGING){
 				System.out.print(TAG);
 				e.printStackTrace();
+			}
+			if(MMSConfiguration.SYSTEM_LOGGING){
+				MMSLog.systemLog.append(TAG+"ShutdownSignalException\n");
 			}
 			
 		} catch (ConsumerCancelledException e) {
 			// TODO Auto-generated catch block
-			if(MMSConfiguration.LOGGING){
+			if(MMSConfiguration.CONSOLE_LOGGING){
 				System.out.print(TAG);
 				e.printStackTrace();
+			}
+			if(MMSConfiguration.SYSTEM_LOGGING){
+				MMSLog.systemLog.append(TAG+"ConsumerCancelledException\n");
 			}
 			
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			if(MMSConfiguration.LOGGING){
+			if(MMSConfiguration.CONSOLE_LOGGING){
 				System.out.print(TAG);
 				e.printStackTrace();
+			}
+			if(MMSConfiguration.SYSTEM_LOGGING){
+				MMSLog.systemLog.append(TAG+"InterruptedException\n");
 			}
 			
 		} finally {

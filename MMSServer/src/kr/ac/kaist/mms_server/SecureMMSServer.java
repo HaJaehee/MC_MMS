@@ -42,7 +42,7 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 
 public final class SecureMMSServer extends Thread {
-	private static final String TAG = "[SecureMMSServer] ";
+	private String TAG = "[SecureMMSServer] ";
 
 	
 	public void runServer() {
@@ -106,7 +106,8 @@ public final class SecureMMSServer extends Thread {
 			
 	        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 	        EventLoopGroup workerGroup = new NioEventLoopGroup();
-	        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Now starting MMS HTTPS server");
+	        if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Now starting MMS HTTPS server");
+	        if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Now starting MMS HTTPS server\n");
 	        try {
 	            ServerBootstrap b = new ServerBootstrap();
 	            b.group(bossGroup, workerGroup)
@@ -125,10 +126,24 @@ public final class SecureMMSServer extends Thread {
 			
 		} catch (CertificateException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if(MMSConfiguration.CONSOLE_LOGGING){
+				System.out.println(TAG);
+				e.printStackTrace();
+			}
+			if(MMSConfiguration.SYSTEM_LOGGING){
+				MMSLog.systemLog.append(TAG+"CertificateException\n");
+			}
+			
 		} catch (SSLException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			if(MMSConfiguration.CONSOLE_LOGGING){
+				System.out.println(TAG);
+				e1.printStackTrace();
+			}
+			if(MMSConfiguration.SYSTEM_LOGGING){
+				MMSLog.systemLog.append(TAG+"SSLException\n");
+			}
+			
 		}
     }
 }
