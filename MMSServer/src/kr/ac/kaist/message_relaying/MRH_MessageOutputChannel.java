@@ -17,16 +17,28 @@ Rev. history : 2017-04-29
 Version : 0.5.3
 	Added system log features
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-05-02
+Version : 0.5.4
+	Added image relaying feature
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+	Jaehyun Park (jae519@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +69,7 @@ import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
+import com.sun.corba.se.impl.ior.ByteBuffer;
 
 public class MRH_MessageOutputChannel {
 	
@@ -80,7 +93,6 @@ public class MRH_MessageOutputChannel {
 	}
 	
 	public void replyToSender(ChannelHandlerContext ctx, byte[] data){
-		
 		
     	ByteBuf textb = Unpooled.copiedBuffer(data);
     	if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Reply to sender\n");
@@ -178,17 +190,20 @@ public class MRH_MessageOutputChannel {
 				MMSLog.systemLog.append(TAG+"Response Code : " + responseCode+"\n");
 			}
 			
-			BufferedReader in = new BufferedReader(
-			        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
-			String inputLine;
-			StringBuffer buf = new StringBuffer();
-			while ((inputLine = in.readLine()) != null) {
-				buf = buf.append(inputLine + "\n"); 
+			
+			InputStream is = con.getInputStream();
+			ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
+			byte[] buffer = new byte[4096];
+			
+			int bytesRead = -1;
+			while ((bytesRead = is.read(buffer))!=-1){
+				byteOS.write(Arrays.copyOfRange(buffer, 0, bytesRead));
 			}
+			byte[] retBuffer = byteOS.toByteArray();
 
-			in.close();
-			String ret = buf.toString();
-			return ret.getBytes();
+			is.close();
+			return retBuffer;
+			//return buffer;
 		} catch (Exception e) {
 			if(MMSConfiguration.CONSOLE_LOGGING){
 				System.out.print(TAG);
@@ -197,7 +212,7 @@ public class MRH_MessageOutputChannel {
 			if(MMSConfiguration.SYSTEM_LOGGING){
 				MMSLog.systemLog.append(TAG+"Exception\n");
 			}
-			
+
 			return "No Reply".getBytes();
 			
 		}
@@ -276,17 +291,18 @@ public class MRH_MessageOutputChannel {
 				MMSLog.systemLog.append(TAG+"Response Code : " + responseCode+"\n");
 			}
 		
-			BufferedReader in = new BufferedReader(
-			        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
-			String inputLine;
-			StringBuffer buf = new StringBuffer();
-			while ((inputLine = in.readLine()) != null) {
-				buf = buf.append(inputLine + "\n"); 
+			InputStream is = con.getInputStream();
+			ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
+			byte[] buffer = new byte[4096];
+			
+			int bytesRead = -1;
+			while ((bytesRead = is.read(buffer))!=-1){
+				byteOS.write(Arrays.copyOfRange(buffer, 0, bytesRead));
 			}
+			byte[] retBuffer = byteOS.toByteArray();
 
-			in.close();
-			String ret = buf.toString();
-			return ret.getBytes();
+			is.close();
+			return retBuffer;
 		} catch (Exception e) {
 			if(MMSConfiguration.CONSOLE_LOGGING){
 				System.out.print(TAG);
@@ -295,6 +311,7 @@ public class MRH_MessageOutputChannel {
 			if(MMSConfiguration.SYSTEM_LOGGING){
 				MMSLog.systemLog.append(TAG+"Exception\n");
 			}
+
 			return "No Reply".getBytes();
 			
 		}
