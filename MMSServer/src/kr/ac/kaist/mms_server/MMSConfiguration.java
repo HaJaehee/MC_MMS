@@ -36,5 +36,5 @@ public class MMSConfiguration {
 	public static final boolean AUTO_SAVE_STATUS = true;
 	public static final long SAVE_STATUS_INTERVAL = 300000;
 	public static final boolean AUTO_SAVE_SYSTEM_LOG = true;
-	public static final long SAVE_SYSTEM_LOG_INTERVAL = 60000; 
+	public static final long SAVE_SYSTEM_LOG_INTERVAL = 180000; 
 }

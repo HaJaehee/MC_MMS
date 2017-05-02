@@ -17,6 +17,11 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-04-25
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-05-02
+Version : 0.5.4
+	Added setting response header
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -49,6 +54,12 @@ public class ServiceRegistry{
 			public int setResponseCode() {
 				// TODO Auto-generated method stub
 				return 200;
+			}
+
+			@Override
+			public Map<String, List<String>> setResponseHeader() {
+				// TODO Auto-generated method stub
+				return null;
 			}
 		});
 	}

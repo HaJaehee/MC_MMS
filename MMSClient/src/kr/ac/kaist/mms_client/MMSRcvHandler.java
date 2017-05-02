@@ -27,6 +27,11 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2017-04-25
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 	Moved PollHandler class into MMSPollHandler.java
+	
+Rev. history : 2017-05-02
+Version : 0.5.4
+	Added setting response header
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -41,6 +46,7 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import com.sun.net.httpserver.HttpExchange;
@@ -169,6 +175,21 @@ class MMSRcvHandler {
             inH.put("Uri", uris);
             
             String response = this.processRequest(inH, message);
+            Map<String,List<String>> myHdr = setResponseHeader();
+            Map<String,List<String>> resHdr = t.getResponseHeaders();
+            
+    		if (myHdr != null) {
+    			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
+    			for (Iterator keys = myHdr.keySet().iterator() ; keys.hasNext() ;) {
+    				String key = (String) keys.next();
+    				ArrayList<String> value = (ArrayList<String>) myHdr.get(key);
+    				if(MMSConfiguration.LOGGING)System.out.println(key+":"+value);
+    				resHdr.put(key, value);
+    			}
+    			if(MMSConfiguration.LOGGING)System.out.println("]");
+    			
+    		} 
+            
             
             t.sendResponseHeaders(setResponseCode(), response.length());
             OutputStream os = t.getResponseBody();
@@ -183,6 +204,10 @@ class MMSRcvHandler {
         
         private int setResponseCode() {
         	return this.myReqCallback.setResponseCode();
+        }
+        
+        private Map<String,List<String>> setResponseHeader(){
+        	return this.myReqCallback.setResponseHeader();
         }
     }
     //OONI

@@ -18,6 +18,11 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2017-04-27
 Version : 0.5.1
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-05-02
+Version : 0.5.4
+	Added setting response header
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -48,6 +53,7 @@ public class SecureMMSClientHandler {
 	public interface RequestCallback{
 		String respondToClient(Map<String,List<String>> headerField, String message);
 		int setResponseCode();
+		Map<String,List<String>> setResponseHeader();
 	}
 	
 	public interface ResponseCallback{

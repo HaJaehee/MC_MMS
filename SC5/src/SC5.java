@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,11 @@ Version : 0.5.0
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-04-25
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-05-02
+Version : 0.5.4
+	Added setting response header
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -54,6 +61,17 @@ public class SC5 {
 				System.out.println(message);
 				
 				return "OK";
+			}
+
+			@Override
+			public Map<String, List<String>> setResponseHeader() {
+				// TODO Auto-generated method stub
+				
+				Map<String, List<String>> myHdr = new HashMap<String, List<String>>();
+				ArrayList<String> hi = new ArrayList<String>();
+				hi.add("hello");
+				myHdr.put("hi", hi);
+				return myHdr;
 			}
 		});
 		

@@ -7,6 +7,11 @@ File name : MMSSystemLogAutoSaver.java
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-04-27
 Version : 0.5.3
+
+Rev. history : 2017-05-02
+Version : 0.5.4
+	Fixed bugs
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr) 
 */
 /* -------------------------------------------------------- */
 
@@ -43,8 +48,8 @@ public class MMSSystemLogAutoSaver extends Thread {
 				MMSLog.systemLog.append(TAG+"InterruptedException\n");
 			}
 		}
-		while (MMSConfiguration.AUTO_SAVE_SYSTEM_LOG) {
-			while (MMSConfiguration.AUTO_SAVE_SYSTEM_LOG) {
+		while (true) {
+			if (MMSConfiguration.AUTO_SAVE_SYSTEM_LOG) {
 				try {
 					
 					
@@ -91,8 +96,8 @@ public class MMSSystemLogAutoSaver extends Thread {
 						MMSLog.systemLog.append(TAG+"InterruptedException\n");
 					}
 				}
-				
-				
+			} else {
+				break;
 			}
 		}
 	}
