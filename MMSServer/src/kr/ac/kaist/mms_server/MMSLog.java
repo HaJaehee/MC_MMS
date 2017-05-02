@@ -40,9 +40,9 @@ public class MMSLog {
 	private static String TAG = "[MMSLog] ";
 	public static String MNSLog = "";
 	public static StringBuffer queueLogForClient = new StringBuffer();
-	public static StringBuffer queueLogForSAS = new StringBuffer();; //SAS: MMSStatusAutoSaver
+	public static StringBuffer queueLogForSAS = new StringBuffer(); //SAS: MMSStatusAutoSaver
 	public static String log = "";
-	public static StringBuffer systemLog = new StringBuffer();;
+	public static StringBuffer systemLog = new StringBuffer();
 	public static int nMsgWaitingPollClnt = 0;
 	
 	public static String getStatus ()  throws UnknownHostException, IOException{

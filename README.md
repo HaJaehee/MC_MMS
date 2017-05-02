@@ -13,6 +13,7 @@ Supports long polling<br/>
 Supports maintaining long polling client session<br/>
 Supports saving MMS logs automatically<br/>
 Supports displaying MMS logs on web browser<br/>
+Supports MMS web management<br/>
 Maritime Name System Dummy<br/>
 Service Consumer Dummies<br/>
 Service Provider Dummies<br/>

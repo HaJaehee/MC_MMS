@@ -130,8 +130,8 @@ class MessageQueueDequeuer extends Thread{
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 			if(!ctx.isRemoved()){
 				String message = new String(delivery.getBody(), "UTF-8");
-				MMSLog.queueLogForClient.append(TAG+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>");
-				MMSLog.queueLogForSAS.append(TAG+queueName +"\n"+ "　　　　[Message] "+message +"\n");
+				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append(TAG+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>");
+				if(MMSConfiguration.AUTO_SAVE_STATUS)MMSLog.queueLogForSAS.append(TAG+queueName +"\n"+ "　　　　[Message] "+message +"\n");
 			    if(MMSConfiguration.CONSOLE_LOGGING) {
 			    	System.out.println(TAG+" Received '" + message + "'");
 			    	System.out.print(TAG+"'"+message+"'\n");
@@ -146,12 +146,16 @@ class MessageQueueDequeuer extends Thread{
 				channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 			} else {
 				String message = new String(delivery.getBody(), "UTF-8");
-				MMSLog.queueLogForClient.append(TAG+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>");
-				MMSLog.queueLogForClient.append(TAG+srcMRN+" is disconnected<br/>");
-				MMSLog.queueLogForClient.append("　　　　[Requeue] "+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>");
-				MMSLog.queueLogForSAS.append(TAG+queueName +"\n"+ "　　　　[Message] "+message +"\n");
-				MMSLog.queueLogForSAS.append(TAG+srcMRN+" is disconnected<br/>");
-				MMSLog.queueLogForSAS.append("　　　　[Requeue] "+queueName +"\n"+ "　　　　[Message] "+message +"\n");
+				if(MMSConfiguration.WEB_LOG_PROVIDING) {
+					MMSLog.queueLogForClient.append(TAG+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>");
+					MMSLog.queueLogForClient.append(TAG+srcMRN+" is disconnected<br/>");
+					MMSLog.queueLogForClient.append("　　　　[Requeue] "+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>");
+				}
+				if(MMSConfiguration.AUTO_SAVE_STATUS){
+					MMSLog.queueLogForSAS.append(TAG+queueName +"\n"+ "　　　　[Message] "+message +"\n");
+					MMSLog.queueLogForSAS.append(TAG+srcMRN+" is disconnected<br/>");
+					MMSLog.queueLogForSAS.append("　　　　[Requeue] "+queueName +"\n"+ "　　　　[Message] "+message +"\n");
+				}
 				if(MMSConfiguration.CONSOLE_LOGGING) {
 					System.out.println(TAG+" Received '" + message + "'");
 					System.out.println(TAG+" MRH_MessageOutputChannel disconnected");

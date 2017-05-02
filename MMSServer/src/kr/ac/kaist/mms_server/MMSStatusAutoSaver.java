@@ -92,7 +92,7 @@ public class MMSStatusAutoSaver extends Thread{
 			    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Status saved\n");
 						
 			    		MMSLog.queueLogForSAS.setLength(0);
-			    		Thread.sleep(MMSConfiguration.SAVE_STATUS_INTERVAL);
+			    		Thread.sleep(MMSConfiguration.AUTO_SAVE_STATUS_INTERVAL);
 					} catch (UnknownHostException e) {
 						// TODO Auto-generated catch block
 						if(MMSConfiguration.CONSOLE_LOGGING){
@@ -122,10 +122,12 @@ public class MMSStatusAutoSaver extends Thread{
 						if(MMSConfiguration.SYSTEM_LOGGING){
 							MMSLog.systemLog.append(TAG+"InterruptedException\n");
 						}
-						
+						MMSLog.queueLogForSAS.setLength(0);
+						break;
 					}
 					
 				} else {
+					MMSLog.queueLogForSAS.setLength(0);
 					break;
 				}
 			}

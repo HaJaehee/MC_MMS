@@ -150,13 +150,13 @@ public class MNSDummy {
               out.close();
               ReplySocket.close();
               
-          }else if (data.equals("Empty-MNS:") && MMSConfiguration.EMPTY_MNS_DUMMY){
+          }else if (data.equals("Empty-MNS:") && MMSConfiguration.WEB_MANAGING){
         	  MRNtoIP.clear();
         	  
         	  if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"MNSDummy:EMPTY");
         	  if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"MNSDummy:END");
               
-          }else if (data.regionMatches(0, "Remove-Entry:", 0, 13) && MMSConfiguration.REMOVE_ENTRY_MNS_DUMMY){
+          }else if (data.regionMatches(0, "Remove-Entry:", 0, 13) && MMSConfiguration.WEB_MANAGING){
         	  String mrn = data.substring(13);
         	  MRNtoIP.remove(mrn);
 

@@ -48,6 +48,16 @@ class MessageTypeDecider {
 	static final int EMPTY_QUEUE = 11;
 	static final int EMPTY_MNSDummy = 12;
 	static final int REMOVE_MNS_ENTRY = 13;
+	static final int AUTO_SAVE_STATUS_ON = 14;
+	static final int AUTO_SAVE_STATUS_OFF = 15;
+	static final int AUTO_SAVE_STATUS_INTERVAL = 16;
+	static final int AUTO_SAVE_SYSTEM_LOG_ON = 17;
+	static final int AUTO_SAVE_SYSTEM_LOG_OFF = 18;
+	static final int AUTO_SAVE_SYSTEM_LOG_INTERVAL = 19;
+	static final int CONSOLE_LOGGING_ON = 20;
+	static final int CONSOLE_LOGGING_OFF = 21;
+	static final int WEB_LOG_PROVIDING_ON = 22;
+	static final int WEB_LOG_PROVIDING_OFF = 23;
 	
 	MessageTypeDecider(int sessionId) {
 		this.SESSION_ID = sessionId;
@@ -67,11 +77,11 @@ class MessageTypeDecider {
     	}
     	
 //		when registering
-    	else if (httpMethod == httpMethod.POST && uri.equals("/registering") && dstMRN.equals(MMSConfiguration.MMS_MRN)) {
+    	else if (httpMethod == HttpMethod.POST && uri.equals("/registering") && dstMRN.equals(MMSConfiguration.MMS_MRN)) {
     		return REGISTER_CLIENT;
     	}
     	
-//		when CONSOLE_LOGGING
+//		when WEB_LOG_PROVIDING
     	else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/logs")){
     		return LOGS;
     	} else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/status")){
@@ -80,16 +90,40 @@ class MessageTypeDecider {
     		return CLEAN_LOGS;
     	} else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/savelogs")){    		
     		return SAVE_LOGS;
-    	} else if (MMSConfiguration.EMPTY_QUEUE && httpMethod == HttpMethod.GET && uri.equals("/emptyqueue")){ 
-    		return EMPTY_QUEUE;
-    	} else if (MMSConfiguration.EMPTY_MNS_DUMMY && httpMethod == HttpMethod.GET && uri.equals("/emptymnsdummy")){ 
-    		return EMPTY_MNSDummy;
-    	} else if (MMSConfiguration.REMOVE_ENTRY_MNS_DUMMY && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/removemnsentry", 0, 15)){ 
-    		return REMOVE_MNS_ENTRY;
     	}
     	
+    	
+//		when WEB_MANAGING
+    	/* else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptyqueue")){ 
+    		return EMPTY_QUEUE;
+    	}*/ else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptymnsdummy")){ 
+    		return EMPTY_MNSDummy;
+    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/removemnsentry", 0, 15)){ 
+    		return REMOVE_MNS_ENTRY;
+    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/status/autosave?switch=on")){
+    		return AUTO_SAVE_STATUS_ON;
+    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/status/autosave?switch=off")){
+    		return AUTO_SAVE_STATUS_OFF;
+    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/systemlog/autosave?switch=on")){
+    		return AUTO_SAVE_SYSTEM_LOG_ON;
+    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/systemlog/autosave?switch=off")){
+    		return AUTO_SAVE_SYSTEM_LOG_OFF;
+    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/status/autosave?interval", 0, 25)) {
+    		return AUTO_SAVE_STATUS_INTERVAL;
+    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/systemlog/autosave?interval", 0, 28)) {
+    		return AUTO_SAVE_SYSTEM_LOG_INTERVAL;
+    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/consolelog?switch=on")){
+    		return CONSOLE_LOGGING_ON;
+    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/consolelog?switch=off")){
+    		return CONSOLE_LOGGING_OFF;
+    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/weblog?switch=on")){
+    		return WEB_LOG_PROVIDING_ON;
+    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/weblog?switch=off")){
+    		return WEB_LOG_PROVIDING_OFF;
+    	} 
+    	
 //    	When relaying
-    	else if (httpMethod == HttpMethod.POST || httpMethod == HttpMethod.GET) {
+    	else {
     		String dstInfo = mch.requestDstInfo(dstMRN);
     		
         	if (dstInfo.equals("No")) {
@@ -104,9 +138,9 @@ class MessageTypeDecider {
         	} else {//when model A, it puts the message into the queue
         		return RELAYING_TO_SC;
         	}
-    	} else {
+    	} /*else {
     		return UNKNOWN_HTTP_TYPE;
-    	}
+    	}*/
 	}
 	
 

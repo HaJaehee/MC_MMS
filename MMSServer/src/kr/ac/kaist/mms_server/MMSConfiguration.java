@@ -23,18 +23,19 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 public class MMSConfiguration {
 	private String TAG = "[MMSConfiguration] ";
-	public static final boolean CONSOLE_LOGGING = true;
-	public static final boolean SYSTEM_LOGGING = true;
-	public static final boolean WEB_LOG_PROVIDING = true;
-	public static final boolean EMPTY_QUEUE = true;
-	public static final boolean EMPTY_MNS_DUMMY = true;
-	public static final boolean REMOVE_ENTRY_MNS_DUMMY = true;
+	public static boolean CONSOLE_LOGGING = true;
+	public static boolean SYSTEM_LOGGING = true;
+	public static boolean WEB_LOG_PROVIDING = true;
+	public static final boolean WEB_MANAGING = true;
 	public static final int HTTP_PORT = 8088;
 	public static final int HTTPS_PORT = 444;
 	public static final int UDP_PORT = 8089;
 	public static final String MMS_MRN = "urn:mrn:smart-navi:device:mms1";
-	public static final boolean AUTO_SAVE_STATUS = true;
-	public static final long SAVE_STATUS_INTERVAL = 300000;
-	public static final boolean AUTO_SAVE_SYSTEM_LOG = true;
-	public static final long SAVE_SYSTEM_LOG_INTERVAL = 180000; 
+	public static boolean AUTO_SAVE_STATUS = true;
+	public static long AUTO_SAVE_STATUS_INTERVAL = 300000;
+	public static Thread AUTO_SAVE_STATUS_THREAD = null;
+	public static boolean AUTO_SAVE_SYSTEM_LOG = true;
+	public static long AUTO_SAVE_SYSTEM_LOG_INTERVAL = 180000; 
+	public static Thread AUTO_SAVE_SYSTEM_LOG_THREAD = null;
+
 }

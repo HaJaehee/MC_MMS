@@ -47,6 +47,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
@@ -54,6 +56,8 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
+import kr.ac.kaist.mms_server.MMSStatusAutoSaver;
+import kr.ac.kaist.mms_server.MMSSystemLogAutoSaver;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 public class MessageRelayingHandler  {
@@ -306,7 +310,144 @@ public class MessageRelayingHandler  {
     		MMSLog.queueLogForClient.setLength(0);
     		MMSLog.log = "";
     		message = "OK".getBytes(Charset.forName("UTF-8"));
-		} else if (type == MessageTypeDecider.UNKNOWN_MRN) {
+		} else if (type == MessageTypeDecider.AUTO_SAVE_STATUS_ON){
+			if (MMSConfiguration.AUTO_SAVE_STATUS) {
+				message = "Is already on".getBytes(Charset.forName("UTF-8"));
+			} else {
+				MMSConfiguration.AUTO_SAVE_STATUS = true;
+				if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"auto save status on");
+	    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"auto save status on\n");
+				if (!MMSConfiguration.AUTO_SAVE_STATUS_THREAD.isAlive()){
+					MMSConfiguration.AUTO_SAVE_STATUS_THREAD = new MMSStatusAutoSaver();
+				}
+				message = "OK".getBytes(Charset.forName("UTF-8"));
+			}
+		} else if (type == MessageTypeDecider.AUTO_SAVE_STATUS_OFF){
+			if (!MMSConfiguration.AUTO_SAVE_STATUS) {
+				message = "Is already off".getBytes(Charset.forName("UTF-8"));
+			} else {
+				MMSConfiguration.AUTO_SAVE_STATUS = false;
+				if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"auto save status off");
+	    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"auto save status off\n");
+	    		if (MMSConfiguration.AUTO_SAVE_STATUS_THREAD.isAlive()){
+					MMSConfiguration.AUTO_SAVE_STATUS_THREAD.interrupt();
+				}
+				message = "OK, auto_save_status_thread is going to stop.".getBytes(Charset.forName("UTF-8"));
+			}
+		} else if (type == MessageTypeDecider.AUTO_SAVE_SYSTEM_LOG_ON){
+			if (MMSConfiguration.AUTO_SAVE_SYSTEM_LOG) {
+				message = "Is already on".getBytes(Charset.forName("UTF-8"));
+			} else {
+				
+	    		
+				MMSConfiguration.AUTO_SAVE_SYSTEM_LOG = true;
+				if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"auto save system log on");
+	    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"auto save system log on\n");
+				if (!MMSConfiguration.AUTO_SAVE_SYSTEM_LOG_THREAD.isAlive()){
+					MMSConfiguration.AUTO_SAVE_SYSTEM_LOG_THREAD = new MMSSystemLogAutoSaver();
+				} 
+				message = "OK".getBytes(Charset.forName("UTF-8"));
+			}
+		} else if (type == MessageTypeDecider.AUTO_SAVE_SYSTEM_LOG_OFF){
+			if (!MMSConfiguration.AUTO_SAVE_SYSTEM_LOG) {
+				message = "Is already off".getBytes(Charset.forName("UTF-8"));
+			} else {
+
+				MMSConfiguration.AUTO_SAVE_SYSTEM_LOG = false;
+				if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"auto save system log off");
+	    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"auto save system log off\n");
+	    		if (MMSConfiguration.AUTO_SAVE_SYSTEM_LOG_THREAD.isAlive()){
+					MMSConfiguration.AUTO_SAVE_SYSTEM_LOG_THREAD.interrupt();
+				} 
+				message = "OK, auto_save_system_log_thread is going to stop.".getBytes(Charset.forName("UTF-8"));
+			}
+		} else if (type == MessageTypeDecider.AUTO_SAVE_STATUS_INTERVAL){
+			QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+    		Map<String,List<String>> params = qsd.parameters();
+    		try {
+    			long interval = Long.parseLong(params.get("interval").get(0));
+    			if (interval >= 30000) {
+    				MMSConfiguration.AUTO_SAVE_STATUS_INTERVAL = interval;
+    				if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"auto save status interval: " + interval);
+    	    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"auto save status interval: " + interval+"\n");
+    	    
+    				message = "OK, will be applied .".getBytes(Charset.forName("UTF-8")); 
+    			} else {
+    				message = "Interval must be same or larger than 30000(ms).".getBytes(Charset.forName("UTF-8")); 
+    			}
+    		} catch (NumberFormatException e){
+    			// TODO Auto-generated catch block
+				if(MMSConfiguration.CONSOLE_LOGGING){
+					System.out.print(TAG);
+					e.printStackTrace();
+				}
+				if(MMSConfiguration.SYSTEM_LOGGING){
+					MMSLog.systemLog.append(TAG+"NumberFormatException\n");
+				}
+				message = "Number Format Exception".getBytes(Charset.forName("UTF-8")); 
+    		}
+    		
+			
+		} else if (type == MessageTypeDecider.AUTO_SAVE_SYSTEM_LOG_INTERVAL){
+			QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+    		Map<String,List<String>> params = qsd.parameters();
+    		try {
+    			long interval = Long.parseLong(params.get("interval").get(0));
+    			if (interval >= 30000) {
+    				MMSConfiguration.AUTO_SAVE_SYSTEM_LOG_INTERVAL = interval;
+    				if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"auto save system log interval: " + interval);
+    	    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"auto save system log interval: " + interval+"\n");
+    	    	
+    				message = "OK".getBytes(Charset.forName("UTF-8")); 
+    			} else {
+    				message = "Interval must be same or larger than 30000(ms).".getBytes(Charset.forName("UTF-8")); 
+    			}
+    		} catch (NumberFormatException e){
+    			// TODO Auto-generated catch block
+				if(MMSConfiguration.CONSOLE_LOGGING){
+					System.out.print(TAG);
+					e.printStackTrace();
+				}
+				if(MMSConfiguration.SYSTEM_LOGGING){
+					MMSLog.systemLog.append(TAG+"NumberFormatException\n");
+				}
+				message = "Number Format Exception".getBytes(Charset.forName("UTF-8")); 
+    		}
+		} else if (type == MessageTypeDecider.CONSOLE_LOGGING_ON) {
+			if (MMSConfiguration.CONSOLE_LOGGING) {
+				message = "Is already on".getBytes(Charset.forName("UTF-8"));
+			} else {
+				MMSConfiguration.CONSOLE_LOGGING = true;
+				message = "OK".getBytes(Charset.forName("UTF-8"));
+			}
+		} else if (type == MessageTypeDecider.CONSOLE_LOGGING_OFF) {
+			if (!MMSConfiguration.CONSOLE_LOGGING) {
+				message = "Is already off".getBytes(Charset.forName("UTF-8"));
+			} else {
+				MMSConfiguration.CONSOLE_LOGGING = false;
+				message = "OK".getBytes(Charset.forName("UTF-8"));
+			}
+		} else if (type == MessageTypeDecider.WEB_LOG_PROVIDING_ON) {
+			if (MMSConfiguration.WEB_LOG_PROVIDING) {
+				message = "Is already on".getBytes(Charset.forName("UTF-8"));
+			} else {
+				MMSConfiguration.WEB_LOG_PROVIDING = true;
+				message = "OK".getBytes(Charset.forName("UTF-8"));
+			}
+		} else if (type == MessageTypeDecider.WEB_LOG_PROVIDING_OFF) {
+			if (!MMSConfiguration.WEB_LOG_PROVIDING) {
+				message = "Is already off".getBytes(Charset.forName("UTF-8"));
+			} else {
+				MMSConfiguration.WEB_LOG_PROVIDING = false;
+				message = "OK".getBytes(Charset.forName("UTF-8"));
+			}
+		}
+		
+		
+		
+		
+		
+		else if (type == MessageTypeDecider.UNKNOWN_MRN) {
 			message = "No Device having that MRN".getBytes();
 		} else if (type == MessageTypeDecider.UNKNOWN_HTTP_TYPE) {
 			message = "Unknown http type".getBytes();

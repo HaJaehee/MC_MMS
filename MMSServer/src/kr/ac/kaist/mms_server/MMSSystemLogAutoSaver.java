@@ -30,7 +30,10 @@ public class MMSSystemLogAutoSaver extends Thread {
 	public MMSSystemLogAutoSaver() {
 		// TODO Auto-generated constructor stub
 		if (MMSConfiguration.AUTO_SAVE_SYSTEM_LOG) {
+			MMSConfiguration.SYSTEM_LOGGING = true;
 			this.start();
+		} else {
+			MMSConfiguration.SYSTEM_LOGGING = false;
 		}
 	}
 	
@@ -51,7 +54,7 @@ public class MMSSystemLogAutoSaver extends Thread {
 		while (true) {
 			if (MMSConfiguration.AUTO_SAVE_SYSTEM_LOG) {
 				try {
-					
+					MMSConfiguration.SYSTEM_LOGGING = true;
 					
 		    		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
 		    		String logfile = "./sys_log_"+timeStamp+".txt";
@@ -65,7 +68,7 @@ public class MMSSystemLogAutoSaver extends Thread {
 		    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"System log saved\n");
 					
 		    		MMSLog.systemLog.setLength(0);
-		    		Thread.sleep(MMSConfiguration.SAVE_SYSTEM_LOG_INTERVAL);
+		    		Thread.sleep(MMSConfiguration.AUTO_SAVE_SYSTEM_LOG_INTERVAL);
 				} catch (UnknownHostException e) {
 					// TODO Auto-generated catch block
 					if(MMSConfiguration.CONSOLE_LOGGING){
@@ -95,8 +98,14 @@ public class MMSSystemLogAutoSaver extends Thread {
 					if(MMSConfiguration.SYSTEM_LOGGING){
 						MMSLog.systemLog.append(TAG+"InterruptedException\n");
 					}
-				}
+					MMSConfiguration.SYSTEM_LOGGING = false;
+					MMSLog.systemLog.setLength(0);
+					break;
+					
+				} 
 			} else {
+				MMSLog.systemLog.setLength(0);
+				MMSConfiguration.SYSTEM_LOGGING = false;
 				break;
 			}
 		}
