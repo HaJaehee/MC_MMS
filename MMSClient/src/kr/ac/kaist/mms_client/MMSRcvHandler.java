@@ -36,12 +36,14 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -168,7 +170,7 @@ class MMSRcvHandler {
                 _out.write(buf, 0, read);
             }
             
-            String receivedData = new String( buf, Charset.forName("UTF-8")).trim();
+            String receivedData = new String( _out.toByteArray(), Charset.forName("UTF-8")).trim();
             
             String message = receivedData;
             inH.put("Http-method", httpMethods);
@@ -193,8 +195,11 @@ class MMSRcvHandler {
             
             t.sendResponseHeaders(setResponseCode(), response.length());
             OutputStream os = t.getResponseBody();
-            os.write(response.getBytes());
-            os.flush();
+            BufferedWriter wr = new BufferedWriter(
+    				new OutputStreamWriter(os,Charset.forName("UTF-8")));
+            wr.write(response);
+            wr.flush();
+            wr.close();
             os.close();
         }
         
