@@ -60,14 +60,17 @@ public class MMSSystemLogAutoSaver extends Thread {
 		    		String logfile = "./sys_log_"+timeStamp+".txt";
 		    		BufferedWriter wr;
 					
+		    		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Saving system log");
+		    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Saving system log\n");
+		    		
 					wr = new BufferedWriter(new FileWriter(logfile));
 		    		wr.write(MMSLog.systemLog.toString());
 		    		wr.flush();
 		    		wr.close();
+		    		
+		    		MMSLog.systemLog.setLength(0);
 		    		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"System log saved");
 		    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"System log saved\n");
-					
-		    		MMSLog.systemLog.setLength(0);
 		    		Thread.sleep(MMSConfiguration.AUTO_SAVE_SYSTEM_LOG_INTERVAL);
 				} catch (UnknownHostException e) {
 					// TODO Auto-generated catch block
@@ -98,14 +101,17 @@ public class MMSSystemLogAutoSaver extends Thread {
 					if(MMSConfiguration.SYSTEM_LOGGING){
 						MMSLog.systemLog.append(TAG+"InterruptedException\n");
 					}
-					MMSConfiguration.SYSTEM_LOGGING = false;
-					MMSLog.systemLog.setLength(0);
-					break;
-					
+					if (!MMSConfiguration.AUTO_SAVE_SYSTEM_LOG){
+						MMSConfiguration.SYSTEM_LOGGING = false;
+						MMSLog.systemLog.setLength(0);
+						break;
+					} else {
+						break;
+					}
 				} 
 			} else {
-				MMSLog.systemLog.setLength(0);
 				MMSConfiguration.SYSTEM_LOGGING = false;
+				MMSLog.systemLog.setLength(0);
 				break;
 			}
 		}

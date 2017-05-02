@@ -85,13 +85,17 @@ public class MMSStatusAutoSaver extends Thread{
 			    		BufferedWriter wr;
 						
 						wr = new BufferedWriter(new FileWriter(logfile));
+			    		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Saving status");
+			    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Saving status\n");
+			    		
 			    		wr.write(status);
 			    		wr.flush();
 			    		wr.close();
-			    		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Status saved");
-			    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Status saved\n");
+
 						
 			    		MMSLog.queueLogForSAS.setLength(0);
+			    		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Status saved");
+			    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Status saved\n");
 			    		Thread.sleep(MMSConfiguration.AUTO_SAVE_STATUS_INTERVAL);
 					} catch (UnknownHostException e) {
 						// TODO Auto-generated catch block
@@ -122,10 +126,13 @@ public class MMSStatusAutoSaver extends Thread{
 						if(MMSConfiguration.SYSTEM_LOGGING){
 							MMSLog.systemLog.append(TAG+"InterruptedException\n");
 						}
-						MMSLog.queueLogForSAS.setLength(0);
-						break;
+						if(!MMSConfiguration.AUTO_SAVE_STATUS){
+							MMSLog.queueLogForSAS.setLength(0);
+							break;
+						} else {
+							break;
+						}
 					}
-					
 				} else {
 					MMSLog.queueLogForSAS.setLength(0);
 					break;
