@@ -1,7 +1,0 @@
-Waiting polling clients: 0
-
-MMS Queue log:
-
-MNS Dummy:
-urn:mrn:imo:imo-no:1000005,127.0.0.1:8906:2
-

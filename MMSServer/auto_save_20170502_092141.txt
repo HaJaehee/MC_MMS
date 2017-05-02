@@ -1,6 +1,0 @@
-Waiting polling clients: 0
-
-MMS Queue log:
-
-MNS Dummy:
-No MRN to IP mapping
