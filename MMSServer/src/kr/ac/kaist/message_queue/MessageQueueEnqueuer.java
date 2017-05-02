@@ -45,8 +45,8 @@ class MessageQueueEnqueuer {
 		String queueName = dstMRN+"::"+srcMRN;
 		 if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Queue name = "+queueName);
 		 if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Queue name = "+queueName+"\n");
-		 MMSLog.queueLogForClient.append(TAG+queueName +"<br/>"+ "　　　　[Message] " + message +"<br/>");
-		 MMSLog.queueLogForSAS.append(TAG+queueName +"\n"+ "　　　　[Message] " + message +"\n");
+		 if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append(TAG+queueName +"<br/>"+ "　　　　[Message] " + message +"<br/>");
+		 if(MMSConfiguration.AUTO_SAVE_STATUS)MMSLog.queueLogForSAS.append(TAG+queueName +"\n"+ "　　　　[Message] " + message +"\n");
 		try {
 			ConnectionFactory factory = new ConnectionFactory();
 			factory.setHost("localhost");

@@ -29,8 +29,8 @@ public class MMSServer {
 		
 		
 		new SecureMMSServer().runServer();
-		new MMSStatusAutoSaver();
-		new MMSSystemLogAutoSaver();
+		MMSConfiguration.AUTO_SAVE_STATUS_THREAD = new MMSStatusAutoSaver();
+		MMSConfiguration.AUTO_SAVE_SYSTEM_LOG_THREAD = new MMSSystemLogAutoSaver();
 		
 		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Now starting MMS HTTP server");
 		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Now starting MMS HTTP server\n");

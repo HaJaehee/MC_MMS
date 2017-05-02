@@ -1,8 +1,8 @@
 
 
 # MC_MMS
-Beta Version 0.5.3 <br/>
-2017.4.29<br/>
+Beta Version 0.5.4 <br/>
+2017.5.2<br/>
 
 
 ## Features
@@ -13,6 +13,7 @@ Supports long polling<br/>
 Supports maintaining long polling client session<br/>
 Supports saving MMS logs automatically<br/>
 Supports displaying MMS logs on web browser<br/>
+Supports MMS web management<br/>
 Maritime Name System Dummy<br/>
 Service Consumer Dummies<br/>
 Service Provider Dummies<br/>
