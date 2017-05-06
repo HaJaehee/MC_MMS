@@ -20,6 +20,11 @@ Rev. history : 2017-04-29
 Version : 0.5.3
 	Added system log features
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-05-06
+Version : 0.5.5
+	Added SessionManager features
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -40,6 +45,7 @@ import com.rabbitmq.client.ShutdownSignalException;
 
 import io.netty.channel.ChannelHandlerContext;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
+import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 
@@ -141,7 +147,10 @@ class MessageQueueDequeuer extends Thread{
 			    	MMSLog.systemLog.append(TAG+" Received '" + message + "'\n");
 			    	MMSLog.systemLog.append(TAG+"'"+message+"'\n");
 			    }
-			    MMSLog.nMsgWaitingPollClnt--;
+			    
+			    if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
+			    	MMSLog.nMsgWaitingPollClnt--;
+			    }
 			    outputChannel.replyToSender(ctx, delivery.getBody());
 				channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 			} else {

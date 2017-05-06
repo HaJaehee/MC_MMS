@@ -23,6 +23,11 @@ Rev. history : 2017-05-02
 Version : 0.5.4
 	Added setting response header
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-05-06
+Version : 0.5.5
+	The polling interval must be larger than 0
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -66,9 +71,13 @@ public class SecureMMSClientHandler {
 		} else if (this.rcvHandler != null) {
 			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
 		} else {
-			this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
-			this.pollHandler.ph.setPollingResponseCallback(callback);
-			this.pollHandler.ph.start();
+			if (interval > 0) {
+				this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
+				this.pollHandler.ph.setPollingResponseCallback(callback);
+				this.pollHandler.ph.start();
+			} else {
+				System.out.println(TAG+"Failed! The interval must be larger than 0");
+			}
 		}
 	}
 	

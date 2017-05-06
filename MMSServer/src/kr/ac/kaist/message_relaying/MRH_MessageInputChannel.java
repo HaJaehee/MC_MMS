@@ -18,6 +18,12 @@ Rev. history : 2017-04-29
 Version : 0.5.3
 	Added system log features
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-05-06
+Version : 0.5.5
+	Added SessionManager features
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -61,6 +67,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			
 			if(MMSConfiguration.CONSOLE_LOGGING)System.out.println("\n"+TAG+"Message received");
 			if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append("\n"+TAG+"Message received\n");
+			SessionManager.sessionInfo.put(SESSION_ID, "");
 			new MessageRelayingHandler(ctx, req, protocol, SESSION_ID);
 		} finally {
           req.release();
@@ -95,7 +102,10 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-    	MMSLog.nMsgWaitingPollClnt--;
+    	if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
+	    	MMSLog.nMsgWaitingPollClnt--;
+    	}
+    	SessionManager.sessionInfo.remove(SESSION_ID);
     	if(MMSConfiguration.CONSOLE_LOGGING){
 			System.out.print(TAG);
 			cause.printStackTrace();

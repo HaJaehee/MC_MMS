@@ -29,6 +29,11 @@ Rev. history : 2017-04-29
 Version : 0.5.3
 	Added session id and system log features
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-05-06
+Version : 0.5.5
+	Added SessionManager features
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -129,6 +134,7 @@ public class MessageRelayingHandler  {
 			
 			//@Deprecated
 			//message = srh.processPollingMessage(srcMRN, srcIP, srcPort, srcModel);
+			SessionManager.sessionInfo.put(SESSION_ID, "p");
 			MMSLog.nMsgWaitingPollClnt++;
 			
 			srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, srcPort, srcModel, svcMRN);
