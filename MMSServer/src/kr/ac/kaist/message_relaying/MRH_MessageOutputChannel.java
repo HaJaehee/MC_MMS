@@ -23,6 +23,11 @@ Version : 0.5.4
 	Added image relaying feature
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 	Jaehyun Park (jae519@kaist.ac.kr)
+	
+Rev. history : 2017-05-06
+Version : 0.5.5
+	Added SessionManager features
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -125,6 +130,7 @@ public class MRH_MessageOutputChannel {
     	ctx.write(textb);
         ChannelFuture f = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
         f.addListener(ChannelFutureListener.CLOSE);
+        SessionManager.sessionInfo.remove(SESSION_ID);
     }
 	
 //  to do relaying
