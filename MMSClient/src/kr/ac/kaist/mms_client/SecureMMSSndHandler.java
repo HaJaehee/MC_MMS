@@ -1,5 +1,7 @@
 package kr.ac.kaist.mms_client;
 
+import java.io.BufferedOutputStream;
+
 /* -------------------------------------------------------- */
 /** 
 File name : SecureMMSSndHandler.java
@@ -18,7 +20,10 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
@@ -32,6 +37,8 @@ import java.util.Set;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.TrustManager;
+
+import sun.misc.BASE64Decoder;
 
 import javax.net.ssl.*;
 
@@ -170,16 +177,22 @@ class SecureMMSSndHandler {
 		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response Code : " + responseCode + "\n");
 		
 		BufferedReader in = new BufferedReader(
-		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
+		        new InputStreamReader(con.getInputStream()));
 		String inputLine;
-		BufferedWriter out = new BufferedWriter(new FileWriter(System.getProperty("user.dir")+fileName));
+		StringBuffer inputMsg = new StringBuffer();
 		
 		while ((inputLine = in.readLine()) != null) {
-			out.append(inputLine); out.newLine();
+			inputMsg.append(inputLine+"\n");
 		}
 		
-		out.flush();
-		out.close();
+		BASE64Decoder base64Decoder = new BASE64Decoder();
+        InputStream encoded = new ByteArrayInputStream(inputMsg.toString().getBytes("UTF-8"));
+        BufferedOutputStream decoded = new BufferedOutputStream(new FileOutputStream(System.getProperty("user.dir")+fileName));
+
+        base64Decoder.decodeBuffer(encoded, decoded);      
+
+        encoded.close();
+        decoded.close();
 		in.close();
 		return fileName + " is saved";
 	}

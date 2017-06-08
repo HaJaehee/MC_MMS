@@ -1,3 +1,0 @@
-[MMSServer] Now starting MMS HTTP server
-[SecureMMSServer] Now starting MMS HTTPS server
-[MMSSystemLogAutoSaver] Saving system log
