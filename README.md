@@ -1,5 +1,5 @@
-# MC_MMS
-Alert! This branch is ongoing implementation! 
+# Alert! 
+This branch is ongoing implementation! 
 Source codes in this branch would be modified without any notification.
 
 # MC_MMS
