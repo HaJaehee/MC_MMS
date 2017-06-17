@@ -4,7 +4,7 @@ Source codes in this branch would be modified without any notification.
 
 # MC_MMS
 Beta Version 0.5.6 <br/>
-2017.6.8<br/>
+2017.6.17<br/>
 
 
 ## Features
@@ -51,8 +51,6 @@ with the License. You may obtain a copy of the License at:<br/>
 <br/>
   http://www.apache.org/licenses/LICENSE-2.0<br/>
   <br/>
-   <br/>
-   
    
 Used [The Rabbit MQ](https://www.rabbitmq.com/mpl.html) https://www.rabbitmq.com/mpl.html<br/>
  Mozilla Public License.<br/>
@@ -75,7 +73,7 @@ use the text of this Exhibit A rather than the text found in the<br/>
 Original Code Source Code for Your Modifications.]<br/>
 <br/>
 
-Used [The LogBack](https://logback.qos.ch/license.html) <br/>
+Used [The LogBack](https://logback.qos.ch/license.html) https://logback.qos.ch/license.html<br/>
 Logback License <br/>
 <br/>
 As of release 0.9.18, logback source code and binaries are dual-licensed under the EPL v1.0 and the LGPL 2.1, or more formally: <br/>
@@ -87,10 +85,9 @@ either the terms of the Eclipse Public License v1.0 as published by <br/>
 the Eclipse Foundation <br/>
   or (per the licensee's choosing) <br/>
   <br/>
-  <br/>
 under the terms of the GNU Lesser General Public License version 2.1 <br/>
 as published by the Free Software Foundation. <br/>
- <br/> <br/>
+ <br/>
 
 ### Databases
 [The Rabbit MQ](https://www.rabbitmq.com/mpl.html) https://www.rabbitmq.com/mpl.html<br/>
