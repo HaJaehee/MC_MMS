@@ -9,5 +9,7 @@
 	<classpathentry exported="true" kind="lib" path="External Jars/one-utils.jar"/>
 	<classpathentry exported="true" kind="lib" path="External Jars/slf4j-api-1.7.21.jar"/>
 	<classpathentry exported="true" kind="lib" path="External Jars/slf4j-simple-1.7.22.jar"/>
+	<classpathentry exported="true" kind="lib" path="External Jars/logback-classic-1.2.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="External Jars/logback-core-1.2.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
