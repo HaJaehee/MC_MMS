@@ -23,6 +23,11 @@ Rev. history : 2017-04-29
 Version : 0.5.3
 	Added system log features
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-06-17
+Version : 0.5.6
+	Added polling method switching features
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr) 
 */
 /* -------------------------------------------------------- */
 
@@ -58,6 +63,7 @@ class MessageTypeDecider {
 	static final int CONSOLE_LOGGING_OFF = 21;
 	static final int WEB_LOG_PROVIDING_ON = 22;
 	static final int WEB_LOG_PROVIDING_OFF = 23;
+	static final int POLLING_METHOD = 24;
 	
 	MessageTypeDecider(int sessionId) {
 		this.SESSION_ID = sessionId;
@@ -120,6 +126,8 @@ class MessageTypeDecider {
     		return WEB_LOG_PROVIDING_ON;
     	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/weblog?switch=off")){
     		return WEB_LOG_PROVIDING_OFF;
+    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0,"/polling?method", 0, 15)){
+    		return POLLING_METHOD;
     	} 
     	
 //    	When relaying

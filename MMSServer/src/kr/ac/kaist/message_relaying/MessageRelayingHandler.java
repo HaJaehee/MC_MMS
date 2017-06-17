@@ -34,6 +34,11 @@ Rev. history : 2017-05-06
 Version : 0.5.5
 	Added SessionManager features
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-06-17
+Version : 0.5.6
+	Added polling method switching features
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr) 
 */
 /* -------------------------------------------------------- */
 
@@ -450,6 +455,35 @@ public class MessageRelayingHandler  {
 				MMSConfiguration.WEB_LOG_PROVIDING = false;
 				message = "OK".getBytes(Charset.forName("UTF-8"));
 			}
+		} else if (type == MessageTypeDecider.POLLING_METHOD) {
+			QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+    		Map<String,List<String>> params = qsd.parameters();
+    		String method = params.get("method").get(0);
+    		if (method.equals("normal")) {
+    			if (MMSConfiguration.POLLING_METHOD == MMSConfiguration.LONG_POLLING) {
+    				MMSConfiguration.POLLING_METHOD = MMSConfiguration.NORMAL_POLLING;
+    				message = "OK".getBytes(Charset.forName("UTF-8"));
+    				if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Polling method is switched to normal polling");
+    	    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Polling method is switched to normal polling\n");
+    	    
+    			}
+    			else {
+    				message = "Is already normal polling".getBytes(Charset.forName("UTF-8"));
+    			}
+    		} else if (method.equals("long")) {
+    			if (MMSConfiguration.POLLING_METHOD == MMSConfiguration.NORMAL_POLLING) {
+    				MMSConfiguration.POLLING_METHOD = MMSConfiguration.LONG_POLLING;
+    				message = "OK".getBytes(Charset.forName("UTF-8"));
+     				if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Polling method is switched to long polling");
+    	    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Polling method is switched to long polling\n");
+    	    
+    			}
+    			else {
+    				message = "Is already long polling".getBytes(Charset.forName("UTF-8"));
+    			}
+    		} else {
+    			message = "Wrong  parameter".getBytes(Charset.forName("UTF-8"));
+    		}
 		}
 		
 		

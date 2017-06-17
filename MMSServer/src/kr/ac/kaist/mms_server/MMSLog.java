@@ -33,6 +33,11 @@ Version : 0.5.3
 	Added getStatusForSAS()
 	Changed data type of queueLogForClient, queueLogForSAS, systemLog, status from String to StringBuffer
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr) 
+
+Rev. history : 2017-06-17
+Version : 0.5.6
+	Added polling method switching features
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr) 
 */
 /* -------------------------------------------------------- */
 
@@ -65,6 +70,13 @@ public class MMSLog {
 		status = status + "<br/>";
 		*/
 		
+		status.append("Polling method: ");
+		if (MMSConfiguration.POLLING_METHOD == MMSConfiguration.NORMAL_POLLING) {
+			status.append("normal polling<br/>");
+		} else if (MMSConfiguration.POLLING_METHOD == MMSConfiguration.LONG_POLLING) {
+			status.append("long polling<br/>");
+		}
+	
 		status.append("Waiting polling clients: "+MMSLog.nMsgWaitingPollClnt+"<br/><br/>");
 		
 		status.append("MMS Queue log:<br/>");
@@ -95,6 +107,13 @@ public class MMSLog {
 		}
 		status = status + "<br/>";
 		*/
+		
+		status.append("Polling method: ");
+		if (MMSConfiguration.POLLING_METHOD == MMSConfiguration.NORMAL_POLLING) {
+			status.append("normal polling\n");
+		} else if (MMSConfiguration.POLLING_METHOD == MMSConfiguration.LONG_POLLING) {
+			status.append("long polling\n");
+		}
 		
 		status.append("Waiting polling clients: "+MMSLog.nMsgWaitingPollClnt+"\n\n");
 		
