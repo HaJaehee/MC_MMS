@@ -39,6 +39,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -97,7 +98,7 @@ public class MRH_MessageOutputChannel {
 		storedHeader = storingHeader;
 	}
 	
-	public void replyToSender(ChannelHandlerContext ctx, byte[] data){
+	public void replyToSender(ChannelHandlerContext ctx, byte[] data) {
 		
     	ByteBuf textb = Unpooled.copiedBuffer(data);
     	if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Reply to sender\n");
@@ -123,7 +124,6 @@ public class MRH_MessageOutputChannel {
     	} else {
     		res.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8");
     	}
-    	
     	
     	HttpUtil.setContentLength(res, responseLen);
     	ctx.write(res);

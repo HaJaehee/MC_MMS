@@ -97,45 +97,14 @@ class MessageQueueDequeuer extends Thread{
 			if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+" Waiting for messages. To exit press CTRL+C");
 			if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+" Waiting for messages. To exit press CTRL+C\n");
 			
-			//Busy waiting
-//			GetResponse res = null;
-//			while (res == null){
-//				res = channel.basicGet(queueName, true);
-//				if (res != null){
-//					String message = new String(res.getBody(), "UTF-8");
-//					if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+" [x] Received '" + message + "'");
-//					outputChannel.replyToSender(ctx, res.getBody());
-//				}
-//			}
-			//Busy waiting
-			//It consumes CPU resources a lot.
-			
-			
-			//Enroll a callback to queue channel
-//			Consumer consumer = new DefaultConsumer(channel)
-//			{
-//			  @Override
-//			  public void handleDelivery(String consumerTag, Envelope envelope,
-//			                             AMQP.BasicProperties properties, byte[] body) {
-//				 
-//				String message = new String(body, "UTF-8");
-//			    if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+" [x] Received '" + message + "'");
-//			    if(MMSConfiguration.CONSOLE_LOGGING)System.out.print(TAG+"\""+message+"\"");
-//			    outputChannel.replyToSender(ctx, body);		  
-//			  	}
-//			};
-//			channel.basicConsume(queueName, true, consumer);
-			//Enroll a callback to queue channel
-			//If there are some messages in the queue, callback is called and messages are retrieved from the queue 
-			//		until the queue is empty.
-			//It do not block this thread.
-			
-			//Enroll a delivery listener to the queue channel in order to get a message from the queue.
-			QueueingConsumer consumer = new QueueingConsumer(channel);
-			channel.basicConsume(queueName, false, consumer);
-			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-			if(!ctx.isRemoved()){
-				String message = new String(delivery.getBody(), "UTF-8");
+			if(MMSConfiguration.POLLING_METHOD == MMSConfiguration.NORMAL_POLLING){
+				GetResponse res = channel.basicGet(queueName, true);
+				String message = "";
+				if (res != null){
+					message = new String(res.getBody());
+					
+				} 
+				
 				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append(TAG+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>");
 				if(MMSConfiguration.AUTO_SAVE_STATUS)MMSLog.queueLogForSAS.append(TAG+queueName +"\n"+ "　　　　[Message] "+message +"\n");
 			    if(MMSConfiguration.CONSOLE_LOGGING) {
@@ -151,10 +120,68 @@ class MessageQueueDequeuer extends Thread{
 			    if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
 			    	MMSLog.nMsgWaitingPollClnt--;
 			    }
-			    outputChannel.replyToSender(ctx, delivery.getBody());
+			    outputChannel.replyToSender(ctx, message.getBytes());
+			}
+				
+				//Busy waiting
+//			GetResponse res = null;
+//			while (res == null){
+//				res = channel.basicGet(queueName, true);
+//				if (res != null){
+//					String message = new String(res.getBody());
+//					if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+" [x] Received '" + message + "'");
+//					outputChannel.replyToSender(ctx, res.getBody());
+//				}
+//			}
+			//Busy waiting
+			//It consumes CPU resources a lot.
+			
+			
+			//Enroll a callback to queue channel
+//			Consumer consumer = new DefaultConsumer(channel)
+//			{
+//			  @Override
+//			  public void handleDelivery(String consumerTag, Envelope envelope,
+//			                             AMQP.BasicProperties properties, byte[] body) {
+//				 
+//				String message = new String(body);
+//			    if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+" [x] Received '" + message + "'");
+//			    if(MMSConfiguration.CONSOLE_LOGGING)System.out.print(TAG+"\""+message+"\"");
+//			    outputChannel.replyToSender(ctx, body);		  
+//			  	}
+//			};
+//			channel.basicConsume(queueName, true, consumer);
+			//Enroll a callback to queue channel
+			//If there are some messages in the queue, callback is called and messages are retrieved from the queue 
+			//		until the queue is empty.
+			//It do not block this thread.
+			
+			else if (MMSConfiguration.POLLING_METHOD == MMSConfiguration.LONG_POLLING) {
+			//Enroll a delivery listener to the queue channel in order to get a message from the queue.
+			QueueingConsumer consumer = new QueueingConsumer(channel);
+			channel.basicConsume(queueName, false, consumer);
+			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+			if(!ctx.isRemoved()){
+				String message = new String(delivery.getBody());
+				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append(TAG+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>");
+				if(MMSConfiguration.AUTO_SAVE_STATUS)MMSLog.queueLogForSAS.append(TAG+queueName +"\n"+ "　　　　[Message] "+message +"\n");
+			    if(MMSConfiguration.CONSOLE_LOGGING) {
+			    	System.out.println(TAG+" Received '" + message + "'");
+			    	System.out.print(TAG+"'"+message+"'\n");
+			    }
+			    
+			    if(MMSConfiguration.SYSTEM_LOGGING) {
+			    	MMSLog.systemLog.append(TAG+" Received '" + message + "'\n");
+			    	MMSLog.systemLog.append(TAG+"'"+message+"'\n");
+			    }
+			    
+			    if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
+			    	MMSLog.nMsgWaitingPollClnt--;
+			    }
+			    outputChannel.replyToSender(ctx, message.getBytes());
 				channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 			} else {
-				String message = new String(delivery.getBody(), "UTF-8");
+				String message = new String(delivery.getBody());
 				if(MMSConfiguration.WEB_LOG_PROVIDING) {
 					MMSLog.queueLogForClient.append(TAG+queueName +"<br/>"+ "　　　　[Message] "+message +"<br/>");
 					MMSLog.queueLogForClient.append(TAG+srcMRN+" is disconnected<br/>");
@@ -182,6 +209,7 @@ class MessageQueueDequeuer extends Thread{
 			connection.close();
 			//Enroll a delivery listener to the queue channel in order to get a message from the queue.
 			//However, it blocks exactly this thread.
+			}
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

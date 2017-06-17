@@ -26,6 +26,11 @@ Rev. history : 2017-04-29
 Version : 0.5.3
 	Added system log features
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-06-17
+Version : 0.5.6
+	Removed UTF-8 encode
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -56,7 +61,7 @@ class MessageQueueEnqueuer {
 			channel = connection.createChannel();
 			channel.queueDeclare(queueName, true, false, false, null);
 			
-			channel.basicPublish("", queueName, null, message.getBytes("UTF-8"));
+			channel.basicPublish("", queueName, null, message.getBytes());
 			if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Sent '" + message + "'");
 			if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Sent '" + message + "'\n");
 			

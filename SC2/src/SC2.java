@@ -56,16 +56,16 @@ public class SC2 {
 			
 		});
 		
-		/*
-		for (int i = 0; i < 10;i++){
+		
+		for (int i = 0; i < 5;i++){
 			sender.sendPostMsg("urn:mrn:smart-navi:device:tm-server", "/forwarding", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
-		}*/
+		}
 
-		
+		/*
 		for (int i = 0; i < 10;i++){
 			sender.sendPostMsg("urn:mrn:imo:imo-no:1000005", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
-		}
+		}*/
 	}
 }
