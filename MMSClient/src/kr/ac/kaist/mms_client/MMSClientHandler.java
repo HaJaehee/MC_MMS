@@ -41,6 +41,11 @@ Rev. history : 2017-05-06
 Version : 0.5.5
 	The polling interval must be larger than 0
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-06-18
+Version : 0.5.6
+	Changed the variable Map<String,String> headerField to Map<String,List<String>>
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -57,7 +62,7 @@ public class MMSClientHandler {
 	private SendHandler sendHandler = null;
 	private String clientMRN = "";
 	private int clientPort = 0;
-	private Map<String,String> headerField = null;
+	private Map<String,List<String>> headerField = null;
 	
 	public MMSClientHandler(String clientMRN) throws IOException{
 		this.clientMRN = clientMRN;
@@ -179,7 +184,7 @@ public class MMSClientHandler {
 	}
 	
 	//HJH
-	public void setMsgHeader(Map<String,String> headerField) throws Exception{
+	public void setMsgHeader(Map<String,List<String>> headerField) throws Exception{
 		this.headerField = headerField;
 	}
 	
@@ -247,7 +252,7 @@ public class MMSClientHandler {
 	
 	private class PollHandler extends MMSPollHandler{
 
-		PollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, Map<String, String> headerField) throws IOException {
+		PollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, Map<String, List<String>> headerField) throws IOException {
 			super(clientMRN, dstMRN, svcMRN, interval, clientPort, 1, headerField);
 		}
 	}

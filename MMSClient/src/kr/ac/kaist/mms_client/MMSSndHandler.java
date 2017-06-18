@@ -22,6 +22,11 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-04-25
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-06-18
+Version : 0.5.6
+	Changed the variable Map<String,String> headerField to Map<String,List<String>>
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -42,6 +47,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 
 import sun.misc.BASE64Decoder;
 
@@ -66,7 +72,7 @@ class MMSSndHandler {
 		this.myCallback = callback;
 	}
 	
-	void sendHttpPost(String dstMRN, String loc, String data, Map<String,String> headerField) throws Exception{
+	void sendHttpPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws Exception{
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
 			loc = "/" + loc;
@@ -85,14 +91,7 @@ class MMSSndHandler {
 		//con.addRequestProperty("Connection","keep-alive");
 		
 		if (headerField != null) {
-			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
-			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
-				String key = (String) keys.next();
-				String value = (String) headerField.get(key);
-				if(MMSConfiguration.LOGGING)System.out.println(key+":"+value);
-				con.setRequestProperty(key, value);
-			}
-			if(MMSConfiguration.LOGGING)System.out.println("]");
+			con = addCustomHeaderField(con, headerField);
 		} 
 		
 		//load contents
@@ -140,7 +139,7 @@ class MMSSndHandler {
 	}
 	
 	//OONI
-	String sendHttpGetFile(String dstMRN, String fileName, Map<String,String> headerField) throws Exception {
+	String sendHttpGetFile(String dstMRN, String fileName, Map<String,List<String>> headerField) throws Exception {
 
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!fileName.startsWith("/")) {
@@ -159,13 +158,7 @@ class MMSSndHandler {
 		con.setRequestProperty("srcMRN", clientMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
 		if (headerField != null) {
-			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
-			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
-				String key = (String) keys.next();
-				String value = (String) headerField.get(key);
-				con.setRequestProperty(key, value);
-			}
-			if(MMSConfiguration.LOGGING)System.out.println("]");
+			con = addCustomHeaderField(con, headerField);
 		}
 		//con.addRequestProperty("Connection","keep-alive");
 
@@ -196,7 +189,7 @@ class MMSSndHandler {
 	//OONI end
 	
 	//HJH
-	void sendHttpGet(String dstMRN, String loc, String params, Map<String,String> headerField) throws Exception {
+	void sendHttpGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField) throws Exception {
 
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
@@ -225,13 +218,7 @@ class MMSSndHandler {
 		con.setRequestProperty("srcMRN", clientMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
 		if (headerField != null) {
-			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
-			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
-				String key = (String) keys.next();
-				String value = (String) headerField.get(key);
-				con.setRequestProperty(key, value);
-			}
-			if(MMSConfiguration.LOGGING)System.out.println("]");
+			con = addCustomHeaderField(con, headerField);
 		}
 		//con.addRequestProperty("Connection","keep-alive");
 
@@ -286,6 +273,21 @@ class MMSSndHandler {
 		}
 	
 		return ret;
+	}
+	
+	private HttpURLConnection addCustomHeaderField (HttpURLConnection con, Map<String,List<String>> headerField) {
+		HttpURLConnection retCon = con;
+		if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
+		for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
+			String key = (String) keys.next();
+			List<String> valueList = (List<String>) headerField.get(key);
+			for (String value : valueList) {
+				if(MMSConfiguration.LOGGING)System.out.println(key+":"+value);
+				retCon.addRequestProperty(key, value);
+			}
+		}
+		if(MMSConfiguration.LOGGING)System.out.println("]");
+		return retCon;
 	}
 	//HJH end
 }
