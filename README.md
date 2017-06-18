@@ -3,8 +3,8 @@ This branch is ongoing implementation!
 Source codes in this branch would be modified without any notification.
 
 # MC_MMS
-Beta Version 0.5.6 <br/>
-2017.6.17<br/>
+Beta Version 0.5.7 <br/>
+2017.6.18<br/>
 
 
 ## Features
