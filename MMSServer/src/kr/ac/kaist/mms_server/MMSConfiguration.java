@@ -29,8 +29,8 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 public class MMSConfiguration {
 	private String TAG = "[MMSConfiguration] ";
 	//-------------------------------------------------------------------
-	public static boolean CONSOLE_LOGGING = true;
-	public static boolean SYSTEM_LOGGING = true;
+	//public static boolean CONSOLE_LOGGING = true;
+	//public static boolean SYSTEM_LOGGING = true;
 	public static boolean WEB_LOG_PROVIDING = true;
 	public static final boolean WEB_MANAGING = true;
 	//-------------------------------------------------------------------
@@ -40,11 +40,11 @@ public class MMSConfiguration {
 	//-------------------------------------------------------------------
 	public static final String MMS_MRN = "urn:mrn:smart-navi:device:mms1";
 	//-------------------------------------------------------------------
-	public static boolean AUTO_SAVE_STATUS = true;
+	public static boolean AUTO_SAVE_STATUS = false;
 	public static long AUTO_SAVE_STATUS_INTERVAL = 300000;
 	public static Thread AUTO_SAVE_STATUS_THREAD = null;
 	//-------------------------------------------------------------------
-	public static boolean AUTO_SAVE_SYSTEM_LOG = true;
+	public static boolean AUTO_SAVE_SYSTEM_LOG = false;
 	public static long AUTO_SAVE_SYSTEM_LOG_INTERVAL = 180000; 
 	public static Thread AUTO_SAVE_SYSTEM_LOG_THREAD = null;
 	//-------------------------------------------------------------------

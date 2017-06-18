@@ -1,9 +1,5 @@
 package kr.ac.kaist.mms_server;
 
-import java.security.cert.CertificateException;
-
-import javax.net.ssl.SSLException;
-
 /* -------------------------------------------------------- */
 /** 
 File name : SecureMMSServer.java
@@ -30,6 +26,10 @@ Version : 0.4.0
  * under the License.
  */
 
+import java.security.cert.CertificateException;
+import javax.net.ssl.SSLException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -42,6 +42,8 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 
 public final class SecureMMSServer extends Thread {
+	
+	private static final Logger logger = LoggerFactory.getLogger(SecureMMSServer.class);
 	private String TAG = "[SecureMMSServer] ";
 
 	
@@ -106,19 +108,22 @@ public final class SecureMMSServer extends Thread {
 			
 	        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 	        EventLoopGroup workerGroup = new NioEventLoopGroup();
-	        if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Now starting MMS HTTPS server");
-	        if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Now starting MMS HTTPS server\n");
+	        //if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Now starting MMS HTTPS server");
+	        //if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Now starting MMS HTTPS server\n");
+	        logger.error("Now starting MMS HTTPS server");
 	        try {
 	            ServerBootstrap b = new ServerBootstrap();
 	            b.group(bossGroup, workerGroup)
 	             .channel(NioServerSocketChannel.class)
 	             .handler(new LoggingHandler(LogLevel.INFO))
 	             .childHandler(new SecureMMSServerInitializer(sslCtx));
-	            System.err.println("Ready for 0.0.0.0:" + MMSConfiguration.HTTPS_PORT);
+	            //System.err.println("Ready for 0.0.0.0:" + MMSConfiguration.HTTPS_PORT);
+	            logger.error("Ready for 0.0.0.0:" + MMSConfiguration.HTTPS_PORT);
 	            b.bind(MMSConfiguration.HTTPS_PORT).sync().channel().closeFuture().sync();
 	        } catch (InterruptedException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
+	        	logger.error(e.getMessage());
 			} finally {
 	            bossGroup.shutdownGracefully();
 	            workerGroup.shutdownGracefully();
@@ -126,24 +131,24 @@ public final class SecureMMSServer extends Thread {
 			
 		} catch (CertificateException e) {
 			// TODO Auto-generated catch block
-			if(MMSConfiguration.CONSOLE_LOGGING){
+			/*if(MMSConfiguration.CONSOLE_LOGGING){
 				System.out.println(TAG);
 				e.printStackTrace();
 			}
 			if(MMSConfiguration.SYSTEM_LOGGING){
 				MMSLog.systemLog.append(TAG+"CertificateException\n");
-			}
-			
+			}*/
+			logger.error(e.getMessage());
 		} catch (SSLException e1) {
 			// TODO Auto-generated catch block
-			if(MMSConfiguration.CONSOLE_LOGGING){
+			/*if(MMSConfiguration.CONSOLE_LOGGING){
 				System.out.println(TAG);
 				e1.printStackTrace();
 			}
 			if(MMSConfiguration.SYSTEM_LOGGING){
 				MMSLog.systemLog.append(TAG+"SSLException\n");
-			}
-			
+			}*/
+			logger.error(e1.getMessage());
 		}
     }
 }

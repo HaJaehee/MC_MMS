@@ -20,10 +20,12 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MMSServer {
 	private static String TAG = "[MMSServer] ";
+	private static final Logger logger = LoggerFactory.getLogger(MMSServer.class);
 	
 	public static void main(String[] args) throws Exception{
 		
@@ -32,8 +34,9 @@ public class MMSServer {
 		MMSConfiguration.AUTO_SAVE_STATUS_THREAD = new MMSStatusAutoSaver();
 		MMSConfiguration.AUTO_SAVE_SYSTEM_LOG_THREAD = new MMSSystemLogAutoSaver();
 		
-		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Now starting MMS HTTP server");
-		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Now starting MMS HTTP server\n");
+		//if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Now starting MMS HTTP server");
+		//if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Now starting MMS HTTP server\n");
+		logger.error("Now starting MMS HTTP server");
 		NettyStartupUtil.runServer(MMSConfiguration.HTTP_PORT, pipeline -> {   //runServer(int port, Consumer<ChannelPipeline> initializer)
 			pipeline.addLast(new HttpServerCodec());
             pipeline.addLast(new HttpObjectAggregator(19999));

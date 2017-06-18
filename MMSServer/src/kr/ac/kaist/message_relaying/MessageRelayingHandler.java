@@ -57,6 +57,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -71,7 +74,9 @@ import kr.ac.kaist.mms_server.MMSSystemLogAutoSaver;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 public class MessageRelayingHandler  {
-	private String TAG = "[MessageRelayingHandler:";
+	
+	private static final Logger logger = LoggerFactory.getLogger(MessageRelayingHandler.class);
+	//private String TAG = "[MessageRelayingHandler:";
 	private int SESSION_ID = 0;
 
 	private MessageParser parser = null;
@@ -86,7 +91,7 @@ public class MessageRelayingHandler  {
 	public MessageRelayingHandler(ChannelHandlerContext ctx, FullHttpRequest req, String protocol, int sessionId) {		
 		this.protocol = protocol;
 		this.SESSION_ID = sessionId;
-		this.TAG += SESSION_ID + "] ";
+		//this.TAG += SESSION_ID + "] ";
 		
 		initializeModule();
 		initializeSubModule();
@@ -114,17 +119,17 @@ public class MessageRelayingHandler  {
 		String uri = parser.getUri();
 		String dstIP = parser.getDstIP();
 		int dstPort = parser.getDstPort();
-		if(MMSConfiguration.CONSOLE_LOGGING){
-			System.out.println(TAG+"SessionID="+this.SESSION_ID+",srcMRN="+srcMRN+",dstMRN="+dstMRN);
+		/*if(MMSConfiguration.CONSOLE_LOGGING){
+			System.out.println(TAG+"SessionID="+this.SESSION_ID+" "+",srcMRN="+srcMRN+",dstMRN="+dstMRN);
 			//System.out.println(TAG+req.content().toString(Charset.forName("UTF-8")).trim());
 		}
 		
 		
 		if(MMSConfiguration.SYSTEM_LOGGING){
-			MMSLog.systemLog.append(TAG+"SessionID="+this.SESSION_ID+",srcMRN="+srcMRN+",dstMRN="+dstMRN+"\n");
+			MMSLog.systemLog.append(TAG+"SessionID="+this.SESSION_ID+" "+",srcMRN="+srcMRN+",dstMRN="+dstMRN+"\n");
 			//MMSLog.systemLog.append(TAG+req.content().toString(Charset.forName("UTF-8")).trim()+"\n");
-		}
-		
+		}*/
+		logger.info("SessionID="+this.SESSION_ID+" "+",srcMRN="+srcMRN+",dstMRN="+dstMRN);
 		
 		
 		byte[] message = null;
@@ -156,18 +161,14 @@ public class MessageRelayingHandler  {
         	try {
         		if (protocol.equals("http")) {
 				    message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod);
-        		} else { //protocol.equals("https")
+        		} else if (protocol.equals("https")) { 
         			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod);
+        		} else {
+        			message = "".getBytes();
+        			logger.info("SessionID="+this.SESSION_ID+" "+"No protocol");
         		}
 			} catch (Exception e) {
-				if(MMSConfiguration.CONSOLE_LOGGING){
-					System.out.print(TAG);
-					e.printStackTrace();
-				}
-				if(MMSConfiguration.SYSTEM_LOGGING){
-					MMSLog.systemLog.append(TAG+"Exception\n");
-				}
-				
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			}
 		} else if (type == MessageTypeDecider.REGISTER_CLIENT) {
 			parser.parseLocInfo(req);
@@ -190,27 +191,11 @@ public class MessageRelayingHandler  {
 				status = MMSLog.getStatus();
 				message = status.getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				if(MMSConfiguration.CONSOLE_LOGGING){
-					System.out.print(TAG);
-					e.printStackTrace();
-				}
-				if(MMSConfiguration.SYSTEM_LOGGING){
-					MMSLog.systemLog.append(TAG+"UnknownHostException\n");
-				}
-				
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				if(MMSConfiguration.CONSOLE_LOGGING){
-					System.out.print(TAG);
-					e.printStackTrace();
-				}
-				if(MMSConfiguration.SYSTEM_LOGGING){
-					MMSLog.systemLog.append(TAG+"IOException\n");
-				}
-				
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			}
-		} else if (type == MessageTypeDecider.LOGS) {
+		} /*else if (type == MessageTypeDecider.LOGS) { //TODO: must be deprecated
     		String status;
 			try {
 				status = MMSLog.getStatus();
@@ -218,26 +203,11 @@ public class MessageRelayingHandler  {
 	    		
 	    		message = MMSLog.log.getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				if(MMSConfiguration.CONSOLE_LOGGING){
-					System.out.print(TAG);
-					e.printStackTrace();
-				}
-				if(MMSConfiguration.SYSTEM_LOGGING){
-					MMSLog.systemLog.append(TAG+"UnknownHostException\n");
-				}
-				
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				if(MMSConfiguration.CONSOLE_LOGGING){
-					System.out.print(TAG);
-					e.printStackTrace();
-				}
-				if(MMSConfiguration.SYSTEM_LOGGING){
-					MMSLog.systemLog.append(TAG+"IOException\n");
-				}
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			}
-		} else if (type == MessageTypeDecider.SAVE_LOGS) {
+		} else if (type == MessageTypeDecider.SAVE_LOGS) { //TODO: must be deprecated
     		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
     		String logfile = "./log_"+timeStamp+".txt";
     		BufferedWriter wr;
@@ -248,17 +218,10 @@ public class MessageRelayingHandler  {
 	    		wr.flush();
 	    		wr.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				if(MMSConfiguration.CONSOLE_LOGGING){
-					System.out.print(TAG);
-					e.printStackTrace();
-				}
-				if(MMSConfiguration.SYSTEM_LOGGING){
-					MMSLog.systemLog.append(TAG+"IOException\n");
-				}
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			}
     		message = "OK".getBytes(Charset.forName("UTF-8"));
-		} /*else if (type == MessageTypeDecision.EMPTY_QUEUE) {
+		} *//*else if (type == MessageTypeDecision.EMPTY_QUEUE) { //TODO: must be deprecated
 			MMSQueue.queue.clear();
     		message = "OK".getBytes(Charset.forName("UTF-8"));
 		} */else if (type == MessageTypeDecider.EMPTY_MNSDummy) {
@@ -266,86 +229,50 @@ public class MessageRelayingHandler  {
 				emptyMNS();
 				message = "OK".getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				if(MMSConfiguration.CONSOLE_LOGGING){
-					System.out.print(TAG);
-					e.printStackTrace();
-				}
-				if(MMSConfiguration.SYSTEM_LOGGING){
-					MMSLog.systemLog.append(TAG+"UnknownHostException\n");
-				}
-				
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				if(MMSConfiguration.CONSOLE_LOGGING){
-					System.out.print(TAG);
-					e.printStackTrace();
-				}
-				if(MMSConfiguration.SYSTEM_LOGGING){
-					MMSLog.systemLog.append(TAG+"IOException\n");
-				}
-				
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			}
 		} else if (type == MessageTypeDecider.REMOVE_MNS_ENTRY) {
     		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
-    		if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Remove MRN: " + params.get("mrn").get(0));
-    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Remove MRN: " + params.get("mrn").get(0)+"\n");
+    		logger.info("SessionID="+this.SESSION_ID+" "+"Remove MRN: " + params.get("mrn").get(0));
     		try {
 				removeEntryMNS(params.get("mrn").get(0));
 				message = "OK".getBytes(Charset.forName("UTF-8"));
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				if(MMSConfiguration.CONSOLE_LOGGING){
-					System.out.print(TAG);
-					e.printStackTrace();
-				}
-				if(MMSConfiguration.SYSTEM_LOGGING){
-					MMSLog.systemLog.append(TAG+"UnknownHostException\n");
-				}
-				
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				if(MMSConfiguration.CONSOLE_LOGGING){
-					System.out.print(TAG);
-					e.printStackTrace();
-				}
-				if(MMSConfiguration.SYSTEM_LOGGING){
-					MMSLog.systemLog.append(TAG+"IOException\n");
-				}
-				
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			} 
-		}
-		else if (type == MessageTypeDecider.CLEAN_LOGS) {
+		} /*else if (type == MessageTypeDecider.CLEAN_LOGS) { //TODO: must be deprecated
     		MMSLog.MNSLog = "";
     		MMSLog.queueLogForClient.setLength(0);
     		MMSLog.log = "";
     		message = "OK".getBytes(Charset.forName("UTF-8"));
-		} else if (type == MessageTypeDecider.AUTO_SAVE_STATUS_ON){
+		} else if (type == MessageTypeDecider.AUTO_SAVE_STATUS_ON){ //TODO: must be deprecated
 			if (MMSConfiguration.AUTO_SAVE_STATUS) {
 				message = "Is already on".getBytes(Charset.forName("UTF-8"));
 			} else {
 				MMSConfiguration.AUTO_SAVE_STATUS = true;
-				if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Auto save status on");
-	    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Auto save status on\n");
+				logger.info("SessionID="+this.SESSION_ID+" "+"Auto save status on");
 				if (!MMSConfiguration.AUTO_SAVE_STATUS_THREAD.isAlive()){
 					MMSConfiguration.AUTO_SAVE_STATUS_THREAD = new MMSStatusAutoSaver();
 				}
 				message = "OK".getBytes(Charset.forName("UTF-8"));
 			}
-		} else if (type == MessageTypeDecider.AUTO_SAVE_STATUS_OFF){
+		} else if (type == MessageTypeDecider.AUTO_SAVE_STATUS_OFF){ //TODO: must be deprecated
 			if (!MMSConfiguration.AUTO_SAVE_STATUS) {
 				message = "Is already off".getBytes(Charset.forName("UTF-8"));
 			} else {
 				MMSConfiguration.AUTO_SAVE_STATUS = false;
-				if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+"Auto save status off");
-	    		if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append(TAG+"Auto save status off\n");
-	    		if (MMSConfiguration.AUTO_SAVE_STATUS_THREAD.isAlive()){
+	    		logger.info("SessionID="+this.SESSION_ID+" "+"Auto save status off");
+				if (MMSConfiguration.AUTO_SAVE_STATUS_THREAD.isAlive()){
 					MMSConfiguration.AUTO_SAVE_STATUS_THREAD.interrupt();
 				}
 				message = "OK, auto_save_status_thread is going to stop.".getBytes(Charset.forName("UTF-8"));
 			}
-		} else if (type == MessageTypeDecider.AUTO_SAVE_SYSTEM_LOG_ON){
+		} else if (type == MessageTypeDecider.AUTO_SAVE_SYSTEM_LOG_ON){ //TODO: must be deprecated
 			if (MMSConfiguration.AUTO_SAVE_SYSTEM_LOG) {
 				message = "Is already on".getBytes(Charset.forName("UTF-8"));
 			} else {
@@ -357,7 +284,7 @@ public class MessageRelayingHandler  {
 				} 
 				message = "OK".getBytes(Charset.forName("UTF-8"));
 			}
-		} else if (type == MessageTypeDecider.AUTO_SAVE_SYSTEM_LOG_OFF){
+		} else if (type == MessageTypeDecider.AUTO_SAVE_SYSTEM_LOG_OFF){ //TODO: must be deprecated
 			if (!MMSConfiguration.AUTO_SAVE_SYSTEM_LOG) {
 				message = "Is already off".getBytes(Charset.forName("UTF-8"));
 			} else {
@@ -369,7 +296,7 @@ public class MessageRelayingHandler  {
 				} 
 				message = "OK, auto_save_system_log_thread is going to stop.".getBytes(Charset.forName("UTF-8"));
 			}
-		} else if (type == MessageTypeDecider.AUTO_SAVE_STATUS_INTERVAL){
+		} else if (type == MessageTypeDecider.AUTO_SAVE_STATUS_INTERVAL){ //TODO: must be deprecated
 			QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
     		try {
@@ -399,7 +326,7 @@ public class MessageRelayingHandler  {
     		}
     		
 			
-		} else if (type == MessageTypeDecider.AUTO_SAVE_SYSTEM_LOG_INTERVAL){
+		}*/ else if (type == MessageTypeDecider.AUTO_SAVE_SYSTEM_LOG_INTERVAL){
 			QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
     		try {

@@ -31,6 +31,9 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 import java.net.InetAddress;
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -46,6 +49,7 @@ import kr.ac.kaist.mms_server.MMSLog;
 
 public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHttpRequest>{
 	
+	private static final Logger logger = LoggerFactory.getLogger(MRH_MessageInputChannel.class); 
 	private String TAG = "[MRH_MessageInputChannel:";
 	private int SESSION_ID = 0;
 	private Random rd = new Random();
@@ -65,8 +69,9 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		try{
 			req.retain();
 			
-			if(MMSConfiguration.CONSOLE_LOGGING)System.out.println("\n"+TAG+"Message received");
-			if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append("\n"+TAG+"Message received\n");
+			//if(MMSConfiguration.CONSOLE_LOGGING)System.out.println("\n"+TAG+"Message received");
+			//if(MMSConfiguration.SYSTEM_LOGGING)MMSLog.systemLog.append("\n"+TAG+"Message received\n");
+			logger.info("Message received");
 			SessionManager.sessionInfo.put(SESSION_ID, "");
 			new MessageRelayingHandler(ctx, req, protocol, SESSION_ID);
 		} finally {
@@ -106,13 +111,14 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	    	MMSLog.nMsgWaitingPollClnt--;
     	}
     	SessionManager.sessionInfo.remove(SESSION_ID);
-    	if(MMSConfiguration.CONSOLE_LOGGING){
+    	/*if(MMSConfiguration.CONSOLE_LOGGING){
 			System.out.print(TAG);
 			cause.printStackTrace();
 		}
     	if(MMSConfiguration.SYSTEM_LOGGING){
 			MMSLog.systemLog.append(TAG+cause.getMessage()+"\n");
-		}
+		}*/
+    	logger.error(cause.getMessage());
         ctx.close();
     }
 }

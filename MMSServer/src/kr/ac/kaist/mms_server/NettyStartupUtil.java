@@ -18,7 +18,11 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import java.util.function.Consumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 class NettyStartupUtil {
+	private static final Logger logger = LoggerFactory.getLogger(NettyStartupUtil.class);
 	private static String TAG = "[NettyStartupUtil] ";
 	static void runServer(int port, ChannelHandler childHandler, Consumer<ServerBootstrap> block) throws Exception {
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
@@ -30,7 +34,8 @@ class NettyStartupUtil {
             b.childHandler(childHandler);
             block.accept(b);
             Channel ch = b.bind(port).sync().channel();
-            System.err.println( TAG + "Ready for 0.0.0.0:" + port);
+            //System.err.println( TAG + "Ready for 0.0.0.0:" + port);
+            logger.error("Ready for 0.0.0.0:" + port);
             ch.closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
