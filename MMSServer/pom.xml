@@ -115,15 +115,18 @@
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
+      <artifactId>logback-classic</artifactId>
+	  <version>1.2.3</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>integration</artifactId>
-      <version>${slf4j.version}</version>
-      <scope>test</scope>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.21</version>
+    </dependency>
+        <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>1.7.21</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -290,44 +293,7 @@
         </configuration>
       </plugin>
 
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <id>bundle-manifest</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>manifest</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <instructions>
-            <Export-Package>ch.qos.logback.classic*, org.slf4j.impl;version=${slf4j.version}</Export-Package>
-            <!-- LB-CLASSIC It is necessary to specify the rolling
-                 file packages as classes are created via IOC (xml
-                 config files). They won't be found by Bnd's analysis
-                 of java code. -->
-            <Import-Package>
-              sun.reflect;resolution:=optional,
-              javax.*;resolution:=optional,
-              org.xml.*;resolution:=optional,
-              org.slf4j,
-              org.slf4j.event,
-              ch.qos.logback.core.rolling,
-              ch.qos.logback.core.rolling.helper,
-              ch.qos.logback.core.util,
-              ch.qos.logback.core.read,
-              org.codehaus.groovy.*;resolution:=optional,
-              groovy.lang.*;resolution:=optional,
-              *
-            </Import-Package>
-            <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
-          </instructions>
-        </configuration>
-      </plugin>
+  
     </plugins>
     <pluginManagement>
       <plugins>

@@ -28,9 +28,8 @@ Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-04-25
 Version : 0.5.0
 
-Rev. history : 2017-06-17
-Version : 0.5.6
-	Removed UTF-8 decoding in receiving response message condition 
+Rev. history : 2017-06-18
+Version : 0.5.7
 	Changed the variable Map<String,String> headerField to Map<String,List<String>>
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
@@ -138,7 +137,7 @@ class SecureMMSPollHandler {
 			inH = getModifiableMap(inH);
 			inH.put("Response-code",responseCodes);
 			BufferedReader inB = new BufferedReader(
-			        new InputStreamReader(con.getInputStream()));//,Charset.forName("UTF-8")));
+			        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 			String inputLine;
 			
 			StringBuffer response = new StringBuffer();
