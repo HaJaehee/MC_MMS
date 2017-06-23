@@ -33,6 +33,11 @@ Rev. history : 2017-06-18
 Version : 0.5.6
 	Changed the variable Map<String,String> headerField to Map<String,List<String>>
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-06-23
+Version : 0.5.7
+	Update javadoc
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -40,6 +45,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import kr.ac.kaist.mms_client.MMSClientHandler.PollingResponseCallback;
+import kr.ac.kaist.mms_client.MMSClientHandler.RequestCallback;
+import kr.ac.kaist.mms_client.MMSClientHandler.ResponseCallback;
+
+/**
+ * It is an object that can communicate to MMS through HTTPS and send or receive messages of other objects.
+ * @version 0.5.7
+ * @see MMSClientHandler
+ */
 public class SecureMMSClientHandler {
 	
 	private String TAG = "[SecureMMSClientHandler] ";
@@ -50,6 +64,11 @@ public class SecureMMSClientHandler {
 	private int clientPort = 0;
 	private Map<String,List<String>> headerField = null;
 	
+	/**
+	 * The Constructor of SecureMMSClientHandler class
+	 * @param	clientMRN		the MRN of client
+	 * @throws	IOException 	if exception occurs
+	 */	
 	public SecureMMSClientHandler(String clientMRN) throws IOException{
 		this.clientMRN = clientMRN;
 		rcvHandler = null;
@@ -57,19 +76,46 @@ public class SecureMMSClientHandler {
 		sendHandler = null;
 	}
 	
+	/**
+	 * This interface is used to handle the response to polling request.
+	 * @see		MMSClientHandler#startPolling(String, String, int, PollingResponseCallback)
+	 */
 	public interface PollingResponseCallback{
 		void callbackMethod(Map<String,List<String>> headerField, String message);
 	}
+	
+	/**
+	 * This interface is used to handle the response to be sent when a message is received.
+	 * @see		MMSClientHandler#setServerPort(int, RequestCallback)
+	 * @see		MMSClientHandler#setServerPort(int, String, RequestCallback)
+	 */
 	public interface RequestCallback{
 		String respondToClient(Map<String,List<String>> headerField, String message);
 		int setResponseCode();
 		Map<String,List<String>> setResponseHeader();
 	}
 	
+	/**
+	 * This interface is used to handle the response to be received when a message is sent.
+	 * @see		MMSClientHandler#setSender(ResponseCallback)
+	 */
 	public interface ResponseCallback{
 		void callbackMethod(Map<String,List<String>> headerField, String message);
 	}
 
+	/**
+	 * This method is that client requests polling. If setting this method, send polling request
+	 * per interval. In the MMS that received the polling request, if there is a message toward the client, 
+	 * the message is send to the MMS client, which requests polling, and in the MMS client,
+	 * the callbackMethod is executed. Depending on whether it is the way of normal polling or long polling,
+	 * the way of response is different.
+	 * @param	dstMRN			the MRN of MMS to request polling
+	 * @param	svcMRN			the MRN of service, which may send to client
+	 * @param	interval		the frequency of polling (unit of time: ms)
+	 * @param	callback		the callback interface of {@link PollingResponseCallback}
+	 * @throws	IOException 	if exception occurs
+	 * @see 	PollingResponseCallback
+	 */	
 	public void startPolling (String dstMRN, String svcMRN, int interval, PollingResponseCallback callback) throws IOException{
 		if (this.sendHandler != null) {
 			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
@@ -97,6 +143,19 @@ public class SecureMMSClientHandler {
 		return false;
 	}
 
+	/**
+	 * This method configures client's port to act as a HTTPS server and create a rcvHandler object.
+	 * HTTPS server is configured via jksDirectory and jksPassword which matches that.
+	 * It is used in a network that supports push method. It receives all messages toward itself.
+	 * When a message is received via the callback method, it is possible to handle the response to be sent.
+	 * @param 	port			port number
+	 * @param 	jksDirectory	MMS certificate
+	 * @param 	jksPassword		password of MMS certificate
+	 * @param 	callback		callback interface of {@link RequestCallback}
+	 * @throws 	Exception		if exception occurs
+	 * @see		#setServerPort(int, String, String, String, RequestCallback)
+	 * @see		#addContext(String)
+	 */
 	public void setServerPort (int port, String jksDirectory, String jksPassword, RequestCallback callback) throws Exception{
 		if (!isErrorForSettingServerPort()){
 			this.rcvHandler = new RcvHandler(port, jksDirectory, jksPassword);
@@ -104,6 +163,21 @@ public class SecureMMSClientHandler {
 		}
 	}
 	
+	/**
+	 * This method configures client's port to act as a HTTPS server and create a rcvHandler object.
+	 * HTTPS server is configured via jksDirectory and jksPassword which matches that.
+	 * It is used in a network that supports push method. This method configures default context and 
+	 * it receives messages that url matches the default context. When a message is received via the 
+	 * callback method, it is possible to handle the response to be sent.
+	 * @param 	port			port number
+	 * @param 	context			context (e.g. /get/messages/)
+	 * @param 	jksDirectory	MMS certificate
+	 * @param 	jksPassword		password of MMS certificate
+	 * @param 	callback		callback interface of {@link RequestCallback}
+	 * @throws 	Exception		if exception occurs
+	 * @see		#setServerPort(int,, String, String, RequestCallback)
+	 * @see		#addContext(String)
+	 */
 	public void setServerPort (int port, String context, String jksDirectory, String jksPassword, RequestCallback callback) throws Exception{
 		if (!isErrorForSettingServerPort()){
 			this.rcvHandler = new RcvHandler(port, context, jksDirectory, jksPassword);
@@ -111,6 +185,18 @@ public class SecureMMSClientHandler {
 		}
 	}
 	
+	/**
+	 * This method configures client's port to act as a HTTPS file server and create a rcvHandler object.
+	 * HTTPS server is configured via jksDirectory and jksPassword which matches that.
+	 * It is used in a network that supports push method. This method configures default context and 
+	 * it receives messages that url matches the default context. When a message is received via the 
+	 * callback method, it is possible to handle the response to be sent.
+	 * @param	port			the port number
+	 * @param	fileDirectory	the file path (e.g. /files/ocean/waves/)
+	 * @param	fileName		the file name (e.g. mokpo.xml)
+	 * @throws	IOException 	if exception occurs
+	 * @see 	#addFileContext(String, String)
+	 */	
 	public void setFileServerPort (int port, String fileDirectory, String fileName, String jksDirectory, String jksPassword, RequestCallback callback) throws Exception {
 		if (!isErrorForSettingServerPort()){
 			this.rcvHandler = new RcvHandler(port, fileDirectory, fileName);
@@ -118,6 +204,12 @@ public class SecureMMSClientHandler {
 		}
 	}
 	
+	/**
+	 * Add context to client's HTTPS server
+	 * @param	context			the context (e.g. /get/messages/)
+	 * @see		#setServerPort(int, String, String, RequestCallback)
+	 * @see		#setServerPort(int, String, String, String, RequestCallback)
+	 */
 	public void addContext (String context) {
 		if(this.rcvHandler != null) {
 			this.rcvHandler.addContext(context);
@@ -126,6 +218,12 @@ public class SecureMMSClientHandler {
 		}
 	}
 	
+	/**
+	 * Add file directory and file name to client's HTTPS file server
+	 * @param 	fileDirectory	the file path (e.g. /files/ocean/waves/)
+	 * @param 	fileName		the file name (e.g. mokpo.xml)
+	 * @see		#setFileServerPort(int, String, String, String, String, RequestCallback)
+	 */
 	public void addFileContext (String fileDirectory, String fileName) {
 		if(this.rcvHandler != null) {
 			this.rcvHandler.addFileContext(fileDirectory, fileName);
@@ -134,6 +232,17 @@ public class SecureMMSClientHandler {
 		}
 	}
 	
+	/**
+	 * This method is used to set in MMS client in order to send message. If using this method, it is possible 
+	 * to use sendPostMsg and sendGetMsg method. When the client send a message, it can handle the response to 
+	 * be received via callback interface.
+	 * @param 	callback		the callback interface of {@link ResponseCallback} 
+	 * @see 	#sendGetMsg(String)
+	 * @see	 	#sendGetMsg(String, String, String)
+	 * @see 	#sendPostMsg(String, String)
+	 * @see 	#sendPostMsg(String, String, String)
+	 * @see		ResponseCallback
+	 */
 	public void setSender (ResponseCallback callback) {
 		if (this.rcvHandler != null) {
 			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort()");
@@ -169,11 +278,24 @@ public class SecureMMSClientHandler {
 	}
 	
 	//HJH
+	/**
+	 * When sending a message, add custom header to HTTP header field
+	 * @param 	headerField		Key and value for additional header
+	 * @throws 	Exception		if exception occurs
+	 */
 	public void setMsgHeader(Map<String,List<String>> headerField) throws Exception{
 		this.headerField = headerField;
 	}
 	
-	
+	/**
+	 * Send a POST message to the destination MRN that url matches the location via MMS
+	 * @param 	dstMRN			the destination MRN to send data
+	 * @param 	loc				url location
+	 * @param 	data			the data to send
+	 * @throws 	Exception		if exception occurs
+	 * @see		#sendPostMsg(String, String)
+	 * @see		#setSender(ResponseCallback)
+	 */
 	public void sendPostMsg(String dstMRN, String loc, String data) throws Exception{
 		if (this.sendHandler == null) {
 			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
@@ -182,6 +304,14 @@ public class SecureMMSClientHandler {
 		}
 	}
 	
+	/**
+	 * Send a POST message to the destination MRN via MMS
+	 * @param 	dstMRN			the destination MRN to send data
+	 * @param 	data			the data to send
+	 * @throws 	Exception		if exception occurs
+	 * @see		#sendPostMsg(String, String, String)
+	 * @see		#setSender(ResponseCallback)
+	 */
 	public void sendPostMsg(String dstMRN, String data) throws Exception{
 		if (this.sendHandler == null) {
 			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
@@ -191,6 +321,13 @@ public class SecureMMSClientHandler {
 	}
 	
 	//HJH
+	/**
+	 * Send a GET message to the destination MRN via MMS
+	 * @param 	dstMRN			the destination MRN
+	 * @throws 	Exception		if exception occurs
+	 * @see		#sendGetMsg(String, String, String)
+	 * @see		#setSender(ResponseCallback)
+	 */
 	public void sendGetMsg(String dstMRN) throws Exception{
 		if (this.sendHandler == null) {
 			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
@@ -200,6 +337,16 @@ public class SecureMMSClientHandler {
 	}
 	
 	//HJH
+	/**
+	 * Send a GET message which the destination MRN is that url matches the location via MMS and setting
+	 * parameter
+	 * @param 	dstMRN			the destination MRN
+	 * @param	loc				url location
+	 * @param	params			parameter
+	 * @throws 	Exception		if exception occurs
+	 * @see		#sendGetMsg(String)
+	 * @see		#setSender(ResponseCallback)
+	 */
 	public void sendGetMsg(String dstMRN, String loc, String params) throws Exception{
 		if (this.sendHandler == null) {
 			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
@@ -209,6 +356,15 @@ public class SecureMMSClientHandler {
 	}
 	
 	//OONI
+	/**
+	 * Use when requesting a file from the destination. Send a GET message to a file server mapping to destination MRN
+	 * to request a file that matches the parameterized filename.
+	 * @param 	dstMRN			the destination MRN to send a message
+	 * @param 	fileName		file path and name (e.g. "/get/test.xml")
+	 * @return					returning result of saving file
+	 * 							<code>null</code> if saving file is failed.
+	 * @throws 	Exception
+	 */
 	public String requestFile(String dstMRN, String fileName) throws Exception{
 		if (this.sendHandler == null) {
 			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
