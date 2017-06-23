@@ -4,11 +4,12 @@ Source codes in this branch would be modified without any notification.
 
 # MC_MMS
 Beta Version 0.5.7 <br/>
-2017.6.19<br/>
+2017.6.23<br/>
 
 
 ## Features
 MMS Beta Version<br/>
+Supports javadoc API documents<br/>
 Supports fully relaying HTTP(S) messages based on ID<br/>
 Supports fully HTTPS communication<br/>
 Supports long polling<br/>
