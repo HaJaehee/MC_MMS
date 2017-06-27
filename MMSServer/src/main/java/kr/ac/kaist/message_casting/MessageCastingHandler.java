@@ -24,10 +24,20 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-06-27
+Version : 0.5.8
+	Variable requestDstInfo is changed to parse multiple MRN case.
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +60,19 @@ public class MessageCastingHandler {
 	
 	public String requestDstInfo(String dstMRN){
 		String dstInfo = mih.requestDstInfo(dstMRN);
-		
+		if (dstInfo.regionMatches(2, "poll", 0, 4)){ // if the returned dstInfo contains json format do parsing.
+			logger.debug("Multicasting occured");
+			JSONObject jo = (JSONObject)JSONValue.parse(dstInfo);
+			JSONArray jl = (JSONArray)jo.get("poll");
+			String ret = "MULTIPLE_MRN,";
+			for (int i = 0;i < jl.size();i++){
+				if (i != jl.size()-1)
+					ret = ret + ((JSONObject)jl.get(i)).get("dstMRN") + ",";
+				else
+					ret = ret + ((JSONObject)jl.get(i)).get("dstMRN");
+			}
+			return ret;
+		}
 		return dstInfo;
 	}
 	

@@ -43,7 +43,7 @@ public class MMSConfiguration {
 	//-------------------------------------------------------------------
 	public static final String MMS_MRN = "urn:mrn:smart-navi:device:mms1";
 	//-------------------------------------------------------------------
-	public static int POLLING_METHOD = 1;
+	public static int POLLING_METHOD = 2;
 	public static final int NORMAL_POLLING = 1;
 	public static final int LONG_POLLING = 2;
 

@@ -8,6 +8,10 @@ Author : Jaehyun Park (jae519@kaist.ac.kr)
 Creation Date : 2017-01-24
 Version : 0.3.01
 
+Rev. history : 2017-06-23
+	Added Geo-location Update.
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
 Rev. history : 2017-02-01
 	Added locator registering features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
@@ -16,6 +20,12 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-06-27
+Version : 0.5.8
+	Added geocasting related features
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -26,12 +36,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.ac.kaist.mms_server.MMSConfiguration;
 
 public class MNSDummy {
+	private static int UNICASTING = 1;
+	private static int GEOCASTING = 2;
+	private static int GROUPCASTING = 3;
 	
 	private static final Logger logger = LoggerFactory.getLogger(MNSDummy.class);
 	//All MRN to IP Mapping is in hashmap 
@@ -43,6 +58,10 @@ public class MNSDummy {
        ServerSocket Sock = new ServerSocket(1004);
        logger.error("MNSDummy started");
 //       -------------Put MRN --> IP Information -------------
+//		 MRN table structure:           IP_Address:PortNumber:Model
+//       (Geo-location added version)   IP_Address:PortNumber:Model:Geo-location
+//
+//
 //       MRNtoIP.put("urn:mrn:imo:imo-no:1000002", "127.0.0.1:8901:1"); // SC2
 //       MRNtoIP.put("urn:mrn:imo:imo-no:1000001", "127.0.0.1:8902:1"); // SC1
 //       MRNtoIP.put("urn:mrn:imo:imo-no:1000003", "127.0.0.1:8903:1"); // SC3
@@ -93,22 +112,66 @@ public class MNSDummy {
         	  data = data.split(",")[0];
         	  
         	  logger.debug("MNSDummy:data=" + data);
-        	  if (MRNtoIP.containsKey(data))
-        		  dataToReply += MRNtoIP.get(data);
-        	  else{
-        	  	  logger.debug("No MRN to IP Mapping");
-        		  dataToReply = "No";
-        	  }
-              logger.debug(dataToReply);
-        	  Socket ReplySocket = new Socket("localhost",rplPort);
-        	  
-        	  BufferedWriter out = new BufferedWriter(
-    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
-        	  out.write(dataToReply);
-              out.flush();
-              out.close();
-              ReplySocket.close();
-              
+        	  if (!data.regionMatches(0, "urn:mrn:mcs:casting:geocast:smart:",0,34)){
+	        	  if (MRNtoIP.containsKey(data))
+	        		  dataToReply += MRNtoIP.get(data);
+	        	  else{
+	        	  	  logger.debug("No MRN to IP Mapping");
+	        		  dataToReply = "No";
+	        	  }
+	              logger.debug(dataToReply);
+	        	  Socket ReplySocket = new Socket("localhost",rplPort);
+	        	  
+	        	  BufferedWriter out = new BufferedWriter(
+	    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
+	        	  out.write(dataToReply);
+	              out.flush();
+	              out.close();
+	              ReplySocket.close();
+          	  }else{ // if geocasting (urn:mrn:mcs:casting:geocasting:smart:-)
+          		  String geoMRN = data.substring(34);
+          		  String[] parsedGeoMRN = geoMRN.split("-");
+          		  logger.info(geoMRN);;
+          		  float lat = Float.parseFloat(parsedGeoMRN[1]); 
+          		  float lon = Float.parseFloat(parsedGeoMRN[3]);
+          		  float rad = Float.parseFloat(parsedGeoMRN[5]);
+          		  Set<String> keys = MRNtoIP.keySet();
+          		  
+          		  Iterator<String> keysIter = keys.iterator();
+          		  // MRN lists are returned by json format.
+          		  // {"poll":[{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},....]}
+          		  JSONArray objlist = new JSONArray();
+          		  
+          		  
+          		  if (keysIter.hasNext()){
+          			  do{
+          				  String key = keysIter.next();
+          				  String value = MRNtoIP.get(key);
+          				  String[] parsedVal = value.split(":");
+          				  if (parsedVal.length == 4){ // Geo-information exists.
+          					  String[] curGeoMRN = parsedVal[3].split("-");
+          					  float curLat = Float.parseFloat(curGeoMRN[1]); 
+                    		  float curLong = Float.parseFloat(curGeoMRN[3]);
+                    		  if (((lat-curLat)*(lat-curLat) + (lon-curLong)*(lon-curLong)) < rad * rad){
+                    			  JSONObject item = new JSONObject();
+                    			  item.put("dstMRN", key);
+                    			  objlist.add(item);
+                    		  }
+          				  }
+          				  
+          				  
+          			  }while(keysIter.hasNext());
+          		  }
+          		  JSONObject dstMRNs = new JSONObject();
+          		  dstMRNs.put("poll", objlist);
+	        	  Socket ReplySocket = new Socket("localhost",rplPort);
+	        	  BufferedWriter out = new BufferedWriter(
+	    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
+	        	  out.write("MNSDummy-Reply:" + dstMRNs.toString());
+	              out.flush();
+	              out.close();
+	              ReplySocket.close();
+          	  }
           }else if (data.regionMatches(0, "Location-Update:", 0, 16)){
         	  data = data.substring(16);
         	
@@ -164,8 +227,14 @@ public class MNSDummy {
         	  String mrn = data.substring(13);
         	  MRNtoIP.remove(mrn);
         	  logger.info("MNSDummy:REMOVE "+mrn);
-        	  
-          }      
+          //Geo-location update function.  
+          }else if (data.regionMatches(0, "Geo-location-Update:", 0, 20)){
+        	  //TODO:Processing geo-location update message
+        	  //data format: Geo-location-update:
+        	  String[] data_sub = data.split(",");
+        	  logger.debug("MNSDummy:Geolocationupdate "+data_sub[1]);
+        	  MRNtoIP.put(data_sub[1], "127.0.0.1" + ":" + data_sub[2] + ":" + data_sub[3] + ":" + data_sub[4]);
+          }
        }
     }
 }
