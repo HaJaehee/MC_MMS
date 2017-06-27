@@ -56,7 +56,7 @@ public class ServiceProvider_GEO {
 					}
 					System.out.println(message);
 
-					//it only forwards messages to sc having urn:mrn:imo:imo-no:1000001
+					//it only forwards messages to sc having urn:mrn:mcs:casting:geocast:smart:lat-1-long-1-radius-3
 					//sender.sendPostMsg("urn:mrn:mcs:casting:geocast:smart:lat-1-long-1-radius-3", message);
 				} catch (Exception e) {
 					e.printStackTrace();
