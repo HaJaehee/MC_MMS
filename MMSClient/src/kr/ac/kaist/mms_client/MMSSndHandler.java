@@ -1,7 +1,5 @@
 package kr.ac.kaist.mms_client;
 
-import java.io.BufferedOutputStream;
-
 /* -------------------------------------------------------- */
 /** 
 File name : MMSSndHandler.java
@@ -22,20 +20,12 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-04-25
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-06-18
-Version : 0.5.6
-	Changed the variable Map<String,String> headerField to Map<String,List<String>>
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -47,9 +37,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-
-import sun.misc.BASE64Decoder;
 
 class MMSSndHandler {
 	
@@ -72,7 +59,7 @@ class MMSSndHandler {
 		this.myCallback = callback;
 	}
 	
-	void sendHttpPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws Exception{
+	void sendHttpPost(String dstMRN, String loc, String data, Map<String,String> headerField) throws Exception{
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
 			loc = "/" + loc;
@@ -91,7 +78,14 @@ class MMSSndHandler {
 		//con.addRequestProperty("Connection","keep-alive");
 		
 		if (headerField != null) {
-			con = addCustomHeaderField(con, headerField);
+			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
+			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
+				String key = (String) keys.next();
+				String value = (String) headerField.get(key);
+				if(MMSConfiguration.LOGGING)System.out.println(key+":"+value);
+				con.setRequestProperty(key, value);
+			}
+			if(MMSConfiguration.LOGGING)System.out.println("]");
 		} 
 		
 		//load contents
@@ -139,7 +133,7 @@ class MMSSndHandler {
 	}
 	
 	//OONI
-	String sendHttpGetFile(String dstMRN, String fileName, Map<String,List<String>> headerField) throws Exception {
+	String sendHttpGetFile(String dstMRN, String fileName, Map<String,String> headerField) throws Exception {
 
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!fileName.startsWith("/")) {
@@ -158,7 +152,13 @@ class MMSSndHandler {
 		con.setRequestProperty("srcMRN", clientMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
 		if (headerField != null) {
-			con = addCustomHeaderField(con, headerField);
+			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
+			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
+				String key = (String) keys.next();
+				String value = (String) headerField.get(key);
+				con.setRequestProperty(key, value);
+			}
+			if(MMSConfiguration.LOGGING)System.out.println("]");
 		}
 		//con.addRequestProperty("Connection","keep-alive");
 
@@ -167,29 +167,23 @@ class MMSSndHandler {
 		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response Code : " + responseCode + "\n");
 		
 		BufferedReader in = new BufferedReader(
-		        new InputStreamReader(con.getInputStream()));
+		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 		String inputLine;
-		StringBuffer inputMsg = new StringBuffer();
+		BufferedWriter out = new BufferedWriter(new FileWriter(System.getProperty("user.dir")+fileName));
 		
 		while ((inputLine = in.readLine()) != null) {
-			inputMsg.append(inputLine+"\n");
+			out.append(inputLine); out.newLine();
 		}
 		
-		BASE64Decoder base64Decoder = new BASE64Decoder();
-        InputStream encoded = new ByteArrayInputStream(inputMsg.toString().getBytes("UTF-8"));
-        BufferedOutputStream decoded = new BufferedOutputStream(new FileOutputStream(System.getProperty("user.dir")+fileName));
-
-        base64Decoder.decodeBuffer(encoded, decoded);      
-
-        encoded.close();
-        decoded.close();
+		out.flush();
+		out.close();
 		in.close();
 		return fileName + " is saved";
 	}
 	//OONI end
 	
 	//HJH
-	void sendHttpGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField) throws Exception {
+	void sendHttpGet(String dstMRN, String loc, String params, Map<String,String> headerField) throws Exception {
 
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
@@ -218,7 +212,13 @@ class MMSSndHandler {
 		con.setRequestProperty("srcMRN", clientMRN);
 		con.setRequestProperty("dstMRN", dstMRN);
 		if (headerField != null) {
-			con = addCustomHeaderField(con, headerField);
+			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
+			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
+				String key = (String) keys.next();
+				String value = (String) headerField.get(key);
+				con.setRequestProperty(key, value);
+			}
+			if(MMSConfiguration.LOGGING)System.out.println("]");
 		}
 		//con.addRequestProperty("Connection","keep-alive");
 
@@ -273,21 +273,6 @@ class MMSSndHandler {
 		}
 	
 		return ret;
-	}
-	
-	private HttpURLConnection addCustomHeaderField (HttpURLConnection con, Map<String,List<String>> headerField) {
-		HttpURLConnection retCon = con;
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
-		for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
-			String key = (String) keys.next();
-			List<String> valueList = (List<String>) headerField.get(key);
-			for (String value : valueList) {
-				if(MMSConfiguration.LOGGING)System.out.println(key+":"+value);
-				retCon.addRequestProperty(key, value);
-			}
-		}
-		if(MMSConfiguration.LOGGING)System.out.println("]");
-		return retCon;
 	}
 	//HJH end
 }

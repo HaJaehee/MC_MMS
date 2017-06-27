@@ -43,7 +43,5 @@ public class SC6 {
 		* server.setPort(port); //It sets default context as '/'
 		* server.addFileContext(fileDirectory, fileName); //Finally server has two context '/' and '/get/test.xml'
 	    */
-		server.addFileContext(fileDirectory, "mc.png");
-		server.addFileContext(fileDirectory, "pdf.pdf");
 	}
 }

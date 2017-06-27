@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,10 +25,6 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2017-04-25
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
-Rev. history : 2017-06-18
-Version : 0.5.6
-	Changed the variable Map<String,String> headerField to Map<String,List<String>>
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -42,12 +37,8 @@ public class SC2 {
 
 		//Service Consumer which can only send message
 		MMSClientHandler sender = new MMSClientHandler(myMRN);
-		
-		//Service Consumer is able to set he's HTTP header field
-		Map<String, List<String>> headerfield = new HashMap<String, List<String>>();
-		List<String> valueList = new ArrayList<String>();
-		valueList.add("1234567890");
-		headerfield.put("AccessToken",valueList);
+		Map<String, String> headerfield = new HashMap<String, String>();
+		headerfield.put("AccessToken", "1234567890");
 		sender.setMsgHeader(headerfield);
 		
 		sender.setSender(new MMSClientHandler.ResponseCallback (){
@@ -65,16 +56,16 @@ public class SC2 {
 			
 		});
 		
-		
-		for (int i = 0; i < 5;i++){
+		/*
+		for (int i = 0; i < 10;i++){
 			sender.sendPostMsg("urn:mrn:smart-navi:device:tm-server", "/forwarding", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
-		}
+		}*/
 
-		/*
+		
 		for (int i = 0; i < 10;i++){
 			sender.sendPostMsg("urn:mrn:imo:imo-no:1000005", "¾È³ç hi hello " + i);
 			//Thread.sleep(100);
-		}*/
+		}
 	}
 }

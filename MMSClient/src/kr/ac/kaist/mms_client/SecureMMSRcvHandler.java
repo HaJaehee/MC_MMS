@@ -47,8 +47,6 @@ import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 
-import sun.misc.BASE64Encoder;
-
 class SecureMMSRcvHandler {
 	HttpsServer server = null;
 	SSLContext sslContext = null;
@@ -267,30 +265,18 @@ class SecureMMSRcvHandler {
         	
             fileName = System.getProperty("user.dir")+fileName.trim();
             File file = new File (fileName);
-            BASE64Encoder base64Encoder = new BASE64Encoder();
-            InputStream in = new FileInputStream(file);
-
-            ByteArrayOutputStream byteOutStream=new ByteArrayOutputStream();
-
-            int len=0;
-
-            byte[] buf = new byte[1024];
-
-            while((len=in.read(buf)) != -1){
-            	byteOutStream.write(buf, 0, len);
-            }
-
-            byte fileArray[]=byteOutStream.toByteArray();
-            byte encodeBytes[]=base64Encoder.encodeBuffer(fileArray).getBytes(); 
+            byte [] bytearray  = new byte [(int)file.length()];
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+            bis.read(bytearray, 0, bytearray.length);
             
-            in.close();
-            byteOutStream.close();
             // ok, we are ready to send the response.
-            t.sendResponseHeaders(200, encodeBytes.length);
+            t.sendResponseHeaders(200, file.length());
             OutputStream os = t.getResponseBody();
-            os.write(encodeBytes,0,encodeBytes.length);
+            os.write(bytearray,0,bytearray.length);
             os.flush();
             os.close();
+            
+            bis.close();
         }
     }
     //OONI end

@@ -27,11 +27,6 @@ File name : SecureMMSPollHandler.java
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-04-25
 Version : 0.5.0
-
-Rev. history : 2017-06-18
-Version : 0.5.7
-	Changed the variable Map<String,String> headerField to Map<String,List<String>>
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -43,7 +38,7 @@ class SecureMMSPollHandler {
 	private static final String USER_AGENT = "MMSClient/0.5.0";
 	private String clientMRN = null;
 	
-	SecureMMSPollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int msgType, Map<String,List<String>> headerField) throws IOException{
+	SecureMMSPollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int msgType, Map<String,String> headerField) throws IOException{
 		ph = new SecurePollingHandler(clientMRN, dstMRN, svcMRN, interval, clientPort, msgType, headerField);
 		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Polling handler is created");
 	}
@@ -56,11 +51,11 @@ class SecureMMSPollHandler {
 		private String svcMRN = null;
 		private int clientPort = 0;
 		private int clientModel = 0;
-		private Map<String,List<String>> headerField = null;
+		private Map<String,String> headerField = null;
 		SecureMMSClientHandler.PollingResponseCallback myCallback = null;
 		private HostnameVerifier hv = null;
 		
-    	SecurePollingHandler (String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int clientModel, Map<String,List<String>> headerField){
+    	SecurePollingHandler (String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int clientModel, Map<String,String> headerField){
     		this.interval = interval;
     		this.clientMRN = clientMRN;
     		this.dstMRN = dstMRN;
@@ -112,7 +107,11 @@ class SecureMMSPollHandler {
 			con.setRequestProperty("srcMRN", clientMRN);
 			con.setRequestProperty("dstMRN", dstMRN);
 			if (headerField != null) {
-				con = addCustomHeaderField(con, headerField);
+				for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
+					String key = (String) keys.next();
+					String value = (String) headerField.get(key);
+					con.setRequestProperty(key, value);
+				}
 			}
 			String urlParameters = data;
 
@@ -204,20 +203,6 @@ class SecureMMSPollHandler {
 			}
 		
 			return ret;
-		}
-		private HttpsURLConnection addCustomHeaderField (HttpsURLConnection con, Map<String,List<String>> headerField) {
-			HttpsURLConnection retCon = con;
-			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
-			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
-				String key = (String) keys.next();
-				List<String> valueList = (List<String>) headerField.get(key);
-				for (String value : valueList) {
-					if(MMSConfiguration.LOGGING)System.out.println(key+":"+value);
-					retCon.addRequestProperty(key, value);
-				}
-			}
-			if(MMSConfiguration.LOGGING)System.out.println("]");
-			return retCon;
 		}
 	}
     //HJH end
