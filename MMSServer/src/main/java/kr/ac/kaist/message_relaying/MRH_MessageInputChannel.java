@@ -107,12 +107,16 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
-    	if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
-	    	MMSLog.nMsgWaitingPollClnt--;
+    	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
+    	if (clientType != null) {
+    		SessionManager.sessionInfo.remove(SESSION_ID);
+    		if (clientType.equals("p")) {
+    			MMSLog.nMsgWaitingPollClnt--;
+    			logger.warn("SessionID="+this.SESSION_ID+" The polling client is disconnected");
+    		} else {
+    			logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected");
+    		}
     	}
-    	SessionManager.sessionInfo.remove(SESSION_ID);
-
-    	logger.error("SessionID="+this.SESSION_ID+" The current connection is forcibly disconnected by the remote host");
         ctx.close();
     }
 
