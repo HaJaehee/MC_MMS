@@ -48,9 +48,15 @@ Version : 0.5.6
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-06-23
+Version : 0.5.7
+	Update javadoc
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2017-06-27
 Version : 0.5.8
 	Geo-location Update
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -61,10 +67,9 @@ import java.util.Map;
 
 /**
  * It is an object that can communicate to MMS through HTTP and send or receive messages of other objects.
- * @version 0.5.6
+ * @version 0.5.7
  * @see SecureMMSClientHandler
  */
-
 public class MMSClientHandler {
 	
 	private String TAG = "[MMSClientHandler] ";
@@ -77,6 +82,7 @@ public class MMSClientHandler {
 	private Map<String,List<String>> headerField = null;
 	private GeoReporter geoReporter = null;
 	/**
+	 * The Constructor of MMSClientHandler class
 	 * @param	clientMRN		the MRN of client
 	 * @throws	IOException 	if exception occurs
 	 */	
@@ -87,9 +93,19 @@ public class MMSClientHandler {
 		sendHandler = null;
 	}
 	
+	/**
+	 * This interface is used to handle the response to polling request.
+	 * @see		MMSClientHandler#startPolling(String, String, int, PollingResponseCallback)
+	 */
 	public interface PollingResponseCallback{
 		void callbackMethod(Map<String,List<String>> headerField, String message);
 	}
+	
+	/**
+	 * This interface is used to handle the response to be sent when a message is received.
+	 * @see		MMSClientHandler#setServerPort(int, RequestCallback)
+	 * @see		MMSClientHandler#setServerPort(int, String, RequestCallback)
+	 */
 	public interface RequestCallback{
 		String respondToClient(Map<String,List<String>> headerField, String message);
 		int setResponseCode();
@@ -97,7 +113,8 @@ public class MMSClientHandler {
 	}
 	
 	/**
-	 * 
+	 * This interface is used to handle the response to be received when a message is sent.
+	 * @see		MMSClientHandler#setSender(ResponseCallback)
 	 */
 	public interface ResponseCallback{
 		void callbackMethod(Map<String,List<String>> headerField, String message);
@@ -157,11 +174,11 @@ public class MMSClientHandler {
 	}
 	
 	/**
-	 * This method configures client's port to act as a HTTP server and create a recvHandler object.
+	 * This method configures client's port to act as a HTTP server and create a rcvHandler object.
 	 * It is used in a network that supports push method. It receives all messages toward itself.
 	 * When a message is received via the callback method, it is possible to handle the response to be sent.
-	 * @param	port			the port number
-	 * @param	callback		the callback interface of {@link RequestCallback}
+	 * @param	port			port number
+	 * @param	callback		callback interface of {@link RequestCallback}
 	 * @throws	IOException 	if exception occurs
 	 * @see 	#setServerPort(int, String, RequestCallback)
 	 * @see 	#addContext(String)
@@ -174,13 +191,13 @@ public class MMSClientHandler {
 	}
 	
 	/**
-	 * This method configures client's port to act as a HTTP server and create a recvHandler object.
+	 * This method configures client's port to act as a HTTP server and create a rcvHandler object.
 	 * It is used in a network that supports push method. This method configures default context and 
 	 * it receives messages that url matches the default context. When a message is received via the 
 	 * callback method, it is possible to handle the response to be sent.
-	 * @param	port			the port number
-	 * @param	context			the context (e.g. /get/messages/)
-	 * @param	callback		the callback interface of {@link RequestCallback}
+	 * @param	port			port number
+	 * @param	context			context (e.g. /get/messages/)
+	 * @param	callback		callback interface of {@link RequestCallback}
 	 * @throws	IOException 	if exception occurs
 	 * @see 	#setServerPort(int, RequestCallback)
 	 * @see 	#addContext(String)
@@ -193,7 +210,7 @@ public class MMSClientHandler {
 	}
 	
 	/**
-	 * This method configures client's port to act as a HTTP server and create a recvHandler object.
+	 * This method configures client's port to act as a HTTP file server and create a rcvHandler object.
 	 * It is used in a network that supports push method. This method configures default context and 
 	 * it receives messages that url matches the default context. When a message is received via the 
 	 * callback method, it is possible to handle the response to be sent.
@@ -246,9 +263,9 @@ public class MMSClientHandler {
 	}
 	
 	/**
-	 * This method is that MMS client sends message. If using this method, it is possible to use sendPostMsg
-	 * and sendGetMsg method. When the client send a message, it can handle the response to be received via
-	 * callback interface.
+	 * This method is used to set in MMS client in order to send message. If using this method, it is possible 
+	 * to use sendPostMsg and sendGetMsg method. When the client send a message, it can handle the response to 
+	 * be received via callback interface.
 	 * @param 	callback		the callback interface of {@link ResponseCallback} 
 	 * @see 	#sendGetMsg(String)
 	 * @see	 	#sendGetMsg(String, String, String)
@@ -364,7 +381,8 @@ public class MMSClientHandler {
 	
 	//OONI
 	/**
-	 * 
+	 * Use when requesting a file from the destination. Send a GET message to a file server mapping to destination MRN
+	 * to request a file that matches the parameterized filename.
 	 * @param 	dstMRN			the destination MRN to send a message
 	 * @param 	fileName		file path and name (e.g. "/get/test.xml")
 	 * @return					returning result of saving file

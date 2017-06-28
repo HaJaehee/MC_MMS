@@ -9,6 +9,7 @@ Beta Version 0.5.8 <br/>
 
 ## Features
 MMS Beta Version<br/>
+Supports javadoc API documents<br/>
 Supports fully relaying HTTP(S) messages based on ID<br/>
 Supports fully HTTPS communication<br/>
 Supports long polling<br/>
