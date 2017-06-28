@@ -44,6 +44,13 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-06-27
+Version : 0.5.8
+	The case which type is RELAYING_TO_MULTIPLE_SC is added. 
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
+
 */
 /* -------------------------------------------------------- */
 
@@ -140,6 +147,13 @@ public class MessageRelayingHandler  {
 			//srh.putSCMessage(dstMRN, req);
 			
 			srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
+    		message = "OK".getBytes(Charset.forName("UTF-8"));
+		} else if (type == MessageTypeDecider.RELAYING_TO_MULTIPLE_SC){
+			String [] dstMRNs = parser.getMultiDstMRN();
+			logger.debug("SessionID="+this.SESSION_ID+" multicast");
+			for (int i = 0; i < dstMRNs.length;i++){
+				srh.putSCMessage(srcMRN, dstMRNs[i], req.content().toString(Charset.forName("UTF-8")).trim());
+			}
     		message = "OK".getBytes(Charset.forName("UTF-8"));
 		} else if (type == MessageTypeDecider.RELAYING_TO_SERVER) {
         	try {

@@ -17,6 +17,12 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-06-27
+Version : 0.5.8
+	Variable multiDstMRN is added for multicast.
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -35,6 +41,7 @@ public class MessageParser {
 	private String srcMRN = null;
 	private String dstIP = null;
 	private String dstMRN = null;
+	private String[] multiDstMRN = null;
 	private int srcPort = 0;
 	private int dstPort = 0;
 	private int srcModel = 0;
@@ -93,6 +100,15 @@ public class MessageParser {
     	dstPort = Integer.parseInt(dstInforms[1]);
     	dstModel = Integer.parseInt(dstInforms[2]);
     	
+	}
+	void parseMultiDstInfo(String dstInfo){
+		System.out.println(dstInfo);
+		String[] dstMRNs = dstInfo.substring(13).split(",");
+		multiDstMRN = dstMRNs;
+	}
+	
+	String[] getMultiDstMRN() {
+		return multiDstMRN;
 	}
 	
 	String getDstMRN() {

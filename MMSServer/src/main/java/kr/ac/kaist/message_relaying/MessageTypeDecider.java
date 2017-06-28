@@ -36,6 +36,11 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-06-27
+Version : 0.5.8
+	Type RELAYING_TO_MULTIPLE_SC is added. 
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -58,7 +63,7 @@ class MessageTypeDecider {
 	static final int EMPTY_MNSDummy = 8;
 	static final int REMOVE_MNS_ENTRY = 9;
 	static final int POLLING_METHOD = 10;
-	
+	static final int RELAYING_TO_MULTIPLE_SC = 11; // it means multicase
 	MessageTypeDecider(int sessionId) {
 		this.SESSION_ID = sessionId;
 	}
@@ -102,6 +107,10 @@ class MessageTypeDecider {
     		
         	if (dstInfo.equals("No")) {
         		return UNKNOWN_MRN;
+        	}
+        	if (dstInfo.regionMatches(0, "MULTIPLE_MRN,", 0, 9)){
+        		parser.parseMultiDstInfo(dstInfo);
+        		return RELAYING_TO_MULTIPLE_SC;
         	}
 
         	parser.parseDstInfo(dstInfo);

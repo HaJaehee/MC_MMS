@@ -51,13 +51,18 @@ Rev. history : 2017-06-23
 Version : 0.5.7
 	Update javadoc
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2017-06-27
+Version : 0.5.8
+	Geo-location Update
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
 
 
 /**
@@ -75,7 +80,7 @@ public class MMSClientHandler {
 	private String clientMRN = "";
 	private int clientPort = 0;
 	private Map<String,List<String>> headerField = null;
-	
+	private GeoReporter geoReporter = null;
 	/**
 	 * The Constructor of MMSClientHandler class
 	 * @param	clientMRN		the MRN of client
@@ -143,7 +148,20 @@ public class MMSClientHandler {
 			}
 		}
 	}
-	
+	public void startGeoReporting (String svcMRN, int interval) throws IOException{
+		if (this.sendHandler != null) {
+			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
+		} else if (this.rcvHandler != null) {
+			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
+		} else {
+			if (interval > 0) {
+				this.geoReporter = new GeoReporter(clientMRN, svcMRN, interval);
+				this.geoReporter.gr.start();
+			} else {
+				System.out.println(TAG+"Failed! The interval must be larger than 0");
+			}
+		}
+	}
 	private boolean isErrorForSettingServerPort (){
 		if (this.sendHandler != null) {
 			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
@@ -405,6 +423,10 @@ public class MMSClientHandler {
 		}
 	}
 	
-
+	private class GeoReporter extends MMSGeoInfoReporter{
+		GeoReporter(String clientMRN, String svcMRN, int interval) throws IOException {
+			super(clientMRN, svcMRN, interval, clientPort, 1);
+		}
+	}
 }
 
