@@ -1,8 +1,5 @@
 package kr.ac.kaist.message_relaying;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /* -------------------------------------------------------- */
 /** 
 File name : MessageTypeDecision.java
@@ -39,11 +36,15 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-06-27
 Version : 0.5.8
-	Type RELAYING_TO_MULTIPLE_SC is added. 
+	Added RELAYING_TO_MULTIPLE_SC.
+	Added EMTPY_QUEUE_LOGS.
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+		   Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import io.netty.handler.codec.http.HttpMethod;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
 import kr.ac.kaist.mms_server.MMSConfiguration;
@@ -62,8 +63,9 @@ class MessageTypeDecider {
 	static final int STATUS = 7;
 	static final int EMPTY_MNSDummy = 8;
 	static final int REMOVE_MNS_ENTRY = 9;
-	static final int POLLING_METHOD = 10;
-	static final int RELAYING_TO_MULTIPLE_SC = 11; // it means multicase
+	static final int EMPTY_QUEUE_LOGS = 10;
+	static final int POLLING_METHOD = 11;
+	static final int RELAYING_TO_MULTIPLE_SC = 12; // it means multicase
 	MessageTypeDecider(int sessionId) {
 		this.SESSION_ID = sessionId;
 	}
@@ -99,6 +101,8 @@ class MessageTypeDecider {
     		return REMOVE_MNS_ENTRY;
     	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0,"/polling?method", 0, 15)){
     		return POLLING_METHOD;
+    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptyqueuelogs")){
+    		return EMPTY_QUEUE_LOGS;
     	} 
     	
 //    	When relaying

@@ -241,6 +241,9 @@ public class MessageRelayingHandler  {
     		} else {
     			message = "Wrong  parameter".getBytes(Charset.forName("UTF-8"));
     		}
+		} else if (type == MessageTypeDecider.EMPTY_QUEUE_LOGS) {
+			MMSLog.queueLogForClient.setLength(0);
+			message = "OK".getBytes(Charset.forName("UTF-8"));
 		}
 
 		else if (type == MessageTypeDecider.UNKNOWN_MRN) {

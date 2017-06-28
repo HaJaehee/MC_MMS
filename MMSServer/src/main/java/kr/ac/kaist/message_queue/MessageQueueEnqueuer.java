@@ -70,7 +70,7 @@ class MessageQueueEnqueuer {
 			channel.queueDeclare(queueName, true, false, false, null);
 			
 			channel.basicPublish("", queueName, null, message.getBytes());
-			logger.trace("SessionID="+this.SESSION_ID+" "+"Sent '" + message + "'");
+			logger.trace("SessionID="+this.SESSION_ID+" Sent=" + message);
 			channel.close();
 			connection.close();
 		} catch (IOException e) {
