@@ -56,7 +56,8 @@ class MessageQueueEnqueuer {
 	void enqueueMessage(String srcMRN, String dstMRN, String message) {
 		
 		String queueName = dstMRN+"::"+srcMRN;
-		 if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueEnqueuer] "+queueName +"<br/>"+ "��������Message: " + message +"<br/>");
+		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+		 if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueEnqueuer] "+queueName +"<br/>"+longSpace+"Message: " + message +"<br/>");
 
 		 logger.trace("SessionID="+this.SESSION_ID+" Queue name="+queueName +" Message=" + message +"\n");
 		try {

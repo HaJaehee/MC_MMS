@@ -91,7 +91,7 @@ class MessageQueueDequeuer extends Thread{
 	public void run() {
 		// TODO Auto-generated method stub
 		super.run();
-		
+		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 		logger.debug("SessionID="+this.SESSION_ID+" Queue name="+queueName);
 	    try {
 			ConnectionFactory factory = new ConnectionFactory();
@@ -108,7 +108,7 @@ class MessageQueueDequeuer extends Thread{
 					
 				} 
 				
-				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>"+ "��������Message: "+message +"<br/>");
+				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>"+longSpace+"Message: "+message +"<br/>");
 				logger.trace("SessionID="+this.SESSION_ID+" Received=" + message);
 
 			    if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
@@ -157,7 +157,7 @@ class MessageQueueDequeuer extends Thread{
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 			if(!ctx.isRemoved()){
 				String message = new String(delivery.getBody());
-				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>"+ "��������Message: "+message +"<br/>");
+				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>"+longSpace+"Message: "+message +"<br/>");
 
 			    logger.trace("SessionID="+this.SESSION_ID+" Received=" + message);
 			    if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
@@ -168,9 +168,9 @@ class MessageQueueDequeuer extends Thread{
 			} else {
 				String message = new String(delivery.getBody());
 				if(MMSConfiguration.WEB_LOG_PROVIDING) {
-					MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>"+ "��������Message: "+message +"<br/>");
+					MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>"+longSpace+"Message: "+message +"<br/>");
 					MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+srcMRN+" is disconnected<br/>");
-					MMSLog.queueLogForClient.append("��������Requeue: "+queueName +"<br/>"+ "��������Message: "+message +"<br/>");
+					MMSLog.queueLogForClient.append(longSpace+"Requeue: "+queueName +"<br/>"+longSpace+"Message: "+message +"<br/>");
 				}
 
 				logger.warn("SessionID="+this.SESSION_ID+" "+srcMRN+" is disconnected. Requeue=" + message);
