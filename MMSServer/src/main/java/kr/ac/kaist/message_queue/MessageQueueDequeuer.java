@@ -151,36 +151,36 @@ class MessageQueueDequeuer extends Thread{
 			//It do not block this thread.
 			
 			else if (MMSConfiguration.POLLING_METHOD == MMSConfiguration.LONG_POLLING) {
-			//Enroll a delivery listener to the queue channel in order to get a message from the queue.
-			QueueingConsumer consumer = new QueueingConsumer(channel);
-			channel.basicConsume(queueName, false, consumer);
-			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-			if(!ctx.isRemoved()){
-				String message = new String(delivery.getBody());
-				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>"+longSpace+"Message: "+message +"<br/>");
-
-			    logger.trace("SessionID="+this.SESSION_ID+" Received=" + message);
-			    if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
-			    	MMSLog.nMsgWaitingPollClnt--;
-			    }
-			    outputChannel.replyToSender(ctx, message.getBytes());
-				channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-			} else {
-				String message = new String(delivery.getBody());
-				if(MMSConfiguration.WEB_LOG_PROVIDING) {
-					MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>"+longSpace+"Message: "+message +"<br/>");
-					MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+srcMRN+" is disconnected<br/>");
-					MMSLog.queueLogForClient.append(longSpace+"Requeue: "+queueName +"<br/>"+longSpace+"Message: "+message +"<br/>");
+				//Enroll a delivery listener to the queue channel in order to get a message from the queue.
+				QueueingConsumer consumer = new QueueingConsumer(channel);
+				channel.basicConsume(queueName, false, consumer);
+				QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+				if(!ctx.isRemoved()){
+					String message = new String(delivery.getBody());
+					if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>"+longSpace+"Message: "+message +"<br/>");
+	
+				    logger.trace("SessionID="+this.SESSION_ID+" Received=" + message);
+				    if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
+				    	MMSLog.nMsgWaitingPollClnt--;
+				    }
+				    outputChannel.replyToSender(ctx, message.getBytes());
+					channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+				} else {
+					String message = new String(delivery.getBody());
+					if(MMSConfiguration.WEB_LOG_PROVIDING) {
+						MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>"+longSpace+"Message: "+message +"<br/>");
+						MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+srcMRN+" is disconnected<br/>");
+						MMSLog.queueLogForClient.append(longSpace+"Requeue: "+queueName +"<br/>"+longSpace+"Message: "+message +"<br/>");
+					}
+	
+					logger.warn("SessionID="+this.SESSION_ID+" "+srcMRN+" is disconnected. Requeue=" + message);
+					channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
 				}
-
-				logger.warn("SessionID="+this.SESSION_ID+" "+srcMRN+" is disconnected. Requeue=" + message);
-				channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
-			}
-			
-			channel.close();
-			connection.close();
-			//Enroll a delivery listener to the queue channel in order to get a message from the queue.
-			//However, it blocks exactly this thread.
+				
+				channel.close();
+				connection.close();
+				//Enroll a delivery listener to the queue channel in order to get a message from the queue.
+				//However, it blocks exactly this thread.
 			}
 			
 		} catch (IOException e) {

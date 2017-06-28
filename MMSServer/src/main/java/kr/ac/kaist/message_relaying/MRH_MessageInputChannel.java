@@ -106,13 +106,14 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	}
 	
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+    public void handlerRemoved(ChannelHandlerContext ctx) {
     	if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
 	    	MMSLog.nMsgWaitingPollClnt--;
     	}
     	SessionManager.sessionInfo.remove(SESSION_ID);
 
-    	logger.error("SessionID="+this.SESSION_ID+" "+cause.getMessage());
+    	logger.error("SessionID="+this.SESSION_ID+" The current connection is forcibly disconnected by the remote host");
         ctx.close();
     }
+
 }

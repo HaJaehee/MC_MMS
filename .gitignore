@@ -1,0 +1,2 @@
+MMSServer/logs/mms-server.log
+MMSServer/target/classes/META-INF/maven/ch.qos.logback/logback-classic/pom.properties
