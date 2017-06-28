@@ -119,5 +119,10 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     	}
         ctx.close();
     }
+    
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        ctx.close();
+    }
 
 }
