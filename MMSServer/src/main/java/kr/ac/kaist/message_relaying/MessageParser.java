@@ -22,6 +22,7 @@ Rev. history : 2017-06-27
 Version : 0.5.8
 	Variable multiDstMRN is added for multicast.
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+		   Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 */
 /* -------------------------------------------------------- */
@@ -30,12 +31,16 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 
 public class MessageParser {
-	private String TAG = "[MessageParser:";
+	
+	private static final Logger logger = LoggerFactory.getLogger(MessageParser.class);
 	private int SESSION_ID = 0;
 	private String srcIP = null;
 	private String srcMRN = null;
@@ -52,7 +57,6 @@ public class MessageParser {
 	
 	MessageParser(int sessionId){
 		this.SESSION_ID = sessionId;
-		this.TAG += SESSION_ID + "] ";
 		
 		srcIP = null;
 		srcMRN = null;
@@ -102,7 +106,7 @@ public class MessageParser {
     	
 	}
 	void parseMultiDstInfo(String dstInfo){
-		System.out.println(dstInfo);
+		logger.debug("Destination info="+dstInfo);
 		String[] dstMRNs = dstInfo.substring(13).split(",");
 		multiDstMRN = dstMRNs;
 	}
