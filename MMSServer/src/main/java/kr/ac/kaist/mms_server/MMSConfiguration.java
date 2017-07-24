@@ -28,6 +28,11 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-07-24
+Version : 0.5.9
+	update max http contents size
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -46,5 +51,6 @@ public class MMSConfiguration {
 	public static int POLLING_METHOD = 2;
 	public static final int NORMAL_POLLING = 1;
 	public static final int LONG_POLLING = 2;
+	public static final int MAX_CONTENT_SIZE = 40 * 1024 * 1024; // 40MB
 
 }

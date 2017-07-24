@@ -53,7 +53,7 @@ public class TS1_client {
 //		data = createDataSize(170);
 //		sender.sendPostMsg(svcMRN, data);
 //
-		data = createDataSize(20000);
+		data = createDataSize(40 * 1024 * 1024);
 //		sender.sendPostMsg(svcMRN, data);
 //		
 //		data = createDataSize(500 * 1024);

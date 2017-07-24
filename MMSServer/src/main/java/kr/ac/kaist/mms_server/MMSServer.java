@@ -40,7 +40,7 @@ public class MMSServer {
 		logger.error("Now starting MMS HTTP server");
 		NettyStartupUtil.runServer(MMSConfiguration.HTTP_PORT, pipeline -> {   //runServer(int port, Consumer<ChannelPipeline> initializer)
 			pipeline.addLast(new HttpServerCodec());
-            pipeline.addLast(new HttpObjectAggregator(19999));
+            pipeline.addLast(new HttpObjectAggregator(MMSConfiguration.MAX_CONTENT_SIZE));
             pipeline.addLast(new MRH_MessageInputChannel("http"));
         });
 		
