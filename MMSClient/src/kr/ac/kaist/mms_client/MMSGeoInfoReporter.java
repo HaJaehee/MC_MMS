@@ -61,12 +61,10 @@ public class MMSGeoInfoReporter {
     			try{
 	    			Thread.sleep(interval);
 	    			Report();
-    			}catch (Exception e){
-    				if(MMSConfiguration.LOGGING){
-						System.out.print(TAG);
-						e.printStackTrace();
-					}
-					
+    			} 
+    			catch (Exception e){
+					System.out.print(TAG);
+					e.printStackTrace();
     			}
     		}
     	}

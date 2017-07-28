@@ -111,8 +111,19 @@ class MMSSndHandler {
 		wr.close();
 
 		Map<String,List<String>> inH = con.getHeaderFields();
+		
+		
 		inH = getModifiableMap(inH);
-		int responseCode = con.getResponseCode();
+		int responseCode = 0;
+		InputStream inStream = null;
+		if (con.getResponseCode() != HttpURLConnection.HTTP_ENTITY_TOO_LARGE) {
+			responseCode = con.getResponseCode();
+			inStream = con.getInputStream();
+		} else {
+		     /* error from server */
+			responseCode = con.getResponseCode();
+			inStream = new ByteArrayInputStream("HTTP 413 Error: HTTP Entity Too Large".getBytes());
+		}
 		List<String> responseCodes = new ArrayList<String>();
 		responseCodes.add(responseCode+"");
 		inH.put("Response-code", responseCodes);
@@ -123,7 +134,7 @@ class MMSSndHandler {
 			System.out.println(TAG+"Response Code : " + responseCode);
 		}
 		BufferedReader in = new BufferedReader(
-		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
+		        new InputStreamReader(inStream,Charset.forName("UTF-8")));
 		String inputLine;
 		StringBuffer response = new StringBuffer();
 		

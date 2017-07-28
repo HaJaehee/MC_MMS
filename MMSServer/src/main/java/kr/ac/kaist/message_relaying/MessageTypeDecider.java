@@ -1,5 +1,4 @@
 package kr.ac.kaist.message_relaying;
-
 /* -------------------------------------------------------- */
 /** 
 File name : MessageTypeDecision.java
@@ -40,6 +39,11 @@ Version : 0.5.8
 	Added EMTPY_QUEUE_LOGS.
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 		   Jaehee Ha (jaehee.ha@kaist.ac.kr)
+		   
+Rev. history : 2017-07-28
+Version : 0.5.9
+	Added null MRN and invalid MRN cases. 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -66,6 +70,11 @@ class MessageTypeDecider {
 	static final int EMPTY_QUEUE_LOGS = 10;
 	static final int POLLING_METHOD = 11;
 	static final int RELAYING_TO_MULTIPLE_SC = 12; // it means multicase
+	static final int NULL_SRC_MRN = 13;
+	static final int NULL_DST_MRN = 14;
+	static final int NULL_MRN = 15;
+	static final int INVALID_SRC_MRN = 16;
+	static final int INVALID_DST_MRN = 17;
 	MessageTypeDecider(int sessionId) {
 		this.SESSION_ID = sessionId;
 	}
@@ -76,8 +85,44 @@ class MessageTypeDecider {
 		HttpMethod httpMethod = parser.getHttpMethod();
 		String uri = parser.getUri();
 		
+//		when WEB_LOG_PROVIDING
+		if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/status")){
+			return STATUS;
+		}
+   	
+   	
+//		when WEB_MANAGING
+	   	/* else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptyqueue")){ 
+	   		return EMPTY_QUEUE;
+	   	}*/ 
+	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptymnsdummy")){ 
+	   		return EMPTY_MNSDummy;
+	   	} 
+	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/removemnsentry", 0, 15)){ 
+	   		return REMOVE_MNS_ENTRY;
+	   	} 
+	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0,"/polling?method", 0, 15)){
+	   		return POLLING_METHOD;
+	   	} 
+	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptyqueuelogs")){
+	   		return EMPTY_QUEUE_LOGS;
+	   	} 
+		
+		
+//		When MRN(s) is(are) null
+	   	else if (srcMRN == null && dstMRN == null) {
+			return NULL_MRN;
+		}
+		else if (srcMRN == null) {
+			return NULL_SRC_MRN;
+		}
+		else if (dstMRN == null) {
+			return NULL_DST_MRN;
+		}
+		
+		
 //    	When polling
-    	if (httpMethod == HttpMethod.POST && uri.equals("/polling") && dstMRN.equals(MMSConfiguration.MMS_MRN)) {
+		else if (httpMethod == HttpMethod.POST && uri.equals("/polling") && dstMRN.equals(MMSConfiguration.MMS_MRN)) {
     		return POLLING; 
     	}
     	
@@ -86,24 +131,7 @@ class MessageTypeDecider {
     		return REGISTER_CLIENT;
     	}
     	
-//		when WEB_LOG_PROVIDING
-    	 else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/status")){
-    		return STATUS;
-    	}
-    	
-    	
-//		when WEB_MANAGING
-    	/* else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptyqueue")){ 
-    		return EMPTY_QUEUE;
-    	}*/ else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptymnsdummy")){ 
-    		return EMPTY_MNSDummy;
-    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/removemnsentry", 0, 15)){ 
-    		return REMOVE_MNS_ENTRY;
-    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0,"/polling?method", 0, 15)){
-    		return POLLING_METHOD;
-    	} else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptyqueuelogs")){
-    		return EMPTY_QUEUE_LOGS;
-    	} 
+
     	
 //    	When relaying
     	else {
@@ -122,7 +150,8 @@ class MessageTypeDecider {
         	
         	if (model == 2) {//model B (destination MSR, MIR, or MSP as servers)
         		return RELAYING_TO_SERVER;
-        	} else {//when model A, it puts the message into the queue
+        	} 
+        	else {//when model A, it puts the message into the queue
         		return RELAYING_TO_SC;
         	}
     	} /*else {

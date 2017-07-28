@@ -12,6 +12,11 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-07-28
+Version : 0.5.9
+	Set MEX_CONTENT_SIZE to HttpObjectAggregator
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -44,7 +49,7 @@ public class SecureMMSServerInitializer extends ChannelInitializer<SocketChannel
 
         // On top of the SSL handler, add the text line codec.
 		pipeline.addLast(new HttpServerCodec());
-        pipeline.addLast(new HttpObjectAggregator(19999));
+        pipeline.addLast(new HttpObjectAggregator(MMSConfiguration.MAX_CONTENT_SIZE));
 
         // and then business logic.
         pipeline.addLast(new MRH_MessageInputChannel("https"));

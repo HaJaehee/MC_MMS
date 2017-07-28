@@ -14,6 +14,11 @@ File name : SC_GEO1.java
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 Creation Date : 2017-06-27
 
+Rev. history : 2017-07-28
+Version : 0.5.9
+	Changed from PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, message) 
+	     to PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, List<String> messages) 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -35,9 +40,11 @@ public class SC_GEO1 {
 			//Response Callback from the polling message
 			//it is called when client receives a message
 			@Override
-			public void callbackMethod(Map<String, List<String>> headerField, String message) {
+			public void callbackMethod(Map<String, List<String>> headerField, List<String> messages) {
 				// TODO Auto-generated method stub
-				System.out.print(message);
+				for (String s : messages) {
+					System.out.print(s);
+				}
 			}
 		});
 		MMSConfiguration.lat = (float)1.0;

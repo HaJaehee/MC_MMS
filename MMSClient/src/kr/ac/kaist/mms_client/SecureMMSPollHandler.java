@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +22,9 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+
 /* -------------------------------------------------------- */
 /** 
 File name : SecureMMSPollHandler.java
@@ -32,6 +36,15 @@ Rev. history : 2017-06-18
 Version : 0.5.7
 	Changed the variable Map<String,String> headerField to Map<String,List<String>>
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-07-28
+Version : 0.5.9
+	MMS replies message array into JSONArray form. And messages are encoded by URLEncoder, UTF-8.
+	SecureMMSPollHandler parses JSONArray and decodes messages by URLDecoder, UTF-8.
+	Changed from PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, message) 
+	     to PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, List<String> messages) 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -79,12 +92,10 @@ class SecureMMSPollHandler {
     			try{
 	    			Thread.sleep(interval);
 	    			Poll();
-    			}catch (Exception e){
-    				if(MMSConfiguration.LOGGING){
-						System.out.print(TAG);
-						e.printStackTrace();
-					}
-					
+    			}
+    			catch (Exception e) {
+					System.out.print(TAG);
+					e.printStackTrace();
     			}
     		}
     	}
@@ -139,21 +150,29 @@ class SecureMMSPollHandler {
 			BufferedReader inB = new BufferedReader(
 			        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
 			String inputLine;
-			
+
 			StringBuffer response = new StringBuffer();
+			List<String> resList = new ArrayList<String>();
+			
 			while ((inputLine = inB.readLine()) != null) {
-				response.append(inputLine.trim() + "\n");
+				response.append(inputLine.trim()+"\n");
 			}
 			
+			if (response.length() != 0){
+				JSONArray jsonArr = new JSONArray();
+				JSONParser jsonPars = new JSONParser();
+				jsonArr = (JSONArray) jsonPars.parse(response.toString());
+				for (int i = 0 ; i < jsonArr.size() ; i++) {
+					resList.add(URLDecoder.decode(jsonArr.get(i).toString(), "UTF-8"));
+				}
+			}
 			
 			inB.close();
 			
-			String res = response.toString();		
-
-			processResponse(inH, res);
+			processResponse(inH, resList);
 		}
 		
-		private void processResponse(Map<String,List<String>> headerField, String message) {
+		private void processResponse(Map<String,List<String>> headerField, List<String> message) {
     		this.myCallback.callbackMethod(headerField, message);
     	}
 		
@@ -179,8 +198,10 @@ class SecureMMSPollHandler {
 	            SSLContext sc = SSLContext.getInstance("SSL");
 	            sc.init(null, trustAllCerts, new java.security.SecureRandom());
 	            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-	        } catch (Exception e) {
-	        	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Error" + e);
+	        } 
+	        catch (Exception e) {
+	        	System.out.println(TAG);
+	        	e.printStackTrace();
 	        }
 	        
 	        HostnameVerifier hv = new HostnameVerifier() {

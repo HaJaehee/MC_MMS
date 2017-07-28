@@ -12,11 +12,15 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.ac.kaist.message_relaying.MessageRelayingHandler;
+import kr.ac.kaist.seamless_roaming.PollingMethodRegDummy;
 
 /* -------------------------------------------------------- */
 /** 
@@ -45,6 +49,11 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-07-28
+Version : 0.5.9
+	Added polling method each service.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -77,20 +86,19 @@ public class MMSLog {
 		status = status + "<br/>";
 		*/
 		
-		status.append("Polling method: ");
-		if (MMSConfiguration.POLLING_METHOD == MMSConfiguration.NORMAL_POLLING) {
-			status.append("normal polling<br/>");
-		} else if (MMSConfiguration.POLLING_METHOD == MMSConfiguration.LONG_POLLING) {
-			status.append("long polling<br/>");
+		status.append("MNS Dummy:<br/>");
+		status.append(dumpMNS() + "<br/>");
+		
+		status.append("Polling method:<br/>");
+		for (String key : PollingMethodRegDummy.pollingMethodReg.keySet()){
+			status.append(key+","+((PollingMethodRegDummy.pollingMethodReg.get(key)==PollingMethodRegDummy.NORMAL_POLLING)?"normal":"long")+" polling<br/>");
 		}
+		status.append("<br/>");
 	
 		status.append("Waiting polling clients: "+MMSLog.nMsgWaitingPollClnt+"<br/><br/>");
 		
 		status.append("MMS Queue log:<br/>");
 		status.append(MMSLog.queueLogForClient + "<br/>");
-
-		status.append("MNS Dummy:<br/>");
-		status.append(dumpMNS() + "<br/>");
   	
   	return status.toString();
   }

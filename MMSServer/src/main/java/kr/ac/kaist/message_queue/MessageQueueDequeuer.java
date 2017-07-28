@@ -30,10 +30,17 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-07-28
+Version : 0.5.9
+	MMS replies message array into JSONArray form. And messages are encoded by URLEncoder, UTF-8.
+	(Secure)MMSPollHandler parses JSONArray and decodes messages by URLDecoder, UTF-8.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
@@ -54,8 +61,10 @@ import com.rabbitmq.client.ShutdownSignalException;
 import io.netty.channel.ChannelHandlerContext;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.SessionManager;
+import kr.ac.kaist.mms_server.Base64Coder;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
+import kr.ac.kaist.seamless_roaming.PollingMethodRegDummy;
 
 
 
@@ -66,6 +75,7 @@ class MessageQueueDequeuer extends Thread{
 	
 	private String queueName = null;
 	private String srcMRN = null;
+	private String svcMRN = null;
 	private MRH_MessageOutputChannel outputChannel = null;
 	private ChannelHandlerContext ctx = null;
 	
@@ -77,6 +87,7 @@ class MessageQueueDequeuer extends Thread{
 		
 		this.queueName = srcMRN+"::"+svcMRN;
 		this.srcMRN = srcMRN;
+		this.svcMRN = svcMRN;
 		this.outputChannel = outputChannel;
 		this.ctx = ctx;
 		
@@ -86,6 +97,8 @@ class MessageQueueDequeuer extends Thread{
 	
 		return;
 	}
+	
+
 	
 	@Override
 	public void run() {
@@ -100,22 +113,78 @@ class MessageQueueDequeuer extends Thread{
 			Channel channel = connection.createChannel();
 			channel.queueDeclare(queueName, true, false, false, null);
 			logger.trace("SessionID="+this.SESSION_ID+" Waiting for messages");
-			if(MMSConfiguration.POLLING_METHOD == MMSConfiguration.NORMAL_POLLING){
-				GetResponse res = channel.basicGet(queueName, true);
-				String message = "";
-				if (res != null){
-					message = new String(res.getBody());
-					
-				} 
+			
+			GetResponse res = null;
+			StringBuffer message = new StringBuffer();
+			message.append("[");
+			int msgCount = 0;
+			do { //Check that the queue having queueName has a message
+				res = channel.basicGet(queueName, true);
 				
-				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>"+longSpace+"Message: "+message +"<br/>");
-				logger.trace("SessionID="+this.SESSION_ID+" Received=" + message);
+				if (res != null){
+					if (msgCount > 0) {
+						message.append(",");
+					}
+					message.append("\""+URLEncoder.encode(new String(res.getBody()),"UTF-8")+"\"");
+					msgCount++;
 
-			    if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
+				} 
+			    
+			} while (res != null);
+			
+			if (msgCount > 0) { //If the queue has a message
+				message.append("]");
+				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>");
+				if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
 			    	MMSLog.nMsgWaitingPollClnt--;
 			    }
-			    outputChannel.replyToSender(ctx, message.getBytes());
+
+			    outputChannel.replyToSender(ctx, message.toString().getBytes());
+			} 
+			else { //If the queue does not have any message, message count == 0
+				message.setLength(0);
+				if (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null
+						 || PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING) {
+					
+					if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
+				    	MMSLog.nMsgWaitingPollClnt--;
+				    }
+
+				    outputChannel.replyToSender(ctx, message.toString().getBytes());
+				}
+				else { //If polling method of service having svcMRN is long polling
+					//Enroll a delivery listener to the queue channel in order to get a message from the queue.
+					QueueingConsumer consumer = new QueueingConsumer(channel);
+					channel.basicConsume(queueName, false, consumer);
+					QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+					if(!ctx.isRemoved()){
+						message.append("[\""+URLEncoder.encode(new String(delivery.getBody()),"UTF-8")+"\"]");
+						if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>");
+		
+					    if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
+					    	MMSLog.nMsgWaitingPollClnt--;
+					    }
+					    outputChannel.replyToSender(ctx, message.toString().getBytes());
+						channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+					} else {
+						message.append(new String(delivery.getBody()));
+						if(MMSConfiguration.WEB_LOG_PROVIDING) {
+							MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>");
+							MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+srcMRN+" is disconnected<br/>");
+							MMSLog.queueLogForClient.append(longSpace+"Requeue: "+queueName +"<br/>");
+						}
+		
+						logger.warn("SessionID="+this.SESSION_ID+" "+srcMRN+" is disconnected. Requeue.");
+						channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
+					}
+					
+					channel.close();
+					connection.close();
+					//Enroll a delivery listener to the queue channel in order to get a message from the queue.
+					//However, it blocks exactly this thread.
+				}
 			}
+
 				
 				//Busy waiting
 //			GetResponse res = null;
@@ -150,50 +219,23 @@ class MessageQueueDequeuer extends Thread{
 			//		until the queue is empty.
 			//It do not block this thread.
 			
-			else if (MMSConfiguration.POLLING_METHOD == MMSConfiguration.LONG_POLLING) {
-				//Enroll a delivery listener to the queue channel in order to get a message from the queue.
-				QueueingConsumer consumer = new QueueingConsumer(channel);
-				channel.basicConsume(queueName, false, consumer);
-				QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-				if(!ctx.isRemoved()){
-					String message = new String(delivery.getBody());
-					if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>"+longSpace+"Message: "+message +"<br/>");
-	
-				    logger.trace("SessionID="+this.SESSION_ID+" Received=" + message);
-				    if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
-				    	MMSLog.nMsgWaitingPollClnt--;
-				    }
-				    outputChannel.replyToSender(ctx, message.getBytes());
-					channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-				} else {
-					String message = new String(delivery.getBody());
-					if(MMSConfiguration.WEB_LOG_PROVIDING) {
-						MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>"+longSpace+"Message: "+message +"<br/>");
-						MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+srcMRN+" is disconnected<br/>");
-						MMSLog.queueLogForClient.append(longSpace+"Requeue: "+queueName +"<br/>"+longSpace+"Message: "+message +"<br/>");
-					}
-	
-					logger.warn("SessionID="+this.SESSION_ID+" "+srcMRN+" is disconnected. Requeue=" + message);
-					channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
-				}
-				
-				channel.close();
-				connection.close();
-				//Enroll a delivery listener to the queue channel in order to get a message from the queue.
-				//However, it blocks exactly this thread.
-			}
-			
-		} catch (IOException e) {
+		} 
+	    catch (IOException e) {
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
-		} catch (TimeoutException e) {
+		} 
+	    catch (TimeoutException e) {
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
-		} catch (ShutdownSignalException e) {
+		} 
+	    catch (ShutdownSignalException e) {
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
-		} catch (ConsumerCancelledException e) {
+		} 
+	    catch (ConsumerCancelledException e) {
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
-		} catch (InterruptedException e) {
+		} 
+	    catch (InterruptedException e) {
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
-		} finally {
+		} 
+	    finally {
 			this.interrupt();
 		}
 		

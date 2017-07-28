@@ -1,7 +1,4 @@
 package kr.ac.kaist.seamless_roaming;
-
-
-
 /* -------------------------------------------------------- */
 /** 
 File name : PollingMessageHandling.java

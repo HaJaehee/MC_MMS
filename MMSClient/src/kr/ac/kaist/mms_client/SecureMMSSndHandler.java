@@ -31,6 +31,7 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -111,7 +112,16 @@ class SecureMMSSndHandler {
 
 		Map<String,List<String>> inH = con.getHeaderFields();
 		inH = getModifiableMap(inH);
-		int responseCode = con.getResponseCode();
+		int responseCode = 0;
+		InputStream inStream = null;
+		if (con.getResponseCode() != HttpURLConnection.HTTP_ENTITY_TOO_LARGE) {
+			responseCode = con.getResponseCode();
+			inStream = con.getInputStream();
+		} else {
+		     /* error from server */
+			responseCode = con.getResponseCode();
+			inStream = new ByteArrayInputStream("HTTP 413 Error: HTTP Entity Too Large".getBytes());
+		}
 		List<String> responseCodes = new ArrayList<String>();
 		responseCodes.add(responseCode+"");
 		inH.put("Response-code", responseCodes);
@@ -121,7 +131,7 @@ class SecureMMSSndHandler {
 			System.out.println(TAG+"Response Code : " + responseCode);
 		}
 		BufferedReader in = new BufferedReader(
-		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
+		        new InputStreamReader(inStream,Charset.forName("UTF-8")));
 		String inputLine;
 		StringBuffer response = new StringBuffer();
 		
@@ -272,7 +282,8 @@ class SecureMMSSndHandler {
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (Exception e) {
-        	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Error" + e);
+        	System.out.println(TAG);
+        	e.printStackTrace();
         }
         
         HostnameVerifier hv = new HostnameVerifier() {

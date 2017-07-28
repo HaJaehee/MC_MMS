@@ -57,6 +57,11 @@ Version : 0.5.8
 	Geo-location Update
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 
+Rev. history : 2017-07-28
+Version : 0.5.9
+	Changed from PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, message) 
+	     to PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, List<String> messages) 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -98,7 +103,7 @@ public class MMSClientHandler {
 	 * @see		MMSClientHandler#startPolling(String, String, int, PollingResponseCallback)
 	 */
 	public interface PollingResponseCallback{
-		void callbackMethod(Map<String,List<String>> headerField, String message);
+		void callbackMethod(Map<String,List<String>> headerField, List<String> messages);
 	}
 	
 	/**

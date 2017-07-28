@@ -66,8 +66,8 @@ public class SC2 {
 		});
 		
 		
-		for (int i = 0; i < 5;i++){
-			sender.sendPostMsg("urn:mrn:smart-navi:device:tm-server", "/forwarding", "¾È³ç hi hello " + i);
+		for (int i = 0; i < 10;i++){
+			sender.sendPostMsg("urn:mrn:smart-navi:device:tm-server", "/forwarding", "¾È³ç hi \"hello\" " + i);
 			//Thread.sleep(100);
 		}
 

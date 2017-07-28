@@ -45,6 +45,12 @@ Version : 0.5.8
 	Variable GeoReporter is added.
 	Functions startGeoReporting and GeoReporter is added.
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
+Rev. history : 2017-07-28
+Version : 0.5.9
+	Changed from PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, message) 
+	     to PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, List<String> messages) 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -86,7 +92,7 @@ public class SecureMMSClientHandler {
 	 * @see		MMSClientHandler#startPolling(String, String, int, PollingResponseCallback)
 	 */
 	public interface PollingResponseCallback{
-		void callbackMethod(Map<String,List<String>> headerField, String message);
+		void callbackMethod(Map<String,List<String>> headerField, List<String> message);
 	}
 	
 	/**
@@ -287,12 +293,9 @@ public class SecureMMSClientHandler {
 			new SecureMMSSndHandler(clientMRN).registerLocator(port);
 			return;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			if(MMSConfiguration.LOGGING){
-				System.out.print(TAG);
-				e.printStackTrace();
-			}
-			
+			System.out.print(TAG);
+			e.printStackTrace();
+
 			return;
 		}
 	}

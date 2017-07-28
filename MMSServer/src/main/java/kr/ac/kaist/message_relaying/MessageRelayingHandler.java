@@ -1,5 +1,4 @@
 package kr.ac.kaist.message_relaying;
-
 /* -------------------------------------------------------- */
 /** 
 File name : MessageRelayingHandler.java
@@ -50,7 +49,10 @@ Version : 0.5.8
 	The case which type is RELAYING_TO_MULTIPLE_SC is added. 
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 
-
+Rev. history : 2017-07-28
+Version : 0.5.9
+	Added null MRN and invalid MRN cases. 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -73,6 +75,7 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
+import kr.ac.kaist.seamless_roaming.PollingMethodRegDummy;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 public class MessageRelayingHandler  {
@@ -125,7 +128,16 @@ public class MessageRelayingHandler  {
 		
 		byte[] message = null;
 		
-		if (type == MessageTypeDecider.POLLING) {
+		if (type == MessageTypeDecider.NULL_MRN) {
+			message = "Error: Null MRNs.".getBytes(Charset.forName("UTF-8"));
+		}
+		else if (type == MessageTypeDecider.NULL_SRC_MRN) {
+			message = "Error: Null source MRN.".getBytes(Charset.forName("UTF-8"));
+		}
+		else if (type == MessageTypeDecider.NULL_DST_MRN) {
+			message = "Error: Null destination MRN.".getBytes(Charset.forName("UTF-8"));
+		}
+		else if (type == MessageTypeDecider.POLLING) {
 			parser.parseLocInfo(req);
 			
 			String srcIP = parser.getSrcIP();
@@ -141,36 +153,43 @@ public class MessageRelayingHandler  {
 			srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, srcPort, srcModel, svcMRN);
 			
 			return;
-		} else if (type == MessageTypeDecider.RELAYING_TO_SC) {
+		} 
+		else if (type == MessageTypeDecider.RELAYING_TO_SC) {
 			
 			//@Deprecated
 			//srh.putSCMessage(dstMRN, req);
 			
 			srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
     		message = "OK".getBytes(Charset.forName("UTF-8"));
-		} else if (type == MessageTypeDecider.RELAYING_TO_MULTIPLE_SC){
+		} 
+		else if (type == MessageTypeDecider.RELAYING_TO_MULTIPLE_SC){
 			String [] dstMRNs = parser.getMultiDstMRN();
 			logger.debug("SessionID="+this.SESSION_ID+" multicast");
 			for (int i = 0; i < dstMRNs.length;i++){
 				srh.putSCMessage(srcMRN, dstMRNs[i], req.content().toString(Charset.forName("UTF-8")).trim());
 			}
     		message = "OK".getBytes(Charset.forName("UTF-8"));
-		} else if (type == MessageTypeDecider.RELAYING_TO_SERVER) {
+		} 
+		else if (type == MessageTypeDecider.RELAYING_TO_SERVER) {
         	try {
         		if (protocol.equals("http")) {
 				    message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod);
 				    logger.info("SessionID="+this.SESSION_ID+" HTTP");
-        		} else if (protocol.equals("https")) { 
+        		} 
+        		else if (protocol.equals("https")) { 
         			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod);
         			logger.info("SessionID="+this.SESSION_ID+" HTTPS");
-        		} else {
+        		} 
+        		else {
         			message = "".getBytes();
         			logger.info("SessionID="+this.SESSION_ID+" No protocol");
         		}
-			} catch (Exception e) {
+			} 
+        	catch (Exception e) {
 				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			}
-		} else if (type == MessageTypeDecider.REGISTER_CLIENT) {
+		} 
+		else if (type == MessageTypeDecider.REGISTER_CLIENT) {
 			parser.parseLocInfo(req);
 			
 			String srcIP = parser.getSrcIP();
@@ -180,75 +199,87 @@ public class MessageRelayingHandler  {
 			String res = mch.registerClientInfo(srcMRN, srcIP, srcPort, srcModel);
 			if (res.equals("OK")){
 				message = "Registering succeeded".getBytes();
-			} else {
+			} 
+			else {
 				message = "Registering failed".getBytes();
 			}
 			
-		} else if (type == MessageTypeDecider.STATUS){
+		} 
+		else if (type == MessageTypeDecider.STATUS){
     		String status;
     		
 			try {
 				status = MMSLog.getStatus();
 				message = status.getBytes(Charset.forName("UTF-8"));
-			} catch (UnknownHostException e) {
+			} 
+			catch (UnknownHostException e) {
 				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
-			} catch (IOException e) {
+			} 
+			catch (IOException e) {
 				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			}
-		} else if (type == MessageTypeDecider.EMPTY_MNSDummy) {
+		}
+		else if (type == MessageTypeDecider.EMPTY_MNSDummy) {
     		try {
 				emptyMNS();
 				message = "OK".getBytes(Charset.forName("UTF-8"));
-			} catch (UnknownHostException e) {
+			} 
+    		catch (UnknownHostException e) {
 				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
-			} catch (IOException e) {
+			} 
+    		catch (IOException e) {
 				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			}
-		} else if (type == MessageTypeDecider.REMOVE_MNS_ENTRY) {
+		} 
+		else if (type == MessageTypeDecider.REMOVE_MNS_ENTRY) {
     		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
     		logger.info("SessionID="+this.SESSION_ID+" Remove MRN=" + params.get("mrn").get(0));
     		try {
 				removeEntryMNS(params.get("mrn").get(0));
 				message = "OK".getBytes(Charset.forName("UTF-8"));
-			} catch (UnknownHostException e) {
-				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
-			} catch (IOException e) {
+			} 
+    		catch (UnknownHostException e) {
 				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			} 
-		} else if (type == MessageTypeDecider.POLLING_METHOD) {
+    		catch (IOException e) {
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
+			} 
+		} 
+		else if (type == MessageTypeDecider.POLLING_METHOD) {
 			QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
     		String method = params.get("method").get(0);
-    		if (method.equals("normal")) {
-    			if (MMSConfiguration.POLLING_METHOD == MMSConfiguration.LONG_POLLING) {
-    				MMSConfiguration.POLLING_METHOD = MMSConfiguration.NORMAL_POLLING;
+    		String svcMRN = params.get("svcMRN").get(0);
+    		if (method != null && svcMRN != null) {
+    			if (method.equals("normal")) {
+
+    				PollingMethodRegDummy.pollingMethodReg.put(svcMRN, PollingMethodRegDummy.NORMAL_POLLING);
     				message = "OK".getBytes(Charset.forName("UTF-8"));
-    				logger.warn("SessionID="+this.SESSION_ID+" Polling method is switched to normal polling");
-    			}
-    			else {
-    				message = "Is already normal polling".getBytes(Charset.forName("UTF-8"));
-    			}
-    		} else if (method.equals("long")) {
-    			if (MMSConfiguration.POLLING_METHOD == MMSConfiguration.NORMAL_POLLING) {
-    				MMSConfiguration.POLLING_METHOD = MMSConfiguration.LONG_POLLING;
+    				logger.warn("SessionID="+this.SESSION_ID+",svcMRN="+svcMRN+" polling method is switched to normal polling");
+
+	    		} 
+	    		else if (method.equals("long")) {
+
+	    			PollingMethodRegDummy.pollingMethodReg.put(svcMRN, PollingMethodRegDummy.LONG_POLLING);
     				message = "OK".getBytes(Charset.forName("UTF-8"));
-     				logger.warn("SessionID="+this.SESSION_ID+" Polling method is switched to long polling");
-    			}
-    			else {
-    				message = "Is already long polling".getBytes(Charset.forName("UTF-8"));
-    			}
-    		} else {
+     				logger.warn("SessionID="+this.SESSION_ID+",svcMRN="+svcMRN+" polling method is switched to long polling");
+	    		
+	    		} 
+    		}
+    		else {
     			message = "Wrong  parameter".getBytes(Charset.forName("UTF-8"));
     		}
-		} else if (type == MessageTypeDecider.EMPTY_QUEUE_LOGS) {
+		} 
+		else if (type == MessageTypeDecider.EMPTY_QUEUE_LOGS) {
 			MMSLog.queueLogForClient.setLength(0);
 			message = "OK".getBytes(Charset.forName("UTF-8"));
 		}
 
 		else if (type == MessageTypeDecider.UNKNOWN_MRN) {
 			message = "No Device having that MRN".getBytes();
-		} else if (type == MessageTypeDecider.UNKNOWN_HTTP_TYPE) {
+		} 
+		else if (type == MessageTypeDecider.UNKNOWN_HTTP_TYPE) {
 			message = "Unknown http type".getBytes();
 		}
 		
