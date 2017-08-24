@@ -26,9 +26,7 @@
 
     <root level="debug">
         <appender-ref ref="FILE"/>
-    </root>
-    <root level="error">
-        <appender-ref ref="STDOUT"/>
+        <!-- <appender-ref ref="STDOUT"/> -->
     </root>
 
 </configuration>
