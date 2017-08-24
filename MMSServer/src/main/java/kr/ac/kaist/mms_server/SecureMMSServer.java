@@ -1,5 +1,13 @@
 package kr.ac.kaist.mms_server;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Security;
+import java.security.UnrecoverableKeyException;
+
 /* -------------------------------------------------------- */
 /** 
 File name : SecureMMSServer.java
@@ -32,6 +40,9 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
  */
 
 import java.security.cert.CertificateException;
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,31 +93,29 @@ public final class SecureMMSServer extends Thread {
 	    */   
     	// ----- for information, not working
     	
-    	
-    	// ----- use keystore
-    	/*
-	    final KeyStore ks = KeyStore.getInstance("JKS");
-	    
-	    String pass = "lovesm13";
-	    
-	    ks.load(new ByteArrayInputStream(Base64Coder.decode(MMSKeystore.data)), pass.toCharArray());
-	    String algorithm = Security.getProperty("ssl.KeyManagerFactory.algorithm");
-	    final KeyManagerFactory kmf = KeyManagerFactory.getInstance(algorithm);
-	    kmf.init(ks, pass.toCharArray());
-	    KeyManager[] km = kmf.getKeyManagers();
-	    SslContext sslCtx = SslContextBuilder.forServer(kmf).build();
-	    */
-	    // ----- use keystore
-	    
-	    
-	 
-       
-		try {
+        try {
+	    	// ----- use keystore
+	    	
+		    final KeyStore ks = KeyStore.getInstance("JKS");
+		    
+		    String pass = "winslab";
+		    
+		    ks.load(new ByteArrayInputStream(Base64Coder.decode(MMSKeystore.data)), pass.toCharArray());
+		    String algorithm = Security.getProperty("ssl.KeyManagerFactory.algorithm");
+		    final KeyManagerFactory kmf = KeyManagerFactory.getInstance(algorithm);
+		    kmf.init(ks, pass.toCharArray());
+		    KeyManager[] km = kmf.getKeyManagers();
+		    SslContext sslCtx = SslContextBuilder.forServer(kmf).build();
+		    
+		    // ----- use keystore
+		
 			
 			// ----- self sign
+			/*
 			SelfSignedCertificate ssc = new SelfSignedCertificate();
 			SslContext sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey())
 			            .build();
+			            */
 			// ----- self sign
 			
 			
@@ -131,6 +140,14 @@ public final class SecureMMSServer extends Thread {
 		} catch (CertificateException e) {
 			logger.error(e.getMessage());
 		} catch (SSLException e1) {
+			logger.error(e1.getMessage());
+		} catch (UnrecoverableKeyException e1) {
+			logger.error(e1.getMessage());
+		} catch (KeyStoreException e1) {
+			logger.error(e1.getMessage());
+		} catch (NoSuchAlgorithmException e1) {
+			logger.error(e1.getMessage());
+		} catch (IOException e1) {
 			logger.error(e1.getMessage());
 		}
     }
