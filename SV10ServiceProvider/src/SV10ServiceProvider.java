@@ -7,45 +7,12 @@ import org.json.simple.parser.JSONParser;
 
 import kr.ac.kaist.mms_client.*;
 
-/* -------------------------------------------------------- */
-/** 
-File name : ServiceProvider.java
-	Service Provider only forwards messages to SC having urn:mrn:imo:imo-no:1000001
-Author : Jaehyun Park (jae519@kaist.ac.kr)
-	Haeun Kim (hukim@kaist.ac.kr)
-	Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2016-12-03
-
-Rev. history : 2017-02-01
-Version : 0.3.01
-	Added header field features.
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-04-20 
-Version : 0.5.0
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-04-25
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-05-02
-Version : 0.5.4
-	Added setting response header
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-08-23
-Version : 0.5.9
-	Added multiple service provider dummies
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-*/
-/* -------------------------------------------------------- */
-
-public class ServiceProvider {
+public class SV10ServiceProvider {
 	public static void main(String args[]) throws Exception{
-		String myMRN = "urn:mrn:smart-navi:service:sv30";
-		int port = 8902;
+		String myMRN = "urn:mrn:smart:service:inst:mof:sv10";
+		int port = 8910;
 
-		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.MMS_URL="143.248.55.83:8088";
 		
 		MMSClientHandler server = new MMSClientHandler(myMRN);
 		MMSClientHandler sender = new MMSClientHandler(myMRN);
@@ -77,8 +44,8 @@ public class ServiceProvider {
 					}
 					System.out.println(message);
 
-					//it only forwards messages to sc having urn:mrn:imo:imo-no:1000001
-					sender.sendPostMsg("urn:mrn:imo:imo-no:1000001", message);
+					//it only forwards messages to sc having urn:mrn:smart:vessel:imo-no:mof:5000010
+					sender.sendPostMsg("urn:mrn:smart:vessel:imo-no:mof:5000010", message);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
