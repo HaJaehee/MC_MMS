@@ -142,9 +142,13 @@ class MessageQueueDequeuer extends Thread{
 			if (msgCount > 0) { //If the queue has a message
 				message.append("]");
 				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>");
-				if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
-			    	MMSLog.nMsgWaitingPollClnt--;
-			    }
+		    	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
+		    	if (clientType != null) {
+		    		SessionManager.sessionInfo.remove(SESSION_ID);
+		    		if (clientType.equals("p")) {
+		    			MMSLog.nMsgWaitingPollClnt--;
+		    		}
+		    	}
 
 			    outputChannel.replyToSender(ctx, message.toString().getBytes());
 			} 
@@ -153,9 +157,13 @@ class MessageQueueDequeuer extends Thread{
 				if (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null
 						 || PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING) {
 					
-					if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
-				    	MMSLog.nMsgWaitingPollClnt--;
-				    }
+			    	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
+			    	if (clientType != null) {
+			    		SessionManager.sessionInfo.remove(SESSION_ID);
+			    		if (clientType.equals("p")) {
+			    			MMSLog.nMsgWaitingPollClnt--;
+			    		}
+			    	}
 
 				    outputChannel.replyToSender(ctx, message.toString().getBytes());
 				}
@@ -168,9 +176,13 @@ class MessageQueueDequeuer extends Thread{
 						message.append("[\""+URLEncoder.encode(new String(delivery.getBody()),"UTF-8")+"\"]");
 						if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>");
 		
-					    if (SessionManager.sessionInfo.get(SESSION_ID).equals("p")) {
-					    	MMSLog.nMsgWaitingPollClnt--;
-					    }
+				    	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
+				    	if (clientType != null) {
+				    		SessionManager.sessionInfo.remove(SESSION_ID);
+				    		if (clientType.equals("p")) {
+				    			MMSLog.nMsgWaitingPollClnt--;
+				    		}
+				    	}
 					    outputChannel.replyToSender(ctx, message.toString().getBytes());
 						channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 					} else {
