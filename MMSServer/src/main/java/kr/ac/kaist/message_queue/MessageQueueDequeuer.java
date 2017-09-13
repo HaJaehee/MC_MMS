@@ -36,6 +36,11 @@ Version : 0.5.9
 	MMS replies message array into JSONArray form. And messages are encoded by URLEncoder, UTF-8.
 	(Secure)MMSPollHandler parses JSONArray and decodes messages by URLDecoder, UTF-8.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-13
+Version : 0.6.0
+	Fixed channel.close() and connection.close() bugs
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
