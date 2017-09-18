@@ -149,9 +149,15 @@ public class MMSClientHandler {
 				this.pollHandler.ph.setPollingResponseCallback(callback);
 				this.pollHandler.ph.start();
 			} else {
-				System.out.println(TAG+"Failed! The interval must be larger than 0");
+				System.out.println(TAG+"Long-polling mode"); //TODO: Long-polling could have trouble when session disconnect.
+				this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
+				this.pollHandler.ph.setPollingResponseCallback(callback);
+				this.pollHandler.ph.start();
 			}
 		}
+	}
+	public void stopPolling (){
+		this.pollHandler.ph.interrupt();
 	}
 	public void startGeoReporting (String svcMRN, int interval) throws IOException{
 		if (this.sendHandler != null) {

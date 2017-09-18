@@ -80,14 +80,17 @@ class MMSPollHandler {
     	}
     	
     	public void run(){
-    		while (true){
-    			try{
+    		try{
+	    		while (!Thread.currentThread().isInterrupted()){
 	    			Thread.sleep(interval);
-	    			Poll();
-    			}catch (Exception e){
-					System.out.print(TAG);
-					e.printStackTrace();
-    			}
+		    		Poll();
+	    		}
+    		} catch (InterruptedException e){
+    			System.out.println("[ERROR]Thread is dead");
+    		} catch (Exception e){
+    			System.out.print(TAG);
+				e.printStackTrace();
+    			
     		}
     	}
     	
