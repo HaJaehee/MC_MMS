@@ -48,7 +48,7 @@ public class SC5 {
 			@Override
 			public int setResponseCode() {
 				// TODO Auto-generated method stub
-				return 200;
+				return 200; //response HTTP OK code
 			}
 			
 			@Override

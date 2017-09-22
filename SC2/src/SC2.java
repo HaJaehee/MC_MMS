@@ -17,7 +17,6 @@ Creation Date : 2016-12-03
 
 Rev. history : 2017-02-01 - Second Issue
 Version : 0.3.01
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-04-20 
 Version : 0.5.0
@@ -58,7 +57,7 @@ public class SC2 {
 				Iterator<String> iter = headerField.keySet().iterator();
 				while (iter.hasNext()){
 					String key = iter.next();
-					System.out.println(key+":"+headerField.get(key).toString());
+					System.out.println(key+":"+headerField.get(key).toString());// Print the matched header field and the header contents.
 				}
 				System.out.println(message);
 			}
