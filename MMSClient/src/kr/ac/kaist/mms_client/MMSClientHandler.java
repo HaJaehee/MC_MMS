@@ -103,6 +103,12 @@ public class MMSClientHandler {
 	 * @see		MMSClientHandler#startPolling(String, String, int, PollingResponseCallback)
 	 */
 	public interface PollingResponseCallback{
+		/**
+		 * Argument list<String> messages means the list of messages about polling response.
+		 * Argument Map<String,List<String>> HeaderField is a set of headers for polling response.
+		 * @param headerField
+		 * @param messages
+		 */
 		void callbackMethod(Map<String,List<String>> headerField, List<String> messages);
 	}
 	
@@ -112,6 +118,14 @@ public class MMSClientHandler {
 	 * @see		MMSClientHandler#setServerPort(int, String, RequestCallback)
 	 */
 	public interface RequestCallback{
+		/**
+		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
+		 * Argument list<String> messages means the list of messages about HTTP requests.
+		 * Argument Map<String,List<String>> HeaderField is a set of headers for HTTP requests.
+		 * @param headerField
+		 * @param message
+		 * @return
+		 */
 		String respondToClient(Map<String,List<String>> headerField, String message);
 		int setResponseCode();
 		Map<String,List<String>> setResponseHeader();
@@ -122,6 +136,13 @@ public class MMSClientHandler {
 	 * @see		MMSClientHandler#setSender(ResponseCallback)
 	 */
 	public interface ResponseCallback{
+		/**
+		 * When the server sends a response to the HTTP request sent by the client, the client performs a ResponseCallback.
+		 * Argument list<String> messages means the list of messages about response.
+		 * Argument Map<String,List<String>> HeaderField is a set of headers for response.
+		 * @param headerField
+		 * @param message
+		 */
 		void callbackMethod(Map<String,List<String>> headerField, String message);
 	}
 	
@@ -156,9 +177,18 @@ public class MMSClientHandler {
 			}
 		}
 	}
+	/**
+	 * This method is that stop polling requests using interrupt signal. 
+	 */
 	public void stopPolling (){
 		this.pollHandler.ph.interrupt();
 	}
+	/**
+	 * This method is developing now, so do not use this method.
+	 * @param svcMRN
+	 * @param interval
+	 * @throws IOException
+	 */
 	public void startGeoReporting (String svcMRN, int interval) throws IOException{
 		if (this.sendHandler != null) {
 			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
@@ -173,6 +203,7 @@ public class MMSClientHandler {
 			}
 		}
 	}
+	
 	private boolean isErrorForSettingServerPort (){
 		if (this.sendHandler != null) {
 			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");

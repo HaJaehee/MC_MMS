@@ -58,7 +58,7 @@ public class SC2 {
 				Iterator<String> iter = headerField.keySet().iterator();
 				while (iter.hasNext()){
 					String key = iter.next();
-					System.out.println(key+":"+headerField.get(key).toString());
+					System.out.println(key+":"+headerField.get(key).toString());// Print the matched header field and the header contents.
 				}
 				System.out.println(message);
 			}
