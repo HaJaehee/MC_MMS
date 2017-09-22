@@ -1,5 +1,7 @@
 package kr.ac.kaist.message_relaying;
 
+import java.io.IOException;
+
 /* -------------------------------------------------------- */
 /** 
 File name : MRH_MessageInputChannel.java
@@ -70,7 +72,6 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
 		try{
 			req.retain();
-			
 			logger.info("Message received");
 			SessionManager.sessionInfo.put(SESSION_ID, "");
 			new MessageRelayingHandler(ctx, req, protocol, SESSION_ID);
@@ -113,8 +114,10 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     		if (clientType.equals("p")) {
     			MMSLog.nMsgWaitingPollClnt--;
     			logger.warn("SessionID="+this.SESSION_ID+" The polling client is disconnected");
+    			System.out.println("polling client is disconnected in handler removed");
     		} else {
     			logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected");
+    			System.out.println("client is disconnected in handler removed");
     		}
     	}
         ctx.close();
@@ -122,6 +125,28 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+    	System.err.println("\n/*****************************************/");
+     	System.out.println("Exception caught");
+//     	ctx.channel().
+    	System.out.println("Error Channel ID: " + ctx.channel().id().asShortText());
+    	
+//    	System.out.println("Error Content");
+    	
+    	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
+    	if(clientType != null){
+	    	if(clientType.equals("p"))
+	    		System.out.println("Client type: Polling Client");
+	    	else
+	    		System.out.println("Client type: Normal Client");
+    	}
+    	else
+    		System.out.println("Client type is already removed");
+    	
+    	if(cause instanceof IOException){
+    		System.out.println("The connection is disconnected by the client");
+    		logger.warn("The connection is disconnected by the client");
+    	}
+    	System.err.println("/*****************************************/");
         ctx.close();
     }
 

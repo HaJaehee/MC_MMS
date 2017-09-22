@@ -64,6 +64,9 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelOutboundHandler;
+import io.netty.channel.ChannelOutboundHandlerAdapter;
+import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -75,12 +78,12 @@ import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
 
-public class MRH_MessageOutputChannel {
+public class MRH_MessageOutputChannel{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MRH_MessageOutputChannel.class);
 	
 	private int SESSION_ID = 0;
-	private final String USER_AGENT = "MMSClient/0.5.0";
+//	private final String USER_AGENT = "MMSClient/0.5.0";
 	private static Map<String,List<String>> storedHeader = null;
 	private static boolean isStoredHeader = false;
 	private HostnameVerifier hv = null;
@@ -97,7 +100,6 @@ public class MRH_MessageOutputChannel {
 	}
 	
 	public void replyToSender(ChannelHandlerContext ctx, byte[] data) {
-		
     	ByteBuf textb = Unpooled.copiedBuffer(data);
     	logger.info("SessionID="+this.SESSION_ID+" "+"Reply to sender");
     	long responseLen = data.length;
@@ -123,11 +125,22 @@ public class MRH_MessageOutputChannel {
     	}
     	
     	HttpUtil.setContentLength(res, responseLen);
+    	System.out.println("Ready to send message in MRH_output");
     	ctx.write(res);
     	ctx.write(textb);
-        ChannelFuture f = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
-        f.addListener(ChannelFutureListener.CLOSE);
+        ChannelFuture future = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
+        future.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+        future.addListener(ChannelFutureListener.CLOSE);
+        ctx.close();
         SessionManager.sessionInfo.remove(SESSION_ID);
+        
+        // Conditional Logging - sending message is completed
+        System.out.println("SessionID: " + this.SESSION_ID + "\n"
+    			+ "ChannelID: " + ctx.channel().id() + "\n"
+    			+ "Message is sent completely\n");
+        logger.trace("SessionID: " + this.SESSION_ID + "\n"
+    			+ "ChannelID: " + ctx.channel().id() + "\n"
+    			+ "Message is sent completely");
     }
 	
 //  to do relaying
@@ -170,8 +183,6 @@ public class MRH_MessageOutputChannel {
 		} 
 		
 		// get request doesn't have http body
-		
-	
 		responseCode = con.getResponseCode();
 	
 		Map<String,List<String>> resHeaders = con.getHeaderFields();
