@@ -38,7 +38,7 @@ public class SC1 {
 		//myMRN = args[0];
 		
 
-		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.MMS_URL="www.mms-kaist.com:8088";
 		
 		//Service Consumer cannot be HTTP server and should poll from MMS. 
 		MMSClientHandler polling = new MMSClientHandler(myMRN);

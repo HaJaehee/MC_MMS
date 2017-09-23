@@ -62,6 +62,11 @@ Version : 0.5.9
 	Changed from PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, message) 
 	     to PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, List<String> messages) 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-23
+Version : 0.6.0
+	Polling interval could be 0.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -165,16 +170,15 @@ public class MMSClientHandler {
 		} else if (this.rcvHandler != null) {
 			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
 		} else {
-			if (interval > 0) {
-				this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
-				this.pollHandler.ph.setPollingResponseCallback(callback);
-				this.pollHandler.ph.start();
-			} else {
+			if (interval == 0) {
 				System.out.println(TAG+"Long-polling mode"); //TODO: Long-polling could have trouble when session disconnect.
-				this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
-				this.pollHandler.ph.setPollingResponseCallback(callback);
-				this.pollHandler.ph.start();
+			} else {
+				System.out.println(TAG+"Failed! Polling interval must be 0 or positive integer");
+				return;
 			}
+			this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
+			this.pollHandler.ph.setPollingResponseCallback(callback);
+			this.pollHandler.ph.start();
 		}
 	}
 	/**
