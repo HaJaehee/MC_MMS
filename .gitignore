@@ -1,3 +1,5 @@
-MMSServer/logs/mms-server.log
+MMSServer/logs/*
 MMSServer/target/classes/META-INF/maven/ch.qos.logback/logback-classic/pom.properties
 MMSServer/target/classes/META-INF/maven/ch.qos.logback/logback-classic/pom.properties
+*/bin/*
+*/*.class

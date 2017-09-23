@@ -51,6 +51,11 @@ Version : 0.5.9
 	Changed from PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, message) 
 	     to PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, List<String> messages) 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-23
+Version : 0.6.0
+	Polling interval could be 0.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -62,7 +67,7 @@ import java.util.Map;
 
 /**
  * It is an object that can communicate to MMS through HTTPS and send or receive messages of other objects.
- * @version 0.5.7
+ * @version 0.6.0
  * @see MMSClientHandler
  */
 public class SecureMMSClientHandler {
