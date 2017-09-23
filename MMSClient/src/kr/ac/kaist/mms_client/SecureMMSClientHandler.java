@@ -59,6 +59,7 @@ import java.util.List;
 import java.util.Map;
 
 
+
 /**
  * It is an object that can communicate to MMS through HTTPS and send or receive messages of other objects.
  * @version 0.5.7
@@ -133,13 +134,15 @@ public class SecureMMSClientHandler {
 		} else if (this.rcvHandler != null) {
 			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
 		} else {
-			if (interval > 0) {
-				this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
-				this.pollHandler.ph.setPollingResponseCallback(callback);
-				this.pollHandler.ph.start();
+			if (interval == 0) {
+				System.out.println(TAG+"Long-polling mode"); //TODO: Long-polling could have trouble when session disconnect.
 			} else {
-				System.out.println(TAG+"Failed! The interval must be larger than 0");
+				System.out.println(TAG+"Failed! Polling interval must be 0 or positive integer");
+				return;
 			}
+			this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
+			this.pollHandler.ph.setPollingResponseCallback(callback);
+			this.pollHandler.ph.start();
 		}
 	}
 	

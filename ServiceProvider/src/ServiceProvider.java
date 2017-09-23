@@ -41,7 +41,7 @@ public class ServiceProvider {
 		String myMRN = "urn:mrn:smart-navi:device:tm-server";
 		int port = 8902;
 
-		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.MMS_URL="www.mms-kaist.com:8088";
 		
 		MMSClientHandler server = new MMSClientHandler(myMRN);
 		MMSClientHandler sender = new MMSClientHandler(myMRN);
