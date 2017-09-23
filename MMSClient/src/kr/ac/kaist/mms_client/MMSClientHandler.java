@@ -63,6 +63,11 @@ Version : 0.5.9
 	     to PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, List<String> messages) 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history : 2017-09-22
+Version : 0.6.0
+	Added commentaries.
+Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
+
 Rev. history : 2017-09-23
 Version : 0.6.0
 	Polling interval could be 0.
