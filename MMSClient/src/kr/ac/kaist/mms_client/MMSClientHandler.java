@@ -114,8 +114,8 @@ public class MMSClientHandler {
 	 */
 	public interface PollingResponseCallback{
 		/**
-		 * Argument list<String> messages means the list of messages about polling response.
-		 * Argument Map<String,List<String>> HeaderField is a set of headers for polling response.
+		 * Argument list&lt;String&gt; messages means the list of messages about polling response.
+		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for polling response.
 		 * @param headerField
 		 * @param messages
 		 */
@@ -130,8 +130,8 @@ public class MMSClientHandler {
 	public interface RequestCallback{
 		/**
 		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
-		 * Argument list<String> messages means the list of messages about HTTP requests.
-		 * Argument Map<String,List<String>> HeaderField is a set of headers for HTTP requests.
+		 * Argument list&lt;String&gt; messages means the list of messages about HTTP requests.
+		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP requests.
 		 * @param headerField
 		 * @param message
 		 * @return
@@ -148,8 +148,8 @@ public class MMSClientHandler {
 	public interface ResponseCallback{
 		/**
 		 * When the server sends a response to the HTTP request sent by the client, the client performs a ResponseCallback.
-		 * Argument list<String> messages means the list of messages about response.
-		 * Argument Map<String,List<String>> HeaderField is a set of headers for response.
+		 * Argument list&lt;String&gt; messages means the list of messages about response.
+		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for response.
 		 * @param headerField
 		 * @param message
 		 */

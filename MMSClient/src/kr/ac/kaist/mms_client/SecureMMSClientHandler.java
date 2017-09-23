@@ -100,28 +100,28 @@ public class SecureMMSClientHandler {
 	
 	/**
 	 * This interface is used to handle the response to polling request.
-	 * @see		MMSClientHandler#startPolling(String, String, int, PollingResponseCallback)
+	 * @see		SecureMMSClientHandler#startPolling(String, String, int, PollingResponseCallback)
 	 */
 	public interface PollingResponseCallback{
 		/**
-		 * Argument list<String> messages means the list of messages about polling response.
-		 * Argument Map<String,List<String>> HeaderField is a set of headers for polling response.
+		 * Argument list&lt;String&gt; messages means the list of messages about polling response.
+		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for polling response.
 		 * @param headerField
 		 * @param messages
 		 */
-		void callbackMethod(Map<String,List<String>> headerField, List<String> message);
+		void callbackMethod(Map<String,List<String>> headerField, List<String> messages);
 	}
 	
 	/**
 	 * This interface is used to handle the response to be sent when a message is received.
-	 * @see		MMSClientHandler#setServerPort(int, RequestCallback)
-	 * @see		MMSClientHandler#setServerPort(int, String, RequestCallback)
+	 * @see		SecureMMSClientHandler#setServerPort(int, String, String, RequestCallback)
+	 * @see		SecureMMSClientHandler#setServerPort(int, String, String, String, RequestCallback)
 	 */
 	public interface RequestCallback{
 		/**
 		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
-		 * Argument list<String> messages means the list of messages about HTTP requests.
-		 * Argument Map<String,List<String>> HeaderField is a set of headers for HTTP requests.
+		 * Argument list&lt;String&gt; messages means the list of messages about HTTP requests.
+		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP requests.
 		 * @param headerField
 		 * @param message
 		 * @return
@@ -133,13 +133,13 @@ public class SecureMMSClientHandler {
 	
 	/**
 	 * This interface is used to handle the response to be received when a message is sent.
-	 * @see		MMSClientHandler#setSender(ResponseCallback)
+	 * @see		SecureMMSClientHandler#setSender(ResponseCallback)
 	 */
 	public interface ResponseCallback{
 		/**
 		 * When the server sends a response to the HTTP request sent by the client, the client performs a ResponseCallback.
-		 * Argument list<String> messages means the list of messages about response.
-		 * Argument Map<String,List<String>> HeaderField is a set of headers for response.
+		 * Argument list&lt;String&gt; messages means the list of messages about response.
+		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for response.
 		 * @param headerField
 		 * @param message
 		 */
@@ -246,7 +246,7 @@ public class SecureMMSClientHandler {
 	 * @param 	jksPassword		password of MMS certificate
 	 * @param 	callback		callback interface of {@link RequestCallback}
 	 * @throws 	Exception		if exception occurs
-	 * @see		#setServerPort(int,, String, String, RequestCallback)
+	 * @see		#setServerPort(int, String, String, RequestCallback)
 	 * @see		#addContext(String)
 	 */
 	public void setServerPort (int port, String context, String jksDirectory, String jksPassword, RequestCallback callback) throws Exception{
