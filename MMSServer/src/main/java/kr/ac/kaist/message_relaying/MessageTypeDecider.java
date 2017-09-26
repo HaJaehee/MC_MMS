@@ -44,6 +44,15 @@ Rev. history : 2017-07-28
 Version : 0.5.9
 	Added null MRN and invalid MRN cases. 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Added adding mrn entry case.
+	Removed empty queue logs case.
+	Added enum msgType and removed public integers.
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -56,30 +65,34 @@ import kr.ac.kaist.mms_server.MMSConfiguration;
 class MessageTypeDecider {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageTypeDecider.class);
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 	
-	static final int POLLING = 1; // it means polling message 
-	static final int RELAYING_TO_SC = 2; // it means relaying to SC
-	static final int RELAYING_TO_SERVER = 3; // it means relaying to SR, IR or SP
-	static final int REGISTER_CLIENT = 4; // it means registering MMS client 
-	static final int UNKNOWN_MRN = 5; // it means unknown MRN
-	static final int UNKNOWN_HTTP_TYPE = 6; // it means unknown http type
-	static final int STATUS = 7;
-	static final int EMPTY_MNSDummy = 8;
-	static final int REMOVE_MNS_ENTRY = 9;
-	static final int EMPTY_QUEUE_LOGS = 10;
-	static final int POLLING_METHOD = 11;
-	static final int RELAYING_TO_MULTIPLE_SC = 12; // it means multicase
-	static final int NULL_SRC_MRN = 13;
-	static final int NULL_DST_MRN = 14;
-	static final int NULL_MRN = 15;
-	static final int INVALID_SRC_MRN = 16;
-	static final int INVALID_DST_MRN = 17;
-	MessageTypeDecider(int sessionId) {
+	
+	public static enum msgType {
+			POLLING,
+			RELAYING_TO_SC,
+			RELAYING_TO_SERVER,
+			REGISTER_CLIENT,
+			UNKNOWN_MRN,
+			UNKNOWN_HTTP_TYPE,
+			STATUS,EMPTY_MNSDummy,
+			REMOVE_MNS_ENTRY,
+			ADD_MNS_ENTRY,
+			POLLING_METHOD,
+			RELAYING_TO_MULTIPLE_SC,
+			NULL_SRC_MRN,
+			NULL_DST_MRN,
+			NULL_MRN,
+			INVALID_SRC_MRN,
+			INVALID_DST_MRN
+	}
+
+	
+	MessageTypeDecider(String sessionId) {
 		this.SESSION_ID = sessionId;
 	}
 	
-	int decideType(MessageParser parser, MessageCastingHandler mch) {
+	msgType decideType(MessageParser parser, MessageCastingHandler mch) {
 		String srcMRN = parser.getSrcMRN();
 		String dstMRN = parser.getDstMRN();
 		HttpMethod httpMethod = parser.getHttpMethod();
@@ -87,48 +100,46 @@ class MessageTypeDecider {
 		
 //		when WEB_LOG_PROVIDING
 		if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/status")){
-			return STATUS;
+			return msgType.STATUS;
 		}
    	
    	
 //		when WEB_MANAGING
-	   	/* else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptyqueue")){ 
-	   		return EMPTY_QUEUE;
-	   	}*/ 
+
 	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptymnsdummy")){ 
-	   		return EMPTY_MNSDummy;
+	   		return msgType.EMPTY_MNSDummy;
+	   	} 
+	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/addmnsentry?mrn", 0, 16)){ 
+	   		return msgType.ADD_MNS_ENTRY;
 	   	} 
 	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/removemnsentry", 0, 15)){ 
-	   		return REMOVE_MNS_ENTRY;
+	   		return msgType.REMOVE_MNS_ENTRY;
 	   	} 
 	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0,"/polling?method", 0, 15)){
-	   		return POLLING_METHOD;
-	   	} 
-	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptyqueuelogs")){
-	   		return EMPTY_QUEUE_LOGS;
+	   		return msgType.POLLING_METHOD;
 	   	} 
 		
 		
 //		When MRN(s) is(are) null
 	   	else if (srcMRN == null && dstMRN == null) {
-			return NULL_MRN;
+			return msgType.NULL_MRN;
 		}
 		else if (srcMRN == null) {
-			return NULL_SRC_MRN;
+			return msgType.NULL_SRC_MRN;
 		}
 		else if (dstMRN == null) {
-			return NULL_DST_MRN;
+			return msgType.NULL_DST_MRN;
 		}
 		
 		
 //    	When polling
 		else if (httpMethod == HttpMethod.POST && uri.equals("/polling") && dstMRN.equals(MMSConfiguration.MMS_MRN)) {
-    		return POLLING; 
+    		return msgType.POLLING; 
     	}
     	
 //		when registering
     	else if (httpMethod == HttpMethod.POST && uri.equals("/registering") && dstMRN.equals(MMSConfiguration.MMS_MRN)) {
-    		return REGISTER_CLIENT;
+    		return msgType.REGISTER_CLIENT;
     	}
     	
 
@@ -138,21 +149,21 @@ class MessageTypeDecider {
     		String dstInfo = mch.requestDstInfo(dstMRN);
     		
         	if (dstInfo.equals("No")) {
-        		return UNKNOWN_MRN;
+        		return msgType.UNKNOWN_MRN;
         	}
         	if (dstInfo.regionMatches(0, "MULTIPLE_MRN,", 0, 9)){
         		parser.parseMultiDstInfo(dstInfo);
-        		return RELAYING_TO_MULTIPLE_SC;
+        		return msgType.RELAYING_TO_MULTIPLE_SC;
         	}
 
         	parser.parseDstInfo(dstInfo);
         	int model = parser.getDstModel();
         	
         	if (model == 2) {//model B (destination MSR, MIR, or MSP as servers)
-        		return RELAYING_TO_SERVER;
+        		return msgType.RELAYING_TO_SERVER;
         	} 
         	else {//when model A, it puts the message into the queue
-        		return RELAYING_TO_SC;
+        		return msgType.RELAYING_TO_SC;
         	}
     	} /*else {
     		return UNKNOWN_HTTP_TYPE;

@@ -28,6 +28,11 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -54,14 +59,13 @@ import kr.ac.kaist.mms_server.MMSLog;
 public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHttpRequest>{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MRH_MessageInputChannel.class); 
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 	private Random rd = new Random();
 	
 	private String protocol = "";
 	
 	public MRH_MessageInputChannel(String protocol) {
 		super();
-		this.SESSION_ID = rd.nextInt( Integer.MAX_VALUE );
 		this.protocol = protocol;
 	}
 	
@@ -72,6 +76,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			req.retain();
 			
 			logger.info("Message received");
+			SESSION_ID = ctx.channel().id().asShortText();
 			SessionManager.sessionInfo.put(SESSION_ID, "");
 			new MessageRelayingHandler(ctx, req, protocol, SESSION_ID);
 		} finally {
@@ -111,7 +116,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     	if (clientType != null) {
     		SessionManager.sessionInfo.remove(SESSION_ID);
     		if (clientType.equals("p")) {
-    			MMSLog.nMsgWaitingPollClnt--;
+    			MMSLog.decreasePollingClientCount();
     			logger.warn("SessionID="+this.SESSION_ID+" The polling client is disconnected");
     		} else {
     			logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected");

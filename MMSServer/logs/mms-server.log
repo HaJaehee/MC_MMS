@@ -481,3 +481,1494 @@
 16:36:09.552 [nioEventLoopGroup-3-11] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1929133424,srcMRN=null,dstMRN=null
 16:36:09.552 [nioEventLoopGroup-3-11] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1929133424 Reply to sender
 16:36:22.710 [nioEventLoopGroup-3-9] WARN  k.a.k.m.MRH_MessageInputChannel - SessionID=555959819 The polling client is disconnected
+10:53:06.330 [main] ERROR kr.ac.kaist.mms_server.MMSServer - Now starting MMS HTTP server
+10:53:06.567 [main] DEBUG i.n.u.i.l.InternalLoggerFactory - Using SLF4J as the default logging framework
+10:53:06.708 [Thread-0] DEBUG io.netty.handler.ssl.OpenSsl - netty-tcnative not in the classpath; OpenSslEngine will be unavailable.
+10:53:06.732 [main] DEBUG i.n.u.internal.PlatformDependent0 - java.nio.Buffer.address: available
+10:53:06.742 [main] DEBUG i.n.u.internal.PlatformDependent0 - sun.misc.Unsafe.theUnsafe: available
+10:53:06.747 [main] DEBUG i.n.u.internal.PlatformDependent0 - sun.misc.Unsafe.copyMemory: available
+10:53:06.748 [main] DEBUG i.n.u.internal.PlatformDependent0 - direct buffer constructor: available
+10:53:06.755 [main] DEBUG i.n.u.internal.PlatformDependent0 - java.nio.Bits.unaligned: available, true
+10:53:06.768 [main] DEBUG i.n.u.internal.PlatformDependent0 - java.nio.DirectByteBuffer.<init>(long, int): available
+10:53:06.772 [main] DEBUG io.netty.util.internal.Cleaner0 - java.nio.ByteBuffer.cleaner(): available
+10:53:06.777 [main] DEBUG i.n.util.internal.PlatformDependent - Platform: Windows
+10:53:06.778 [main] DEBUG i.n.util.internal.PlatformDependent - Java version: 8
+10:53:06.779 [main] DEBUG i.n.util.internal.PlatformDependent - -Dio.netty.noUnsafe: false
+10:53:06.779 [main] DEBUG i.n.util.internal.PlatformDependent - sun.misc.Unsafe: available
+10:53:06.781 [main] DEBUG i.n.util.internal.PlatformDependent - -Dio.netty.noJavassist: false
+10:53:06.783 [main] DEBUG i.n.util.internal.PlatformDependent - Javassist: unavailable
+10:53:06.784 [main] DEBUG i.n.util.internal.PlatformDependent - You don't have Javassist in your class path or you don't have enough permission to load dynamically generated classes.  Please check the configuration for better performance.
+10:53:06.785 [main] DEBUG i.n.util.internal.PlatformDependent - -Dio.netty.tmpdir: C:\Users\Jaehee\AppData\Local\Temp (java.io.tmpdir)
+10:53:06.785 [main] DEBUG i.n.util.internal.PlatformDependent - -Dio.netty.bitMode: 64 (sun.arch.data.model)
+10:53:06.786 [main] DEBUG i.n.util.internal.PlatformDependent - -Dio.netty.noPreferDirect: false
+10:53:06.786 [main] DEBUG i.n.util.internal.PlatformDependent - io.netty.maxDirectMemory: 1877475328 bytes
+10:53:06.807 [main] DEBUG i.n.c.MultithreadEventLoopGroup - -Dio.netty.eventLoopThreads: 8
+10:53:06.906 [main] DEBUG io.netty.channel.nio.NioEventLoop - -Dio.netty.noKeySetOptimization: false
+10:53:06.907 [main] DEBUG io.netty.channel.nio.NioEventLoop - -Dio.netty.selectorAutoRebuildThreshold: 512
+10:53:06.912 [main] DEBUG i.n.util.internal.PlatformDependent - org.jctools-core.MpscChunkedArrayQueue: available
+10:53:07.574 [main] DEBUG io.netty.channel.DefaultChannelId - -Dio.netty.processId: 3452 (auto-detected)
+10:53:07.578 [main] DEBUG io.netty.util.NetUtil - -Djava.net.preferIPv4Stack: false
+10:53:07.579 [main] DEBUG io.netty.util.NetUtil - -Djava.net.preferIPv6Addresses: false
+10:53:07.648 [Thread-0] DEBUG io.netty.handler.ssl.JdkSslContext - Default protocols (JDK): [TLSv1.2, TLSv1.1, TLSv1] 
+10:53:07.648 [Thread-0] DEBUG io.netty.handler.ssl.JdkSslContext - Default cipher suites (JDK): [TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA, TLS_RSA_WITH_AES_128_GCM_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA, SSL_RSA_WITH_3DES_EDE_CBC_SHA]
+10:53:07.689 [Thread-0] ERROR k.a.k.mms_server.SecureMMSServer - Now starting MMS HTTPS server
+10:53:07.691 [Thread-0] ERROR k.a.k.mms_server.SecureMMSServer - Ready for 0.0.0.0:444
+10:53:07.808 [main] DEBUG io.netty.util.NetUtil - Loopback interface: lo (Software Loopback Interface 1, 127.0.0.1)
+10:53:07.808 [main] DEBUG io.netty.util.NetUtil - \proc\sys\net\core\somaxconn: 200 (non-existent)
+10:53:08.077 [main] DEBUG io.netty.channel.DefaultChannelId - -Dio.netty.machineId: 00:50:56:ff:fe:c0:00:01 (auto-detected)
+10:53:08.082 [Thread-0] DEBUG i.n.util.internal.ThreadLocalRandom - -Dio.netty.initialSeedUniquifier: 0x8ba587898fd242ba
+10:53:08.154 [Thread-0] DEBUG io.netty.util.ResourceLeakDetector - -Dio.netty.leakDetection.level: simple
+10:53:08.154 [Thread-0] DEBUG io.netty.util.ResourceLeakDetector - -Dio.netty.leakDetection.maxRecords: 4
+10:53:08.234 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.numHeapArenas: 8
+10:53:08.235 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.numDirectArenas: 8
+10:53:08.235 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.pageSize: 8192
+10:53:08.235 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.maxOrder: 11
+10:53:08.235 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.chunkSize: 16777216
+10:53:08.235 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.tinyCacheSize: 512
+10:53:08.235 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.smallCacheSize: 256
+10:53:08.235 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.normalCacheSize: 64
+10:53:08.235 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+10:53:08.236 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.cacheTrimInterval: 8192
+10:53:08.257 [main] DEBUG io.netty.buffer.ByteBufUtil - -Dio.netty.allocator.type: pooled
+10:53:08.257 [main] DEBUG io.netty.buffer.ByteBufUtil - -Dio.netty.threadLocalDirectBufferSize: 65536
+10:53:08.257 [main] DEBUG io.netty.buffer.ByteBufUtil - -Dio.netty.maxThreadLocalCharBufferSize: 16384
+10:53:08.269 [main] ERROR k.a.k.mms_server.NettyStartupUtil - Ready for 0.0.0.0:8088
+10:53:08.280 [nioEventLoopGroup-4-1] INFO  i.n.handler.logging.LoggingHandler - [id: 0x6a0dcd40] REGISTERED
+10:53:08.282 [nioEventLoopGroup-4-1] INFO  i.n.handler.logging.LoggingHandler - [id: 0x6a0dcd40] BIND: 0.0.0.0/0.0.0.0:444
+10:53:08.283 [nioEventLoopGroup-4-1] INFO  i.n.handler.logging.LoggingHandler - [id: 0x6a0dcd40, L:/0:0:0:0:0:0:0:0:444] ACTIVE
+10:55:22.804 [main] ERROR k.ac.kaist.mns_interaction.MNSDummy - MNSDummy started
+10:55:30.777 [nioEventLoopGroup-3-2] DEBUG io.netty.buffer.AbstractByteBuf - -Dio.netty.buffer.bytebuf.checkAccessible: true
+10:55:30.779 [nioEventLoopGroup-3-2] DEBUG i.n.u.ResourceLeakDetectorFactory - Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@6fab9f2a
+10:55:30.915 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.maxCapacityPerThread: 32768
+10:55:30.915 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.maxSharedCapacityFactor: 2
+10:55:30.916 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.linkCapacity: 16
+10:55:30.916 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.ratio: 8
+10:55:30.941 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:55:30.958 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=455795428,srcMRN=null,dstMRN=null
+10:55:30.968 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+10:55:30.968 [nioEventLoopGroup-3-1] DEBUG kr.ac.kaist.mms_server.MMSLog - Dump-MNS
+10:55:30.969 [nioEventLoopGroup-3-1] DEBUG kr.ac.kaist.mms_server.MMSLog - Reply port : 4386
+10:55:30.970 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Dump-MNS:,4386
+10:55:30.970 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=Dump-MNS:,4386
+10:55:30.971 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+10:55:30.971 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+10:55:30.984 [nioEventLoopGroup-3-1] DEBUG kr.ac.kaist.mms_server.MMSLog - Dumped MNS: No
+10:55:30.986 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=455795428 Reply to sender
+10:55:31.961 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:55:31.961 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=329139960,srcMRN=null,dstMRN=null
+10:55:31.962 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=329139960 Reply to sender
+10:56:43.321 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:56:43.322 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1096730679,srcMRN=null,dstMRN=null
+10:56:43.323 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1096730679 Add MRN=hello IP=148.243.55.83 Port=8088 Model=2
+10:56:43.326 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1096730679 Add-Entry=hello
+10:56:43.326 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+10:56:43.327 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Add-Entry:hello,148.243.55.83,8088,2
+10:56:43.327 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1096730679 Reply to sender
+10:56:43.327 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:ADD=hello
+10:56:44.349 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:56:44.350 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=868751185,srcMRN=null,dstMRN=null
+10:56:44.350 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=868751185 Reply to sender
+10:56:47.645 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:56:47.645 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1864290447,srcMRN=null,dstMRN=null
+10:56:47.646 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1864290447 Reply to sender
+10:56:49.344 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:56:49.345 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1432130677,srcMRN=null,dstMRN=null
+10:56:49.346 [nioEventLoopGroup-3-6] DEBUG kr.ac.kaist.mms_server.MMSLog - Dump-MNS
+10:56:49.346 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+10:56:49.348 [nioEventLoopGroup-3-6] DEBUG kr.ac.kaist.mms_server.MMSLog - Reply port : 4399
+10:56:49.348 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Dump-MNS:,4399
+10:56:49.349 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=Dump-MNS:,4399
+10:56:49.350 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:hello,148.243.55.8380882<br/>
+10:56:49.353 [nioEventLoopGroup-3-6] DEBUG kr.ac.kaist.mms_server.MMSLog - Dumped MNS: MNSDummy-Reply:hello,148.243.55.8380882<br/>
+10:56:49.354 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1432130677 Reply to sender
+10:56:49.682 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:56:49.682 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=528498148,srcMRN=null,dstMRN=null
+10:56:49.682 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=528498148 Reply to sender
+10:57:21.349 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:21.350 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=335104400,srcMRN=null,dstMRN=null
+10:57:21.350 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=335104400 Reply to sender
+10:57:22.877 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:22.877 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=808861515,srcMRN=null,dstMRN=null
+10:57:22.877 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=808861515 Reply to sender
+10:57:24.353 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:24.353 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1467287628,srcMRN=null,dstMRN=null
+10:57:24.357 [nioEventLoopGroup-3-3] DEBUG kr.ac.kaist.mms_server.MMSLog - Dump-MNS
+10:57:24.357 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+10:57:24.358 [nioEventLoopGroup-3-3] DEBUG kr.ac.kaist.mms_server.MMSLog - Reply port : 4407
+10:57:24.358 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Dump-MNS:,4407
+10:57:24.359 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=Dump-MNS:,4407
+10:57:24.359 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:hello,148.243.55.8380882<br/>
+10:57:24.361 [nioEventLoopGroup-3-3] DEBUG kr.ac.kaist.mms_server.MMSLog - Dumped MNS: MNSDummy-Reply:hello,148.243.55.8380882<br/>
+10:57:24.362 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1467287628 Reply to sender
+10:57:24.701 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:24.702 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=979053418,srcMRN=null,dstMRN=null
+10:57:24.702 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=979053418 Reply to sender
+10:57:25.665 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:25.666 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=427366728,srcMRN=null,dstMRN=null
+10:57:25.667 [nioEventLoopGroup-3-5] DEBUG kr.ac.kaist.mms_server.MMSLog - Dump-MNS
+10:57:25.668 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+10:57:25.669 [nioEventLoopGroup-3-5] DEBUG kr.ac.kaist.mms_server.MMSLog - Reply port : 4412
+10:57:25.669 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Dump-MNS:,4412
+10:57:25.670 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=Dump-MNS:,4412
+10:57:25.670 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:hello,148.243.55.8380882<br/>
+10:57:25.673 [nioEventLoopGroup-3-5] DEBUG kr.ac.kaist.mms_server.MMSLog - Dumped MNS: MNSDummy-Reply:hello,148.243.55.8380882<br/>
+10:57:25.673 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=427366728 Reply to sender
+10:57:26.010 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:26.010 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=882560314,srcMRN=null,dstMRN=null
+10:57:26.010 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=882560314 Reply to sender
+10:57:37.182 [main] ERROR k.ac.kaist.mns_interaction.MNSDummy - MNSDummy started
+10:57:40.261 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:40.262 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1994815152,srcMRN=null,dstMRN=null
+10:57:40.263 [nioEventLoopGroup-3-8] DEBUG kr.ac.kaist.mms_server.MMSLog - Dump-MNS
+10:57:40.263 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+10:57:40.264 [nioEventLoopGroup-3-8] DEBUG kr.ac.kaist.mms_server.MMSLog - Reply port : 4419
+10:57:40.265 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Dump-MNS:,4419
+10:57:40.265 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=Dump-MNS:,4419
+10:57:40.266 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+10:57:40.266 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+10:57:40.281 [nioEventLoopGroup-3-8] DEBUG kr.ac.kaist.mms_server.MMSLog - Dumped MNS: No
+10:57:40.282 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1994815152 Reply to sender
+10:57:40.703 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:40.703 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1646671957,srcMRN=null,dstMRN=null
+10:57:40.703 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1646671957 Reply to sender
+10:57:43.525 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:43.525 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1104256421,srcMRN=null,dstMRN=null
+10:57:43.525 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1104256421 Reply to sender
+10:57:44.545 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:44.545 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1316908237,srcMRN=null,dstMRN=null
+10:57:44.545 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1316908237 Reply to sender
+10:57:45.859 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:45.859 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1464667265,srcMRN=null,dstMRN=null
+10:57:45.861 [nioEventLoopGroup-3-4] DEBUG kr.ac.kaist.mms_server.MMSLog - Dump-MNS
+10:57:45.861 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+10:57:45.862 [nioEventLoopGroup-3-4] DEBUG kr.ac.kaist.mms_server.MMSLog - Reply port : 4426
+10:57:45.863 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Dump-MNS:,4426
+10:57:45.863 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=Dump-MNS:,4426
+10:57:45.863 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+10:57:45.863 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+10:57:45.866 [nioEventLoopGroup-3-4] DEBUG kr.ac.kaist.mms_server.MMSLog - Dumped MNS: No
+10:57:45.866 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1464667265 Reply to sender
+10:57:46.177 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:46.177 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=929763034,srcMRN=null,dstMRN=null
+10:57:46.177 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=929763034 Reply to sender
+10:57:47.066 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:47.066 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1326665703,srcMRN=null,dstMRN=null
+10:57:47.068 [nioEventLoopGroup-3-6] DEBUG kr.ac.kaist.mms_server.MMSLog - Dump-MNS
+10:57:47.068 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+10:57:47.069 [nioEventLoopGroup-3-6] DEBUG kr.ac.kaist.mms_server.MMSLog - Reply port : 4431
+10:57:47.070 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Dump-MNS:,4431
+10:57:47.070 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=Dump-MNS:,4431
+10:57:47.070 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+10:57:47.071 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+10:57:47.073 [nioEventLoopGroup-3-6] DEBUG kr.ac.kaist.mms_server.MMSLog - Dumped MNS: No
+10:57:47.075 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1326665703 Reply to sender
+10:57:47.468 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:47.469 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1005438219,srcMRN=null,dstMRN=null
+10:57:47.469 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1005438219 Reply to sender
+10:57:48.191 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:48.192 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=575444981,srcMRN=null,dstMRN=null
+10:57:48.192 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=575444981 Reply to sender
+10:57:49.915 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:49.915 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=720011356,srcMRN=null,dstMRN=null
+10:57:49.915 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=720011356 Reply to sender
+10:57:50.867 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:50.867 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1444268722,srcMRN=null,dstMRN=null
+10:57:50.869 [nioEventLoopGroup-3-2] DEBUG kr.ac.kaist.mms_server.MMSLog - Dump-MNS
+10:57:50.869 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+10:57:50.870 [nioEventLoopGroup-3-2] DEBUG kr.ac.kaist.mms_server.MMSLog - Reply port : 4438
+10:57:50.871 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Dump-MNS:,4438
+10:57:50.871 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=Dump-MNS:,4438
+10:57:50.871 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+10:57:50.872 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+10:57:50.875 [nioEventLoopGroup-3-2] DEBUG kr.ac.kaist.mms_server.MMSLog - Dumped MNS: No
+10:57:50.876 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1444268722 Reply to sender
+10:57:51.181 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:51.181 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1098096139,srcMRN=null,dstMRN=null
+10:57:51.181 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1098096139 Reply to sender
+10:57:51.375 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:51.375 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=159642112,srcMRN=null,dstMRN=null
+10:57:51.377 [nioEventLoopGroup-3-4] DEBUG kr.ac.kaist.mms_server.MMSLog - Dump-MNS
+10:57:51.377 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+10:57:51.378 [nioEventLoopGroup-3-4] DEBUG kr.ac.kaist.mms_server.MMSLog - Reply port : 4443
+10:57:51.380 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Dump-MNS:,4443
+10:57:51.381 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=Dump-MNS:,4443
+10:57:51.381 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+10:57:51.381 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+10:57:51.383 [nioEventLoopGroup-3-4] DEBUG kr.ac.kaist.mms_server.MMSLog - Dumped MNS: No
+10:57:51.383 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=159642112 Reply to sender
+10:57:51.757 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:51.758 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=746602196,srcMRN=null,dstMRN=null
+10:57:51.758 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=746602196 Reply to sender
+10:57:51.804 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:51.804 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1753435307,srcMRN=null,dstMRN=null
+10:57:51.805 [nioEventLoopGroup-3-6] DEBUG kr.ac.kaist.mms_server.MMSLog - Dump-MNS
+10:57:51.805 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+10:57:51.806 [nioEventLoopGroup-3-6] DEBUG kr.ac.kaist.mms_server.MMSLog - Reply port : 4448
+10:57:51.807 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Dump-MNS:,4448
+10:57:51.807 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=Dump-MNS:,4448
+10:57:51.807 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+10:57:51.807 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+10:57:51.811 [nioEventLoopGroup-3-6] DEBUG kr.ac.kaist.mms_server.MMSLog - Dumped MNS: No
+10:57:51.812 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1753435307 Reply to sender
+10:57:52.215 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:57:52.215 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=178113630,srcMRN=null,dstMRN=null
+10:57:52.215 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=178113630 Reply to sender
+10:58:20.268 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:58:20.269 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1413007157,srcMRN=null,dstMRN=null
+10:58:20.269 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1413007157 Reply to sender
+10:58:21.122 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:58:21.122 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=16407939,srcMRN=null,dstMRN=null
+10:58:21.122 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=16407939 Add MRN=hello IP=148.243.55.83 Port=8088 Model=2
+10:58:21.126 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=16407939 Add-Entry=hello
+10:58:21.126 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+10:58:21.126 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Add-Entry:hello,148.243.55.83,8088,2
+10:58:21.126 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=16407939 Reply to sender
+10:58:21.127 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:ADD=hello
+10:58:21.451 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:58:21.451 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=413998370,srcMRN=null,dstMRN=null
+10:58:21.451 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=413998370 Reply to sender
+10:58:22.783 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:58:22.783 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1601549466,srcMRN=null,dstMRN=null
+10:58:22.783 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1601549466 Reply to sender
+10:58:23.824 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:58:23.824 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1424223483,srcMRN=null,dstMRN=null
+10:58:23.826 [nioEventLoopGroup-3-5] DEBUG kr.ac.kaist.mms_server.MMSLog - Dump-MNS
+10:58:23.826 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+10:58:23.827 [nioEventLoopGroup-3-5] DEBUG kr.ac.kaist.mms_server.MMSLog - Reply port : 4464
+10:58:23.828 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Dump-MNS:,4464
+10:58:23.828 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=Dump-MNS:,4464
+10:58:23.828 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:hello,148.243.55.83:8088:2<br/>
+10:58:23.831 [nioEventLoopGroup-3-5] DEBUG kr.ac.kaist.mms_server.MMSLog - Dumped MNS: MNSDummy-Reply:hello,148.243.55.83:8088:2<br/>
+10:58:23.832 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1424223483 Reply to sender
+10:58:24.210 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+10:58:24.210 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=384662245,srcMRN=null,dstMRN=null
+10:58:24.210 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=384662245 Reply to sender
+12:59:06.567 [main] ERROR kr.ac.kaist.mms_server.MMSServer - Now starting MMS HTTP server
+12:59:06.639 [main] DEBUG i.n.u.i.l.InternalLoggerFactory - Using SLF4J as the default logging framework
+12:59:06.693 [Thread-0] DEBUG io.netty.handler.ssl.OpenSsl - netty-tcnative not in the classpath; OpenSslEngine will be unavailable.
+12:59:06.697 [main] DEBUG i.n.u.internal.PlatformDependent0 - java.nio.Buffer.address: available
+12:59:06.699 [main] DEBUG i.n.u.internal.PlatformDependent0 - sun.misc.Unsafe.theUnsafe: available
+12:59:06.700 [main] DEBUG i.n.u.internal.PlatformDependent0 - sun.misc.Unsafe.copyMemory: available
+12:59:06.701 [main] DEBUG i.n.u.internal.PlatformDependent0 - direct buffer constructor: available
+12:59:06.702 [main] DEBUG i.n.u.internal.PlatformDependent0 - java.nio.Bits.unaligned: available, true
+12:59:06.705 [main] DEBUG i.n.u.internal.PlatformDependent0 - java.nio.DirectByteBuffer.<init>(long, int): available
+12:59:06.707 [main] DEBUG io.netty.util.internal.Cleaner0 - java.nio.ByteBuffer.cleaner(): available
+12:59:06.708 [main] DEBUG i.n.util.internal.PlatformDependent - Platform: Windows
+12:59:06.709 [main] DEBUG i.n.util.internal.PlatformDependent - Java version: 8
+12:59:06.710 [main] DEBUG i.n.util.internal.PlatformDependent - -Dio.netty.noUnsafe: false
+12:59:06.710 [main] DEBUG i.n.util.internal.PlatformDependent - sun.misc.Unsafe: available
+12:59:06.710 [main] DEBUG i.n.util.internal.PlatformDependent - -Dio.netty.noJavassist: false
+12:59:06.711 [main] DEBUG i.n.util.internal.PlatformDependent - Javassist: unavailable
+12:59:06.712 [main] DEBUG i.n.util.internal.PlatformDependent - You don't have Javassist in your class path or you don't have enough permission to load dynamically generated classes.  Please check the configuration for better performance.
+12:59:06.713 [main] DEBUG i.n.util.internal.PlatformDependent - -Dio.netty.tmpdir: C:\Users\Jaehee\AppData\Local\Temp (java.io.tmpdir)
+12:59:06.724 [main] DEBUG i.n.util.internal.PlatformDependent - -Dio.netty.bitMode: 64 (sun.arch.data.model)
+12:59:06.724 [main] DEBUG i.n.util.internal.PlatformDependent - -Dio.netty.noPreferDirect: false
+12:59:06.724 [main] DEBUG i.n.util.internal.PlatformDependent - io.netty.maxDirectMemory: 1877475328 bytes
+12:59:06.733 [main] DEBUG i.n.c.MultithreadEventLoopGroup - -Dio.netty.eventLoopThreads: 8
+12:59:06.764 [main] DEBUG io.netty.channel.nio.NioEventLoop - -Dio.netty.noKeySetOptimization: false
+12:59:06.765 [main] DEBUG io.netty.channel.nio.NioEventLoop - -Dio.netty.selectorAutoRebuildThreshold: 512
+12:59:06.767 [main] DEBUG i.n.util.internal.PlatformDependent - org.jctools-core.MpscChunkedArrayQueue: available
+12:59:07.014 [main] DEBUG io.netty.channel.DefaultChannelId - -Dio.netty.processId: 1776 (auto-detected)
+12:59:07.017 [main] DEBUG io.netty.util.NetUtil - -Djava.net.preferIPv4Stack: false
+12:59:07.017 [main] DEBUG io.netty.util.NetUtil - -Djava.net.preferIPv6Addresses: false
+12:59:07.140 [Thread-0] DEBUG io.netty.handler.ssl.JdkSslContext - Default protocols (JDK): [TLSv1.2, TLSv1.1, TLSv1] 
+12:59:07.141 [Thread-0] DEBUG io.netty.handler.ssl.JdkSslContext - Default cipher suites (JDK): [TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA, TLS_RSA_WITH_AES_128_GCM_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA, SSL_RSA_WITH_3DES_EDE_CBC_SHA]
+12:59:07.173 [Thread-0] ERROR k.a.k.mms_server.SecureMMSServer - Now starting MMS HTTPS server
+12:59:07.175 [Thread-0] ERROR k.a.k.mms_server.SecureMMSServer - Ready for 0.0.0.0:444
+12:59:07.233 [main] DEBUG io.netty.util.NetUtil - Loopback interface: lo (Software Loopback Interface 1, 127.0.0.1)
+12:59:07.233 [main] DEBUG io.netty.util.NetUtil - \proc\sys\net\core\somaxconn: 200 (non-existent)
+12:59:07.393 [main] DEBUG io.netty.channel.DefaultChannelId - -Dio.netty.machineId: 00:50:56:ff:fe:c0:00:01 (auto-detected)
+12:59:07.394 [main] DEBUG i.n.util.internal.ThreadLocalRandom - -Dio.netty.initialSeedUniquifier: 0xe876b482fab0a3d6
+12:59:07.405 [main] DEBUG io.netty.util.ResourceLeakDetector - -Dio.netty.leakDetection.level: simple
+12:59:07.406 [main] DEBUG io.netty.util.ResourceLeakDetector - -Dio.netty.leakDetection.maxRecords: 4
+12:59:07.425 [Thread-0] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.numHeapArenas: 8
+12:59:07.425 [Thread-0] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.numDirectArenas: 8
+12:59:07.425 [Thread-0] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.pageSize: 8192
+12:59:07.425 [Thread-0] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.maxOrder: 11
+12:59:07.425 [Thread-0] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.chunkSize: 16777216
+12:59:07.426 [Thread-0] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.tinyCacheSize: 512
+12:59:07.426 [Thread-0] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.smallCacheSize: 256
+12:59:07.426 [Thread-0] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.normalCacheSize: 64
+12:59:07.426 [Thread-0] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+12:59:07.426 [Thread-0] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.cacheTrimInterval: 8192
+12:59:07.434 [Thread-0] DEBUG io.netty.buffer.ByteBufUtil - -Dio.netty.allocator.type: pooled
+12:59:07.435 [Thread-0] DEBUG io.netty.buffer.ByteBufUtil - -Dio.netty.threadLocalDirectBufferSize: 65536
+12:59:07.435 [Thread-0] DEBUG io.netty.buffer.ByteBufUtil - -Dio.netty.maxThreadLocalCharBufferSize: 16384
+12:59:07.447 [main] ERROR k.a.k.mms_server.NettyStartupUtil - Ready for 0.0.0.0:8088
+12:59:07.453 [nioEventLoopGroup-4-1] INFO  i.n.handler.logging.LoggingHandler - [id: 0xd2f97a36] REGISTERED
+12:59:07.454 [nioEventLoopGroup-4-1] INFO  i.n.handler.logging.LoggingHandler - [id: 0xd2f97a36] BIND: 0.0.0.0/0.0.0.0:444
+12:59:07.455 [nioEventLoopGroup-4-1] INFO  i.n.handler.logging.LoggingHandler - [id: 0xd2f97a36, L:/0:0:0:0:0:0:0:0:444] ACTIVE
+12:59:11.766 [main] ERROR k.ac.kaist.mns_interaction.MNSDummy - MNSDummy started
+13:01:18.153 [nioEventLoopGroup-3-1] DEBUG io.netty.buffer.AbstractByteBuf - -Dio.netty.buffer.bytebuf.checkAccessible: true
+13:01:18.155 [nioEventLoopGroup-3-1] DEBUG i.n.u.ResourceLeakDetectorFactory - Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@11c6522a
+13:01:18.189 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.maxCapacityPerThread: 32768
+13:01:18.189 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.maxSharedCapacityFactor: 2
+13:01:18.189 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.linkCapacity: 16
+13:01:18.189 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.ratio: 8
+13:01:18.206 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:01:18.220 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:01:18.222 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5441
+13:01:18.222 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:01:18.222 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+13:01:18.223 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+13:01:18.234 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=7432fc22,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:01:18.236 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=7432fc22 Reply to sender
+13:01:18.254 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:01:18.256 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:01:18.257 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5445
+13:01:18.257 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:01:18.257 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+13:01:18.257 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+13:01:18.259 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=33408a38,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:01:18.260 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=33408a38 Reply to sender
+13:01:18.273 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:01:18.274 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:01:18.275 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5449
+13:01:18.275 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:01:18.275 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+13:01:18.275 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+13:01:18.277 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=d7782c5d,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:01:18.277 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=d7782c5d Reply to sender
+13:01:18.290 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:01:18.291 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:01:18.292 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5453
+13:01:18.292 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:01:18.292 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+13:01:18.292 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+13:01:18.293 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=6fe0a08f,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:01:18.294 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=6fe0a08f Reply to sender
+13:01:18.307 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:01:18.309 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:01:18.309 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5457
+13:01:18.310 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:01:18.310 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+13:01:18.310 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+13:01:18.311 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=130f56c4,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:01:18.312 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=130f56c4 Reply to sender
+13:01:18.329 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:01:18.331 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:01:18.331 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5461
+13:01:18.331 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:01:18.332 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+13:01:18.332 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+13:01:18.333 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=d50de9a6,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:01:18.333 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=d50de9a6 Reply to sender
+13:01:18.347 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:01:18.348 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:01:18.349 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5465
+13:01:18.349 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:01:18.349 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+13:01:18.349 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+13:01:18.351 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=ef571280,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:01:18.351 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=ef571280 Reply to sender
+13:01:18.363 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:01:18.365 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:01:18.366 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5469
+13:01:18.366 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:01:18.366 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+13:01:18.366 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+13:01:18.370 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=aa7722bf,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:01:18.370 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=aa7722bf Reply to sender
+13:01:18.385 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:01:18.387 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:01:18.388 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5473
+13:01:18.388 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:01:18.388 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+13:01:18.388 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+13:01:18.390 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=53599277,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:01:18.390 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=53599277 Reply to sender
+13:01:18.401 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:01:18.403 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:01:18.403 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5477
+13:01:18.403 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:01:18.404 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No MRN to IP Mapping
+13:01:18.404 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - No
+13:01:18.405 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=ff355bd8,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:01:18.405 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=ff355bd8 Reply to sender
+13:03:21.565 [main] ERROR kr.ac.kaist.mms_server.MMSServer - Now starting MMS HTTP server
+13:03:21.651 [main] DEBUG i.n.u.i.l.InternalLoggerFactory - Using SLF4J as the default logging framework
+13:03:21.690 [Thread-0] DEBUG io.netty.handler.ssl.OpenSsl - netty-tcnative not in the classpath; OpenSslEngine will be unavailable.
+13:03:21.691 [main] DEBUG i.n.u.internal.PlatformDependent0 - java.nio.Buffer.address: available
+13:03:21.692 [main] DEBUG i.n.u.internal.PlatformDependent0 - sun.misc.Unsafe.theUnsafe: available
+13:03:21.693 [main] DEBUG i.n.u.internal.PlatformDependent0 - sun.misc.Unsafe.copyMemory: available
+13:03:21.694 [main] DEBUG i.n.u.internal.PlatformDependent0 - direct buffer constructor: available
+13:03:21.696 [main] DEBUG i.n.u.internal.PlatformDependent0 - java.nio.Bits.unaligned: available, true
+13:03:21.698 [main] DEBUG i.n.u.internal.PlatformDependent0 - java.nio.DirectByteBuffer.<init>(long, int): available
+13:03:21.700 [main] DEBUG io.netty.util.internal.Cleaner0 - java.nio.ByteBuffer.cleaner(): available
+13:03:21.702 [main] DEBUG i.n.util.internal.PlatformDependent - Platform: Windows
+13:03:21.703 [main] DEBUG i.n.util.internal.PlatformDependent - Java version: 8
+13:03:21.703 [main] DEBUG i.n.util.internal.PlatformDependent - -Dio.netty.noUnsafe: false
+13:03:21.703 [main] DEBUG i.n.util.internal.PlatformDependent - sun.misc.Unsafe: available
+13:03:21.704 [main] DEBUG i.n.util.internal.PlatformDependent - -Dio.netty.noJavassist: false
+13:03:21.707 [main] DEBUG i.n.util.internal.PlatformDependent - Javassist: unavailable
+13:03:21.707 [main] DEBUG i.n.util.internal.PlatformDependent - You don't have Javassist in your class path or you don't have enough permission to load dynamically generated classes.  Please check the configuration for better performance.
+13:03:21.708 [main] DEBUG i.n.util.internal.PlatformDependent - -Dio.netty.tmpdir: C:\Users\Jaehee\AppData\Local\Temp (java.io.tmpdir)
+13:03:21.709 [main] DEBUG i.n.util.internal.PlatformDependent - -Dio.netty.bitMode: 64 (sun.arch.data.model)
+13:03:21.711 [main] DEBUG i.n.util.internal.PlatformDependent - -Dio.netty.noPreferDirect: false
+13:03:21.711 [main] DEBUG i.n.util.internal.PlatformDependent - io.netty.maxDirectMemory: 1877475328 bytes
+13:03:21.737 [main] DEBUG i.n.c.MultithreadEventLoopGroup - -Dio.netty.eventLoopThreads: 8
+13:03:21.784 [main] DEBUG io.netty.channel.nio.NioEventLoop - -Dio.netty.noKeySetOptimization: false
+13:03:21.784 [main] DEBUG io.netty.channel.nio.NioEventLoop - -Dio.netty.selectorAutoRebuildThreshold: 512
+13:03:21.786 [main] DEBUG i.n.util.internal.PlatformDependent - org.jctools-core.MpscChunkedArrayQueue: available
+13:03:22.006 [main] DEBUG io.netty.channel.DefaultChannelId - -Dio.netty.processId: 11704 (auto-detected)
+13:03:22.009 [main] DEBUG io.netty.util.NetUtil - -Djava.net.preferIPv4Stack: false
+13:03:22.010 [main] DEBUG io.netty.util.NetUtil - -Djava.net.preferIPv6Addresses: false
+13:03:22.130 [Thread-0] DEBUG io.netty.handler.ssl.JdkSslContext - Default protocols (JDK): [TLSv1.2, TLSv1.1, TLSv1] 
+13:03:22.131 [Thread-0] DEBUG io.netty.handler.ssl.JdkSslContext - Default cipher suites (JDK): [TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA, TLS_RSA_WITH_AES_128_GCM_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA, SSL_RSA_WITH_3DES_EDE_CBC_SHA]
+13:03:22.163 [Thread-0] ERROR k.a.k.mms_server.SecureMMSServer - Now starting MMS HTTPS server
+13:03:22.165 [Thread-0] ERROR k.a.k.mms_server.SecureMMSServer - Ready for 0.0.0.0:444
+13:03:22.234 [main] DEBUG io.netty.util.NetUtil - Loopback interface: lo (Software Loopback Interface 1, 127.0.0.1)
+13:03:22.235 [main] DEBUG io.netty.util.NetUtil - \proc\sys\net\core\somaxconn: 200 (non-existent)
+13:03:22.400 [main] DEBUG io.netty.channel.DefaultChannelId - -Dio.netty.machineId: 00:50:56:ff:fe:c0:00:01 (auto-detected)
+13:03:22.401 [main] DEBUG i.n.util.internal.ThreadLocalRandom - -Dio.netty.initialSeedUniquifier: 0x8210985061319c95
+13:03:22.413 [main] DEBUG io.netty.util.ResourceLeakDetector - -Dio.netty.leakDetection.level: simple
+13:03:22.413 [main] DEBUG io.netty.util.ResourceLeakDetector - -Dio.netty.leakDetection.maxRecords: 4
+13:03:22.436 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.numHeapArenas: 8
+13:03:22.436 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.numDirectArenas: 8
+13:03:22.436 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.pageSize: 8192
+13:03:22.436 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.maxOrder: 11
+13:03:22.436 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.chunkSize: 16777216
+13:03:22.437 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.tinyCacheSize: 512
+13:03:22.437 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.smallCacheSize: 256
+13:03:22.437 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.normalCacheSize: 64
+13:03:22.437 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+13:03:22.437 [main] DEBUG i.n.buffer.PooledByteBufAllocator - -Dio.netty.allocator.cacheTrimInterval: 8192
+13:03:22.448 [main] DEBUG io.netty.buffer.ByteBufUtil - -Dio.netty.allocator.type: pooled
+13:03:22.448 [main] DEBUG io.netty.buffer.ByteBufUtil - -Dio.netty.threadLocalDirectBufferSize: 65536
+13:03:22.448 [main] DEBUG io.netty.buffer.ByteBufUtil - -Dio.netty.maxThreadLocalCharBufferSize: 16384
+13:03:22.463 [main] ERROR k.a.k.mms_server.NettyStartupUtil - Ready for 0.0.0.0:8088
+13:03:22.467 [nioEventLoopGroup-4-1] INFO  i.n.handler.logging.LoggingHandler - [id: 0x472134f8] REGISTERED
+13:03:22.468 [nioEventLoopGroup-4-1] INFO  i.n.handler.logging.LoggingHandler - [id: 0x472134f8] BIND: 0.0.0.0/0.0.0.0:444
+13:03:22.469 [nioEventLoopGroup-4-1] INFO  i.n.handler.logging.LoggingHandler - [id: 0x472134f8, L:/0:0:0:0:0:0:0:0:444] ACTIVE
+13:03:30.676 [main] ERROR k.ac.kaist.mns_interaction.MNSDummy - MNSDummy started
+13:04:29.959 [nioEventLoopGroup-3-1] DEBUG io.netty.buffer.AbstractByteBuf - -Dio.netty.buffer.bytebuf.checkAccessible: true
+13:04:29.961 [nioEventLoopGroup-3-1] DEBUG i.n.u.ResourceLeakDetectorFactory - Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@3a58b183
+13:04:29.998 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.maxCapacityPerThread: 32768
+13:04:29.999 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.maxSharedCapacityFactor: 2
+13:04:29.999 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.linkCapacity: 16
+13:04:29.999 [nioEventLoopGroup-3-1] DEBUG io.netty.util.Recycler - -Dio.netty.recycler.ratio: 8
+13:04:30.018 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:30.031 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=5e2b903e,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:30.033 [nioEventLoopGroup-3-1] DEBUG k.a.k.m.LocatorUpdater - SessionID=5e2b903e Location-Update:127.0.0.1,urn:mrn:smart-navi:device:tm-server,8902,2
+13:04:30.038 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:30.040 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:smart-navi:device:tm-server,8902,2,5534
+13:04:30.041 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:smart-navi:device:tm-server,8902,2,5534
+13:04:30.053 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=5e2b903e Reply to sender
+13:04:35.872 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:35.872 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=c6c681e6,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:35.873 [nioEventLoopGroup-3-2] DEBUG k.a.k.m.LocatorUpdater - SessionID=c6c681e6 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:35.876 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:35.877 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5539
+13:04:35.878 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5539
+13:04:35.889 [Thread-1] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=c6c681e6 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:36.466 [Thread-1] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=c6c681e6 Reply to sender
+13:04:37.534 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:37.534 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=7baa4b08,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:37.535 [nioEventLoopGroup-3-3] DEBUG k.a.k.m.LocatorUpdater - SessionID=7baa4b08 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:37.537 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:37.538 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5544
+13:04:37.539 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5544
+13:04:37.543 [Thread-2] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=7baa4b08 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:37.554 [Thread-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=7baa4b08 Reply to sender
+13:04:38.602 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:38.603 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=44294109,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:38.603 [nioEventLoopGroup-3-4] DEBUG k.a.k.m.LocatorUpdater - SessionID=44294109 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:38.605 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:38.606 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5549
+13:04:38.606 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5549
+13:04:38.610 [Thread-3] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=44294109 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:38.623 [Thread-3] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=44294109 Reply to sender
+13:04:39.672 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:39.673 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=66971ae2,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:39.674 [nioEventLoopGroup-3-5] DEBUG k.a.k.m.LocatorUpdater - SessionID=66971ae2 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:39.676 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:39.677 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5554
+13:04:39.677 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5554
+13:04:39.680 [Thread-4] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=66971ae2 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:39.693 [Thread-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=66971ae2 Reply to sender
+13:04:40.176 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.178 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.178 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5559
+13:04:40.179 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:04:40.179 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:04:40.180 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=f0ca96bb,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:04:40.183 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=f0ca96bb Connected=http://127.0.0.1:8902/forwarding
+13:04:40.254 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.255 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.255 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,5564
+13:04:40.255 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:04:40.255 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:04:40.257 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=fb1641ad,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:04:40.271 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=fb1641ad Reply to sender
+13:04:40.294 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=f0ca96bb HTTP
+13:04:40.294 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=f0ca96bb Reply to sender
+13:04:40.313 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.315 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.316 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5569
+13:04:40.316 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:04:40.316 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:04:40.317 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=94ebaada,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:04:40.318 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=94ebaada Connected=http://127.0.0.1:8902/forwarding
+13:04:40.324 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.327 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.329 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,5573
+13:04:40.329 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:04:40.329 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:04:40.331 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=f7a6835a,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:04:40.341 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=f7a6835a Reply to sender
+13:04:40.343 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=94ebaada HTTP
+13:04:40.344 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=94ebaada Reply to sender
+13:04:40.359 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.360 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.361 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5578
+13:04:40.361 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:04:40.361 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:04:40.362 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=98f6a675,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:04:40.363 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=98f6a675 Connected=http://127.0.0.1:8902/forwarding
+13:04:40.367 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.368 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.369 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,5582
+13:04:40.369 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:04:40.369 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:04:40.371 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=a99c175f,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:04:40.380 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=a99c175f Reply to sender
+13:04:40.382 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=98f6a675 HTTP
+13:04:40.382 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=98f6a675 Reply to sender
+13:04:40.400 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.402 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.403 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5587
+13:04:40.403 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:04:40.403 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:04:40.405 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=a3f6b0a5,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:04:40.405 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=a3f6b0a5 Connected=http://127.0.0.1:8902/forwarding
+13:04:40.412 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.413 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.414 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,5591
+13:04:40.414 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:04:40.414 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:04:40.415 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=b9984a37,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:04:40.423 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=b9984a37 Reply to sender
+13:04:40.425 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=a3f6b0a5 HTTP
+13:04:40.425 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=a3f6b0a5 Reply to sender
+13:04:40.437 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.438 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.439 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5596
+13:04:40.439 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:04:40.439 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:04:40.441 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=f51af535,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:04:40.441 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=f51af535 Connected=http://127.0.0.1:8902/forwarding
+13:04:40.445 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.446 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.447 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,5600
+13:04:40.447 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:04:40.447 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:04:40.448 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=4ce5ac8e,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:04:40.474 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=4ce5ac8e Reply to sender
+13:04:40.476 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=f51af535 HTTP
+13:04:40.476 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=f51af535 Reply to sender
+13:04:40.489 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.490 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.491 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5605
+13:04:40.491 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:04:40.492 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:04:40.493 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=570305aa,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:04:40.494 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=570305aa Connected=http://127.0.0.1:8902/forwarding
+13:04:40.499 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.500 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.501 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,5609
+13:04:40.501 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:04:40.501 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:04:40.503 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=7c7b4a0e,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:04:40.511 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=7c7b4a0e Reply to sender
+13:04:40.513 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=570305aa HTTP
+13:04:40.513 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=570305aa Reply to sender
+13:04:40.526 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.527 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.528 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5614
+13:04:40.528 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:04:40.528 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:04:40.530 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=4b08ec6c,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:04:40.530 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=4b08ec6c Connected=http://127.0.0.1:8902/forwarding
+13:04:40.534 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.536 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.537 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,5618
+13:04:40.537 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:04:40.537 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:04:40.538 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=e12df7e5,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:04:40.549 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=e12df7e5 Reply to sender
+13:04:40.550 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=4b08ec6c HTTP
+13:04:40.551 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=4b08ec6c Reply to sender
+13:04:40.564 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.565 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.566 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5623
+13:04:40.566 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:04:40.566 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:04:40.567 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=e66ec324,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:04:40.568 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=e66ec324 Connected=http://127.0.0.1:8902/forwarding
+13:04:40.573 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.575 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.575 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,5627
+13:04:40.575 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:04:40.575 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:04:40.577 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=3916eb7b,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:04:40.586 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=3916eb7b Reply to sender
+13:04:40.587 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=e66ec324 HTTP
+13:04:40.588 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=e66ec324 Reply to sender
+13:04:40.599 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.600 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.601 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5632
+13:04:40.601 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:04:40.601 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:04:40.602 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=5ddcd88a,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:04:40.603 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=5ddcd88a Connected=http://127.0.0.1:8902/forwarding
+13:04:40.606 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.607 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.608 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,5636
+13:04:40.608 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:04:40.608 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:04:40.610 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=5c0683f3,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:04:40.634 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=5c0683f3 Reply to sender
+13:04:40.636 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=5ddcd88a HTTP
+13:04:40.636 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=5ddcd88a Reply to sender
+13:04:40.649 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.650 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.651 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,5641
+13:04:40.651 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:04:40.651 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:04:40.653 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=45653f2a,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:04:40.653 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=45653f2a Connected=http://127.0.0.1:8902/forwarding
+13:04:40.658 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.660 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.660 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,5645
+13:04:40.661 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:04:40.661 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:04:40.663 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=18541568,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:04:40.671 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=18541568 Reply to sender
+13:04:40.673 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=45653f2a HTTP
+13:04:40.673 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=45653f2a Reply to sender
+13:04:40.706 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:40.707 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=54394dfb,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:40.707 [nioEventLoopGroup-3-2] DEBUG k.a.k.m.LocatorUpdater - SessionID=54394dfb Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:40.707 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:40.708 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5650
+13:04:40.709 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5650
+13:04:40.710 [Thread-5] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=54394dfb Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:40.780 [Thread-5] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=54394dfb Reply to sender
+13:04:41.820 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:41.821 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=b944a30d,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:41.821 [nioEventLoopGroup-3-3] DEBUG k.a.k.m.LocatorUpdater - SessionID=b944a30d Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:41.822 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:41.823 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5655
+13:04:41.823 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5655
+13:04:41.824 [Thread-6] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=b944a30d Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:41.832 [Thread-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=b944a30d Reply to sender
+13:04:42.872 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:42.872 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=4dacfcb7,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:42.873 [nioEventLoopGroup-3-4] DEBUG k.a.k.m.LocatorUpdater - SessionID=4dacfcb7 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:42.875 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:42.876 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5660
+13:04:42.877 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5660
+13:04:42.880 [Thread-7] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=4dacfcb7 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:42.892 [Thread-7] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=4dacfcb7 Reply to sender
+13:04:43.909 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:43.909 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=ca0e5d8f,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:43.909 [nioEventLoopGroup-3-5] DEBUG k.a.k.m.LocatorUpdater - SessionID=ca0e5d8f Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:43.911 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:43.912 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5665
+13:04:43.912 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5665
+13:04:43.914 [Thread-8] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=ca0e5d8f Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:43.930 [Thread-8] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=ca0e5d8f Reply to sender
+13:04:44.988 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:44.988 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=d29f6953,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:44.989 [nioEventLoopGroup-3-6] DEBUG k.a.k.m.LocatorUpdater - SessionID=d29f6953 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:44.992 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:44.993 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5670
+13:04:44.993 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5670
+13:04:44.997 [Thread-9] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=d29f6953 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:45.013 [Thread-9] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=d29f6953 Reply to sender
+13:04:46.036 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:46.037 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=c4337d71,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:46.037 [nioEventLoopGroup-3-7] DEBUG k.a.k.m.LocatorUpdater - SessionID=c4337d71 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:46.038 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:46.039 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5676
+13:04:46.039 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5676
+13:04:46.041 [Thread-10] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=c4337d71 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:46.051 [Thread-10] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=c4337d71 Reply to sender
+13:04:47.093 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:47.094 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=a3dc0907,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:47.094 [nioEventLoopGroup-3-8] DEBUG k.a.k.m.LocatorUpdater - SessionID=a3dc0907 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:47.096 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:47.097 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5681
+13:04:47.098 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5681
+13:04:47.102 [Thread-11] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=a3dc0907 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:47.119 [Thread-11] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=a3dc0907 Reply to sender
+13:04:48.150 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:48.151 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=9ca93d3c,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:48.151 [nioEventLoopGroup-3-1] DEBUG k.a.k.m.LocatorUpdater - SessionID=9ca93d3c Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:48.154 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:48.155 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5686
+13:04:48.155 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5686
+13:04:48.159 [Thread-12] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=9ca93d3c Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:48.172 [Thread-12] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=9ca93d3c Reply to sender
+13:04:49.218 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:49.219 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=b00e5ec7,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:49.219 [nioEventLoopGroup-3-2] DEBUG k.a.k.m.LocatorUpdater - SessionID=b00e5ec7 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:49.221 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:49.221 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5691
+13:04:49.222 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5691
+13:04:49.224 [Thread-13] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=b00e5ec7 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:49.234 [Thread-13] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=b00e5ec7 Reply to sender
+13:04:50.286 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:50.286 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=31565dae,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:50.287 [nioEventLoopGroup-3-3] DEBUG k.a.k.m.LocatorUpdater - SessionID=31565dae Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:50.289 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:50.290 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5696
+13:04:50.290 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5696
+13:04:50.293 [Thread-14] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=31565dae Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:50.302 [Thread-14] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=31565dae Reply to sender
+13:04:51.335 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:51.335 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=63e45a24,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:51.336 [nioEventLoopGroup-3-4] DEBUG k.a.k.m.LocatorUpdater - SessionID=63e45a24 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:51.338 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:51.339 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5701
+13:04:51.340 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5701
+13:04:51.345 [Thread-15] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=63e45a24 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:51.355 [Thread-15] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=63e45a24 Reply to sender
+13:04:52.399 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:52.400 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=9a3d4e57,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:52.400 [nioEventLoopGroup-3-5] DEBUG k.a.k.m.LocatorUpdater - SessionID=9a3d4e57 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:52.402 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:52.403 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5706
+13:04:52.403 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5706
+13:04:52.406 [Thread-16] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=9a3d4e57 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:52.418 [Thread-16] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=9a3d4e57 Reply to sender
+13:04:53.460 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:53.460 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=bec80cdf,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:53.461 [nioEventLoopGroup-3-6] DEBUG k.a.k.m.LocatorUpdater - SessionID=bec80cdf Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:53.462 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:53.463 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5713
+13:04:53.464 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5713
+13:04:53.468 [Thread-17] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=bec80cdf Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:53.480 [Thread-17] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=bec80cdf Reply to sender
+13:04:54.507 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:54.507 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=0bd8df43,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:54.507 [nioEventLoopGroup-3-7] DEBUG k.a.k.m.LocatorUpdater - SessionID=0bd8df43 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:54.510 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:54.511 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5718
+13:04:54.511 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5718
+13:04:54.514 [Thread-18] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=0bd8df43 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:54.527 [Thread-18] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=0bd8df43 Reply to sender
+13:04:55.576 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:55.577 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=baef02bf,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:55.577 [nioEventLoopGroup-3-8] DEBUG k.a.k.m.LocatorUpdater - SessionID=baef02bf Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:55.579 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:55.581 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5723
+13:04:55.581 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5723
+13:04:55.585 [Thread-19] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=baef02bf Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:55.600 [Thread-19] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=baef02bf Reply to sender
+13:04:56.637 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:56.638 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=9aedd4a1,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:56.638 [nioEventLoopGroup-3-1] DEBUG k.a.k.m.LocatorUpdater - SessionID=9aedd4a1 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:56.640 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:56.641 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5728
+13:04:56.641 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5728
+13:04:56.645 [Thread-20] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=9aedd4a1 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:56.663 [Thread-20] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=9aedd4a1 Reply to sender
+13:04:57.677 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:57.677 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=f6bf8669,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:57.677 [nioEventLoopGroup-3-2] DEBUG k.a.k.m.LocatorUpdater - SessionID=f6bf8669 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:57.678 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:57.679 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5733
+13:04:57.679 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5733
+13:04:57.681 [Thread-21] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=f6bf8669 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:57.688 [Thread-21] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=f6bf8669 Reply to sender
+13:04:58.716 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:58.717 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=db80e386,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:58.717 [nioEventLoopGroup-3-3] DEBUG k.a.k.m.LocatorUpdater - SessionID=db80e386 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:58.720 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:58.721 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5738
+13:04:58.721 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5738
+13:04:58.725 [Thread-22] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=db80e386 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:58.734 [Thread-22] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=db80e386 Reply to sender
+13:04:59.750 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:04:59.751 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=eb964f43,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:04:59.751 [nioEventLoopGroup-3-4] DEBUG k.a.k.m.LocatorUpdater - SessionID=eb964f43 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:04:59.756 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:04:59.757 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5743
+13:04:59.758 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5743
+13:04:59.761 [Thread-23] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=eb964f43 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:04:59.769 [Thread-23] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=eb964f43 Reply to sender
+13:05:00.792 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:00.792 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=6e37173d,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:00.792 [nioEventLoopGroup-3-5] DEBUG k.a.k.m.LocatorUpdater - SessionID=6e37173d Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:00.795 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:00.796 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5748
+13:05:00.796 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5748
+13:05:00.798 [Thread-24] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=6e37173d Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:00.810 [Thread-24] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=6e37173d Reply to sender
+13:05:01.824 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:01.825 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=6e11c7b0,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:01.825 [nioEventLoopGroup-3-6] DEBUG k.a.k.m.LocatorUpdater - SessionID=6e11c7b0 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:01.827 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:01.828 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5753
+13:05:01.828 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5753
+13:05:01.830 [Thread-25] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=6e11c7b0 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:01.841 [Thread-25] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=6e11c7b0 Reply to sender
+13:05:02.852 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:02.852 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=06d070c7,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:02.852 [nioEventLoopGroup-3-7] DEBUG k.a.k.m.LocatorUpdater - SessionID=06d070c7 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:02.853 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:02.854 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5763
+13:05:02.854 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5763
+13:05:02.857 [Thread-26] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=06d070c7 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:02.865 [Thread-26] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=06d070c7 Reply to sender
+13:05:03.877 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:03.877 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=71fc2027,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:03.878 [nioEventLoopGroup-3-8] DEBUG k.a.k.m.LocatorUpdater - SessionID=71fc2027 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:03.879 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:03.880 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5772
+13:05:03.880 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5772
+13:05:03.882 [Thread-27] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=71fc2027 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:03.891 [Thread-27] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=71fc2027 Reply to sender
+13:05:04.903 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:04.903 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=6b0a4e72,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:04.903 [nioEventLoopGroup-3-1] DEBUG k.a.k.m.LocatorUpdater - SessionID=6b0a4e72 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:04.905 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:04.906 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5781
+13:05:04.906 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5781
+13:05:04.910 [Thread-28] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=6b0a4e72 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:04.921 [Thread-28] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=6b0a4e72 Reply to sender
+13:05:05.935 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:05.936 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=f5380aed,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:05.936 [nioEventLoopGroup-3-2] DEBUG k.a.k.m.LocatorUpdater - SessionID=f5380aed Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:05.937 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:05.938 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5788
+13:05:05.938 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5788
+13:05:05.941 [Thread-29] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=f5380aed Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:05.949 [Thread-29] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=f5380aed Reply to sender
+13:05:06.961 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:06.961 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=ff43dfb5,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:06.961 [nioEventLoopGroup-3-3] DEBUG k.a.k.m.LocatorUpdater - SessionID=ff43dfb5 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:06.962 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:06.963 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5793
+13:05:06.963 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5793
+13:05:06.965 [Thread-30] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=ff43dfb5 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:06.973 [Thread-30] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=ff43dfb5 Reply to sender
+13:05:07.992 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:07.993 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=473b1583,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:07.993 [nioEventLoopGroup-3-4] DEBUG k.a.k.m.LocatorUpdater - SessionID=473b1583 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:07.994 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:07.995 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5798
+13:05:07.996 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5798
+13:05:07.997 [Thread-31] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=473b1583 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:08.006 [Thread-31] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=473b1583 Reply to sender
+13:05:08.821 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:08.821 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=589429af,srcMRN=null,dstMRN=null
+13:05:08.823 [nioEventLoopGroup-3-5] DEBUG kr.ac.kaist.mms_server.MMSLog - Dump-MNS
+13:05:08.823 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:08.824 [nioEventLoopGroup-3-5] DEBUG kr.ac.kaist.mms_server.MMSLog - Reply port : 5807
+13:05:08.825 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Dump-MNS:,5807
+13:05:08.825 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=Dump-MNS:,5807
+13:05:08.825 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:urn:mrn:smart-navi:device:tm-server,127.0.0.1:8902:2<br/>urn:mrn:imo:imo-no:1000001,127.0.0.1:0:1<br/>
+13:05:08.827 [nioEventLoopGroup-3-5] DEBUG kr.ac.kaist.mms_server.MMSLog - Dumped MNS: MNSDummy-Reply:urn:mrn:smart-navi:device:tm-server,127.0.0.1:8902:2<br/>urn:mrn:imo:imo-no:1000001,127.0.0.1:0:1<br/>
+13:05:08.828 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=589429af Reply to sender
+13:05:09.021 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:09.021 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=8d7afaff,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:09.021 [nioEventLoopGroup-3-7] DEBUG k.a.k.m.LocatorUpdater - SessionID=8d7afaff Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:09.023 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:09.024 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5811
+13:05:09.024 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5811
+13:05:09.027 [Thread-32] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=8d7afaff Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:09.065 [Thread-32] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=8d7afaff Reply to sender
+13:05:10.083 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:10.083 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=a4865fe6,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:10.083 [nioEventLoopGroup-3-8] DEBUG k.a.k.m.LocatorUpdater - SessionID=a4865fe6 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:10.085 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:10.086 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5816
+13:05:10.086 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5816
+13:05:10.089 [Thread-33] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=a4865fe6 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:10.098 [Thread-33] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=a4865fe6 Reply to sender
+13:05:10.115 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:10.115 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=93a66ffe,srcMRN=null,dstMRN=null
+13:05:10.115 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=93a66ffe Reply to sender
+13:05:11.111 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:11.111 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=73d731cf,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:11.111 [nioEventLoopGroup-3-1] DEBUG k.a.k.m.LocatorUpdater - SessionID=73d731cf Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:11.112 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:11.113 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5821
+13:05:11.113 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5821
+13:05:11.115 [Thread-34] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=73d731cf Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:11.123 [Thread-34] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=73d731cf Reply to sender
+13:05:12.134 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:12.134 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=2d80eb55,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:12.134 [nioEventLoopGroup-3-2] DEBUG k.a.k.m.LocatorUpdater - SessionID=2d80eb55 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:12.136 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:12.136 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5826
+13:05:12.137 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5826
+13:05:12.139 [Thread-35] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=2d80eb55 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:12.145 [Thread-35] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=2d80eb55 Reply to sender
+13:05:13.156 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:13.156 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=cee1f53e,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:13.157 [nioEventLoopGroup-3-3] DEBUG k.a.k.m.LocatorUpdater - SessionID=cee1f53e Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:13.158 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:13.159 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5831
+13:05:13.159 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5831
+13:05:13.160 [Thread-36] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=cee1f53e Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:13.170 [Thread-36] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=cee1f53e Reply to sender
+13:05:14.181 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:14.182 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=37354a66,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:14.182 [nioEventLoopGroup-3-4] DEBUG k.a.k.m.LocatorUpdater - SessionID=37354a66 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:14.183 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:14.183 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5836
+13:05:14.183 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5836
+13:05:14.185 [Thread-37] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=37354a66 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:14.192 [Thread-37] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=37354a66 Reply to sender
+13:05:15.240 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:15.240 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=99138b9d,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:15.241 [nioEventLoopGroup-3-5] DEBUG k.a.k.m.LocatorUpdater - SessionID=99138b9d Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:15.242 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:15.244 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5841
+13:05:15.244 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5841
+13:05:15.247 [Thread-38] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=99138b9d Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:15.258 [Thread-38] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=99138b9d Reply to sender
+13:05:16.271 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:16.271 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=273bb032,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:16.272 [nioEventLoopGroup-3-6] DEBUG k.a.k.m.LocatorUpdater - SessionID=273bb032 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:16.273 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:16.273 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5846
+13:05:16.273 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5846
+13:05:16.275 [Thread-39] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=273bb032 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:16.282 [Thread-39] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=273bb032 Reply to sender
+13:05:17.298 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:17.298 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=00595911,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:17.298 [nioEventLoopGroup-3-7] DEBUG k.a.k.m.LocatorUpdater - SessionID=00595911 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:17.299 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:17.300 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5852
+13:05:17.300 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5852
+13:05:17.302 [Thread-40] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=00595911 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:17.308 [Thread-40] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=00595911 Reply to sender
+13:05:18.320 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:18.320 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=e534d1f7,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:18.320 [nioEventLoopGroup-3-8] DEBUG k.a.k.m.LocatorUpdater - SessionID=e534d1f7 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:18.321 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:18.322 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5857
+13:05:18.322 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5857
+13:05:18.323 [Thread-41] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=e534d1f7 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:18.330 [Thread-41] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=e534d1f7 Reply to sender
+13:05:19.349 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:19.350 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=4f89de99,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:19.350 [nioEventLoopGroup-3-1] DEBUG k.a.k.m.LocatorUpdater - SessionID=4f89de99 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:19.351 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:19.352 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5862
+13:05:19.352 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5862
+13:05:19.354 [Thread-42] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=4f89de99 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:19.364 [Thread-42] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=4f89de99 Reply to sender
+13:05:20.375 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:20.375 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=379b8a14,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:20.375 [nioEventLoopGroup-3-2] DEBUG k.a.k.m.LocatorUpdater - SessionID=379b8a14 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:20.376 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:20.377 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5867
+13:05:20.377 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5867
+13:05:20.379 [Thread-43] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=379b8a14 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:20.387 [Thread-43] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=379b8a14 Reply to sender
+13:05:21.401 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:21.402 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=47aa5789,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:21.402 [nioEventLoopGroup-3-3] DEBUG k.a.k.m.LocatorUpdater - SessionID=47aa5789 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:21.403 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:21.404 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5872
+13:05:21.404 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5872
+13:05:21.406 [Thread-44] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=47aa5789 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:21.415 [Thread-44] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=47aa5789 Reply to sender
+13:05:22.461 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:22.462 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=0e2ade00,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:22.462 [nioEventLoopGroup-3-4] DEBUG k.a.k.m.LocatorUpdater - SessionID=0e2ade00 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:22.464 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:22.465 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5877
+13:05:22.465 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5877
+13:05:22.467 [Thread-45] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=0e2ade00 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:22.479 [Thread-45] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=0e2ade00 Reply to sender
+13:05:23.520 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:23.520 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=aabf63fc,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:23.520 [nioEventLoopGroup-3-5] DEBUG k.a.k.m.LocatorUpdater - SessionID=aabf63fc Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:23.522 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:23.522 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5882
+13:05:23.522 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5882
+13:05:23.525 [Thread-46] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=aabf63fc Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:23.539 [Thread-46] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=aabf63fc Reply to sender
+13:05:24.587 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:24.588 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=c6ddd96c,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:24.588 [nioEventLoopGroup-3-6] DEBUG k.a.k.m.LocatorUpdater - SessionID=c6ddd96c Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:24.590 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:24.591 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5887
+13:05:24.591 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5887
+13:05:24.594 [Thread-47] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=c6ddd96c Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:24.606 [Thread-47] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=c6ddd96c Reply to sender
+13:05:25.619 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:25.619 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=328718c8,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:25.619 [nioEventLoopGroup-3-7] DEBUG k.a.k.m.LocatorUpdater - SessionID=328718c8 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:25.620 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:25.621 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5892
+13:05:25.621 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5892
+13:05:25.623 [Thread-48] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=328718c8 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:25.631 [Thread-48] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=328718c8 Reply to sender
+13:05:26.672 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:26.672 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=763bee2b,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:26.673 [nioEventLoopGroup-3-8] DEBUG k.a.k.m.LocatorUpdater - SessionID=763bee2b Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:26.675 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:26.676 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5897
+13:05:26.676 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5897
+13:05:26.681 [Thread-49] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=763bee2b Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:26.729 [Thread-49] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=763bee2b Reply to sender
+13:05:27.746 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:27.747 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=f24561f9,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:27.747 [nioEventLoopGroup-3-1] DEBUG k.a.k.m.LocatorUpdater - SessionID=f24561f9 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:27.748 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:27.749 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5902
+13:05:27.749 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5902
+13:05:27.751 [Thread-50] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=f24561f9 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:27.758 [Thread-50] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=f24561f9 Reply to sender
+13:05:28.764 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:28.764 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=32172794,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:28.764 [nioEventLoopGroup-3-2] DEBUG k.a.k.m.LocatorUpdater - SessionID=32172794 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:28.766 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:28.767 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5909
+13:05:28.767 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5909
+13:05:28.770 [Thread-51] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=32172794 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:28.781 [Thread-51] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=32172794 Reply to sender
+13:05:29.821 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:29.822 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=5bacf2e4,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:29.822 [nioEventLoopGroup-3-3] DEBUG k.a.k.m.LocatorUpdater - SessionID=5bacf2e4 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:29.824 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:29.825 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5914
+13:05:29.826 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5914
+13:05:29.829 [Thread-52] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=5bacf2e4 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:29.844 [Thread-52] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=5bacf2e4 Reply to sender
+13:05:30.859 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:30.860 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=a51d517c,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:30.860 [nioEventLoopGroup-3-4] DEBUG k.a.k.m.LocatorUpdater - SessionID=a51d517c Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:30.862 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:30.862 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5920
+13:05:30.863 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5920
+13:05:30.865 [Thread-53] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=a51d517c Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:30.877 [Thread-53] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=a51d517c Reply to sender
+13:05:31.908 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:31.909 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=98669745,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:31.909 [nioEventLoopGroup-3-5] DEBUG k.a.k.m.LocatorUpdater - SessionID=98669745 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:31.910 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:31.911 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5926
+13:05:31.911 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5926
+13:05:31.913 [Thread-54] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=98669745 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:31.921 [Thread-54] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=98669745 Reply to sender
+13:05:32.956 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:32.956 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=375285ff,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:32.956 [nioEventLoopGroup-3-6] DEBUG k.a.k.m.LocatorUpdater - SessionID=375285ff Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:32.958 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:32.959 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5931
+13:05:32.959 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5931
+13:05:32.961 [Thread-55] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=375285ff Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:32.971 [Thread-55] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=375285ff Reply to sender
+13:05:34.016 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:34.017 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=7fb8ab10,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:34.017 [nioEventLoopGroup-3-7] DEBUG k.a.k.m.LocatorUpdater - SessionID=7fb8ab10 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:34.019 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:34.020 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5936
+13:05:34.021 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5936
+13:05:34.025 [Thread-56] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=7fb8ab10 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:34.047 [Thread-56] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=7fb8ab10 Reply to sender
+13:05:35.094 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:35.095 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=bc2b3aa4,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:35.096 [nioEventLoopGroup-3-8] DEBUG k.a.k.m.LocatorUpdater - SessionID=bc2b3aa4 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:35.100 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:35.123 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5942
+13:05:35.123 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5942
+13:05:35.127 [Thread-57] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=bc2b3aa4 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:35.139 [Thread-57] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=bc2b3aa4 Reply to sender
+13:05:36.160 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:36.160 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=cd415ad9,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:36.160 [nioEventLoopGroup-3-1] DEBUG k.a.k.m.LocatorUpdater - SessionID=cd415ad9 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:36.162 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:36.162 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5947
+13:05:36.162 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5947
+13:05:36.165 [Thread-58] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=cd415ad9 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:36.176 [Thread-58] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=cd415ad9 Reply to sender
+13:05:37.193 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:37.194 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=50eb2cb0,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:37.194 [nioEventLoopGroup-3-2] DEBUG k.a.k.m.LocatorUpdater - SessionID=50eb2cb0 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:37.195 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:37.196 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5952
+13:05:37.196 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5952
+13:05:37.198 [Thread-59] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=50eb2cb0 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:37.206 [Thread-59] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=50eb2cb0 Reply to sender
+13:05:38.233 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:38.234 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=919b24fd,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:38.234 [nioEventLoopGroup-3-3] DEBUG k.a.k.m.LocatorUpdater - SessionID=919b24fd Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:38.236 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:38.237 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5957
+13:05:38.237 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5957
+13:05:38.239 [Thread-60] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=919b24fd Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:38.250 [Thread-60] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=919b24fd Reply to sender
+13:05:39.265 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:39.265 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=69db4597,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:39.266 [nioEventLoopGroup-3-4] DEBUG k.a.k.m.LocatorUpdater - SessionID=69db4597 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:39.267 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:39.268 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5962
+13:05:39.268 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5962
+13:05:39.271 [Thread-61] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=69db4597 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:39.282 [Thread-61] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=69db4597 Reply to sender
+13:05:40.305 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:40.305 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=86fd73f6,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:40.306 [nioEventLoopGroup-3-5] DEBUG k.a.k.m.LocatorUpdater - SessionID=86fd73f6 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:40.308 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:40.309 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5967
+13:05:40.310 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5967
+13:05:40.313 [Thread-62] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=86fd73f6 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:40.328 [Thread-62] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=86fd73f6 Reply to sender
+13:05:41.341 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:41.341 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=303d0bef,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:41.341 [nioEventLoopGroup-3-6] DEBUG k.a.k.m.LocatorUpdater - SessionID=303d0bef Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:41.343 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:41.344 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5972
+13:05:41.344 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5972
+13:05:41.346 [Thread-63] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=303d0bef Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:41.356 [Thread-63] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=303d0bef Reply to sender
+13:05:42.373 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:42.373 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=049f247d,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:42.373 [nioEventLoopGroup-3-7] DEBUG k.a.k.m.LocatorUpdater - SessionID=049f247d Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:42.375 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:42.375 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5977
+13:05:42.376 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5977
+13:05:42.378 [Thread-64] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=049f247d Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:42.384 [Thread-64] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=049f247d Reply to sender
+13:05:43.405 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:43.406 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=5559425c,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:43.406 [nioEventLoopGroup-3-8] DEBUG k.a.k.m.LocatorUpdater - SessionID=5559425c Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:43.407 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:43.407 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5982
+13:05:43.408 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5982
+13:05:43.410 [Thread-65] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=5559425c Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:43.418 [Thread-65] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=5559425c Reply to sender
+13:05:44.432 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:44.432 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=0538ee69,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:44.432 [nioEventLoopGroup-3-1] DEBUG k.a.k.m.LocatorUpdater - SessionID=0538ee69 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:44.433 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:44.434 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5987
+13:05:44.434 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5987
+13:05:44.436 [Thread-66] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=0538ee69 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:44.446 [Thread-66] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=0538ee69 Reply to sender
+13:05:45.459 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:45.459 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=2060453a,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:45.459 [nioEventLoopGroup-3-2] DEBUG k.a.k.m.LocatorUpdater - SessionID=2060453a Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:45.460 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:45.461 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5992
+13:05:45.461 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5992
+13:05:45.462 [Thread-67] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=2060453a Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:45.473 [Thread-67] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=2060453a Reply to sender
+13:05:46.509 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:46.509 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=5dd70569,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:46.509 [nioEventLoopGroup-3-3] DEBUG k.a.k.m.LocatorUpdater - SessionID=5dd70569 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:46.511 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:46.513 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5998
+13:05:46.513 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,5998
+13:05:46.516 [Thread-68] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=5dd70569 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:46.523 [Thread-68] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=5dd70569 Reply to sender
+13:05:47.534 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:47.535 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=dba55923,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:47.535 [nioEventLoopGroup-3-4] DEBUG k.a.k.m.LocatorUpdater - SessionID=dba55923 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:47.536 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:47.536 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6003
+13:05:47.536 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6003
+13:05:47.538 [Thread-69] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=dba55923 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:47.545 [Thread-69] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=dba55923 Reply to sender
+13:05:48.567 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:48.567 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=05b76f10,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:48.567 [nioEventLoopGroup-3-5] DEBUG k.a.k.m.LocatorUpdater - SessionID=05b76f10 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:48.569 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:48.570 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6008
+13:05:48.570 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6008
+13:05:48.572 [Thread-70] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=05b76f10 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:48.588 [Thread-70] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=05b76f10 Reply to sender
+13:05:49.638 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:49.638 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=5c6ebf7a,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:49.639 [nioEventLoopGroup-3-6] DEBUG k.a.k.m.LocatorUpdater - SessionID=5c6ebf7a Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:49.641 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:49.642 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6013
+13:05:49.643 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6013
+13:05:49.647 [Thread-71] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=5c6ebf7a Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:49.664 [Thread-71] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=5c6ebf7a Reply to sender
+13:05:50.692 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:50.693 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=2ad38dc5,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:50.693 [nioEventLoopGroup-3-7] DEBUG k.a.k.m.LocatorUpdater - SessionID=2ad38dc5 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:50.696 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:50.697 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6018
+13:05:50.698 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6018
+13:05:50.701 [Thread-72] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=2ad38dc5 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:50.718 [Thread-72] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=2ad38dc5 Reply to sender
+13:05:51.729 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:51.730 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=4d67db9c,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:51.730 [nioEventLoopGroup-3-8] DEBUG k.a.k.m.LocatorUpdater - SessionID=4d67db9c Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:51.731 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:51.731 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6023
+13:05:51.731 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6023
+13:05:51.733 [Thread-73] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=4d67db9c Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:51.740 [Thread-73] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=4d67db9c Reply to sender
+13:05:52.758 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:52.758 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=3713cc9c,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:52.759 [nioEventLoopGroup-3-1] DEBUG k.a.k.m.LocatorUpdater - SessionID=3713cc9c Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:52.760 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:52.762 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6028
+13:05:52.763 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6028
+13:05:52.765 [Thread-74] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=3713cc9c Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:52.774 [Thread-74] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=3713cc9c Reply to sender
+13:05:53.785 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:53.785 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=41124a76,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:53.785 [nioEventLoopGroup-3-2] DEBUG k.a.k.m.LocatorUpdater - SessionID=41124a76 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:53.787 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:53.787 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6033
+13:05:53.788 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6033
+13:05:53.790 [Thread-75] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=41124a76 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:53.802 [Thread-75] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=41124a76 Reply to sender
+13:05:54.816 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:54.816 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=15f33e21,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:54.816 [nioEventLoopGroup-3-3] DEBUG k.a.k.m.LocatorUpdater - SessionID=15f33e21 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:54.817 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:54.818 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6038
+13:05:54.818 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6038
+13:05:54.819 [Thread-76] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=15f33e21 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:54.826 [Thread-76] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=15f33e21 Reply to sender
+13:05:55.867 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:55.867 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=ab205786,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:55.867 [nioEventLoopGroup-3-4] DEBUG k.a.k.m.LocatorUpdater - SessionID=ab205786 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:55.870 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:55.872 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6043
+13:05:55.872 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6043
+13:05:55.876 [Thread-77] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=ab205786 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:55.886 [Thread-77] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=ab205786 Reply to sender
+13:05:56.936 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:56.936 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=1bebf097,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:56.937 [nioEventLoopGroup-3-5] DEBUG k.a.k.m.LocatorUpdater - SessionID=1bebf097 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:56.938 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:56.939 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6048
+13:05:56.940 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6048
+13:05:56.943 [Thread-78] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=1bebf097 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:56.956 [Thread-78] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=1bebf097 Reply to sender
+13:05:57.973 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:57.973 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=5a0d058c,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:57.973 [nioEventLoopGroup-3-6] DEBUG k.a.k.m.LocatorUpdater - SessionID=5a0d058c Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:57.975 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:57.976 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6053
+13:05:57.976 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6053
+13:05:57.978 [Thread-79] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=5a0d058c Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:57.988 [Thread-79] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=5a0d058c Reply to sender
+13:05:59.001 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:05:59.001 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=fbabc441,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:05:59.001 [nioEventLoopGroup-3-7] DEBUG k.a.k.m.LocatorUpdater - SessionID=fbabc441 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:05:59.003 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:05:59.004 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6058
+13:05:59.004 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6058
+13:05:59.006 [Thread-80] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=fbabc441 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:05:59.014 [Thread-80] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=fbabc441 Reply to sender
+13:06:00.056 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:00.057 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=999abe85,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:06:00.057 [nioEventLoopGroup-3-8] DEBUG k.a.k.m.LocatorUpdater - SessionID=999abe85 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:06:00.059 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:00.060 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6063
+13:06:00.060 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6063
+13:06:00.065 [Thread-81] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=999abe85 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:06:00.080 [Thread-81] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=999abe85 Reply to sender
+13:06:01.123 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:01.123 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=f1fb44a8,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:06:01.124 [nioEventLoopGroup-3-1] DEBUG k.a.k.m.LocatorUpdater - SessionID=f1fb44a8 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:06:01.126 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:01.127 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6068
+13:06:01.127 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6068
+13:06:01.132 [Thread-82] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=f1fb44a8 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:06:01.141 [Thread-82] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=f1fb44a8 Reply to sender
+13:06:02.155 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:02.155 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=3954fd9d,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:06:02.155 [nioEventLoopGroup-3-2] DEBUG k.a.k.m.LocatorUpdater - SessionID=3954fd9d Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:06:02.156 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:02.157 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6073
+13:06:02.157 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6073
+13:06:02.159 [Thread-83] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=3954fd9d Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:06:02.170 [Thread-83] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=3954fd9d Reply to sender
+13:06:03.188 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:03.188 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=86257400,srcMRN=urn:mrn:imo:imo-no:1000001,dstMRN=urn:mrn:smart-navi:device:mms1
+13:06:03.188 [nioEventLoopGroup-3-3] DEBUG k.a.k.m.LocatorUpdater - SessionID=86257400 Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1
+13:06:03.190 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:03.191 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Location-Update:127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6078
+13:06:03.191 [main] INFO  k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=127.0.0.1,urn:mrn:imo:imo-no:1000001,0,1,6078
+13:06:03.194 [Thread-84] DEBUG k.a.k.m.MessageQueueDequeuer - SessionID=86257400 Queue name=urn:mrn:imo:imo-no:1000001::urn:mrn:smart-navi:device:tm-server
+13:06:03.212 [Thread-84] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=86257400 Reply to sender
+13:06:12.804 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:12.805 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:12.806 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,6084
+13:06:12.806 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:06:12.806 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:06:12.807 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=7beeb738,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:06:12.807 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=7beeb738 Connected=http://127.0.0.1:8902/forwarding
+13:06:12.814 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:12.815 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:12.816 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,6089
+13:06:12.817 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:06:12.817 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:06:12.818 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=3d183016,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:06:12.830 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=3d183016 Reply to sender
+13:06:12.832 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=7beeb738 HTTP
+13:06:12.832 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=7beeb738 Reply to sender
+13:06:12.847 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:12.849 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:12.850 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,6094
+13:06:12.850 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:06:12.850 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:06:12.852 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=91773649,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:06:12.852 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=91773649 Connected=http://127.0.0.1:8902/forwarding
+13:06:12.857 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:12.858 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:12.858 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,6098
+13:06:12.858 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:06:12.858 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:06:12.860 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=f79aea71,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:06:12.867 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=f79aea71 Reply to sender
+13:06:12.870 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=91773649 HTTP
+13:06:12.870 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=91773649 Reply to sender
+13:06:12.886 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:12.887 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:12.888 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,6103
+13:06:12.888 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:06:12.888 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:06:12.890 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=27fa6b8a,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:06:12.890 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=27fa6b8a Connected=http://127.0.0.1:8902/forwarding
+13:06:12.894 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:12.895 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:12.896 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,6107
+13:06:12.896 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:06:12.896 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:06:12.897 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=024d698a,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:06:12.908 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=024d698a Reply to sender
+13:06:12.910 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=27fa6b8a HTTP
+13:06:12.910 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=27fa6b8a Reply to sender
+13:06:12.924 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:12.925 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:12.926 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,6112
+13:06:12.926 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:06:12.926 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:06:12.927 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=7785925c,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:06:12.927 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=7785925c Connected=http://127.0.0.1:8902/forwarding
+13:06:12.932 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:12.934 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:12.935 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,6116
+13:06:12.936 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:06:12.936 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:06:12.938 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=de6d3f46,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:06:12.949 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=de6d3f46 Reply to sender
+13:06:12.951 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=7785925c HTTP
+13:06:12.951 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=7785925c Reply to sender
+13:06:12.967 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:12.968 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:12.969 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,6121
+13:06:12.969 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:06:12.970 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:06:12.971 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=f78b6848,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:06:12.971 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=f78b6848 Connected=http://127.0.0.1:8902/forwarding
+13:06:12.975 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:12.976 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:12.978 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,6125
+13:06:12.978 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:06:12.978 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:06:12.979 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=43902118,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:06:12.989 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=43902118 Reply to sender
+13:06:12.990 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=f78b6848 HTTP
+13:06:12.990 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=f78b6848 Reply to sender
+13:06:13.003 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:13.004 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:13.005 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,6130
+13:06:13.005 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:06:13.005 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:06:13.007 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=ed164f87,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:06:13.007 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=ed164f87 Connected=http://127.0.0.1:8902/forwarding
+13:06:13.011 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:13.012 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:13.013 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,6134
+13:06:13.013 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:06:13.013 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:06:13.014 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=81ff6875,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:06:13.023 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=81ff6875 Reply to sender
+13:06:13.024 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=ed164f87 HTTP
+13:06:13.024 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=ed164f87 Reply to sender
+13:06:13.038 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:13.040 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:13.041 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,6139
+13:06:13.041 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:06:13.041 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:06:13.043 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=507d61f4,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:06:13.043 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=507d61f4 Connected=http://127.0.0.1:8902/forwarding
+13:06:13.047 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:13.048 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:13.049 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,6143
+13:06:13.050 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:06:13.050 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:06:13.052 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=e5204680,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:06:13.071 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=e5204680 Reply to sender
+13:06:13.072 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=507d61f4 HTTP
+13:06:13.073 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=507d61f4 Reply to sender
+13:06:13.087 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:13.088 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:13.089 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,6148
+13:06:13.089 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:06:13.089 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:06:13.090 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=c8130952,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:06:13.090 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=c8130952 Connected=http://127.0.0.1:8902/forwarding
+13:06:13.094 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:13.095 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:13.096 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,6152
+13:06:13.096 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:06:13.096 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:06:13.097 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MessageRelayingHandler - SessionID=e371b418,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:06:13.106 [nioEventLoopGroup-3-3] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=e371b418 Reply to sender
+13:06:13.107 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MessageRelayingHandler - SessionID=c8130952 HTTP
+13:06:13.107 [nioEventLoopGroup-3-2] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=c8130952 Reply to sender
+13:06:13.119 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:13.120 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:13.121 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,6157
+13:06:13.121 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:06:13.121 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:06:13.122 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=7a3ff2d8,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:06:13.123 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=7a3ff2d8 Connected=http://127.0.0.1:8902/forwarding
+13:06:13.126 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:13.127 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:13.128 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,6161
+13:06:13.128 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:06:13.128 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:06:13.129 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MessageRelayingHandler - SessionID=52b06fb0,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:06:13.143 [nioEventLoopGroup-3-5] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=52b06fb0 Reply to sender
+13:06:13.144 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MessageRelayingHandler - SessionID=7a3ff2d8 HTTP
+13:06:13.145 [nioEventLoopGroup-3-4] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=7a3ff2d8 Reply to sender
+13:06:13.162 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:13.164 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:13.165 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:smart-navi:device:tm-server,6166
+13:06:13.165 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:smart-navi:device:tm-server
+13:06:13.166 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:8902:2
+13:06:13.167 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=d7807751,srcMRN=urn:mrn:imo:imo-no:1000002,dstMRN=urn:mrn:smart-navi:device:tm-server
+13:06:13.167 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=d7807751 Connected=http://127.0.0.1:8902/forwarding
+13:06:13.173 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:13.175 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:13.176 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MRN-Request:urn:mrn:imo:imo-no:1000001,6170
+13:06:13.177 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=urn:mrn:imo:imo-no:1000001
+13:06:13.177 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:127.0.0.1:0:1
+13:06:13.179 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MessageRelayingHandler - SessionID=4b807c94,srcMRN=urn:mrn:smart-navi:device:tm-server,dstMRN=urn:mrn:imo:imo-no:1000001
+13:06:13.189 [nioEventLoopGroup-3-7] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=4b807c94 Reply to sender
+13:06:13.192 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MessageRelayingHandler - SessionID=d7807751 HTTP
+13:06:13.192 [nioEventLoopGroup-3-6] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=d7807751 Reply to sender
+13:06:15.734 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:15.735 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MessageRelayingHandler - SessionID=64b1a65d,srcMRN=null,dstMRN=null
+13:06:15.736 [nioEventLoopGroup-3-8] DEBUG kr.ac.kaist.mms_server.MMSLog - Dump-MNS
+13:06:15.736 [nioEventLoopGroup-3-8] DEBUG kr.ac.kaist.mms_server.MMSLog - Reply port : 6178
+13:06:15.736 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Packet incomming
+13:06:15.737 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - Dump-MNS:,6178
+13:06:15.737 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy:data=Dump-MNS:,6178
+13:06:15.737 [main] DEBUG k.ac.kaist.mns_interaction.MNSDummy - MNSDummy-Reply:urn:mrn:smart-navi:device:tm-server,127.0.0.1:8902:2<br/>urn:mrn:imo:imo-no:1000001,127.0.0.1:0:1<br/>
+13:06:15.738 [nioEventLoopGroup-3-8] DEBUG kr.ac.kaist.mms_server.MMSLog - Dumped MNS: MNSDummy-Reply:urn:mrn:smart-navi:device:tm-server,127.0.0.1:8902:2<br/>urn:mrn:imo:imo-no:1000001,127.0.0.1:0:1<br/>
+13:06:15.739 [nioEventLoopGroup-3-8] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=64b1a65d Reply to sender
+13:06:16.654 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageInputChannel - Message received
+13:06:16.655 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MessageRelayingHandler - SessionID=4047238c,srcMRN=null,dstMRN=null
+13:06:16.655 [nioEventLoopGroup-3-1] INFO  k.a.k.m.MRH_MessageOutputChannel - SessionID=4047238c Reply to sender

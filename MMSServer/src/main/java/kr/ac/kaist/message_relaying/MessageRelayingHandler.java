@@ -53,6 +53,15 @@ Rev. history : 2017-07-28
 Version : 0.5.9
 	Added null MRN and invalid MRN cases. 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Added adding mrn entry case.
+	Added removing polling method of mrn case.
+	Added enum msgType and removed public integers.
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -82,7 +91,7 @@ public class MessageRelayingHandler  {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageRelayingHandler.class);
 
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 
 	private MessageParser parser = null;
 	private MessageTypeDecider typeDecider = null;
@@ -93,7 +102,7 @@ public class MessageRelayingHandler  {
 	
 	private String protocol = "";
 	
-	public MessageRelayingHandler(ChannelHandlerContext ctx, FullHttpRequest req, String protocol, int sessionId) {		
+	public MessageRelayingHandler(ChannelHandlerContext ctx, FullHttpRequest req, String protocol, String sessionId) {		
 		this.protocol = protocol;
 		this.SESSION_ID = sessionId;
 		
@@ -101,7 +110,7 @@ public class MessageRelayingHandler  {
 		initializeSubModule();
 		parser.parseMessage(ctx, req);
 		
-		int type = typeDecider.decideType(parser, mch);
+		MessageTypeDecider.msgType type = typeDecider.decideType(parser, mch);
 		processRelaying(type, ctx, req);
 	}
 	
@@ -116,7 +125,7 @@ public class MessageRelayingHandler  {
 		outputChannel = new MRH_MessageOutputChannel(this.SESSION_ID);
 	}
 
-	private void processRelaying(int type, ChannelHandlerContext ctx, FullHttpRequest req){
+	private void processRelaying(MessageTypeDecider.msgType type, ChannelHandlerContext ctx, FullHttpRequest req){
 		String srcMRN = parser.getSrcMRN();
 		String dstMRN = parser.getDstMRN();
 		HttpMethod httpMethod = parser.getHttpMethod();
@@ -125,19 +134,20 @@ public class MessageRelayingHandler  {
 		int dstPort = parser.getDstPort();
 
 		logger.info("SessionID="+this.SESSION_ID+",srcMRN="+srcMRN+",dstMRN="+dstMRN);
+		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+",srcMRN="+srcMRN+",dstMRN="+dstMRN);
 		
 		byte[] message = null;
 		
-		if (type == MessageTypeDecider.NULL_MRN) {
+		if (type == MessageTypeDecider.msgType.NULL_MRN) {
 			message = "Error: Null MRNs.".getBytes(Charset.forName("UTF-8"));
 		}
-		else if (type == MessageTypeDecider.NULL_SRC_MRN) {
+		else if (type == MessageTypeDecider.msgType.NULL_SRC_MRN) {
 			message = "Error: Null source MRN.".getBytes(Charset.forName("UTF-8"));
 		}
-		else if (type == MessageTypeDecider.NULL_DST_MRN) {
+		else if (type == MessageTypeDecider.msgType.NULL_DST_MRN) {
 			message = "Error: Null destination MRN.".getBytes(Charset.forName("UTF-8"));
 		}
-		else if (type == MessageTypeDecider.POLLING) {
+		else if (type == MessageTypeDecider.msgType.POLLING) {
 			parser.parseLocInfo(req);
 			
 			String srcIP = parser.getSrcIP();
@@ -148,13 +158,13 @@ public class MessageRelayingHandler  {
 			//@Deprecated
 			//message = srh.processPollingMessage(srcMRN, srcIP, srcPort, srcModel);
 			SessionManager.sessionInfo.put(SESSION_ID, "p");
-			MMSLog.nMsgWaitingPollClnt++;
+			MMSLog.increasePollingClientCount();
 			
 			srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, srcPort, srcModel, svcMRN);
 			
 			return;
 		} 
-		else if (type == MessageTypeDecider.RELAYING_TO_SC) {
+		else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC) {
 			
 			//@Deprecated
 			//srh.putSCMessage(dstMRN, req);
@@ -162,7 +172,7 @@ public class MessageRelayingHandler  {
 			srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
     		message = "OK".getBytes(Charset.forName("UTF-8"));
 		} 
-		else if (type == MessageTypeDecider.RELAYING_TO_MULTIPLE_SC){
+		else if (type == MessageTypeDecider.msgType.RELAYING_TO_MULTIPLE_SC){
 			String [] dstMRNs = parser.getMultiDstMRN();
 			logger.debug("SessionID="+this.SESSION_ID+" multicast");
 			for (int i = 0; i < dstMRNs.length;i++){
@@ -170,7 +180,7 @@ public class MessageRelayingHandler  {
 			}
     		message = "OK".getBytes(Charset.forName("UTF-8"));
 		} 
-		else if (type == MessageTypeDecider.RELAYING_TO_SERVER) {
+		else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
         	try {
         		if (protocol.equals("http")) {
 				    message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod);
@@ -189,7 +199,7 @@ public class MessageRelayingHandler  {
 				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			}
 		} 
-		else if (type == MessageTypeDecider.REGISTER_CLIENT) {
+		else if (type == MessageTypeDecider.msgType.REGISTER_CLIENT) {
 			parser.parseLocInfo(req);
 			
 			String srcIP = parser.getSrcIP();
@@ -205,7 +215,7 @@ public class MessageRelayingHandler  {
 			}
 			
 		} 
-		else if (type == MessageTypeDecider.STATUS){
+		else if (type == MessageTypeDecider.msgType.STATUS){
     		String status;
     		
 			try {
@@ -219,7 +229,7 @@ public class MessageRelayingHandler  {
 				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			}
 		}
-		else if (type == MessageTypeDecider.EMPTY_MNSDummy) {
+		else if (type == MessageTypeDecider.msgType.EMPTY_MNSDummy) {
     		try {
 				emptyMNS();
 				message = "OK".getBytes(Charset.forName("UTF-8"));
@@ -231,7 +241,7 @@ public class MessageRelayingHandler  {
 				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			}
 		} 
-		else if (type == MessageTypeDecider.REMOVE_MNS_ENTRY) {
+		else if (type == MessageTypeDecider.msgType.REMOVE_MNS_ENTRY) {
     		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
     		logger.info("SessionID="+this.SESSION_ID+" Remove MRN=" + params.get("mrn").get(0));
@@ -246,7 +256,22 @@ public class MessageRelayingHandler  {
 				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			} 
 		} 
-		else if (type == MessageTypeDecider.POLLING_METHOD) {
+		else if (type == MessageTypeDecider.msgType.ADD_MNS_ENTRY) {
+			QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+			Map<String,List<String>> params = qsd.parameters();
+			logger.info("SessionID="+this.SESSION_ID+" Add MRN=" + params.get("mrn").get(0) + " IP=" + params.get("ip").get(0) + " Port=" + params.get("port").get(0) + " Model=" + params.get("model").get(0));
+			try {
+				addEntryMNS(params.get("mrn").get(0), params.get("ip").get(0), params.get("port").get(0), params.get("model").get(0));
+				message = "OK".getBytes(Charset.forName("UTF-8"));
+			}
+			catch (UnknownHostException e) {
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
+			} 
+    		catch (IOException e) {
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
+			} 
+		}
+		else if (type == MessageTypeDecider.msgType.POLLING_METHOD) {
 			QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
     		String method = params.get("method").get(0);
@@ -265,21 +290,28 @@ public class MessageRelayingHandler  {
     				message = "OK".getBytes(Charset.forName("UTF-8"));
      				logger.warn("SessionID="+this.SESSION_ID+",svcMRN="+svcMRN+" polling method is switched to long polling");
 	    		
-	    		} 
+	    		} else if (method.equals("remove")) {
+	    			
+	    			PollingMethodRegDummy.pollingMethodReg.remove(svcMRN);
+    				message = "OK".getBytes(Charset.forName("UTF-8"));
+     				logger.warn("SessionID="+this.SESSION_ID+",svcMRN="+svcMRN+" polling method is removed");
+	    		
+	    		}
     		}
     		else {
     			message = "Wrong  parameter".getBytes(Charset.forName("UTF-8"));
     		}
 		} 
+		/*
 		else if (type == MessageTypeDecider.EMPTY_QUEUE_LOGS) {
-			MMSLog.queueLogForClient.setLength(0);
+			MMSLog.setLength(0);
 			message = "OK".getBytes(Charset.forName("UTF-8"));
-		}
+		}*/
 
-		else if (type == MessageTypeDecider.UNKNOWN_MRN) {
+		else if (type == MessageTypeDecider.msgType.UNKNOWN_MRN) {
 			message = "No Device having that MRN".getBytes();
 		} 
-		else if (type == MessageTypeDecider.UNKNOWN_HTTP_TYPE) {
+		else if (type == MessageTypeDecider.msgType.UNKNOWN_HTTP_TYPE) {
 			message = "Unknown http type".getBytes();
 		}
 		
@@ -287,7 +319,8 @@ public class MessageRelayingHandler  {
 	}
 	
 
-  
+//This method will be
+  @Deprecated
   private void emptyMNS() throws UnknownHostException, IOException{ //
 
   	Socket MNSSocket = new Socket("localhost", 1004);
@@ -304,6 +337,8 @@ public class MessageRelayingHandler  {
   	return;
   }
   
+//This method will be
+  @Deprecated
   private void removeEntryMNS(String mrn) throws UnknownHostException, IOException{ //
   	
   	Socket MNSSocket = new Socket("localhost", 1004);
@@ -311,7 +346,7 @@ public class MessageRelayingHandler  {
   	BufferedWriter outToMNS = new BufferedWriter(
 					new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
   	
-  	logger.info("SessionID="+this.SESSION_ID+" "+"Remove-Entry:"+mrn);
+  	logger.info("SessionID="+this.SESSION_ID+" Remove-Entry="+mrn);
   	outToMNS.write("Remove-Entry:"+mrn);
   	outToMNS.flush();
   	outToMNS.close();
@@ -320,6 +355,21 @@ public class MessageRelayingHandler  {
   	return;
   }
   
-
- 
+//This method will be
+  @Deprecated
+  private void addEntryMNS(String mrn, String ip, String port, String model) throws UnknownHostException, IOException {
+	
+	  Socket MNSSocket = new Socket("localhost", 1004);
+	  
+	  BufferedWriter outToMNS = new BufferedWriter(
+				new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
+	
+	  logger.info("SessionID="+this.SESSION_ID+" Add-Entry="+mrn);
+	  outToMNS.write("Add-Entry:"+mrn+","+ip+","+port+","+model);
+	  outToMNS.flush();
+	  outToMNS.close();
+	  MNSSocket.close();
+	
+	  return;
+  }
 }

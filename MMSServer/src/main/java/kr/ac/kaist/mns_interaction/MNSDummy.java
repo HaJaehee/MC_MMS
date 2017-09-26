@@ -26,6 +26,11 @@ Version : 0.5.8
 	Added geocasting related features
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Added adding mrn entry case 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -131,7 +136,7 @@ public class MNSDummy {
           	  }else{ // if geocasting (urn:mrn:mcs:casting:geocasting:smart:-)
           		  String geoMRN = data.substring(34);
           		  String[] parsedGeoMRN = geoMRN.split("-");
-          		  logger.info(geoMRN);;
+          		  logger.info("Geocasting MRN="+geoMRN);
           		  float lat = Float.parseFloat(parsedGeoMRN[1]); 
           		  float lon = Float.parseFloat(parsedGeoMRN[3]);
           		  float rad = Float.parseFloat(parsedGeoMRN[5]);
@@ -226,7 +231,14 @@ public class MNSDummy {
           }else if (data.regionMatches(0, "Remove-Entry:", 0, 13) && MMSConfiguration.WEB_MANAGING){
         	  String mrn = data.substring(13);
         	  MRNtoIP.remove(mrn);
-        	  logger.info("MNSDummy:REMOVE "+mrn);
+        	  logger.info("MNSDummy:REMOVE="+mrn);
+          }else if (data.regionMatches(0, "Add-Entry:", 0, 10) && MMSConfiguration.WEB_MANAGING){
+        	  String[] params = data.substring(10).split(",");
+        	  String mrn = params[0];
+        	  String locator = params[1] +":"+ params[2] +":"+ params[3];
+        	  MRNtoIP.put(mrn, locator);
+        	  logger.info("MNSDummy:ADD="+mrn);
+        	  
           //Geo-location update function.  
           }else if (data.regionMatches(0, "Geo-location-Update:", 0, 20)){
         	  //TODO:Processing geo-location update message

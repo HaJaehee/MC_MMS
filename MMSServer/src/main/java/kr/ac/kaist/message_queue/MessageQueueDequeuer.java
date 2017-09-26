@@ -41,6 +41,11 @@ Rev. history : 2017-09-13
 Version : 0.6.0
 	Fixed channel.close() and connection.close() bugs
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -76,7 +81,7 @@ import kr.ac.kaist.seamless_roaming.PollingMethodRegDummy;
 class MessageQueueDequeuer extends Thread{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueDequeuer.class);
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 	
 	private String queueName = null;
 	private String srcMRN = null;
@@ -86,7 +91,7 @@ class MessageQueueDequeuer extends Thread{
 	private Channel channel = null;
 	private Connection connection = null;
 	
-	MessageQueueDequeuer (int sessionId) {
+	MessageQueueDequeuer (String sessionId) {
 		this.SESSION_ID = sessionId;
 	}
 	
@@ -141,12 +146,13 @@ class MessageQueueDequeuer extends Thread{
 			
 			if (msgCount > 0) { //If the queue has a message
 				message.append("]");
-				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>");
+				//if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>");
+				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("[MessageQueueDequeuer] "+queueName);
 		    	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
 		    	if (clientType != null) {
 		    		SessionManager.sessionInfo.remove(SESSION_ID);
 		    		if (clientType.equals("p")) {
-		    			MMSLog.nMsgWaitingPollClnt--;
+		    			MMSLog.decreasePollingClientCount();
 		    		}
 		    	}
 
@@ -161,7 +167,7 @@ class MessageQueueDequeuer extends Thread{
 			    	if (clientType != null) {
 			    		SessionManager.sessionInfo.remove(SESSION_ID);
 			    		if (clientType.equals("p")) {
-			    			MMSLog.nMsgWaitingPollClnt--;
+			    			MMSLog.decreasePollingClientCount();
 			    		}
 			    	}
 
@@ -174,25 +180,28 @@ class MessageQueueDequeuer extends Thread{
 					QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 					if(!ctx.isRemoved()){
 						message.append("[\""+URLEncoder.encode(new String(delivery.getBody()),"UTF-8")+"\"]");
-						if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>");
-		
+						//if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>");
+						if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("[MessageQueueDequeuer] "+queueName);
 				    	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
 				    	if (clientType != null) {
 				    		SessionManager.sessionInfo.remove(SESSION_ID);
 				    		if (clientType.equals("p")) {
-				    			MMSLog.nMsgWaitingPollClnt--;
+				    			MMSLog.decreasePollingClientCount();
 				    		}
 				    	}
 					    outputChannel.replyToSender(ctx, message.toString().getBytes());
 						channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 					} else {
 						message.append(new String(delivery.getBody()));
-						if(MMSConfiguration.WEB_LOG_PROVIDING) {
+						/*if(MMSConfiguration.WEB_LOG_PROVIDING) {
 							MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>");
 							MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+srcMRN+" is disconnected<br/>");
-							MMSLog.queueLogForClient.append(longSpace+"Requeue: "+queueName +"<br/>");
+							MMSLog.queueLogForClient.append(longSpace+"Requeue="+queueName +"<br/>");
+						}*/
+						if(MMSConfiguration.WEB_LOG_PROVIDING) {
+							MMSLog.addBriefLogForStatus("[MessageQueueDequeuer] "+queueName);
+							MMSLog.addBriefLogForStatus("[MessageQueueDequeuer] "+srcMRN+" is disconnected. Requeue.");
 						}
-		
 						logger.warn("SessionID="+this.SESSION_ID+" "+srcMRN+" is disconnected. Requeue.");
 						channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
 					}
