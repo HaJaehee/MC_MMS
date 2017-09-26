@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Map;
@@ -55,16 +56,25 @@ Rev. history : 2017-07-28
 Version : 0.5.9
 	Added polling method each service.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Added brief log for status case.
+	Revised variable from nMsgWaitingPollClnt to msgWaitingPollClientCount.
+	Revised variable msgWaitingPollClientCount from  to 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 public class MMSLog {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MMSLog.class);
-	public static String MNSLog = "";
-	public static StringBuffer queueLogForClient = new StringBuffer();
+	//public static String MNSLog = "";
+	//public static StringBuffer queueLogForClient = new StringBuffer();
+	
+	private static ArrayList<String> briefLogForStatus = new ArrayList<String>();
 
-	public static int nMsgWaitingPollClnt = 0;
+	private static int msgWaitingPollClientCount = 0;
 	
 	public static String getStatus ()  throws UnknownHostException, IOException{
 		  	
@@ -95,10 +105,13 @@ public class MMSLog {
 		}
 		status.append("<br/>");
 	
-		status.append("Waiting polling clients: "+MMSLog.nMsgWaitingPollClnt+"<br/><br/>");
+		status.append("Waiting polling clients: "+MMSLog.msgWaitingPollClientCount+"<br/><br/>");
 		
-		status.append("MMS Queue log:<br/>");
-		status.append(MMSLog.queueLogForClient + "<br/>");
+		status.append("MMS Brief Log(Maximum list size:"+MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE+")<br/>");
+		for (String log : briefLogForStatus) {
+			status.append(log+"<br/>");
+		}
+		
   	
   	return status.toString();
   }
@@ -141,4 +154,20 @@ public class MMSLog {
   	dumpedMNS = dumpedMNS.substring(15);
   	return dumpedMNS;
   }
+	public static void addBriefLogForStatus (String arg) {
+		if (briefLogForStatus.size() > MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE) {
+			briefLogForStatus.remove(0);
+			briefLogForStatus.add(arg);
+		}
+		else {
+			briefLogForStatus.add(arg);
+		}
+	}
+	
+	public static void increasePollingClientCount (){
+		msgWaitingPollClientCount++;
+	}
+	public static void decreasePollingClientCount (){
+		msgWaitingPollClientCount--;
+	}
 }

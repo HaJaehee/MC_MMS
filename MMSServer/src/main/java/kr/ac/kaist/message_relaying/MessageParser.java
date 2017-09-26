@@ -24,6 +24,10 @@ Version : 0.5.8
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 		   Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -41,7 +45,7 @@ import io.netty.handler.codec.http.HttpMethod;
 public class MessageParser {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageParser.class);
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 	private String srcIP = null;
 	private String srcMRN = null;
 	private String dstIP = null;
@@ -55,7 +59,7 @@ public class MessageParser {
 	private HttpMethod httpMethod = null;
 	private String svcMRN = null;
 	
-	MessageParser(int sessionId){
+	MessageParser(String sessionId){
 		this.SESSION_ID = sessionId;
 		
 		srcIP = null;

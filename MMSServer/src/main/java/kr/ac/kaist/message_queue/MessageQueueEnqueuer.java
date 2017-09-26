@@ -43,16 +43,18 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2017-09-13
 Version : 0.6.0
 	An unused logger statement removed 
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
 class MessageQueueEnqueuer {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueEnqueuer.class);
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 	
-	MessageQueueEnqueuer (int sessionId) {
+	MessageQueueEnqueuer (String sessionId) {
 		this.SESSION_ID = sessionId;
 
 	}
@@ -62,7 +64,8 @@ class MessageQueueEnqueuer {
 		
 		String queueName = dstMRN+"::"+srcMRN;
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-		 if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueEnqueuer] "+queueName +"<br/>");
+		 //if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueEnqueuer] "+queueName +"<br/>");
+		 if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("[MessageQueueEnqueuer] "+queueName);
 
 		 logger.trace("SessionID="+this.SESSION_ID+" Queue name="+queueName +" Message=" + message +"\n");
 		try {
@@ -75,7 +78,6 @@ class MessageQueueEnqueuer {
 			channel.queueDeclare(queueName, true, false, false, null);
 			
 			channel.basicPublish("", queueName, null, message.getBytes());
-			logger.trace("SessionID="+this.SESSION_ID+" Sent=" + message);
 			channel.close();
 			connection.close();
 		} catch (IOException e) {

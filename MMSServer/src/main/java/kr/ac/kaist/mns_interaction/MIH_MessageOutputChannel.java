@@ -16,6 +16,11 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -36,9 +41,9 @@ import kr.ac.kaist.mms_server.MMSLog;
 class MIH_MessageOutputChannel {
 
 	private static final Logger logger = LoggerFactory.getLogger(MIH_MessageOutputChannel.class);
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 	
-	MIH_MessageOutputChannel(int sessionId) {
+	MIH_MessageOutputChannel(String sessionId) {
 		// TODO Auto-generated constructor stub
 		this.SESSION_ID = sessionId;
 

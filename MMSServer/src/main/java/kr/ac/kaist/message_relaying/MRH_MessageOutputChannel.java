@@ -33,6 +33,11 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -74,19 +79,20 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
+import kr.ac.kaist.mms_server.MMSLog;
 
 public class MRH_MessageOutputChannel {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MRH_MessageOutputChannel.class);
 	
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 	private final String USER_AGENT = "MMSClient/0.5.0";
 	private static Map<String,List<String>> storedHeader = null;
 	private static boolean isStoredHeader = false;
 	private HostnameVerifier hv = null;
 	private int responseCode = 200;
 	
-	MRH_MessageOutputChannel(int sessionId) {
+	MRH_MessageOutputChannel(String sessionId) {
 		// TODO Auto-generated constructor stub
 		this.SESSION_ID = sessionId;
 	}
@@ -100,6 +106,7 @@ public class MRH_MessageOutputChannel {
 		
     	ByteBuf textb = Unpooled.copiedBuffer(data);
     	logger.info("SessionID="+this.SESSION_ID+" "+"Reply to sender");
+    	MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" "+"Reply to sender");
     	long responseLen = data.length;
     	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, getHttpResponseStatus(responseCode));
     	if (isStoredHeader){
@@ -134,10 +141,10 @@ public class MRH_MessageOutputChannel {
 	byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws Exception { // 
 
 		String url = "http://" + IPAddress + ":" + port + req.uri();
-		logger.info("SessionID="+this.SESSION_ID+" "+url);
-		
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+		logger.info("SessionID="+this.SESSION_ID+" Connected="+url);
+		MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Connected="+url);
 		HttpHeaders httpHeaders = req.headers();
 		
 		
@@ -209,10 +216,11 @@ public class MRH_MessageOutputChannel {
 	  	hv = getHV();
 	  	
 		String url = "https://" + IPAddress + ":" + port + req.uri();
-		logger.info("SessionID="+this.SESSION_ID+" "+url);
+		
 		URL obj = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-		logger.debug("SessionID="+this.SESSION_ID+" "+"connection opened");
+		logger.info("SessionID="+this.SESSION_ID+" Connected="+url);
+		MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Connected="+url);
 		con.setHostnameVerifier(hv);
 		
 		HttpHeaders httpHeaders = req.headers();
@@ -256,9 +264,9 @@ public class MRH_MessageOutputChannel {
 		Map<String,List<String>> resHeaders = con.getHeaderFields();
 		setResponseHeader(resHeaders);
 		
-		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url + "\n"
-				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters+"\n"
-				+ "Response Code : " + responseCode);
+		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters=" + urlParameters+"\n"
+				+ "Response Code=" + responseCode);
 		
 		InputStream is = con.getInputStream();
 		ByteArrayOutputStream byteOS = new ByteArrayOutputStream();

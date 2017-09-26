@@ -20,18 +20,23 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 public class MNSInteractionHandler {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MNSInteractionHandler.class);
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 	private LocatorUpdater locatorUpdater = null;
 	private LocatorQuerier locatorQuerier = null;
 	private MIH_MessageOutputChannel messageOutput = null;
 	
-	public MNSInteractionHandler(int sessionId) {
+	public MNSInteractionHandler(String sessionId) {
 		this.SESSION_ID = sessionId;
 		
 		initializeModule();

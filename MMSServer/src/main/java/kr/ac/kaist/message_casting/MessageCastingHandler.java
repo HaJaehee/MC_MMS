@@ -30,6 +30,11 @@ Version : 0.5.8
 	Variable requestDstInfo is changed to parse multiple MRN case.
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -44,11 +49,11 @@ import org.slf4j.LoggerFactory;
 public class MessageCastingHandler {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageCastingHandler.class);
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 	
 	private MNSInteractionHandler mih = null;
 	
-	public MessageCastingHandler(int sessionId) {
+	public MessageCastingHandler(String sessionId) {
 		this.SESSION_ID = sessionId;
 	
 		initializeModule();

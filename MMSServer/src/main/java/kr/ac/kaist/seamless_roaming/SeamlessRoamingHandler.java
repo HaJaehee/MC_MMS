@@ -30,14 +30,14 @@ import org.slf4j.LoggerFactory;
 public class SeamlessRoamingHandler {
 	
 	private static final Logger logger = LoggerFactory.getLogger(SeamlessRoamingHandler.class);
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 	
 	private PollingMessageHandler pmh = null;
 	private SCMessageHandler scmh = null;
 	private MNSInteractionHandler mih = null;
 
 	
-	public SeamlessRoamingHandler(int sessionId) {
+	public SeamlessRoamingHandler(String sessionId) {
 		this.SESSION_ID = sessionId;
 		
 		initializeModule();
