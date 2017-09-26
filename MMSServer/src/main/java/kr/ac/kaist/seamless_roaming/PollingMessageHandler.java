@@ -16,6 +16,11 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -29,10 +34,10 @@ import org.slf4j.LoggerFactory;
 class PollingMessageHandler {
 
 	private static final Logger logger = LoggerFactory.getLogger(PollingMessageHandler.class);
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 	private MessageQueueManager mqm = null;
 	
-	public PollingMessageHandler(int sessionId) {
+	public PollingMessageHandler(String sessionId) {
 		this.SESSION_ID = sessionId;
 		
 		initializeModule();

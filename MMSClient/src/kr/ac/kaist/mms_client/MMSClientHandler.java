@@ -177,7 +177,7 @@ public class MMSClientHandler {
 		} else {
 			if (interval == 0) {
 				System.out.println(TAG+"Long-polling mode"); //TODO: Long-polling could have trouble when session disconnect.
-			} else {
+			} else if (interval < 0){
 				System.out.println(TAG+"Failed! Polling interval must be 0 or positive integer");
 				return;
 			}

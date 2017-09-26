@@ -19,6 +19,11 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -26,13 +31,11 @@ import io.netty.channel.ChannelHandlerContext;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 public class MessageQueueManager {
 	
-	private String TAG = "[MessageQueueManager:";
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 	
-	public MessageQueueManager(int sessionId) {
+	public MessageQueueManager(String sessionId) {
 		// TODO Auto-generated constructor stub
 		this.SESSION_ID = sessionId;
-		this.TAG += SESSION_ID + "] ";
 	}
 	
 	public void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN ) {

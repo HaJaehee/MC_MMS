@@ -27,9 +27,9 @@ import kr.ac.kaist.mms_server.MMSConfiguration;
 public class LocatorUpdater {
 	
 	private static final Logger logger = LoggerFactory.getLogger(LocatorUpdater.class);
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 	
-	LocatorUpdater (int sessionId){
+	LocatorUpdater (String sessionId){
 		this.SESSION_ID = sessionId;
 	}
 	String buildUpdate(String MRN, String IP, int port, int model) {
