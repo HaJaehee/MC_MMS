@@ -66,7 +66,7 @@ public class MessageCastingHandler {
 	public String requestDstInfo(String dstMRN){
 		String dstInfo = mih.requestDstInfo(dstMRN);
 		if (dstInfo.regionMatches(2, "poll", 0, 4)){ // if the returned dstInfo contains json format do parsing.
-			logger.debug("Multicasting occured");
+			logger.debug("SessionID="+this.SESSION_ID+" Multicasting occured.");
 			JSONObject jo = (JSONObject)JSONValue.parse(dstInfo);
 			JSONArray jl = (JSONArray)jo.get("poll");
 			String ret = "MULTIPLE_MRN,";

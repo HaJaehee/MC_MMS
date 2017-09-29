@@ -139,10 +139,10 @@ public class MMSLog {
   	BufferedWriter outToMNS = new BufferedWriter(
 					new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
   	
-  	logger.debug("Dump-MNS");
+  	logger.debug("Dump-MNS.");
   	ServerSocket Sock = new ServerSocket(0);
   	int rplPort = Sock.getLocalPort();
-  	logger.debug("Reply port : "+rplPort);
+  	logger.debug("Reply port : "+rplPort+".");
   	outToMNS.write("Dump-MNS:"+","+rplPort);
   	outToMNS.flush();
   	outToMNS.close();
@@ -159,7 +159,7 @@ public class MMSLog {
 		}
 		
   	dumpedMNS = response.toString();
-  	logger.debug("Dumped MNS: " + dumpedMNS);
+  	logger.debug("Dumped MNS: " + dumpedMNS+".");
   	inFromMNS.close();
   	if (dumpedMNS.equals("No"))
   		return "No MRN to IP mapping";

@@ -71,7 +71,7 @@ class MessageQueueEnqueuer {
 		 //if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueEnqueuer] "+queueName +"<br/>");
 		 if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+SESSION_ID+" Enqueue="+queueName+".");
 		 logger.debug("SessionID="+this.SESSION_ID+" Enqueue="+queueName+" .");
-		 logger.trace("SessionID="+this.SESSION_ID+" Enqueue, queue name="+queueName +" Message=" + message +"\n");
+		 logger.trace("SessionID="+this.SESSION_ID+" Enqueue, queue name="+queueName +" Message=" + message +".");
 		
 		try {
 			ConnectionFactory factory = new ConnectionFactory();
@@ -86,9 +86,9 @@ class MessageQueueEnqueuer {
 			channel.close();
 			connection.close();
 		} catch (IOException e) {
-			logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage());
+			logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 		} catch (TimeoutException e) {
-			logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage());
+			logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 		}
 	}
 }

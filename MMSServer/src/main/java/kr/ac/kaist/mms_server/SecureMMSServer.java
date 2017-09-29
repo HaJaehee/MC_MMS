@@ -121,7 +121,7 @@ public final class SecureMMSServer extends Thread {
 			
 	        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 	        EventLoopGroup workerGroup = new NioEventLoopGroup();
-	        logger.error("Now starting MMS HTTPS server");
+	        logger.error("Now starting MMS HTTPS server.");
 	        try {
 	            ServerBootstrap b = new ServerBootstrap();
 	            b.group(bossGroup, workerGroup)
@@ -131,24 +131,24 @@ public final class SecureMMSServer extends Thread {
 	            logger.error("Ready for 0.0.0.0:" + MMSConfiguration.HTTPS_PORT);
 	            b.bind(MMSConfiguration.HTTPS_PORT).sync().channel().closeFuture().sync();
 	        } catch (InterruptedException e) {
-	        	logger.error(e.getMessage());
+	        	logger.error(e.getMessage()+".");
 			} finally {
 	            bossGroup.shutdownGracefully();
 	            workerGroup.shutdownGracefully();
 	        }
 			
 		} catch (CertificateException e) {
-			logger.error(e.getMessage());
+			logger.error(e.getMessage()+".");
 		} catch (SSLException e1) {
-			logger.error(e1.getMessage());
+			logger.error(e1.getMessage()+".");
 		} catch (UnrecoverableKeyException e1) {
-			logger.error(e1.getMessage());
+			logger.error(e1.getMessage()+".");
 		} catch (KeyStoreException e1) {
-			logger.error(e1.getMessage());
+			logger.error(e1.getMessage()+".");
 		} catch (NoSuchAlgorithmException e1) {
-			logger.error(e1.getMessage());
+			logger.error(e1.getMessage()+".");
 		} catch (IOException e1) {
-			logger.error(e1.getMessage());
+			logger.error(e1.getMessage()+".");
 		}
     }
 }

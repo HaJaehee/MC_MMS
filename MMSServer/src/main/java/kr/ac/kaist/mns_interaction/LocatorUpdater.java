@@ -35,7 +35,7 @@ public class LocatorUpdater {
 	String buildUpdate(String MRN, String IP, int port, int model) {
 		String msg = "Location-Update:" + IP + "," + MRN + "," + Integer.toString(port) + "," + Integer.toString(model);
 
-		logger.debug("SessionID="+this.SESSION_ID+" "+msg);
+		logger.debug("SessionID="+this.SESSION_ID+" "+msg+".");
 		return msg;
 	}
 }

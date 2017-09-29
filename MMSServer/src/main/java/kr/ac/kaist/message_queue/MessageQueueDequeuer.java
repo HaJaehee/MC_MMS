@@ -122,7 +122,7 @@ class MessageQueueDequeuer extends Thread{
 		// TODO Auto-generated method stub
 		super.run();
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-		logger.debug("SessionID="+this.SESSION_ID+" Dequeue, queue name="+queueName);
+		logger.debug("SessionID="+this.SESSION_ID+" Dequeue, queue name="+queueName+".");
 	    try {
 			ConnectionFactory factory = new ConnectionFactory();
 			factory.setHost("localhost");
@@ -191,7 +191,7 @@ class MessageQueueDequeuer extends Thread{
 						message.append("[\""+URLEncoder.encode(new String(delivery.getBody()),"UTF-8")+"\"]");
 						//if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>");
 						if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
-						logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName);
+						logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
 				    	String clientType = SessionManager.sessionInfo.get(this.SESSION_ID);
 				    	if (clientType != null) {
 				    		SessionManager.sessionInfo.remove(this.SESSION_ID);
@@ -209,10 +209,10 @@ class MessageQueueDequeuer extends Thread{
 							MMSLog.queueLogForClient.append(longSpace+"Requeue="+queueName +"<br/>");
 						}*/
 						if(MMSConfiguration.WEB_LOG_PROVIDING) {
-							MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Dequeue="+queueName);
+							MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
 							MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" "+srcMRN+" is disconnected. Requeue.");
 						}
-						logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName);
+						logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
 						logger.warn("SessionID="+this.SESSION_ID+" "+srcMRN+" is disconnected. Requeue.");
 						channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
 					}
@@ -259,33 +259,33 @@ class MessageQueueDequeuer extends Thread{
 			
 		} 
 	    catch (IOException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 		} 
 	    catch (TimeoutException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 		} 
 	    catch (ShutdownSignalException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 		} 
 	    catch (ConsumerCancelledException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 		} 
 	    catch (InterruptedException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 		} 
 	    finally {
 	    	if (channel != null) {
 	    		try {
 					channel.close();
 				} catch (IOException | TimeoutException e) {
-					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 				}
 	    	}
 			if (connection != null) {
 				try {
 					connection.close();
 				} catch (IOException e) {
-					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 				}
 			}
 		}

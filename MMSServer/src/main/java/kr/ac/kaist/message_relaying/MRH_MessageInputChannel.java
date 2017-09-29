@@ -75,7 +75,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		try{
 			req.retain();
 			
-			logger.info("Message received");
+			logger.info("Message received.");
 			SESSION_ID = ctx.channel().id().asShortText();
 			SessionManager.sessionInfo.put(SESSION_ID, "");
 			new MessageRelayingHandler(ctx, req, protocol, SESSION_ID);
@@ -117,9 +117,9 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     		SessionManager.sessionInfo.remove(SESSION_ID);
     		if (clientType.equals("p")) {
     			MMSLog.decreasePollingClientCount();
-    			logger.warn("SessionID="+this.SESSION_ID+" The polling client is disconnected");
+    			logger.warn("SessionID="+this.SESSION_ID+" The polling client is disconnected.");
     		} else {
-    			logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected");
+    			logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected.");
     		}
     	}
         ctx.close();

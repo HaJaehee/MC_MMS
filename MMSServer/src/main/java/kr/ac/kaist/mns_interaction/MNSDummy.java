@@ -68,7 +68,7 @@ public class MNSDummy {
     {
        
        ServerSocket Sock = new ServerSocket(1004);
-       logger.error("MNSDummy started");
+       logger.error("MNSDummy started.");
 //       -------------Put MRN --> IP Information -------------
 //		 MRN table structure:           IP_Address:PortNumber:Model
 //       (Geo-location added version)   IP_Address:PortNumber:Model:Geo-location
@@ -104,7 +104,7 @@ public class MNSDummy {
        {
           Socket connectionSocket = Sock.accept();
 
-          logger.debug("Packet incomming");
+          logger.debug("Packet incomming.");
           BufferedReader dataReceived =
              new BufferedReader(new InputStreamReader(connectionSocket.getInputStream(),Charset.forName("UTF-8")));
 
@@ -129,7 +129,7 @@ public class MNSDummy {
 	        	  if (MRNtoIP.containsKey(data))
 	        		  dataToReply += MRNtoIP.get(data);
 	        	  else{
-	        	  	  logger.debug("No MRN to IP Mapping");
+	        	  	  logger.debug("No MRN to IP Mapping.");
 	        		  dataToReply = "No";
 	        	  }
 	              logger.debug(dataToReply);
@@ -144,7 +144,7 @@ public class MNSDummy {
           	  }else{ // if geocasting (urn:mrn:mcs:casting:geocasting:smart:-)
           		  String geoMRN = data.substring(34);
           		  String[] parsedGeoMRN = geoMRN.split("-");
-          		  logger.info("Geocasting MRN="+geoMRN);
+          		  logger.info("Geocasting MRN="+geoMRN+".");
           		  float lat = Float.parseFloat(parsedGeoMRN[1]); 
           		  float lon = Float.parseFloat(parsedGeoMRN[3]);
           		  float rad = Float.parseFloat(parsedGeoMRN[5]);
@@ -215,7 +215,7 @@ public class MNSDummy {
             	  }
         	  }
         	  else{
-        	  	  logger.debug("No MRN to IP Mapping");
+        	  	  logger.debug("No MRN to IP Mapping.");
         		  dataToReply = "No";
         	  }
         	  Socket ReplySocket = new Socket("localhost",rplPort);
@@ -229,18 +229,18 @@ public class MNSDummy {
               
           }else if (data.equals("Empty-MNS:") && MMSConfiguration.WEB_MANAGING){
         	  MRNtoIP.clear();
-        	  logger.info("MNSDummy:EMPTY");
+        	  logger.warn("MNSDummy:EMPTY.");
             
           }else if (data.regionMatches(0, "Remove-Entry:", 0, 13) && MMSConfiguration.WEB_MANAGING){
         	  String mrn = data.substring(13);
         	  MRNtoIP.remove(mrn);
-        	  logger.info("MNSDummy:REMOVE="+mrn);
+        	  logger.warn("MNSDummy:REMOVE="+mrn+".");
           }else if (data.regionMatches(0, "Add-Entry:", 0, 10) && MMSConfiguration.WEB_MANAGING){
         	  String[] params = data.substring(10).split(",");
         	  String mrn = params[0];
         	  String locator = params[1] +":"+ params[2] +":"+ params[3];
         	  MRNtoIP.put(mrn, locator);
-        	  logger.info("MNSDummy:ADD="+mrn);
+        	  logger.warn("MNSDummy:ADD="+mrn+".");
         	  
           //Geo-location update function.  
           }else if (data.regionMatches(0, "Geo-location-Update:", 0, 20)){

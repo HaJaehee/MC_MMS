@@ -110,7 +110,7 @@ public class MessageParser {
     	
 	}
 	void parseMultiDstInfo(String dstInfo){
-		logger.debug("Destination info="+dstInfo);
+		logger.debug("SessionID="+this.SESSION_ID+" Destination info="+dstInfo+".");
 		String[] dstMRNs = dstInfo.substring(13).split(",");
 		multiDstMRN = dstMRNs;
 	}

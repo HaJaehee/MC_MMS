@@ -60,10 +60,10 @@ class MIH_MessageOutputChannel {
 	    	BufferedWriter outToMNS = new BufferedWriter(
 						new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
 	    	
-	    	logger.trace("SessionID="+this.SESSION_ID+" "+request);
+	    	logger.trace("SessionID="+this.SESSION_ID+" "+request+".");
 	    	ServerSocket Sock = new ServerSocket(0);
 	    	int rplPort = Sock.getLocalPort();
-	    	logger.trace("SessionID="+this.SESSION_ID+" Reply port="+rplPort);
+	    	logger.trace("SessionID="+this.SESSION_ID+" Reply port="+rplPort+".");
 	    	outToMNS.write(request+","+rplPort);
 	    	outToMNS.flush();
 	    	outToMNS.close();
@@ -80,7 +80,7 @@ class MIH_MessageOutputChannel {
 			}
 			
 	    	returnedIP = response.toString();
-	    	logger.trace("SessionID="+this.SESSION_ID+" From server=" + returnedIP);
+	    	logger.trace("SessionID="+this.SESSION_ID+" From server=" + returnedIP+".");
 	    	inFromMNS.close();
 	    	
 	    	if (returnedIP.equals("No")) {
@@ -94,7 +94,7 @@ class MIH_MessageOutputChannel {
 	    	return returnedIP;
     	}
     	catch (Exception e) {
-    		logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage());
+    		logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 			return null;
 		}
 	}
