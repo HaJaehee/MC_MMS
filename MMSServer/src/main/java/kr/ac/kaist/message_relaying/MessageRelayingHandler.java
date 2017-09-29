@@ -62,6 +62,10 @@ Version : 0.6.0
 	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history : 2017-09-29
+Version : 0.6.0
+	MMS filters out the messages which have srcMRN or dstMRN as this MMS's MRN .
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -229,6 +233,7 @@ public class MessageRelayingHandler  {
 				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			}
 		}
+		/*
 		else if (type == MessageTypeDecider.msgType.EMPTY_MNSDummy) {
     		try {
 				emptyMNS();
@@ -240,43 +245,54 @@ public class MessageRelayingHandler  {
     		catch (IOException e) {
 				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 			}
-		} 
+		} */
 		else if (type == MessageTypeDecider.msgType.REMOVE_MNS_ENTRY) {
     		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
     		logger.info("SessionID="+this.SESSION_ID+" Remove MRN=" + params.get("mrn").get(0));
-    		try {
-				removeEntryMNS(params.get("mrn").get(0));
-				message = "OK".getBytes(Charset.forName("UTF-8"));
-			} 
-    		catch (UnknownHostException e) {
-				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
-			} 
-    		catch (IOException e) {
-				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
-			} 
+    		if (!params.get("mrn").get(0).equals(MMSConfiguration.MMS_MRN)) {
+    			try {
+    		
+					removeEntryMNS(params.get("mrn").get(0));
+					message = "OK".getBytes(Charset.forName("UTF-8"));
+				} 
+	    		catch (UnknownHostException e) {
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
+				} 
+	    		catch (IOException e) {
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
+				} 
+    		}
+    		else {
+				message = "Wrong  parameter".getBytes(Charset.forName("UTF-8"));
+			}
 		} 
 		else if (type == MessageTypeDecider.msgType.ADD_MNS_ENTRY) {
 			QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 			Map<String,List<String>> params = qsd.parameters();
 			logger.info("SessionID="+this.SESSION_ID+" Add MRN=" + params.get("mrn").get(0) + " IP=" + params.get("ip").get(0) + " Port=" + params.get("port").get(0) + " Model=" + params.get("model").get(0));
-			try {
-				addEntryMNS(params.get("mrn").get(0), params.get("ip").get(0), params.get("port").get(0), params.get("model").get(0));
-				message = "OK".getBytes(Charset.forName("UTF-8"));
+			if (!params.get("mrn").get(0).equals(MMSConfiguration.MMS_MRN)) {
+				try {
+					addEntryMNS(params.get("mrn").get(0), params.get("ip").get(0), params.get("port").get(0), params.get("model").get(0));
+					message = "OK".getBytes(Charset.forName("UTF-8"));
+				}
+				catch (UnknownHostException e) {
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
+				} 
+	    		catch (IOException e) {
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
+				} 
 			}
-			catch (UnknownHostException e) {
-				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
-			} 
-    		catch (IOException e) {
-				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
-			} 
+			else {
+				message = "Wrong  parameter".getBytes(Charset.forName("UTF-8"));
+			}
 		}
 		else if (type == MessageTypeDecider.msgType.POLLING_METHOD) {
 			QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
     		String method = params.get("method").get(0);
     		String svcMRN = params.get("svcMRN").get(0);
-    		if (method != null && svcMRN != null) {
+    		if (method != null && svcMRN != null && !svcMRN.equals(MMSConfiguration.MMS_MRN)) {
     			if (method.equals("normal")) {
 
     				PollingMethodRegDummy.pollingMethodReg.put(svcMRN, PollingMethodRegDummy.NORMAL_POLLING);
@@ -307,14 +323,20 @@ public class MessageRelayingHandler  {
 			MMSLog.setLength(0);
 			message = "OK".getBytes(Charset.forName("UTF-8"));
 		}*/
-
+		else if (type == MessageTypeDecider.msgType.DST_MRN_IS_THIS_MMS_MRN) {
+			message = "Hello, MMS!".getBytes();
+		}
+		else if (type == MessageTypeDecider.msgType.SRC_MRN_IS_THIS_MMS_MRN) {
+			message = "You are not me".getBytes();
+		}
 		else if (type == MessageTypeDecider.msgType.UNKNOWN_MRN) {
 			message = "No Device having that MRN".getBytes();
 		} 
-		else if (type == MessageTypeDecider.msgType.UNKNOWN_HTTP_TYPE) {
-			message = "Unknown http type".getBytes();
-		}
 		
+		if (message == null) {
+			message = "INVALID MESSAGE".getBytes();
+			logger.info("SessionID="+this.SESSION_ID+" "+"INVALID MESSAGE");
+		}
 		outputChannel.replyToSender(ctx, message);
 	}
 	

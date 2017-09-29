@@ -218,7 +218,6 @@ public class MNSDummy {
         	  	  logger.debug("No MRN to IP Mapping");
         		  dataToReply = "No";
         	  }
-        	  logger.debug(dataToReply);
         	  Socket ReplySocket = new Socket("localhost",rplPort);
         	  
         	  BufferedWriter out = new BufferedWriter(

@@ -53,6 +53,10 @@ Version : 0.6.0
 	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history : 2017-09-29
+Version : 0.6.0
+	MMS filters out the messages which have srcMRN or dstMRN as this MMS's MRN .
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -74,7 +78,6 @@ class MessageTypeDecider {
 			RELAYING_TO_SERVER,
 			REGISTER_CLIENT,
 			UNKNOWN_MRN,
-			UNKNOWN_HTTP_TYPE,
 			STATUS,EMPTY_MNSDummy,
 			REMOVE_MNS_ENTRY,
 			ADD_MNS_ENTRY,
@@ -84,7 +87,9 @@ class MessageTypeDecider {
 			NULL_DST_MRN,
 			NULL_MRN,
 			INVALID_SRC_MRN,
-			INVALID_DST_MRN
+			INVALID_DST_MRN,
+			DST_MRN_IS_THIS_MMS_MRN,
+			SRC_MRN_IS_THIS_MMS_MRN
 	}
 
 	
@@ -98,30 +103,8 @@ class MessageTypeDecider {
 		HttpMethod httpMethod = parser.getHttpMethod();
 		String uri = parser.getUri();
 		
-//		when WEB_LOG_PROVIDING
-		if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/status")){
-			return msgType.STATUS;
-		}
-   	
-   	
-//		when WEB_MANAGING
-
-	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptymnsdummy")){ 
-	   		return msgType.EMPTY_MNSDummy;
-	   	} 
-	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/addmnsentry?mrn", 0, 16)){ 
-	   		return msgType.ADD_MNS_ENTRY;
-	   	} 
-	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/removemnsentry", 0, 15)){ 
-	   		return msgType.REMOVE_MNS_ENTRY;
-	   	} 
-	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0,"/polling?method", 0, 15)){
-	   		return msgType.POLLING_METHOD;
-	   	} 
-		
-		
 //		When MRN(s) is(are) null
-	   	else if (srcMRN == null && dstMRN == null) {
+	   	if (srcMRN == null && dstMRN == null) {
 			return msgType.NULL_MRN;
 		}
 		else if (srcMRN == null) {
@@ -130,19 +113,45 @@ class MessageTypeDecider {
 		else if (dstMRN == null) {
 			return msgType.NULL_DST_MRN;
 		}
+	   	
+		else if (srcMRN.equals(MMSConfiguration.MMS_MRN)) {
+			return msgType.SRC_MRN_IS_THIS_MMS_MRN;
+		}
 		
+		else if (dstMRN.equals(MMSConfiguration.MMS_MRN)) {
+			//    	When polling
+			if (httpMethod == HttpMethod.POST && uri.equals("/polling")) {
+	    		return msgType.POLLING; 
+	    	}
+	    	
+			//		when registering
+	    	else if (httpMethod == HttpMethod.POST && uri.equals("/registering")) {
+	    		return msgType.REGISTER_CLIENT;
+	    	}
+			
+	    	else {
+	    		return msgType.DST_MRN_IS_THIS_MMS_MRN;
+	    	}
+		}
 		
-//    	When polling
-		else if (httpMethod == HttpMethod.POST && uri.equals("/polling") && dstMRN.equals(MMSConfiguration.MMS_MRN)) {
-    		return msgType.POLLING; 
-    	}
-    	
-//		when registering
-    	else if (httpMethod == HttpMethod.POST && uri.equals("/registering") && dstMRN.equals(MMSConfiguration.MMS_MRN)) {
-    		return msgType.REGISTER_CLIENT;
-    	}
-    	
-
+//		when WEB_LOG_PROVIDING
+		else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/status")){
+			return msgType.STATUS;
+		}
+		
+//		when WEB_MANAGING
+	   	/*else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptymnsdummy")){ 
+	   		return msgType.EMPTY_MNSDummy;
+	   	} */
+	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/addmnsentry?mrn", 0, 16)){ 
+	   		return msgType.ADD_MNS_ENTRY;
+	   	} 
+	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/removemnsentry?mrn", 0, 19)){ 
+	   		return msgType.REMOVE_MNS_ENTRY;
+	   	} 
+	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0,"/polling?method", 0, 15)){
+	   		return msgType.POLLING_METHOD;
+	   	} 	
     	
 //    	When relaying
     	else {
@@ -150,8 +159,8 @@ class MessageTypeDecider {
     		
         	if (dstInfo.equals("No")) {
         		return msgType.UNKNOWN_MRN;
-        	}
-        	if (dstInfo.regionMatches(0, "MULTIPLE_MRN,", 0, 9)){
+        	}  
+        	else if (dstInfo.regionMatches(0, "MULTIPLE_MRN,", 0, 9)){
         		parser.parseMultiDstInfo(dstInfo);
         		return msgType.RELAYING_TO_MULTIPLE_SC;
         	}
@@ -162,10 +171,14 @@ class MessageTypeDecider {
         	if (model == 2) {//model B (destination MSR, MIR, or MSP as servers)
         		return msgType.RELAYING_TO_SERVER;
         	} 
-        	else {//when model A, it puts the message into the queue
+        	else if (model == 1){//when model A, it puts the message into the queue
         		return msgType.RELAYING_TO_SC;
         	}
-    	} /*else {
+        	else {
+        		return msgType.UNKNOWN_MRN;
+        	}
+    	} 
+		/*else {
     		return UNKNOWN_HTTP_TYPE;
     	}*/
 	}
