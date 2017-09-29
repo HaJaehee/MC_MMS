@@ -13,9 +13,12 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,8 +103,10 @@ public class MMSLog {
 		status.append(dumpMNS() + "<br/>");
 		
 		status.append("Polling method:<br/>");
-		for (String key : PollingMethodRegDummy.pollingMethodReg.keySet()){
-			status.append(key+","+((PollingMethodRegDummy.pollingMethodReg.get(key)==PollingMethodRegDummy.NORMAL_POLLING)?"normal":"long")+" polling<br/>");
+		SortedSet<String> keys = new TreeSet<String>(PollingMethodRegDummy.pollingMethodReg.keySet());
+		for (String key : keys){
+			int value = PollingMethodRegDummy.pollingMethodReg.get(key);
+			status.append(key+","+((value==PollingMethodRegDummy.NORMAL_POLLING)?"normal":"long")+" polling<br/>");
 		}
 		status.append("<br/>");
 	
@@ -157,11 +162,10 @@ public class MMSLog {
 	public static void addBriefLogForStatus (String arg) {
 		if (briefLogForStatus.size() > MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE) {
 			briefLogForStatus.remove(0);
-			briefLogForStatus.add(arg);
 		}
-		else {
-			briefLogForStatus.add(arg);
-		}
+		SimpleDateFormat sdf = new SimpleDateFormat("M/dd hh:mm");
+		arg = sdf.format(new Date()) + arg;
+		briefLogForStatus.add(arg);
 	}
 	
 	public static void increasePollingClientCount (){

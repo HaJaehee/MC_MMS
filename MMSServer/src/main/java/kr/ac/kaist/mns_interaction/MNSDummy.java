@@ -31,6 +31,11 @@ Rev. history : 2017-09-26
 Version : 0.6.0
 	Added adding mrn entry case 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-29
+Version : 0.6.0
+	MRNtoIPs are printed into sorted by key(MRN) form .
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -40,6 +45,8 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -88,7 +95,8 @@ public class MNSDummy {
 //       MRNtoIP.put("urn:mrn:smart-navi:device:og-server", "52.78.97.177:8920:2");
 //       MRNtoIP.put("urn:mrn:imo:imo-no:1000008", "218.158.173.219:0:1");
 //       MRNtoIP.put("urn:mrn:smart-navi:device:chat-server-kaist", "52.78.97.177:18902:2");
-       
+ 
+
        
        //-----------------------------------------------------
        
@@ -198,17 +206,13 @@ public class MNSDummy {
 
         	  logger.debug("MNSDummy:data=" + data);
         	  int rplPort = Integer.parseInt(data.split(",")[1]);
-        	  
-        	  Set<String> keys = MRNtoIP.keySet();
-        	  Iterator<String> keysIter = keys.iterator();
-        	  
-        	  if (keysIter.hasNext()){
-        		  do{
-        			  String key = keysIter.next();
-        			  String value = MRNtoIP.get(key);
-        			  
-        			  dataToReply = dataToReply + key + "," + value + "<br/>";
-        		  }while(keysIter.hasNext());
+
+        	  if (!MRNtoIP.isEmpty()){
+        		  SortedSet<String> keys = new TreeSet<String>(MRNtoIP.keySet());
+            	  for (String key : keys) {
+            		  String value = MRNtoIP.get(key);
+            		  dataToReply = dataToReply + key + "," + value + "<br/>";
+            	  }
         	  }
         	  else{
         	  	  logger.debug("No MRN to IP Mapping");
