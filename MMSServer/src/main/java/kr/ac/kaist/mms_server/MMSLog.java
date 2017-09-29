@@ -108,10 +108,12 @@ public class MMSLog {
 		status.append(dumpMNS() + "<br/>");
 		
 		status.append("Polling method:<br/>");
-		SortedSet<String> keys = new TreeSet<String>(PollingMethodRegDummy.pollingMethodReg.keySet());
-		for (String key : keys){
-			int value = PollingMethodRegDummy.pollingMethodReg.get(key);
-			status.append(key+","+((value==PollingMethodRegDummy.NORMAL_POLLING)?"normal":"long")+" polling<br/>");
+		if (!PollingMethodRegDummy.pollingMethodReg.isEmpty()){
+			SortedSet<String> keys = new TreeSet<String>(PollingMethodRegDummy.pollingMethodReg.keySet());
+			for (String key : keys){
+				int value = PollingMethodRegDummy.pollingMethodReg.get(key);
+				status.append(key+","+((value==PollingMethodRegDummy.NORMAL_POLLING)?"normal":"long")+" polling<br/>");
+			}
 		}
 		status.append("<br/>");
 	
@@ -168,8 +170,8 @@ public class MMSLog {
 		if (briefLogForStatus.size() > MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE) {
 			briefLogForStatus.remove(0);
 		}
-		SimpleDateFormat sdf = new SimpleDateFormat("M/dd hh:mm");
-		arg = sdf.format(new Date()) + arg;
+		SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
+		arg = sdf.format(new Date()) + " " + arg;
 		briefLogForStatus.add(arg);
 	}
 	
