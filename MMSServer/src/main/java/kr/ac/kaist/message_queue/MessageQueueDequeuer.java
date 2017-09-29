@@ -182,7 +182,7 @@ class MessageQueueDequeuer extends Thread{
 				}
 				else { //If polling method of service having svcMRN is long polling
 					//Enroll a delivery listener to the queue channel in order to get a message from the queue.
-					if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Client is waiting message.");
+					if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".");
 					logger.debug("SessionID="+this.SESSION_ID+" Client is waiting message.");
 					QueueingConsumer consumer = new QueueingConsumer(channel);
 					channel.basicConsume(queueName, false, consumer);
