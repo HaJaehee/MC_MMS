@@ -66,6 +66,11 @@ Version : 0.6.0
 	Revised variable from nMsgWaitingPollClnt to msgWaitingPollClientCount.
 	Revised variable msgWaitingPollClientCount from  to 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-29
+Version : 0.6.0
+	Polling methods are printed into sorted by key(MRN) form .
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
