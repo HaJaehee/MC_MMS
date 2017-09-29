@@ -79,6 +79,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
+import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 
 public class MRH_MessageOutputChannel {
@@ -106,7 +107,7 @@ public class MRH_MessageOutputChannel {
 		
     	ByteBuf textb = Unpooled.copiedBuffer(data);
     	logger.info("SessionID="+this.SESSION_ID+" "+"Reply to sender");
-    	MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" "+"Reply to sender");
+    	if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" "+"Reply to sender.");
     	long responseLen = data.length;
     	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, getHttpResponseStatus(responseCode));
     	if (isStoredHeader){
@@ -143,8 +144,8 @@ public class MRH_MessageOutputChannel {
 		String url = "http://" + IPAddress + ":" + port + req.uri();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		logger.info("SessionID="+this.SESSION_ID+" Connected="+url);
-		MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Connected="+url);
+		logger.info("SessionID="+this.SESSION_ID+" Try connecting url="+url);
+		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Try connecting url="+url);
 		HttpHeaders httpHeaders = req.headers();
 		
 		
@@ -219,8 +220,8 @@ public class MRH_MessageOutputChannel {
 		
 		URL obj = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-		logger.info("SessionID="+this.SESSION_ID+" Connected="+url);
-		MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Connected="+url);
+		logger.info("SessionID="+this.SESSION_ID+" Try connecting url="+url);
+		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Try connecting url="+url);
 		con.setHostnameVerifier(hv);
 		
 		HttpHeaders httpHeaders = req.headers();

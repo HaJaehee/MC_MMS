@@ -46,6 +46,10 @@ Version : 0.6.0
 	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history : 2017-09-29
+Version : 0.6.0
+	Added brief logging features.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -65,9 +69,10 @@ class MessageQueueEnqueuer {
 		String queueName = dstMRN+"::"+srcMRN;
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 		 //if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueEnqueuer] "+queueName +"<br/>");
-		 if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("[MessageQueueEnqueuer] "+queueName);
-
-		 logger.trace("SessionID="+this.SESSION_ID+" Queue name="+queueName +" Message=" + message +"\n");
+		 if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+SESSION_ID+" Enqueue="+queueName+".");
+		 logger.debug("SessionID="+this.SESSION_ID+" Enqueue="+queueName+" .");
+		 logger.trace("SessionID="+this.SESSION_ID+" Enqueue, queue name="+queueName +" Message=" + message +"\n");
+		
 		try {
 			ConnectionFactory factory = new ConnectionFactory();
 			factory.setHost("localhost");

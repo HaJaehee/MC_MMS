@@ -105,6 +105,26 @@ class MessageTypeDecider {
 		
 //		When MRN(s) is(are) null
 	   	if (srcMRN == null && dstMRN == null) {
+	   		
+//			when WEB_LOG_PROVIDING
+			if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/status")){
+				return msgType.STATUS;
+			}
+			
+//			when WEB_MANAGING
+		   	/*else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptymnsdummy")){ 
+		   		return msgType.EMPTY_MNSDummy;
+		   	} */
+		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/addmnsentry?mrn", 0, 16)){ 
+		   		return msgType.ADD_MNS_ENTRY;
+		   	} 
+		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/removemnsentry?mrn", 0, 19)){ 
+		   		return msgType.REMOVE_MNS_ENTRY;
+		   	} 
+		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0,"/polling?method", 0, 15)){
+		   		return msgType.POLLING_METHOD;
+		   	} 	
+			
 			return msgType.NULL_MRN;
 		}
 		else if (srcMRN == null) {
@@ -133,25 +153,7 @@ class MessageTypeDecider {
 	    		return msgType.DST_MRN_IS_THIS_MMS_MRN;
 	    	}
 		}
-		
-//		when WEB_LOG_PROVIDING
-		else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/status")){
-			return msgType.STATUS;
-		}
-		
-//		when WEB_MANAGING
-	   	/*else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptymnsdummy")){ 
-	   		return msgType.EMPTY_MNSDummy;
-	   	} */
-	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/addmnsentry?mrn", 0, 16)){ 
-	   		return msgType.ADD_MNS_ENTRY;
-	   	} 
-	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/removemnsentry?mrn", 0, 19)){ 
-	   		return msgType.REMOVE_MNS_ENTRY;
-	   	} 
-	   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0,"/polling?method", 0, 15)){
-	   		return msgType.POLLING_METHOD;
-	   	} 	
+	
     	
 //    	When relaying
     	else {

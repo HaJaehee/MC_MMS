@@ -137,8 +137,8 @@ public class MessageRelayingHandler  {
 		String dstIP = parser.getDstIP();
 		int dstPort = parser.getDstPort();
 
-		logger.info("SessionID="+this.SESSION_ID+",srcMRN="+srcMRN+",dstMRN="+dstMRN);
-		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+",srcMRN="+srcMRN+",dstMRN="+dstMRN);
+		logger.info("SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
+		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
 		
 		byte[] message = null;
 		
@@ -297,20 +297,20 @@ public class MessageRelayingHandler  {
 
     				PollingMethodRegDummy.pollingMethodReg.put(svcMRN, PollingMethodRegDummy.NORMAL_POLLING);
     				message = "OK".getBytes(Charset.forName("UTF-8"));
-    				logger.warn("SessionID="+this.SESSION_ID+",svcMRN="+svcMRN+" polling method is switched to normal polling");
+    				logger.warn("SessionID="+this.SESSION_ID+" svcMRN="+svcMRN+" polling method is switched to normal polling");
 
 	    		} 
 	    		else if (method.equals("long")) {
 
 	    			PollingMethodRegDummy.pollingMethodReg.put(svcMRN, PollingMethodRegDummy.LONG_POLLING);
     				message = "OK".getBytes(Charset.forName("UTF-8"));
-     				logger.warn("SessionID="+this.SESSION_ID+",svcMRN="+svcMRN+" polling method is switched to long polling");
+     				logger.warn("SessionID="+this.SESSION_ID+" svcMRN="+svcMRN+" polling method is switched to long polling");
 	    		
 	    		} else if (method.equals("remove")) {
 	    			
 	    			PollingMethodRegDummy.pollingMethodReg.remove(svcMRN);
     				message = "OK".getBytes(Charset.forName("UTF-8"));
-     				logger.warn("SessionID="+this.SESSION_ID+",svcMRN="+svcMRN+" polling method is removed");
+     				logger.warn("SessionID="+this.SESSION_ID+" svcMRN="+svcMRN+" polling method is removed");
 	    		
 	    		}
     		}

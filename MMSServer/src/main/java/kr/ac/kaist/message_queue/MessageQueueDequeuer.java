@@ -46,6 +46,11 @@ Rev. history : 2017-09-26
 Version : 0.6.0
 	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-29
+Version : 0.6.0
+	Added brief logging features.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -117,14 +122,14 @@ class MessageQueueDequeuer extends Thread{
 		// TODO Auto-generated method stub
 		super.run();
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-		logger.debug("SessionID="+this.SESSION_ID+" Queue name="+queueName);
+		logger.debug("SessionID="+this.SESSION_ID+" Dequeue, queue name="+queueName);
 	    try {
 			ConnectionFactory factory = new ConnectionFactory();
 			factory.setHost("localhost");
 			connection = factory.newConnection();
 			channel = connection.createChannel();
 			channel.queueDeclare(queueName, true, false, false, null);
-			logger.trace("SessionID="+this.SESSION_ID+" Waiting for messages");
+			logger.trace("SessionID="+this.SESSION_ID+" Start dequeueing messages.");
 			
 			GetResponse res = null;
 			StringBuffer message = new StringBuffer();
@@ -147,10 +152,11 @@ class MessageQueueDequeuer extends Thread{
 			if (msgCount > 0) { //If the queue has a message
 				message.append("]");
 				//if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>");
-				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("[MessageQueueDequeuer] "+queueName);
-		    	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
+				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
+				logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+" .");
+		    	String clientType = SessionManager.sessionInfo.get(this.SESSION_ID);
 		    	if (clientType != null) {
-		    		SessionManager.sessionInfo.remove(SESSION_ID);
+		    		SessionManager.sessionInfo.remove(this.SESSION_ID);
 		    		if (clientType.equals("p")) {
 		    			MMSLog.decreasePollingClientCount();
 		    		}
@@ -162,10 +168,11 @@ class MessageQueueDequeuer extends Thread{
 				message.setLength(0);
 				if (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null
 						 || PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING) {
-					
-			    	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
+					if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Queue="+queueName+" is emtpy.");
+					logger.debug("SessionID="+this.SESSION_ID+" Queue="+queueName+" is emtpy.");
+			    	String clientType = SessionManager.sessionInfo.get(this.SESSION_ID);
 			    	if (clientType != null) {
-			    		SessionManager.sessionInfo.remove(SESSION_ID);
+			    		SessionManager.sessionInfo.remove(this.SESSION_ID);
 			    		if (clientType.equals("p")) {
 			    			MMSLog.decreasePollingClientCount();
 			    		}
@@ -175,16 +182,19 @@ class MessageQueueDequeuer extends Thread{
 				}
 				else { //If polling method of service having svcMRN is long polling
 					//Enroll a delivery listener to the queue channel in order to get a message from the queue.
+					if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Client is waiting message.");
+					logger.debug("SessionID="+this.SESSION_ID+" Client is waiting message.");
 					QueueingConsumer consumer = new QueueingConsumer(channel);
 					channel.basicConsume(queueName, false, consumer);
 					QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 					if(!ctx.isRemoved()){
 						message.append("[\""+URLEncoder.encode(new String(delivery.getBody()),"UTF-8")+"\"]");
 						//if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>");
-						if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("[MessageQueueDequeuer] "+queueName);
-				    	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
+						if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
+						logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName);
+				    	String clientType = SessionManager.sessionInfo.get(this.SESSION_ID);
 				    	if (clientType != null) {
-				    		SessionManager.sessionInfo.remove(SESSION_ID);
+				    		SessionManager.sessionInfo.remove(this.SESSION_ID);
 				    		if (clientType.equals("p")) {
 				    			MMSLog.decreasePollingClientCount();
 				    		}
@@ -199,9 +209,10 @@ class MessageQueueDequeuer extends Thread{
 							MMSLog.queueLogForClient.append(longSpace+"Requeue="+queueName +"<br/>");
 						}*/
 						if(MMSConfiguration.WEB_LOG_PROVIDING) {
-							MMSLog.addBriefLogForStatus("[MessageQueueDequeuer] "+queueName);
-							MMSLog.addBriefLogForStatus("[MessageQueueDequeuer] "+srcMRN+" is disconnected. Requeue.");
+							MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Dequeue="+queueName);
+							MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" "+srcMRN+" is disconnected. Requeue.");
 						}
+						logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName);
 						logger.warn("SessionID="+this.SESSION_ID+" "+srcMRN+" is disconnected. Requeue.");
 						channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
 					}

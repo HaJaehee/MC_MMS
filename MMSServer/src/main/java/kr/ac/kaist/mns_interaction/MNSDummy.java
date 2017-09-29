@@ -97,7 +97,7 @@ public class MNSDummy {
 //       MRNtoIP.put("urn:mrn:smart-navi:device:chat-server-kaist", "52.78.97.177:18902:2");
  
 
-       
+
        //-----------------------------------------------------
        
        while(true)
