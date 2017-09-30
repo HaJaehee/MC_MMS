@@ -104,10 +104,10 @@ public class MMSLog {
 		status = status + "<br/>";
 		*/
 		
-		status.append("MNS Dummy:<br/>");
+		status.append("<strong>Maritime Name System Dummy:</strong><br/>");
 		status.append(dumpMNS() + "<br/>");
 		
-		status.append("Polling method:<br/>");
+		status.append("<strong>Polling method:</strong><br/>");
 		if (!PollingMethodRegDummy.pollingMethodReg.isEmpty()){
 			SortedSet<String> keys = new TreeSet<String>(PollingMethodRegDummy.pollingMethodReg.keySet());
 			for (String key : keys){
@@ -117,9 +117,9 @@ public class MMSLog {
 		}
 		status.append("<br/>");
 	
-		status.append("Waiting polling clients: "+MMSLog.msgWaitingPollClientCount+"<br/><br/>");
+		status.append("<strong>Waiting polling clients:</strong> "+MMSLog.msgWaitingPollClientCount+"<br/><br/>");
 		
-		status.append("MMS Brief Log(Maximum list size:"+MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE+")<br/>");
+		status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE+"):</strong><br/>");
 		for (String log : briefLogForStatus) {
 			status.append(log+"<br/>");
 		}
