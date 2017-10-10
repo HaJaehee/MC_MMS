@@ -28,7 +28,7 @@ Creation Date : 2017-06-27
 public class MMSGeoInfoReporter {
 	GeoInfoReporter gr = null;
 	//HJH
-	private static final String USER_AGENT = "MMSClient/0.5.8";
+	private static final String USER_AGENT = "MMSClient/0.6.0";
 	private String TAG = "[MMSGeoInfoReporter] ";
 	private String clientMRN = null;
 	

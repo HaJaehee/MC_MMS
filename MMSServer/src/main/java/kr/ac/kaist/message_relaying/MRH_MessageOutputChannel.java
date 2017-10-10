@@ -106,8 +106,8 @@ public class MRH_MessageOutputChannel {
 	public void replyToSender(ChannelHandlerContext ctx, byte[] data) {
 		
     	ByteBuf textb = Unpooled.copiedBuffer(data);
-    	logger.info("SessionID="+this.SESSION_ID+" "+"Reply to sender.");
-    	if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" "+"Reply to sender.");
+    	logger.info("SessionID="+this.SESSION_ID+" Reply to sender.");
+    	if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Reply to sender.");
     	long responseLen = data.length;
     	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, getHttpResponseStatus(responseCode));
     	if (isStoredHeader){
@@ -202,8 +202,8 @@ public class MRH_MessageOutputChannel {
 		byte[] retBuffer = byteOS.toByteArray();
 
 		is.close();
-		logger.info("SessionID="+this.SESSION_ID+" Received response.");
-		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Received response.");
+		logger.info("SessionID="+this.SESSION_ID+" Received a response.");
+		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Received a response.");
 		
 		return retBuffer;
 	}
@@ -281,8 +281,8 @@ public class MRH_MessageOutputChannel {
 		byte[] retBuffer = byteOS.toByteArray();
 
 		is.close();
-		logger.info("SessionID="+this.SESSION_ID+" Received response.");
-		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Received response.");
+		logger.info("SessionID="+this.SESSION_ID+" Received a response.");
+		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Received a response.");
 		return retBuffer;
 	
 	}
