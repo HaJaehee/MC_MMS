@@ -202,9 +202,10 @@ public class MRH_MessageOutputChannel {
 		byte[] retBuffer = byteOS.toByteArray();
 
 		is.close();
-		return retBuffer;
-			
+		logger.info("SessionID="+this.SESSION_ID+" Received response.");
+		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Received response.");
 		
+		return retBuffer;
 	}
 	
 	
@@ -280,6 +281,8 @@ public class MRH_MessageOutputChannel {
 		byte[] retBuffer = byteOS.toByteArray();
 
 		is.close();
+		logger.info("SessionID="+this.SESSION_ID+" Received response.");
+		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Received response.");
 		return retBuffer;
 	
 	}
