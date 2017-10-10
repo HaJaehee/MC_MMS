@@ -144,8 +144,8 @@ public class MRH_MessageOutputChannel {
 		String url = "http://" + IPAddress + ":" + port + req.uri();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		logger.info("SessionID="+this.SESSION_ID+" Try connecting url="+url);
-		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Try connecting url="+url);
+		logger.info("SessionID="+this.SESSION_ID+" Try connecting to url="+url);
+		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Try connecting to url="+url);
 		HttpHeaders httpHeaders = req.headers();
 		
 		
@@ -220,8 +220,8 @@ public class MRH_MessageOutputChannel {
 		
 		URL obj = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-		logger.info("SessionID="+this.SESSION_ID+" Try connecting url="+url);
-		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Try connecting url="+url);
+		logger.info("SessionID="+this.SESSION_ID+" Try connecting to url="+url);
+		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Try connecting to url="+url);
 		con.setHostnameVerifier(hv);
 		
 		HttpHeaders httpHeaders = req.headers();
