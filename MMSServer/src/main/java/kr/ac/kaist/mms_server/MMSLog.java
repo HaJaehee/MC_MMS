@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.ac.kaist.message_relaying.MessageRelayingHandler;
+import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.seamless_roaming.PollingMethodRegDummy;
 
 /* -------------------------------------------------------- */
@@ -64,12 +65,16 @@ Rev. history : 2017-09-26
 Version : 0.6.0
 	Added brief log for status case.
 	Revised variable from nMsgWaitingPollClnt to msgWaitingPollClientCount.
-	Revised variable msgWaitingPollClientCount from  to 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-29
 Version : 0.6.0
 	Polling methods are printed into sorted by key(MRN) form .
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-10-12
+Version : 0.6.1
+	Removed msgWaitingPollClientCount.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -81,43 +86,42 @@ public class MMSLog {
 	//public static StringBuffer queueLogForClient = new StringBuffer();
 	
 	private static ArrayList<String> briefLogForStatus = new ArrayList<String>();
-
-	private static int msgWaitingPollClientCount = 0;
 	
 	public static String getStatus ()  throws UnknownHostException, IOException{
 		  	
 		StringBuffer status = new StringBuffer();
 		
-		//@Deprecated
-		/*
-		HashMap<String, String> queue = MMSQueue.queue;
-		status = status + "Message Queue:<br/>";
-		Set<String> queueKeys = queue.keySet();
-		Iterator<String> queueKeysIter = queueKeys.iterator();
-		while (queueKeysIter.hasNext() ){
-			String key = queueKeysIter.next();
-			if (key==null)
-				continue;
-			String value = queue.get(key);
-			status = status + key + "," + value + "<br/>"; 
-		}
-		status = status + "<br/>";
-		*/
-		
 		status.append("<strong>Maritime Name System Dummy:</strong><br/>");
-		status.append(dumpMNS() + "<br/>");
+		status.append(dumpMNS());
+		status.append("<br/>");
 		
 		status.append("<strong>Polling method:</strong><br/>");
 		if (!PollingMethodRegDummy.pollingMethodReg.isEmpty()){
 			SortedSet<String> keys = new TreeSet<String>(PollingMethodRegDummy.pollingMethodReg.keySet());
 			for (String key : keys){
 				int value = PollingMethodRegDummy.pollingMethodReg.get(key);
-				status.append(key+","+((value==PollingMethodRegDummy.NORMAL_POLLING)?"normal":"long")+" polling<br/>");
+				status.append(key+", "+((value==PollingMethodRegDummy.NORMAL_POLLING)?"normal":"long")+" polling<br/>");
 			}
+		} else {
+			status.append("All services, normal polling<br/>");
 		}
 		status.append("<br/>");
 	
-		status.append("<strong>Waiting polling clients:</strong> "+MMSLog.msgWaitingPollClientCount+"<br/><br/>");
+		status.append("<strong>Sessions waiting for a message:</strong><br/>");
+		int nPollingSessions = 0;
+		if (!SessionManager.sessionInfo.isEmpty()){
+			SortedSet<String> keys = new TreeSet<String>(SessionManager.sessionInfo.keySet());
+			for (String key : keys){
+				if (SessionManager.sessionInfo.get(key).equals("p")) {
+					status.append("SessionID="+key+"<br/>");
+					nPollingSessions++;
+				}
+			}
+		} 
+		if (nPollingSessions == 0){
+			status.append("None<br/>");
+		}
+		status.append("<br/>");
 		
 		status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE+"):</strong><br/>");
 		for (String log : briefLogForStatus) {
@@ -162,7 +166,7 @@ public class MMSLog {
   	logger.debug("Dumped MNS: " + dumpedMNS+".");
   	inFromMNS.close();
   	if (dumpedMNS.equals("No"))
-  		return "No MRN to IP mapping";
+  		return "No MRN to IP mapping.<br/>";
   	dumpedMNS = dumpedMNS.substring(15);
   	return dumpedMNS;
   }
@@ -175,10 +179,4 @@ public class MMSLog {
 		briefLogForStatus.add(arg);
 	}
 	
-	public static void increasePollingClientCount (){
-		msgWaitingPollClientCount++;
-	}
-	public static void decreasePollingClientCount (){
-		msgWaitingPollClientCount--;
-	}
 }

@@ -162,7 +162,6 @@ public class MessageRelayingHandler  {
 			//@Deprecated
 			//message = srh.processPollingMessage(srcMRN, srcIP, srcPort, srcModel);
 			SessionManager.sessionInfo.put(SESSION_ID, "p");
-			MMSLog.increasePollingClientCount();
 			
 			srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, srcPort, srcModel, svcMRN);
 			

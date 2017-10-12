@@ -154,12 +154,9 @@ class MessageQueueDequeuer extends Thread{
 				//if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>");
 				if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
 				logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+" .");
-		    	String clientType = SessionManager.sessionInfo.get(this.SESSION_ID);
-		    	if (clientType != null) {
+		    	
+		    	if (SessionManager.sessionInfo.get(this.SESSION_ID) != null) {
 		    		SessionManager.sessionInfo.remove(this.SESSION_ID);
-		    		if (clientType.equals("p")) {
-		    			MMSLog.decreasePollingClientCount();
-		    		}
 		    	}
 
 			    outputChannel.replyToSender(ctx, message.toString().getBytes());
@@ -170,12 +167,8 @@ class MessageQueueDequeuer extends Thread{
 						 || PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING) {
 					if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Queue="+queueName+" is emtpy.");
 					logger.debug("SessionID="+this.SESSION_ID+" Queue="+queueName+" is emtpy.");
-			    	String clientType = SessionManager.sessionInfo.get(this.SESSION_ID);
-			    	if (clientType != null) {
+			    	if (SessionManager.sessionInfo.get(this.SESSION_ID) != null) {
 			    		SessionManager.sessionInfo.remove(this.SESSION_ID);
-			    		if (clientType.equals("p")) {
-			    			MMSLog.decreasePollingClientCount();
-			    		}
 			    	}
 
 				    outputChannel.replyToSender(ctx, message.toString().getBytes());
@@ -192,12 +185,9 @@ class MessageQueueDequeuer extends Thread{
 						//if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueDequeuer] "+queueName +"<br/>");
 						if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
 						logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
-				    	String clientType = SessionManager.sessionInfo.get(this.SESSION_ID);
-				    	if (clientType != null) {
+				    	
+				    	if (SessionManager.sessionInfo.get(this.SESSION_ID) != null) {
 				    		SessionManager.sessionInfo.remove(this.SESSION_ID);
-				    		if (clientType.equals("p")) {
-				    			MMSLog.decreasePollingClientCount();
-				    		}
 				    	}
 					    outputChannel.replyToSender(ctx, message.toString().getBytes());
 						channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);

@@ -3,7 +3,7 @@ package kr.ac.kaist.message_relaying;
 /* -------------------------------------------------------- */
 /** 
 File name : MRH_MessageOutputChannel.java
-	It output the messages to destination of message through the Internet using HTTP. 
+	It outputs the messages to destination of message through the Internet using HTTP. 
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jin Jung (jungst0001@kaist.ac.kr)
 Creation Date : 2017-01-24
@@ -87,7 +87,7 @@ public class MRH_MessageOutputChannel {
 	private static final Logger logger = LoggerFactory.getLogger(MRH_MessageOutputChannel.class);
 	
 	private String SESSION_ID = "";
-	private final String USER_AGENT = "MMSClient/0.5.0";
+	private final String USER_AGENT = "MMSClient/0.6.0";
 	private static Map<String,List<String>> storedHeader = null;
 	private static boolean isStoredHeader = false;
 	private HostnameVerifier hv = null;

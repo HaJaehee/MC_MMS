@@ -116,7 +116,6 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     	if (clientType != null) {
     		SessionManager.sessionInfo.remove(SESSION_ID);
     		if (clientType.equals("p")) {
-    			MMSLog.decreasePollingClientCount();
     			logger.warn("SessionID="+this.SESSION_ID+" The polling client is disconnected.");
     		} else {
     			logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected.");
