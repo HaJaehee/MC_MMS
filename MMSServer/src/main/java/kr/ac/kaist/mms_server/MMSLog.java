@@ -73,7 +73,7 @@ Version : 0.6.0
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-10-12
-Version : 0.6.1
+Version : 0.6.0
 	Removed msgWaitingPollClientCount.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
