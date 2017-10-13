@@ -102,6 +102,7 @@ public class MMSLog {
 				int value = PollingMethodRegDummy.pollingMethodReg.get(key);
 				status.append(key+", "+((value==PollingMethodRegDummy.NORMAL_POLLING)?"normal":"long")+" polling<br/>");
 			}
+			status.append("Other services, normal polling<br/>");
 		} else {
 			status.append("All services, normal polling<br/>");
 		}
