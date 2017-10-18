@@ -138,6 +138,8 @@ public class MRH_MessageOutputChannel{
         System.out.println("SessionID: " + this.SESSION_ID + "\n"
     			+ "ChannelID: " + ctx.channel().id() + "\n"
     			+ "Message is sent completely\n");
+        /////////////////////////////////////////////////////
+        
         logger.trace("SessionID: " + this.SESSION_ID + "\n"
     			+ "ChannelID: " + ctx.channel().id() + "\n"
     			+ "Message is sent completely");

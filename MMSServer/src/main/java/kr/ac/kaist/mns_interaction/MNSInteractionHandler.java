@@ -43,6 +43,12 @@ public class MNSInteractionHandler {
 		messageOutput = new MIH_MessageOutputChannel(this.SESSION_ID);
 	}
 	
+	public String requestIPtoMRN(String ipAddress){
+		String msg = "IP-Request:" + ipAddress;
+		String mrn = messageOutput.sendToMNS(msg);
+		
+		return mrn;
+	}
 	
 	public String requestDstInfo(String dstMRN) {
 		String msg = locatorQuerier.buildQuery(dstMRN);
