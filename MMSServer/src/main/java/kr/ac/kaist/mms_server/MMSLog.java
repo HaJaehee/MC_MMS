@@ -76,6 +76,11 @@ Rev. history : 2017-10-12
 Version : 0.6.0
 	Removed msgWaitingPollClientCount.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-10-24
+Version : 0.6.0
+	The log level of the log about MNS Dummy entries is lowered from debug level to trace level.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -164,7 +169,7 @@ public class MMSLog {
 		}
 		
   	dumpedMNS = response.toString();
-  	logger.debug("Dumped MNS: " + dumpedMNS+".");
+  	logger.trace("Dumped MNS: " + dumpedMNS+".");
   	inFromMNS.close();
   	if (dumpedMNS.equals("No"))
   		return "No MRN to IP mapping.<br/>";

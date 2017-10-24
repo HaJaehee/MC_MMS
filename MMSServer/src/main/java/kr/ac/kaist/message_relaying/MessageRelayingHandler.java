@@ -66,6 +66,11 @@ Rev. history : 2017-09-29
 Version : 0.6.0
 	MMS filters out the messages which have srcMRN or dstMRN as this MMS's MRN .
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-10-24
+Version : 0.6.0
+	MMS logs msg payloads at trace level.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -77,6 +82,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +96,7 @@ import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.seamless_roaming.PollingMethodRegDummy;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
+
 
 public class MessageRelayingHandler  {
 	
@@ -115,6 +122,8 @@ public class MessageRelayingHandler  {
 		parser.parseMessage(ctx, req);
 		
 		MessageTypeDecider.msgType type = typeDecider.decideType(parser, mch);
+
+		
 		processRelaying(type, ctx, req);
 	}
 	
@@ -140,6 +149,8 @@ public class MessageRelayingHandler  {
 		logger.info("SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
 		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
 		
+		logger.trace("SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));	
+		if(MMSConfiguration.WEB_LOG_PROVIDING&&logger.isTraceEnabled())MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));
 		byte[] message = null;
 		
 		if (type == MessageTypeDecider.msgType.NULL_MRN) {
