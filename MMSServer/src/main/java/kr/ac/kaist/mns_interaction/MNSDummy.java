@@ -74,17 +74,24 @@ public class MNSDummy {
 //       (Geo-location added version)   IP_Address:PortNumber:Model:Geo-location
 //
 //
-//       MRNtoIP.put("urn:mrn:imo:imo-no:1000001","118.220.143.130:0:1");
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000001","223.39.131.117:0:1");
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000001-SCSession","118.220.143.130:0:1");
 //       MRNtoIP.put("urn:mrn:imo:imo-no:1000001-kaist","172.25.0.11:0:1");
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000001-pjh","143.248.55.117:0:1");
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000001-test171024","219.249.186.19:0:1");
 //       MRNtoIP.put("urn:mrn:imo:imo-no:1000002-kaist","172.25.0.11:0:1");
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000005","218.39.202.78:8906:2");
 //       MRNtoIP.put("urn:mrn:smart-navi:client:sv40","106.240.253.98:0:1");
 //       MRNtoIP.put("urn:mrn:smart-navi:device:msc1-20170914","175.244.145.136:0:1");
 //       MRNtoIP.put("urn:mrn:smart-navi:device:msr1-20170914","221.162.236.234:8982:2");
-//       MRNtoIP.put("urn:mrn:smart-navi:device:tm-server","61.37.71.5:8902:2");
-//       MRNtoIP.put("urn:mrn:smart-navi:s:kjesv40","1.220.41.11:0:1");
+//       MRNtoIP.put("urn:mrn:smart-navi:device:tm-server","223.39.131.117:8902:2");
+//       MRNtoIP.put("urn:mrn:smart-navi:device:tm-server-kaist","143.248.57.72:8902:2");
+//       MRNtoIP.put("urn:mrn:smart-navi:device:tm-server-middle-test171024","223.39.131.117:20001:2");
+//       MRNtoIP.put("urn:mrn:smart-navi:device:tm-server-pjh","143.248.55.117:8902:2");
+//       MRNtoIP.put("urn:mrn:smart-navi:s:kjesv40","112.162.241.161:0:1");
 //       MRNtoIP.put("urn:mrn:smart-navi:s:sv40","1.220.41.11:0:1");
 //       MRNtoIP.put("urn:mrn:smart-navi:service:kjesv40","1.220.41.11:8902:2");
-//       MRNtoIP.put("urn:mrn:smart-navi:service:sv40","1.220.41.11:8088:2");
+//       MRNtoIP.put("urn:mrn:smart-navi:service:sv40","183.103.51.133:8902:2");
 //       MRNtoIP.put("urn:mrn:smart:service:instance:mof:NXDDS","106.248.228.114:7088:2");
 //       MRNtoIP.put("urn:mrn:smart:service:instance:mof:NXRESULT","106.248.228.114:7090:2");
 //       MRNtoIP.put("urn:mrn:smart:service:instance:mof:S10","203.250.182.94:7088:2");
@@ -92,12 +99,16 @@ public class MNSDummy {
 //       MRNtoIP.put("urn:mrn:smart:service:instance:mof:S20","203.250.182.94:7088:2");
 //       MRNtoIP.put("urn:mrn:smart:service:instance:mof:S30","203.250.182.94:7088:2");
 //       MRNtoIP.put("urn:mrn:smart:service:instance:mof:S40","1.220.41.11:8902:2");
-//       MRNtoIP.put("urn:mrn:smart:service:instance:mof:S51","61.37.71.5:0:1");
+//       MRNtoIP.put("urn:mrn:smart:service:instance:mof:S51","219.249.186.19:0:1");
 //       MRNtoIP.put("urn:mrn:smart:service:instance:mof:S52","203.250.182.94:7088:2");
-//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp100fors10","106.248.228.114:7090:2");
+//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp100fors10","203.250.182.94:0:1");
 //       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp100fors11","203.250.182.94:7080:2");
-//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp400fors40","1.220.41.11:0:1");
-//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp520fors52","112.172.60.133:0:1");
+//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp101fors10","118.220.143.130:0:1");
+//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp200fors20","1.1.1.1:0:1");
+//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp300fors30","1.1.1.1:0:1");
+//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp400fors40","112.186.26.198:0:1");
+//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp510fors51","218.39.202.78:20001:2");
+//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp520fors52","119.203.5.157:0:1");
  
 
 

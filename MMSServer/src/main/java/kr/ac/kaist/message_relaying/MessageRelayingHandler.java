@@ -71,15 +71,22 @@ Rev. history : 2017-10-24
 Version : 0.6.0
 	MMS logs msg payloads at trace level.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-10-25
+Version : 0.6.0
+	Added MMSLogsForDebug features.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import java.awt.TrayIcon.MessageType;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -94,6 +101,7 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
+import kr.ac.kaist.mms_server.MMSLogsForDebug;
 import kr.ac.kaist.seamless_roaming.PollingMethodRegDummy;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
@@ -145,12 +153,24 @@ public class MessageRelayingHandler  {
 		String uri = parser.getUri();
 		String dstIP = parser.getDstIP();
 		int dstPort = parser.getDstPort();
-
+		
+		MMSLogsForDebug.addSessionId(srcMRN, this.SESSION_ID);
+		MMSLogsForDebug.addSessionId(dstMRN, this.SESSION_ID);
+		
 		logger.info("SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
-		if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
+		if(MMSConfiguration.WEB_LOG_PROVIDING) {
+			String log = "SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".";
+			MMSLog.addBriefLogForStatus(log);
+			MMSLogsForDebug.addLog(this.SESSION_ID, log);
+		}
 		
 		logger.trace("SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));	
-		if(MMSConfiguration.WEB_LOG_PROVIDING&&logger.isTraceEnabled())MMSLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));
+		if(MMSConfiguration.WEB_LOG_PROVIDING&&logger.isTraceEnabled()) {
+			String log = "SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim());
+			MMSLog.addBriefLogForStatus(log);
+			MMSLogsForDebug.addLog(this.SESSION_ID, log);
+		}
+		
 		byte[] message = null;
 		
 		if (type == MessageTypeDecider.msgType.NULL_MRN) {
@@ -170,8 +190,17 @@ public class MessageRelayingHandler  {
 			int srcModel = parser.getSrcModel();
 			String svcMRN = parser.getSvcMRN();
 			
-			//@Deprecated
-			//message = srh.processPollingMessage(srcMRN, srcIP, srcPort, srcModel);
+			MMSLogsForDebug.addSessionId(svcMRN, this.SESSION_ID);
+			
+
+			if(MMSConfiguration.WEB_LOG_PROVIDING) {
+				MMSLogsForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
+			}
+			
+			if(MMSConfiguration.WEB_LOG_PROVIDING&&logger.isTraceEnabled()) {
+				MMSLogsForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));
+			}
+			
 			SessionManager.sessionInfo.put(SESSION_ID, "p");
 			
 			srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, srcPort, srcModel, svcMRN);
@@ -179,10 +208,6 @@ public class MessageRelayingHandler  {
 			return;
 		} 
 		else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC) {
-			
-			//@Deprecated
-			//srh.putSCMessage(dstMRN, req);
-			
 			srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
     		message = "OK".getBytes(Charset.forName("UTF-8"));
 		} 
@@ -231,38 +256,67 @@ public class MessageRelayingHandler  {
 		} 
 		else if (type == MessageTypeDecider.msgType.STATUS){
     		String status;
-    		
-			try {
-				status = MMSLog.getStatus();
-				message = status.getBytes(Charset.forName("UTF-8"));
-			} 
-			catch (UnknownHostException e) {
-				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-			} 
-			catch (IOException e) {
-				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-			}
+    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+    		Map<String,List<String>> params = qsd.parameters();
+    		if (params.get("mrn") == null) {
+    			try {
+					status = MMSLog.getStatus("");
+					message = status.getBytes(Charset.forName("UTF-8"));
+				} 
+				catch (UnknownHostException e) {
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+				} 
+				catch (IOException e) {
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+				}
+    		}
+    		else {
+
+				try {
+    				status = MMSLog.getStatus(params.get("mrn").get(0));
+					message = status.getBytes(Charset.forName("UTF-8"));
+				} 
+				catch (UnknownHostException e) {
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+				} 
+				catch (IOException e) {
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+				}
+    		}
 		}
-		/*
-		else if (type == MessageTypeDecider.msgType.EMPTY_MNSDummy) {
-    		try {
-				emptyMNS();
-				message = "OK".getBytes(Charset.forName("UTF-8"));
-			} 
-    		catch (UnknownHostException e) {
-				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-			} 
-    		catch (IOException e) {
-				logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-			}
-		} */
+		else if (type == MessageTypeDecider.msgType.ADD_MRN_BEING_DEBUGGED) {
+    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+    		Map<String,List<String>> params = qsd.parameters();
+    		if (params.get("mrn")!=null) {
+    			String mrn = params.get("mrn").get(0);
+    			MMSLogsForDebug.addMrn(mrn);
+    			logger.warn("SessionID="+this.SESSION_ID+" Added a MRN being debugged="+mrn+".");
+    			message = "OK".getBytes(Charset.forName("UTF-8"));
+    		}
+    		else {
+    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
+    		}
+		}
+		else if (type == MessageTypeDecider.msgType.REMOVE_MRN_BEING_DEBUGGED) {
+    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+    		Map<String,List<String>> params = qsd.parameters();
+    		if (params.get("mrn")!=null) {
+    			String mrn = params.get("mrn").get(0);
+    			MMSLogsForDebug.removeMrn(mrn);
+    			logger.warn("SessionID="+this.SESSION_ID+" Removed debug MRN="+mrn+".");
+    			message = "OK".getBytes(Charset.forName("UTF-8"));
+    		}
+    		else {
+    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
+    		}
+		}
+
 		else if (type == MessageTypeDecider.msgType.REMOVE_MNS_ENTRY) {
     		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
     		logger.warn("SessionID="+this.SESSION_ID+" Remove MRN=" + params.get("mrn").get(0)+".");
-    		if (!params.get("mrn").get(0).equals(MMSConfiguration.MMS_MRN)) {
+    		if (params.get("mrn")!=null && !params.get("mrn").get(0).equals(MMSConfiguration.MMS_MRN)) {
     			try {
-    		
 					removeEntryMNS(params.get("mrn").get(0));
 					message = "OK".getBytes(Charset.forName("UTF-8"));
 				} 
@@ -274,14 +328,14 @@ public class MessageRelayingHandler  {
 				} 
     		}
     		else {
-				message = "Wrong  parameter".getBytes(Charset.forName("UTF-8"));
+				message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
 			}
 		} 
 		else if (type == MessageTypeDecider.msgType.ADD_MNS_ENTRY) {
 			QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 			Map<String,List<String>> params = qsd.parameters();
 			logger.warn("SessionID="+this.SESSION_ID+" Add MRN=" + params.get("mrn").get(0) + " IP=" + params.get("ip").get(0) + " Port=" + params.get("port").get(0) + " Model=" + params.get("model").get(0)+".");
-			if (!params.get("mrn").get(0).equals(MMSConfiguration.MMS_MRN)) {
+			if (params.get("mrn")!=null && !params.get("mrn").get(0).equals(MMSConfiguration.MMS_MRN)) {
 				try {
 					addEntryMNS(params.get("mrn").get(0), params.get("ip").get(0), params.get("port").get(0), params.get("model").get(0));
 					message = "OK".getBytes(Charset.forName("UTF-8"));
@@ -300,33 +354,38 @@ public class MessageRelayingHandler  {
 		else if (type == MessageTypeDecider.msgType.POLLING_METHOD) {
 			QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
-    		String method = params.get("method").get(0);
-    		String svcMRN = params.get("svcMRN").get(0);
-    		if (method != null && svcMRN != null && !svcMRN.equals(MMSConfiguration.MMS_MRN)) {
-    			if (method.equals("normal")) {
-
-    				PollingMethodRegDummy.pollingMethodReg.put(svcMRN, PollingMethodRegDummy.NORMAL_POLLING);
-    				message = "OK".getBytes(Charset.forName("UTF-8"));
-    				logger.warn("SessionID="+this.SESSION_ID+" svcMRN="+svcMRN+" polling method is switched to normal polling.");
-
-	    		} 
-	    		else if (method.equals("long")) {
-
-	    			PollingMethodRegDummy.pollingMethodReg.put(svcMRN, PollingMethodRegDummy.LONG_POLLING);
-    				message = "OK".getBytes(Charset.forName("UTF-8"));
-     				logger.warn("SessionID="+this.SESSION_ID+" svcMRN="+svcMRN+" polling method is switched to long polling.");
-	    		
-	    		} 
-	    		else if (method.equals("remove")) {
-	    			
-	    			PollingMethodRegDummy.pollingMethodReg.remove(svcMRN);
-    				message = "OK".getBytes(Charset.forName("UTF-8"));
-     				logger.warn("SessionID="+this.SESSION_ID+" svcMRN="+svcMRN+" polling method is removed.");
-	    		
-	    		}
+    		if (params.get("method")==null || params.get("svcMRN")==null) {
+    			message = "Wrong parameter.".getBytes(Charset.forName("UTF-8"));
     		}
     		else {
-    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
+	    		String method = params.get("method").get(0);
+	    		String svcMRN = params.get("svcMRN").get(0);
+	    		if (method != null && svcMRN != null && !svcMRN.equals(MMSConfiguration.MMS_MRN)) {
+	    			if (method.equals("normal")) {
+	
+	    				PollingMethodRegDummy.pollingMethodReg.put(svcMRN, PollingMethodRegDummy.NORMAL_POLLING);
+	    				message = "OK".getBytes(Charset.forName("UTF-8"));
+	    				logger.warn("SessionID="+this.SESSION_ID+" svcMRN="+svcMRN+" polling method is switched to normal polling.");
+	
+		    		} 
+		    		else if (method.equals("long")) {
+	
+		    			PollingMethodRegDummy.pollingMethodReg.put(svcMRN, PollingMethodRegDummy.LONG_POLLING);
+	    				message = "OK".getBytes(Charset.forName("UTF-8"));
+	     				logger.warn("SessionID="+this.SESSION_ID+" svcMRN="+svcMRN+" polling method is switched to long polling.");
+		    		
+		    		} 
+		    		else if (method.equals("remove")) {
+		    			
+		    			PollingMethodRegDummy.pollingMethodReg.remove(svcMRN);
+	    				message = "OK".getBytes(Charset.forName("UTF-8"));
+	     				logger.warn("SessionID="+this.SESSION_ID+" svcMRN="+svcMRN+" polling method is removed.");
+		    		
+		    		}
+	    		}
+	    		else {
+	    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
+	    		}
     		}
 		} 
 		/*

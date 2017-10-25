@@ -57,6 +57,11 @@ Rev. history : 2017-09-29
 Version : 0.6.0
 	MMS filters out the messages which have srcMRN or dstMRN as this MMS's MRN .
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-10-25
+Version : 0.6.0
+	Added MMSLogsForDebug features.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -89,7 +94,9 @@ class MessageTypeDecider {
 			INVALID_SRC_MRN,
 			INVALID_DST_MRN,
 			DST_MRN_IS_THIS_MMS_MRN,
-			SRC_MRN_IS_THIS_MMS_MRN
+			SRC_MRN_IS_THIS_MMS_MRN,
+			ADD_MRN_BEING_DEBUGGED,
+			REMOVE_MRN_BEING_DEBUGGED
 	}
 
 	
@@ -107,23 +114,26 @@ class MessageTypeDecider {
 	   	if (srcMRN == null && dstMRN == null) {
 	   		
 //			when WEB_LOG_PROVIDING
-			if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.equals("/status")){
+			if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/status", 0, 7)){
 				return msgType.STATUS;
 			}
 			
 //			when WEB_MANAGING
-		   	/*else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.equals("/emptymnsdummy")){ 
-		   		return msgType.EMPTY_MNSDummy;
-		   	} */
-		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/addmnsentry?mrn", 0, 16)){ 
+		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/add-mns-entry?mrn", 0, 18)){ 
 		   		return msgType.ADD_MNS_ENTRY;
 		   	} 
-		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/removemnsentry?mrn", 0, 19)){ 
+		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/remove-mns-entry?mrn", 0, 21)){ 
 		   		return msgType.REMOVE_MNS_ENTRY;
 		   	} 
-		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0,"/polling?method", 0, 15)){
+		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/polling?method", 0, 15)){
 		   		return msgType.POLLING_METHOD;
 		   	} 	
+		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/add-mrn-being-debugged?mrn", 0, 21)) {
+		   		return msgType.ADD_MRN_BEING_DEBUGGED;
+		   	}
+		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/remove-mrn-being-debugged?mrn", 0, 24)) {
+		   		return msgType.REMOVE_MRN_BEING_DEBUGGED;
+		   	}
 			
 			return msgType.NULL_MRN;
 		}

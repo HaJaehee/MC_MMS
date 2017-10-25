@@ -121,12 +121,24 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     			logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected.");
     		}
     	}
-        ctx.close();
+    	if(!ctx.isRemoved()){
+    		ctx.close();
+    	}
     }
     
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        ctx.close();
+    	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
+    	if (clientType != null) {
+    		SessionManager.sessionInfo.remove(SESSION_ID);
+    		if (clientType.equals("p")) {
+    			logger.warn("SessionID="+this.SESSION_ID+" The polling client is disconnected.");
+    		} else {
+    			logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected.");
+    		}
+    	}
+    	if(!ctx.isRemoved()){
+    		ctx.close();
+    	}
     }
-
 }

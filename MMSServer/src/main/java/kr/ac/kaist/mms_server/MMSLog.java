@@ -81,6 +81,11 @@ Rev. history : 2017-10-24
 Version : 0.6.0
 	The log level of the log about MNS Dummy entries is lowered from debug level to trace level.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-10-25
+Version : 0.6.0
+	Added MMSLogsForDebug features.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -92,10 +97,10 @@ public class MMSLog {
 	
 	private static ArrayList<String> briefLogForStatus = new ArrayList<String>();
 	
-	public static String getStatus ()  throws UnknownHostException, IOException{
+	public static String getStatus (String mrn)  throws UnknownHostException, IOException{
 		  	
 		StringBuffer status = new StringBuffer();
-		
+
 		status.append("<strong>Maritime Name System Dummy:</strong><br/>");
 		status.append(dumpMNS());
 		status.append("<br/>");
@@ -129,9 +134,34 @@ public class MMSLog {
 		}
 		status.append("<br/>");
 		
-		status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE+"):</strong><br/>");
-		for (String log : briefLogForStatus) {
-			status.append(log+"<br/>");
+
+		status.append("<strong>MRNs being debugged:</strong><br/>");
+		if (!MMSLogsForDebug.getMrnSet().isEmpty()) {
+			SortedSet<String> keys = new TreeSet<String>(MMSLogsForDebug.getMrnSet());
+			for (String key : keys) {
+				status.append(key+"<br/>");
+			}
+		}
+		else {
+			status.append("None<br/>");
+		}
+		status.append("<br/>");
+
+		if (mrn.equals("")) {
+			status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE+"):</strong><br/>");
+			for (String log : briefLogForStatus) {
+				status.append(log+"<br/>");
+			}
+		} 
+		else {
+			status.append("<strong>MMS Brief Log for MRN="+mrn+"<br/>(Maximum session count:"+MMSLogsForDebug.getMaxSessionCount()+"):</strong><br/>");
+			String log = MMSLogsForDebug.getLog(mrn);
+			if (log != null) {
+				status.append(log);
+			}
+			else {
+				status.append("Invalid MRN being debugged.<br/>");
+			}
 		}
 		
   	
