@@ -60,7 +60,7 @@ public class MNSDummy {
 	private static int GEOCASTING = 2;
 	private static int GROUPCASTING = 3;
 	
-	private static final Logger logger = LoggerFactory.getLogger(MNSDummy.class);
+	//private static final Logger logger = LoggerFactory.getLogger(MNSDummy.class);
 	//All MRN to IP Mapping is in hashmap 
 	private static HashMap<String, String> MRNtoIP = new HashMap<String, String>();
 	
@@ -68,7 +68,7 @@ public class MNSDummy {
     {
        
        ServerSocket Sock = new ServerSocket(1004);
-       logger.error("MNSDummy started.");
+       //logger.error("MNSDummy started.");
 //       -------------Put MRN --> IP Information -------------
 //		 MRN table structure:           IP_Address:PortNumber:Model
 //       (Geo-location added version)   IP_Address:PortNumber:Model:Geo-location
@@ -118,7 +118,7 @@ public class MNSDummy {
        {
           Socket connectionSocket = Sock.accept();
 
-          logger.debug("Packet incomming.");
+          //logger.debug("Packet incomming.");
           BufferedReader dataReceived =
              new BufferedReader(new InputStreamReader(connectionSocket.getInputStream(),Charset.forName("UTF-8")));
 
@@ -129,7 +129,7 @@ public class MNSDummy {
           }
           String data = buf.toString();
 
-          logger.debug(data);
+          //logger.debug(data);
           String dataToReply = "MNSDummy-Reply:";
        
           if (data.regionMatches(0, "MRN-Request:", 0, 12)){
@@ -138,15 +138,15 @@ public class MNSDummy {
         	  int rplPort = Integer.parseInt(data.split(",")[1]);
         	  data = data.split(",")[0];
         	  
-        	  logger.debug("MNSDummy:data=" + data);
+        	  //loggerdebug("MNSDummy:data=" + data);
         	  if (!data.regionMatches(0, "urn:mrn:mcs:casting:geocast:smart:",0,34)){
 	        	  if (MRNtoIP.containsKey(data))
 	        		  dataToReply += MRNtoIP.get(data);
 	        	  else{
-	        	  	  logger.debug("No MRN to IP Mapping.");
+	        	  	  //loggerdebug("No MRN to IP Mapping.");
 	        		  dataToReply = "No";
 	        	  }
-	              logger.debug(dataToReply);
+	              //loggerdebug(dataToReply);
 	        	  Socket ReplySocket = new Socket("localhost",rplPort);
 	        	  
 	        	  BufferedWriter out = new BufferedWriter(
@@ -158,7 +158,7 @@ public class MNSDummy {
           	  }else{ // if geocasting (urn:mrn:mcs:casting:geocasting:smart:-)
           		  String geoMRN = data.substring(34);
           		  String[] parsedGeoMRN = geoMRN.split("-");
-          		  logger.info("Geocasting MRN="+geoMRN+".");
+          		  //loggerinfo("Geocasting MRN="+geoMRN+".");
           		  float lat = Float.parseFloat(parsedGeoMRN[1]); 
           		  float lon = Float.parseFloat(parsedGeoMRN[3]);
           		  float rad = Float.parseFloat(parsedGeoMRN[5]);
@@ -202,7 +202,7 @@ public class MNSDummy {
           }else if (data.regionMatches(0, "Location-Update:", 0, 16)){
         	  data = data.substring(16);
         	
-        	  logger.info("MNSDummy:data=" + data);
+        	  //loggerinfo("MNSDummy:data=" + data);
         	  String[] data_sub = data.split(",");
         	  // data_sub = IP_address, MRN, Port
         	  MRNtoIP.put(data_sub[1], data_sub[0] + ":" + data_sub[2] + ":" + data_sub[3]);
@@ -218,7 +218,7 @@ public class MNSDummy {
         	  
           }else if (data.regionMatches(0, "Dump-MNS:", 0, 9)){
 
-        	  logger.debug("MNSDummy:data=" + data);
+        	  //loggerdebug("MNSDummy:data=" + data);
         	  int rplPort = Integer.parseInt(data.split(",")[1]);
 
         	  if (!MRNtoIP.isEmpty()){
@@ -229,7 +229,7 @@ public class MNSDummy {
             	  }
         	  }
         	  else{
-        	  	  logger.debug("No MRN to IP Mapping.");
+        	  	  //loggerdebug("No MRN to IP Mapping.");
         		  dataToReply = "No";
         	  }
         	  Socket ReplySocket = new Socket("localhost",rplPort);
@@ -243,25 +243,25 @@ public class MNSDummy {
               
           }else if (data.equals("Empty-MNS:") && MMSConfiguration.WEB_MANAGING){
         	  MRNtoIP.clear();
-        	  logger.warn("MNSDummy:EMPTY.");
+        	  //loggerwarn("MNSDummy:EMPTY.");
             
           }else if (data.regionMatches(0, "Remove-Entry:", 0, 13) && MMSConfiguration.WEB_MANAGING){
         	  String mrn = data.substring(13);
         	  MRNtoIP.remove(mrn);
-        	  logger.warn("MNSDummy:REMOVE="+mrn+".");
+        	  //loggerwarn("MNSDummy:REMOVE="+mrn+".");
           }else if (data.regionMatches(0, "Add-Entry:", 0, 10) && MMSConfiguration.WEB_MANAGING){
         	  String[] params = data.substring(10).split(",");
         	  String mrn = params[0];
         	  String locator = params[1] +":"+ params[2] +":"+ params[3];
         	  MRNtoIP.put(mrn, locator);
-        	  logger.warn("MNSDummy:ADD="+mrn+".");
+        	  //loggerwarn("MNSDummy:ADD="+mrn+".");
         	  
           //Geo-location update function.  
           }else if (data.regionMatches(0, "Geo-location-Update:", 0, 20)){
         	  //TODO:Processing geo-location update message
         	  //data format: Geo-location-update:
         	  String[] data_sub = data.split(",");
-        	  logger.debug("MNSDummy:Geolocationupdate "+data_sub[1]);
+        	  //loggerdebug("MNSDummy:Geolocationupdate "+data_sub[1]);
         	  MRNtoIP.put(data_sub[1], "127.0.0.1" + ":" + data_sub[2] + ":" + data_sub[3] + ":" + data_sub[4]);
           }
        }
