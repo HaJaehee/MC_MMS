@@ -63,6 +63,7 @@ public class MNSDummy {
 	//private static final Logger logger = LoggerFactory.getLogger(MNSDummy.class);
 	//All MRN to IP Mapping is in hashmap 
 	private static HashMap<String, String> MRNtoIP = new HashMap<String, String>();
+//	private static HashMap<String, String> IPtoMRN = new HashMap<String, String>();
 	
 	public static void main(String argv[]) throws Exception
     {
@@ -129,7 +130,9 @@ public class MNSDummy {
           }
           String data = buf.toString();
 
+
           //logger.debug(data);
+
           String dataToReply = "MNSDummy-Reply:";
        
           if (data.regionMatches(0, "MRN-Request:", 0, 12)){
@@ -263,6 +266,36 @@ public class MNSDummy {
         	  String[] data_sub = data.split(",");
         	  //loggerdebug("MNSDummy:Geolocationupdate "+data_sub[1]);
         	  MRNtoIP.put(data_sub[1], "127.0.0.1" + ":" + data_sub[2] + ":" + data_sub[3] + ":" + data_sub[4]);
+          } else if(data.regionMatches(0, "IP-Request:", 0, 11)){
+        	  String address = data.substring(11).split(",")[0];
+        	  System.out.println("Incomming Address: " + address);
+        	  String[] parseAddress = address.split(":");
+        	  String mrn = null;
+        	  for(String value : MRNtoIP.keySet()){
+        		  String[] parseValue = MRNtoIP.get(value).split(":");
+        		  System.out.println("Value:" + parseValue.toString());
+        		  if(parseAddress[0].equals(parseValue[0]) 
+        				  && parseAddress[1].equals(parseValue[1])){
+        			  mrn = value;
+        			  break;
+        		  }
+        	  }
+        	  
+        	  if(mrn == null){
+        		  dataToReply += "Unregistered MRN in MRN";
+        	  } else {
+        		  dataToReply += mrn;
+        	  }
+        	  
+        	  int rplPort = Integer.parseInt(data.split(",")[1]);
+        	  Socket ReplySocket = new Socket("localhost", rplPort);
+        	  
+        	  BufferedWriter out = new BufferedWriter(
+    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
+        	  out.write(dataToReply);
+              out.flush();
+              out.close();
+              ReplySocket.close();
           }
        }
     }

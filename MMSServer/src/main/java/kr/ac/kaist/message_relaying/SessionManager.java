@@ -20,7 +20,8 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 public class SessionManager {
 	private String TAG = "[SessionManager] ";
 	
+
 	public static HashMap<String, String> sessionInfo = new HashMap<>(); //If client is a polling client, value is "p" otherwise ""
 	
-	
+
 }

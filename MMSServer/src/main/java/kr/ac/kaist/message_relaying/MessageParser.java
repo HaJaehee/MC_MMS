@@ -45,6 +45,7 @@ import io.netty.handler.codec.http.HttpMethod;
 public class MessageParser {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageParser.class);
+
 	private String SESSION_ID = "";
 	private String srcIP = null;
 	private String srcMRN = null;
@@ -59,9 +60,14 @@ public class MessageParser {
 	private HttpMethod httpMethod = null;
 	private String svcMRN = null;
 	
+
+	MessageParser(){
+		this("");
+	}
+	
+
 	MessageParser(String sessionId){
 		this.SESSION_ID = sessionId;
-		
 		srcIP = null;
 		srcMRN = null;
 		dstIP = null;
@@ -78,11 +84,14 @@ public class MessageParser {
 	void parseMessage(ChannelHandlerContext ctx, FullHttpRequest req) {
 		InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 	    InetAddress inetaddress = socketAddress.getAddress();
+	    
+	    channelID = ctx.channel().id().asShortText();
+	    
 	    srcIP = inetaddress.getHostAddress(); // IP address of client
-		
-
 		srcMRN = req.headers().get("srcMRN");
+		
 		dstMRN = req.headers().get("dstMRN");
+		
 		uri = req.uri();
 		httpMethod = req.method();
 	}
@@ -114,52 +123,26 @@ public class MessageParser {
 		String[] dstMRNs = dstInfo.substring(13).split(",");
 		multiDstMRN = dstMRNs;
 	}
-	
-	String[] getMultiDstMRN() {
-		return multiDstMRN;
-	}
-	
-	String getDstMRN() {
-		return dstMRN;
-	}
 
-	String getSrcMRN() {
-		return srcMRN;
-	}
-
-	String getUri() {
-		return uri;
-	}
+	// HTTP Information //
+	String getUri() { return uri; }
+	HttpMethod getHttpMethod() { return httpMethod; }
 	
-	HttpMethod getHttpMethod() {
-		return httpMethod;
-	}
+	// Destination Information //
+	String getDstIP() { return dstIP; }
+	int getDstPort() { return dstPort; }
+	String getDstMRN() { return dstMRN; }
+	int getDstModel() { return dstModel; }
 	
-	String getDstIP() {
-		return dstIP;
-	}
+	// Destination Special Information //
+	String[] getMultiDstMRN() { return multiDstMRN; }
 	
-	int getDstPort() {
-		return dstPort;
-	}
+	// Source Information //
+	String getSrcIP(){ return srcIP; }
+	int getSrcPort(){ return srcPort; }
+	String getSrcMRN() { return srcMRN; }
+	int getSrcModel(){ return srcModel; }
 	
-	int getDstModel() {
-		return dstModel;
-	}
-	
-	String getSrcIP(){
-		return srcIP;
-	}
-	
-	int getSrcPort(){
-		return srcPort;
-	}
-	
-	int getSrcModel(){
-		return srcModel;
-	}
-	
-	String getSvcMRN (){
-		return svcMRN;
-	}
+	// Service Information //
+	String getSvcMRN (){ return svcMRN; }
 }

@@ -141,7 +141,8 @@ public class MessageRelayingHandler  {
 	}
 	
 	private void initializeSubModule() {
-		parser = new MessageParser(this.SESSION_ID);
+//		parser = new MessageParser(this.SESSION_ID);
+		parser = new MessageParser();
 		typeDecider = new MessageTypeDecider(this.SESSION_ID);
 		outputChannel = new MRH_MessageOutputChannel(this.SESSION_ID);
 	}
