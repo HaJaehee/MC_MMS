@@ -189,17 +189,18 @@ public class MessageRelayingHandler  {
 			int srcPort = parser.getSrcPort();
 			int srcModel = parser.getSrcModel();
 			String svcMRN = parser.getSvcMRN();
-			
+		
 			MMSLogsForDebug.addSessionId(svcMRN, this.SESSION_ID);
-			
 
 			if(MMSConfiguration.WEB_LOG_PROVIDING) {
-				MMSLogsForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
+				if(MMSLogsForDebug.isItsLogListNull(this.SESSION_ID)) {
+					MMSLogsForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
+					if(logger.isTraceEnabled()) {
+						MMSLogsForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));
+					}
+				}
 			}
-			
-			if(MMSConfiguration.WEB_LOG_PROVIDING&&logger.isTraceEnabled()) {
-				MMSLogsForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));
-			}
+
 			
 			SessionManager.sessionInfo.put(SESSION_ID, "p");
 			

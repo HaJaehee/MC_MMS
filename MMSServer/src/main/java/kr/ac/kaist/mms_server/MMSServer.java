@@ -40,6 +40,7 @@ public class MMSServer {
 		
 		
 		new SecureMMSServer().runServer(); // Thread
+		MMSLogsForDebug.getInstance(); //initialize MMSLogsForDebug
 		
 		logger.error("Now starting MMS HTTP server.");
 		NettyStartupUtil.runServer(MMSConfiguration.HTTP_PORT, pipeline -> {   //runServer(int port, Consumer<ChannelPipeline> initializer)

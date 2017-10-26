@@ -24,8 +24,33 @@ public class MMSLogsForDebug {
 	private static Map<String,List<String>> mrnSessionIdMapper = new HashMap<String,List<String>>();
 	private static Map<String,List<String>> sessionIdMrnMapper = new HashMap<String,List<String>>();
 	private static int maxSessionCount = 100;
+	private static MMSLogsForDebug inst = null;
 	
-	// TODO
+	private MMSLogsForDebug () {
+		addMrn("urn:mrn:smart:service:instance:mof:S10");
+		addMrn("urn:mrn:smart:service:instance:mof:S11");
+		addMrn("urn:mrn:smart:service:instance:mof:S20");
+		addMrn("urn:mrn:smart:service:instance:mof:S30");
+		addMrn("urn:mrn:smart:service:instance:mof:S40");
+		addMrn("urn:mrn:smart:service:instance:mof:S51");
+		addMrn("urn:mrn:smart:service:instance:mof:S52");
+		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp100fors10");
+		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp100fors11");
+		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp101fors10");
+		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp200fors20");
+		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp300fors30");
+		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp400fors40");
+		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp400fors41");
+		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp510fors51");
+		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp520fors52");
+	}
+	
+	public static MMSLogsForDebug getInstance() {
+		if (inst == null) {
+			inst = new MMSLogsForDebug();
+		}
+		return inst;
+	}
 	public static String getLog (String mrn){
 		if (mrnSessionIdMapper.get(mrn)!=null) {
 			List<String> sessionIdList = mrnSessionIdMapper.get(mrn);
@@ -54,7 +79,7 @@ public class MMSLogsForDebug {
 	}
 	
 	public static boolean containsSessionId (String sessionId){
-		if (sessionIdLogMapper.containsKey(sessionId)) {
+		if (sessionIdLogMapper.containsKey(sessionId)&&sessionIdMrnMapper.containsKey(sessionId)) {
 			return true;
 		} 
 		else {
@@ -102,9 +127,13 @@ public class MMSLogsForDebug {
 				List<String> sessionIdList = mrnSessionIdMapper.get(mrn);
 				while (sessionIdList.size() > maxSessionCount) {
 					String lruSession = mrnSessionIdMapper.get(mrn).get(0);
-					if (sessionIdLogMapper.get(lruSession)!=null) {
-						sessionIdLogMapper.get(lruSession).clear();
-						sessionIdLogMapper.remove(lruSession);
+					sessionIdMrnMapper.get(lruSession).remove(mrn);
+					if (sessionIdMrnMapper.get(lruSession).isEmpty()) {
+						if (sessionIdLogMapper.get(lruSession)!=null) {
+							sessionIdLogMapper.get(lruSession).clear();
+							sessionIdLogMapper.remove(lruSession);
+						}
+						sessionIdMrnMapper.remove(lruSession);
 					}
 					mrnSessionIdMapper.get(mrn).remove(0);
 				}
@@ -148,6 +177,14 @@ public class MMSLogsForDebug {
 		}
 	}
 
+	public static boolean isItsLogListNull (String sessionId) {
+		if (sessionIdLogMapper.get(sessionId)==null) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 	public static int getMaxSessionCount ()	{
 		return maxSessionCount;
 	}
