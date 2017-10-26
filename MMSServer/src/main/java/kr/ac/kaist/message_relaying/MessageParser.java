@@ -85,8 +85,7 @@ public class MessageParser {
 		InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 	    InetAddress inetaddress = socketAddress.getAddress();
 	    
-	    channelID = ctx.channel().id().asShortText();
-	    
+
 	    srcIP = inetaddress.getHostAddress(); // IP address of client
 		srcMRN = req.headers().get("srcMRN");
 		

@@ -73,7 +73,6 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	public MRH_MessageInputChannel(String protocol) {
 		super();
 		this.protocol = protocol;
-		this.channelID = null;
 		this.parser = new MessageParser();
 	}
 	
@@ -147,7 +146,6 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 
-     	channelID = ctx.channel().id().asShortText();
 //    	ctx.channel().
     	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
 //    	ctx.pipeline().get(HttpHeaderValues.class);
