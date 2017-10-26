@@ -22,6 +22,7 @@ Version : 0.6.0
 public class MMSLogsForDebug {
 	private static Map<String,List<String>> sessionIdLogMapper = new HashMap<String,List<String>>();
 	private static Map<String,List<String>> mrnSessionIdMapper = new HashMap<String,List<String>>();
+	private static Map<String,List<String>> sessionIdMrnMapper = new HashMap<String,List<String>>();
 	private static int maxSessionCount = 100;
 	
 	// TODO
@@ -73,11 +74,17 @@ public class MMSLogsForDebug {
 	
 	
 	public static void removeMrn (String mrn) {
-		if (mrnSessionIdMapper.get(mrn)!=null) {
+		if (mrnSessionIdMapper.containsKey(mrn)&&mrnSessionIdMapper.get(mrn)!=null) {
 			for (String sessionId : mrnSessionIdMapper.get(mrn)) {
-				if (sessionIdLogMapper.get(sessionId)!=null) {
-					sessionIdLogMapper.get(sessionId).clear();
-					sessionIdLogMapper.remove(sessionId);
+				if (sessionIdMrnMapper.get(sessionId)!=null&&sessionIdMrnMapper.get(sessionId).contains(mrn)) {
+					sessionIdMrnMapper.get(sessionId).remove(mrn);
+					if (sessionIdMrnMapper.get(sessionId).isEmpty()) {
+						if (sessionIdLogMapper.get(sessionId)!=null) {
+							sessionIdLogMapper.get(sessionId).clear();
+							sessionIdLogMapper.remove(sessionId);
+						}
+						sessionIdMrnMapper.remove(sessionId);
+					}
 				}
 			}
 			mrnSessionIdMapper.get(mrn).clear();
@@ -110,6 +117,15 @@ public class MMSLogsForDebug {
 				sessionIdList.add(sessionId);
 				mrnSessionIdMapper.put(mrn, sessionIdList);
 				sessionIdLogMapper.put(sessionId, null);
+
+			}
+			if (sessionIdMrnMapper.get(sessionId)==null) {
+				List<String> mrnList = new ArrayList<String>();
+				mrnList.add(mrn);
+				sessionIdMrnMapper.put(sessionId, mrnList);
+			} 
+			else {
+				sessionIdMrnMapper.get(sessionId).add(mrn);
 			}
 		}
 	}
