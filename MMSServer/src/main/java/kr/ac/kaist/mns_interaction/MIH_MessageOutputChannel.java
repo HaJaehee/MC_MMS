@@ -16,6 +16,11 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -36,9 +41,9 @@ import kr.ac.kaist.mms_server.MMSLog;
 class MIH_MessageOutputChannel {
 
 	private static final Logger logger = LoggerFactory.getLogger(MIH_MessageOutputChannel.class);
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 	
-	MIH_MessageOutputChannel(int sessionId) {
+	MIH_MessageOutputChannel(String sessionId) {
 		// TODO Auto-generated constructor stub
 		this.SESSION_ID = sessionId;
 
@@ -55,10 +60,10 @@ class MIH_MessageOutputChannel {
 	    	BufferedWriter outToMNS = new BufferedWriter(
 						new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
 	    	
-	    	logger.trace("SessionID="+this.SESSION_ID+" "+request);
+	    	logger.trace("SessionID="+this.SESSION_ID+" "+request+".");
 	    	ServerSocket Sock = new ServerSocket(0);
 	    	int rplPort = Sock.getLocalPort();
-	    	logger.trace("SessionID="+this.SESSION_ID+" Reply port="+rplPort);
+	    	logger.trace("SessionID="+this.SESSION_ID+" Reply port="+rplPort+".");
 	    	outToMNS.write(request+","+rplPort);
 	    	outToMNS.flush();
 	    	outToMNS.close();
@@ -75,7 +80,7 @@ class MIH_MessageOutputChannel {
 			}
 			
 	    	returnedIP = response.toString();
-	    	logger.trace("SessionID="+this.SESSION_ID+" From server=" + returnedIP);
+	    	logger.trace("SessionID="+this.SESSION_ID+" From server=" + returnedIP+".");
 	    	inFromMNS.close();
 	    	
 	    	if (returnedIP.equals("No")) {
@@ -89,7 +94,7 @@ class MIH_MessageOutputChannel {
 	    	return returnedIP;
     	}
     	catch (Exception e) {
-    		logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage());
+    		logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 			return null;
 		}
 	}

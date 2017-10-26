@@ -59,7 +59,7 @@ class SecureMMSRcvHandler {
 	//OONI
 
 	private String TAG = "[SecureMMSRcvHandler] ";
-	private static final String USER_AGENT = "MMSClient/0.5.0";
+	private static final String USER_AGENT = "MMSClient/0.6.0";
 	private String clientMRN = null;
 	
 	SecureMMSRcvHandler(int port, String jksDirectory, String jksPassword) throws Exception{

@@ -26,6 +26,16 @@ Version : 0.5.8
 	Added geocasting related features
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Added adding mrn entry case 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-29
+Version : 0.6.0
+	MRNtoIPs are printed into sorted by key(MRN) form .
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -35,6 +45,8 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -48,7 +60,7 @@ public class MNSDummy {
 	private static int GEOCASTING = 2;
 	private static int GROUPCASTING = 3;
 	
-	private static final Logger logger = LoggerFactory.getLogger(MNSDummy.class);
+	//private static final Logger logger = LoggerFactory.getLogger(MNSDummy.class);
 	//All MRN to IP Mapping is in hashmap 
 	private static HashMap<String, String> MRNtoIP = new HashMap<String, String>();
 //	private static HashMap<String, String> IPtoMRN = new HashMap<String, String>();
@@ -57,42 +69,57 @@ public class MNSDummy {
     {
        
        ServerSocket Sock = new ServerSocket(1004);
-       logger.error("MNSDummy started");
+       //logger.error("MNSDummy started.");
 //       -------------Put MRN --> IP Information -------------
 //		 MRN table structure:           IP_Address:PortNumber:Model
 //       (Geo-location added version)   IP_Address:PortNumber:Model:Geo-location
 //
 //
-//       MRNtoIP.put("urn:mrn:imo:imo-no:1000002", "127.0.0.1:8901:1"); // SC2
-//       MRNtoIP.put("urn:mrn:imo:imo-no:1000001", "127.0.0.1:8902:1"); // SC1
-//       MRNtoIP.put("urn:mrn:imo:imo-no:1000003", "127.0.0.1:8903:1"); // SC3
-//       MRNtoIP.put("urn:mrn:smart-navi:device:mir1", "127.0.0.1:8904:2"); // MIR
-//       MRNtoIP.put("urn:mrn:smart-navi:device:msr1", "127.0.0.1:8905:2"); // MSR
-//       MRNtoIP.put("urn:mrn:smart-navi:device:tm-server", "127.0.0.1:8902:2"); // SP2
-//       MRNtoIP.put("urn:mrn:simple:simple:server", "143.248.57.72:8080:2");
-       
-//       MRNtoIP.put("urn:mrn:smart-navi:service:si-id:ocean-grid", "127.0.0.1:8910:2");
-//       MRNtoIP.put("urn:mrn:smart-navi:device:mir1", "52.78.97.177:8904:2");
-//       MRNtoIP.put("urn:mrn:smart-navi:service:si-id:text-messenger", "127.0.0.1:8909:2");
-//       MRNtoIP.put("urn:mrn:imo:imo-no:1000006", "143.248.57.72:0:1");
-//       MRNtoIP.put("urn:mrn:imo:imo-no:1000005", "223.62.215.216:0:1");
-//       MRNtoIP.put("urn:mrn:simple:simple:server", "143.248.57.72:8080:2");
-//       MRNtoIP.put("urn:mrn:smart-navi:device:chat-server", "52.78.97.177:8907:2");
-//       MRNtoIP.put("urn:mrn:smart-navi:device:msr1", "52.78.97.177:8921:2");
-//       MRNtoIP.put("urn:mrn:smart-navi:device:portal-server", "223.39.131.16:0:1");
-//       MRNtoIP.put("urn:mrn:imo:imo-no:1000007", "143.248.57.72:0:1");
-//       MRNtoIP.put("urn:mrn:smart-navi:device:og-server", "52.78.97.177:8920:2");
-//       MRNtoIP.put("urn:mrn:imo:imo-no:1000008", "218.158.173.219:0:1");
-//       MRNtoIP.put("urn:mrn:smart-navi:device:chat-server-kaist", "52.78.97.177:18902:2");
-       
-       
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000001","223.39.131.117:0:1");
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000001-SCSession","118.220.143.130:0:1");
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000001-kaist","172.25.0.11:0:1");
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000001-pjh","143.248.55.117:0:1");
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000001-test171024","219.249.186.19:0:1");
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000002-kaist","172.25.0.11:0:1");
+//       MRNtoIP.put("urn:mrn:imo:imo-no:1000005","218.39.202.78:8906:2");
+//       MRNtoIP.put("urn:mrn:smart-navi:client:sv40","106.240.253.98:0:1");
+//       MRNtoIP.put("urn:mrn:smart-navi:device:msc1-20170914","175.244.145.136:0:1");
+//       MRNtoIP.put("urn:mrn:smart-navi:device:msr1-20170914","221.162.236.234:8982:2");
+//       MRNtoIP.put("urn:mrn:smart-navi:device:tm-server","223.39.131.117:8902:2");
+//       MRNtoIP.put("urn:mrn:smart-navi:device:tm-server-kaist","143.248.57.72:8902:2");
+//       MRNtoIP.put("urn:mrn:smart-navi:device:tm-server-middle-test171024","223.39.131.117:20001:2");
+//       MRNtoIP.put("urn:mrn:smart-navi:device:tm-server-pjh","143.248.55.117:8902:2");
+//       MRNtoIP.put("urn:mrn:smart-navi:s:kjesv40","112.162.241.161:0:1");
+//       MRNtoIP.put("urn:mrn:smart-navi:s:sv40","1.220.41.11:0:1");
+//       MRNtoIP.put("urn:mrn:smart-navi:service:kjesv40","1.220.41.11:8902:2");
+//       MRNtoIP.put("urn:mrn:smart-navi:service:sv40","183.103.51.133:8902:2");
+//       MRNtoIP.put("urn:mrn:smart:service:instance:mof:NXDDS","106.248.228.114:7088:2");
+//       MRNtoIP.put("urn:mrn:smart:service:instance:mof:NXRESULT","106.248.228.114:7090:2");
+//       MRNtoIP.put("urn:mrn:smart:service:instance:mof:S10","203.250.182.94:7088:2");
+//       MRNtoIP.put("urn:mrn:smart:service:instance:mof:S11","203.250.182.94:7088:2");
+//       MRNtoIP.put("urn:mrn:smart:service:instance:mof:S20","203.250.182.94:7088:2");
+//       MRNtoIP.put("urn:mrn:smart:service:instance:mof:S30","203.250.182.94:7088:2");
+//       MRNtoIP.put("urn:mrn:smart:service:instance:mof:S40","1.220.41.11:8902:2");
+//       MRNtoIP.put("urn:mrn:smart:service:instance:mof:S51","219.249.186.19:0:1");
+//       MRNtoIP.put("urn:mrn:smart:service:instance:mof:S52","203.250.182.94:7088:2");
+//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp100fors10","203.250.182.94:0:1");
+//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp100fors11","203.250.182.94:7080:2");
+//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp101fors10","118.220.143.130:0:1");
+//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp200fors20","1.1.1.1:0:1");
+//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp300fors30","1.1.1.1:0:1");
+//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp400fors40","112.186.26.198:0:1");
+//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp510fors51","218.39.202.78:20001:2");
+//       MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp520fors52","119.203.5.157:0:1");
+ 
+
+
        //-----------------------------------------------------
        
        while(true)
        {
           Socket connectionSocket = Sock.accept();
 
-          logger.debug("Packet incomming");
+          //logger.debug("Packet incomming.");
           BufferedReader dataReceived =
              new BufferedReader(new InputStreamReader(connectionSocket.getInputStream(),Charset.forName("UTF-8")));
 
@@ -103,8 +130,9 @@ public class MNSDummy {
           }
           String data = buf.toString();
 
-          logger.debug(data);
-          
+
+          //logger.debug(data);
+
           String dataToReply = "MNSDummy-Reply:";
        
           if (data.regionMatches(0, "MRN-Request:", 0, 12)){
@@ -113,15 +141,15 @@ public class MNSDummy {
         	  int rplPort = Integer.parseInt(data.split(",")[1]);
         	  data = data.split(",")[0];
         	  
-        	  logger.debug("MNSDummy:data=" + data);
+        	  //loggerdebug("MNSDummy:data=" + data);
         	  if (!data.regionMatches(0, "urn:mrn:mcs:casting:geocast:smart:",0,34)){
 	        	  if (MRNtoIP.containsKey(data))
 	        		  dataToReply += MRNtoIP.get(data);
 	        	  else{
-	        	  	  logger.debug("No MRN to IP Mapping");
+	        	  	  //loggerdebug("No MRN to IP Mapping.");
 	        		  dataToReply = "No";
 	        	  }
-	              logger.debug(dataToReply);
+	              //loggerdebug(dataToReply);
 	        	  Socket ReplySocket = new Socket("localhost",rplPort);
 	        	  
 	        	  BufferedWriter out = new BufferedWriter(
@@ -133,7 +161,7 @@ public class MNSDummy {
           	  }else{ // if geocasting (urn:mrn:mcs:casting:geocasting:smart:-)
           		  String geoMRN = data.substring(34);
           		  String[] parsedGeoMRN = geoMRN.split("-");
-          		  logger.info(geoMRN);;
+          		  //loggerinfo("Geocasting MRN="+geoMRN+".");
           		  float lat = Float.parseFloat(parsedGeoMRN[1]); 
           		  float lon = Float.parseFloat(parsedGeoMRN[3]);
           		  float rad = Float.parseFloat(parsedGeoMRN[5]);
@@ -177,7 +205,7 @@ public class MNSDummy {
           }else if (data.regionMatches(0, "Location-Update:", 0, 16)){
         	  data = data.substring(16);
         	
-        	  logger.info("MNSDummy:data=" + data);
+        	  //loggerinfo("MNSDummy:data=" + data);
         	  String[] data_sub = data.split(",");
         	  // data_sub = IP_address, MRN, Port
         	  MRNtoIP.put(data_sub[1], data_sub[0] + ":" + data_sub[2] + ":" + data_sub[3]);
@@ -193,25 +221,20 @@ public class MNSDummy {
         	  
           }else if (data.regionMatches(0, "Dump-MNS:", 0, 9)){
 
-        	  logger.debug("MNSDummy:data=" + data);
+        	  //loggerdebug("MNSDummy:data=" + data);
         	  int rplPort = Integer.parseInt(data.split(",")[1]);
-        	  
-        	  Set<String> keys = MRNtoIP.keySet();
-        	  Iterator<String> keysIter = keys.iterator();
-        	  
-        	  if (keysIter.hasNext()){
-        		  do{
-        			  String key = keysIter.next();
-        			  String value = MRNtoIP.get(key);
-        			  
-        			  dataToReply = dataToReply + key + "," + value + "<br/>";
-        		  }while(keysIter.hasNext());
+
+        	  if (!MRNtoIP.isEmpty()){
+        		  SortedSet<String> keys = new TreeSet<String>(MRNtoIP.keySet());
+            	  for (String key : keys) {
+            		  String value = MRNtoIP.get(key);
+            		  dataToReply = dataToReply + key + "," + value + "<br/>";
+            	  }
         	  }
         	  else{
-        	  	  logger.debug("No MRN to IP Mapping");
+        	  	  //loggerdebug("No MRN to IP Mapping.");
         		  dataToReply = "No";
         	  }
-        	  logger.debug(dataToReply);
         	  Socket ReplySocket = new Socket("localhost",rplPort);
         	  
         	  BufferedWriter out = new BufferedWriter(
@@ -223,18 +246,25 @@ public class MNSDummy {
               
           }else if (data.equals("Empty-MNS:") && MMSConfiguration.WEB_MANAGING){
         	  MRNtoIP.clear();
-        	  logger.info("MNSDummy:EMPTY");
+        	  //loggerwarn("MNSDummy:EMPTY.");
             
           }else if (data.regionMatches(0, "Remove-Entry:", 0, 13) && MMSConfiguration.WEB_MANAGING){
         	  String mrn = data.substring(13);
         	  MRNtoIP.remove(mrn);
-        	  logger.info("MNSDummy:REMOVE "+mrn);
+        	  //loggerwarn("MNSDummy:REMOVE="+mrn+".");
+          }else if (data.regionMatches(0, "Add-Entry:", 0, 10) && MMSConfiguration.WEB_MANAGING){
+        	  String[] params = data.substring(10).split(",");
+        	  String mrn = params[0];
+        	  String locator = params[1] +":"+ params[2] +":"+ params[3];
+        	  MRNtoIP.put(mrn, locator);
+        	  //loggerwarn("MNSDummy:ADD="+mrn+".");
+        	  
           //Geo-location update function.  
           }else if (data.regionMatches(0, "Geo-location-Update:", 0, 20)){
         	  //TODO:Processing geo-location update message
         	  //data format: Geo-location-update:
         	  String[] data_sub = data.split(",");
-        	  logger.debug("MNSDummy:Geolocationupdate "+data_sub[1]);
+        	  //loggerdebug("MNSDummy:Geolocationupdate "+data_sub[1]);
         	  MRNtoIP.put(data_sub[1], "127.0.0.1" + ":" + data_sub[2] + ":" + data_sub[3] + ":" + data_sub[4]);
           } else if(data.regionMatches(0, "IP-Request:", 0, 11)){
         	  String address = data.substring(11).split(",")[0];

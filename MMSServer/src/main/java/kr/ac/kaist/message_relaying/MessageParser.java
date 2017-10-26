@@ -24,6 +24,10 @@ Version : 0.5.8
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 		   Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -41,7 +45,8 @@ import io.netty.handler.codec.http.HttpMethod;
 public class MessageParser {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageParser.class);
-	private String channelID = null;
+
+	private String SESSION_ID = "";
 	private String srcIP = null;
 	private String srcMRN = null;
 	private String dstIP = null;
@@ -55,13 +60,14 @@ public class MessageParser {
 	private HttpMethod httpMethod = null;
 	private String svcMRN = null;
 	
+
 	MessageParser(){
-		this(null);
+		this("");
 	}
 	
-	MessageParser(String channelID){
-		this.channelID = channelID;
-		
+
+	MessageParser(String sessionId){
+		this.SESSION_ID = sessionId;
 		srcIP = null;
 		srcMRN = null;
 		dstIP = null;
@@ -113,13 +119,10 @@ public class MessageParser {
     	
 	}
 	void parseMultiDstInfo(String dstInfo){
-		logger.debug("Destination info="+dstInfo);
+		logger.debug("SessionID="+this.SESSION_ID+" Destination info="+dstInfo+".");
 		String[] dstMRNs = dstInfo.substring(13).split(",");
 		multiDstMRN = dstMRNs;
 	}
-	
-	// Channel Information //
-	String getChannelID() { return channelID; }
 
 	// HTTP Information //
 	String getUri() { return uri; }

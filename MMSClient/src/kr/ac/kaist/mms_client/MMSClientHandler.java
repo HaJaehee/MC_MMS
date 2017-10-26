@@ -62,6 +62,16 @@ Version : 0.5.9
 	Changed from PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, message) 
 	     to PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, List<String> messages) 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-22
+Version : 0.6.0
+	Added commentaries.
+Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
+
+Rev. history : 2017-09-23
+Version : 0.6.0
+	Polling interval could be 0.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -72,7 +82,7 @@ import java.util.Map;
 
 /**
  * It is an object that can communicate to MMS through HTTP and send or receive messages of other objects.
- * @version 0.5.7
+ * @version 0.6.0
  * @see SecureMMSClientHandler
  */
 public class MMSClientHandler {
@@ -103,6 +113,12 @@ public class MMSClientHandler {
 	 * @see		MMSClientHandler#startPolling(String, String, int, PollingResponseCallback)
 	 */
 	public interface PollingResponseCallback{
+		/**
+		 * Argument list&lt;String&gt; messages means the list of messages about polling response.
+		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for polling response.
+		 * @param headerField
+		 * @param messages
+		 */
 		void callbackMethod(Map<String,List<String>> headerField, List<String> messages);
 	}
 	
@@ -112,6 +128,14 @@ public class MMSClientHandler {
 	 * @see		MMSClientHandler#setServerPort(int, String, RequestCallback)
 	 */
 	public interface RequestCallback{
+		/**
+		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
+		 * Argument list&lt;String&gt; messages means the list of messages about HTTP requests.
+		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP requests.
+		 * @param headerField
+		 * @param message
+		 * @return
+		 */
 		String respondToClient(Map<String,List<String>> headerField, String message);
 		int setResponseCode();
 		Map<String,List<String>> setResponseHeader();
@@ -122,6 +146,13 @@ public class MMSClientHandler {
 	 * @see		MMSClientHandler#setSender(ResponseCallback)
 	 */
 	public interface ResponseCallback{
+		/**
+		 * When the server sends a response to the HTTP request sent by the client, the client performs a ResponseCallback.
+		 * Argument list&lt;String&gt; messages means the list of messages about response.
+		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for response.
+		 * @param headerField
+		 * @param message
+		 */
 		void callbackMethod(Map<String,List<String>> headerField, String message);
 	}
 	
@@ -144,15 +175,29 @@ public class MMSClientHandler {
 		} else if (this.rcvHandler != null) {
 			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
 		} else {
-			if (interval > 0) {
-				this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
-				this.pollHandler.ph.setPollingResponseCallback(callback);
-				this.pollHandler.ph.start();
-			} else {
-				System.out.println(TAG+"Failed! The interval must be larger than 0");
+			if (interval == 0) {
+				System.out.println(TAG+"Long-polling mode"); //TODO: Long-polling could have trouble when session disconnect.
+			} else if (interval < 0){
+				System.out.println(TAG+"Failed! Polling interval must be 0 or positive integer");
+				return;
 			}
+			this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
+			this.pollHandler.ph.setPollingResponseCallback(callback);
+			this.pollHandler.ph.start();
 		}
 	}
+	/**
+	 * This method is that stop polling requests using interrupt signal. 
+	 */
+	public void stopPolling (){
+		this.pollHandler.ph.interrupt();
+	}
+	/**
+	 * This method is developing now, so do not use this method.
+	 * @param svcMRN
+	 * @param interval
+	 * @throws IOException
+	 */
 	public void startGeoReporting (String svcMRN, int interval) throws IOException{
 		if (this.sendHandler != null) {
 			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
@@ -167,6 +212,7 @@ public class MMSClientHandler {
 			}
 		}
 	}
+	
 	private boolean isErrorForSettingServerPort (){
 		if (this.sendHandler != null) {
 			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");

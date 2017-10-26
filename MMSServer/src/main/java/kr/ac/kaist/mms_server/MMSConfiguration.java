@@ -49,5 +49,7 @@ public class MMSConfiguration {
 	public static final String MMS_MRN = "urn:mrn:smart-navi:device:mms1";
 	//-------------------------------------------------------------------
 	public static final int MAX_CONTENT_SIZE = 40 * 1024 * 1024; // 40MB
+	//-------------------------------------------------------------------
+	public static final int MAX_BRIEF_LOG_LIST_SIZE = 200;
 
 }

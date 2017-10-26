@@ -30,6 +30,11 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -59,15 +64,14 @@ import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHttpRequest>{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MRH_MessageInputChannel.class); 
-	private int SESSION_ID = 0;
-	private String channelID;
-	private Random rd = new Random();
+
+	private String SESSION_ID = "";
+
 	private MessageParser parser;
 	private String protocol = "";
 	
 	public MRH_MessageInputChannel(String protocol) {
 		super();
-		this.SESSION_ID = rd.nextInt( Integer.MAX_VALUE );
 		this.protocol = protocol;
 		this.channelID = null;
 		this.parser = new MessageParser();
@@ -80,10 +84,14 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		
 		try{
 			req.retain();
-			logger.info("Message received");
+
 			parser.parseMessage(ctx, req);
+      
+			logger.info("Message received.");
+			SESSION_ID = ctx.channel().id().asShortText();
+
 			SessionManager.sessionInfo.put(SESSION_ID, "");
-//			SessionManager.channelInfo.put(channelID, "");
+
 			new MessageRelayingHandler(ctx, req, protocol, SESSION_ID);
 		} finally {
           req.release();
@@ -124,32 +132,34 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     	if (clientType != null) {
     		SessionManager.sessionInfo.remove(SESSION_ID);
     		if (clientType.equals("p")) {
-    			MMSLog.nMsgWaitingPollClnt--;
-    			logger.warn("SessionID="+this.SESSION_ID+" The polling client is disconnected");
-    			System.out.println("polling client is disconnected in handler removed");
+
+    			logger.warn("SessionID="+this.SESSION_ID+" The polling client is disconnected.");
     		} else {
-    			logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected");
-    			System.out.println("client is disconnected in handler removed");
+    			logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected.");
+
     		}
     	}
-        ctx.close();
+    	if (!ctx.isRemoved()){
+    		ctx.close();
+    	}
     }
     
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+
      	channelID = ctx.channel().id().asShortText();
 //    	ctx.channel().
     	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
 //    	ctx.pipeline().get(HttpHeaderValues.class);
 //    	channels.
     	
-    	if(cause instanceof IOException){
+    	if (cause instanceof IOException){
     		int srcPort = 0;
         	String srcIP = null;
         	String[] reqInfo;
         	final int minDynamicPort = 49152;
      
-        	if(parser.getSrcIP() == null){
+        	if (parser.getSrcIP() == null) {
             	InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
         	    InetAddress inetaddress = socketAddress.getAddress();
         	    MNSInteractionHandler handler = new MNSInteractionHandler(SESSION_ID);
@@ -158,7 +168,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         	    String request = null;
         	    if(srcPort >= minDynamicPort) {
         	    	request = srcIP + ":0";
-        	    } else {
+        	    } 
+              else {
         	    	request = srcIP + ":" + srcPort;
         	    }
         	    
@@ -168,7 +179,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         	    reqInfo[0] = srcIP;
         	    reqInfo[1] = srcMRN;
 
-        	} else {
+        	} 
+          else {
         		reqInfo = new String[5];
         		reqInfo[0] = parser.getSrcIP();
         		reqInfo[1] = parser.getSrcMRN();
@@ -179,45 +191,48 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     		
     	    printError(srcIP, reqInfo, clientType);
     	}
-    	
-    	if(ctx.channel().isActive())
-    		ctx.close();
+    	if (clientType != null) {
+    		SessionManager.sessionInfo.remove(SESSION_ID);
+      }
+    	if (!ctx.isRemoved()){
+    		  ctx.close();
+      }
     }
     
     private void printError(String channelID, String[] reqInfo, String clientType){
-    	// reqInfo is ordering to srcIP, srcMRN, dstIP, dstMRN, svcMRN
-    	
-//    	System.out.println("\n/*****************************************/");
-//		System.out.println("The connection is disconnected by the client");
-//    	System.out.println("Error Channel ID: " + channelID);
-    	String errorlog = null;
-    	
-    	if(clientType != null){
-	    	if(clientType.equals("p")){
-//	    		System.out.println("Client type: Polling Client");
-	    		errorlog = new String("Client Type: Polling");
-	    		
-	    	} else {
-//	    		System.out.println("Client type: Normal Client");
-	    		errorlog = new String("Client Type: Normal");
-	    	}
-    	}
-    	else {
-//    		System.out.println("Client type is unknown");
-    		errorlog = new String("Client Type: Unknown");
-    	}
+        // reqInfo is ordering to srcIP, srcMRN, dstIP, dstMRN, svcMRN
+
+  //    	System.out.println("\n/*****************************************/");
+  //		System.out.println("The connection is disconnected by the client");
+  //    	System.out.println("Error Channel ID: " + channelID);
+        String errorlog = null;
+
+        if (clientType != null){
+          if(clientType.equals("p")){
+  //	    		System.out.println("Client type: Polling Client");
+            errorlog = new String("Client Type=Polling");
+
+          } else {
+  //	    		System.out.println("Client type: Normal Client");
+            errorlog = new String("Client Type=Normal");
+          }
+        }
+        else {
+  //    		System.out.println("Client type is unknown");
+          errorlog = new String("Client Type=Unknown");
+        }
+
+  //		System.out.println("srcIP: " + reqInfo[0]);
+  //		System.out.println("srcMRN: " +  reqInfo[1]);
+        errorlog += "srcIP=" + reqInfo[0] + " srcMRN=" + reqInfo[1];
+      if (reqInfo.length == 5){
+  //			System.out.println("dstIP: " +  reqInfo[2]);
+  //			System.out.println("dstMRN: " +  reqInfo[3]);
+  //			System.out.println("svcMRN: " + reqInfo[4]);
+        errorlog += " dstIP=" + reqInfo[2] + " dstMRN=" + reqInfo[3] + " svcMRN=" + reqInfo[4];
+      }
+  //    	System.out.println("/*****************************************/");
 		
-//		System.out.println("srcIP: " + reqInfo[0]);
-//		System.out.println("srcMRN: " +  reqInfo[1]);
-    	errorlog += "srcIP " + reqInfo[0] + " srcMRN: " + reqInfo[1];
-		if(reqInfo.length == 5){
-//			System.out.println("dstIP: " +  reqInfo[2]);
-//			System.out.println("dstMRN: " +  reqInfo[3]);
-//			System.out.println("svcMRN: " + reqInfo[4]);
-			errorlog += " dstIP: " + reqInfo[2] + " dstMRN: " + reqInfo[3] + " svcMRN: " + reqInfo[4];
-		}
-//    	System.out.println("/*****************************************/");
-		
-		logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected" + errorlog + ".");
+		  logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected, " + errorlog + ".");
     }
 }

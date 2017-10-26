@@ -12,6 +12,7 @@ import com.rabbitmq.client.ConnectionFactory;
 
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
+import kr.ac.kaist.mms_server.MMSLogsForDebug;
 
 /* -------------------------------------------------------- */
 /** 
@@ -39,15 +40,31 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-13
+Version : 0.6.0
+	An unused logger statement removed 
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-29
+Version : 0.6.0
+	Added brief logging features.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-10-25
+Version : 0.6.0
+	Added MMSLogsForDebug features.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 class MessageQueueEnqueuer {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueEnqueuer.class);
-	private int SESSION_ID = 0;
+	private String SESSION_ID = "";
 	
-	MessageQueueEnqueuer (int sessionId) {
+	MessageQueueEnqueuer (String sessionId) {
 		this.SESSION_ID = sessionId;
 
 	}
@@ -57,9 +74,15 @@ class MessageQueueEnqueuer {
 		
 		String queueName = dstMRN+"::"+srcMRN;
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-		 if(MMSConfiguration.WEB_LOG_PROVIDING)MMSLog.queueLogForClient.append("[MessageQueueEnqueuer] "+queueName +"<br/>"+longSpace+"Message: " + message +"<br/>");
-
-		 logger.trace("SessionID="+this.SESSION_ID+" Queue name="+queueName +" Message=" + message +"\n");
+		 
+		 if(MMSConfiguration.WEB_LOG_PROVIDING) {
+			 String log = "SessionID="+SESSION_ID+" Enqueue="+queueName+".";
+			 MMSLog.addBriefLogForStatus(log);
+			 MMSLogsForDebug.addLog(this.SESSION_ID, log);
+		 }
+		 logger.debug("SessionID="+this.SESSION_ID+" Enqueue="+queueName+" .");
+		 logger.trace("SessionID="+this.SESSION_ID+" Enqueue, queue name="+queueName +" Message=" + message +".");
+		
 		try {
 			ConnectionFactory factory = new ConnectionFactory();
 			factory.setHost("localhost");
@@ -70,13 +93,12 @@ class MessageQueueEnqueuer {
 			channel.queueDeclare(queueName, true, false, false, null);
 			
 			channel.basicPublish("", queueName, null, message.getBytes());
-			logger.trace("SessionID="+this.SESSION_ID+" Sent=" + message);
 			channel.close();
 			connection.close();
 		} catch (IOException e) {
-			logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage());
+			logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 		} catch (TimeoutException e) {
-			logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage());
+			logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 		}
 	}
 }

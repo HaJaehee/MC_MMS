@@ -44,7 +44,7 @@ import org.json.simple.parser.ParseException;
 class MMSPollHandler {
 	PollHandler ph = null;
 	//HJH
-	private static final String USER_AGENT = "MMSClient/0.5.0";
+	private static final String USER_AGENT = "MMSClient/0.6.0";
 	private String TAG = "[MMSPollHandler] ";
 	private String clientMRN = null;
 	
@@ -80,14 +80,17 @@ class MMSPollHandler {
     	}
     	
     	public void run(){
-    		while (true){
-    			try{
+    		try{
+	    		while (!Thread.currentThread().isInterrupted()){
 	    			Thread.sleep(interval);
-	    			Poll();
-    			}catch (Exception e){
-					System.out.print(TAG);
-					e.printStackTrace();
-    			}
+		    		Poll();
+	    		}
+    		} catch (InterruptedException e){
+    			System.out.println("[ERROR]Thread is dead");
+    		} catch (Exception e){
+    			System.out.print(TAG);
+				e.printStackTrace();
+    			
     		}
     	}
     	

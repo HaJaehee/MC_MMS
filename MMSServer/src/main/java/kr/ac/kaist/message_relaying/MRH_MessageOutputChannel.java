@@ -1,9 +1,8 @@
 package kr.ac.kaist.message_relaying;
-
 /* -------------------------------------------------------- */
 /** 
 File name : MRH_MessageOutputChannel.java
-	It output the messages to destination of message through the Internet using HTTP. 
+	It outputs the messages to destination of message through the Internet using HTTP. 
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Jin Jung (jungst0001@kaist.ac.kr)
 Creation Date : 2017-01-24
@@ -32,6 +31,16 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-09-26
+Version : 0.6.0
+	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-10-25
+Version : 0.6.0
+	Added MMSLogsForDebug features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -77,19 +86,23 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
+import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.MMSLog;
+import kr.ac.kaist.mms_server.MMSLogsForDebug;
 
 public class MRH_MessageOutputChannel{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MRH_MessageOutputChannel.class);
 	
-	private int SESSION_ID = 0;
-//	private final String USER_AGENT = "MMSClient/0.5.0";
+
+	private String SESSION_ID = "";
+	private final String USER_AGENT = "MMSClient/0.6.0";
 	private static Map<String,List<String>> storedHeader = null;
 	private static boolean isStoredHeader = false;
 	private HostnameVerifier hv = null;
 	private int responseCode = 200;
 	
-	MRH_MessageOutputChannel(int sessionId) {
+	MRH_MessageOutputChannel(String sessionId) {
 		// TODO Auto-generated constructor stub
 		this.SESSION_ID = sessionId;
 	}
@@ -101,7 +114,12 @@ public class MRH_MessageOutputChannel{
 	
 	public void replyToSender(ChannelHandlerContext ctx, byte[] data) {
     	ByteBuf textb = Unpooled.copiedBuffer(data);
-    	logger.info("SessionID="+this.SESSION_ID+" "+"Reply to sender");
+    	logger.info("SessionID="+this.SESSION_ID+" Reply to sender.");
+    	if(MMSConfiguration.WEB_LOG_PROVIDING) {
+    		String log = "SessionID="+this.SESSION_ID+" Reply to sender.";
+    		MMSLog.addBriefLogForStatus(log);
+    		MMSLogsForDebug.addLog(this.SESSION_ID, log);
+    	}
     	long responseLen = data.length;
     	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, getHttpResponseStatus(responseCode));
     	if (isStoredHeader){
@@ -149,10 +167,14 @@ public class MRH_MessageOutputChannel{
 	byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws Exception { // 
 
 		String url = "http://" + IPAddress + ":" + port + req.uri();
-		logger.info("SessionID="+this.SESSION_ID+" "+url);
-		
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+		logger.info("SessionID="+this.SESSION_ID+" Try connecting to url="+url);
+		if(MMSConfiguration.WEB_LOG_PROVIDING) {
+			String log = "SessionID="+this.SESSION_ID+" Try connecting to url="+url;
+			MMSLog.addBriefLogForStatus(log);
+			MMSLogsForDebug.addLog(this.SESSION_ID, log);
+		}
 		HttpHeaders httpHeaders = req.headers();
 		
 		
@@ -207,9 +229,14 @@ public class MRH_MessageOutputChannel{
 		byte[] retBuffer = byteOS.toByteArray();
 
 		is.close();
-		return retBuffer;
-			
+		logger.info("SessionID="+this.SESSION_ID+" Received a response.");
+		if(MMSConfiguration.WEB_LOG_PROVIDING) {
+			String log = "SessionID="+this.SESSION_ID+" Received a response.";
+			MMSLog.addBriefLogForStatus(log);
+			MMSLogsForDebug.addLog(this.SESSION_ID, log);
+		}
 		
+		return retBuffer;
 	}
 	
 	
@@ -222,10 +249,15 @@ public class MRH_MessageOutputChannel{
 	  	hv = getHV();
 	  	
 		String url = "https://" + IPAddress + ":" + port + req.uri();
-		logger.info("SessionID="+this.SESSION_ID+" "+url);
+		
 		URL obj = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-		logger.debug("SessionID="+this.SESSION_ID+" "+"connection opened");
+		logger.info("SessionID="+this.SESSION_ID+" Try connecting to url="+url);
+		if(MMSConfiguration.WEB_LOG_PROVIDING) {
+			String log = "SessionID="+this.SESSION_ID+" Try connecting to url="+url;
+			MMSLog.addBriefLogForStatus(log);
+			MMSLogsForDebug.addLog(this.SESSION_ID, log);
+		}
 		con.setHostnameVerifier(hv);
 		
 		HttpHeaders httpHeaders = req.headers();
@@ -269,9 +301,9 @@ public class MRH_MessageOutputChannel{
 		Map<String,List<String>> resHeaders = con.getHeaderFields();
 		setResponseHeader(resHeaders);
 		
-		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url + "\n"
-				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters+"\n"
-				+ "Response Code : " + responseCode);
+		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters=" + urlParameters+"\n"
+				+ "Response Code=" + responseCode);
 		
 		InputStream is = con.getInputStream();
 		ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
@@ -284,6 +316,12 @@ public class MRH_MessageOutputChannel{
 		byte[] retBuffer = byteOS.toByteArray();
 
 		is.close();
+		logger.info("SessionID="+this.SESSION_ID+" Received a response.");
+		if(MMSConfiguration.WEB_LOG_PROVIDING) {
+			String log = "SessionID="+this.SESSION_ID+" Received a response.";
+			MMSLog.addBriefLogForStatus(log);
+			MMSLogsForDebug.addLog(this.SESSION_ID, log);
+		}
 		return retBuffer;
 	
 	}
@@ -311,12 +349,12 @@ public class MRH_MessageOutputChannel{
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (Exception e) {
-        	logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage());
+        	logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
         }
         
         HostnameVerifier hv = new HostnameVerifier() {
             public boolean verify(String urlHostName, SSLSession session) {
-            	logger.info("SessionID="+SESSION_ID+" "+"URL Host: " + urlHostName + " vs. " + session.getPeerHost());
+            	logger.info("SessionID="+SESSION_ID+" URL Host=" + urlHostName + " vs " + session.getPeerHost()+".");
                 return true;
             }
         };
