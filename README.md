@@ -3,8 +3,8 @@ This branch is ongoing implementation!
 Source codes in this branch would be modified without any notification.
 
 # MC_MMS
-Beta Version 0.6.0 <br/>
-2017.9.23<br/>
+Beta Version 0.6.1 <br/>
+2017.10.26<br/>
 
 # Web Site
 www.mms-kaist.com
