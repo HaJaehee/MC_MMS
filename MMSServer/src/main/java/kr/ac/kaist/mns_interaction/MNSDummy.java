@@ -252,7 +252,7 @@ public class MNSDummy {
         	  }
         	  
         	  if(mrn == null){
-        		  dataToReply += "Unregistered MRN";
+        		  dataToReply += "Unregistered MRN in MRN";
         	  } else {
         		  dataToReply += mrn;
         	  }
