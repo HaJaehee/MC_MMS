@@ -22,7 +22,7 @@ public class MMSConfiguration {
 	public static String MNS_HOST = "127.0.0.1";
 	public static int MMS_PORT = 444; //HTTPS port : 444, HTTP port : 8088
 	public static String MMS_URL = MMS_HOST+":"+MMS_PORT;
-	public static final boolean LOGGING = true;
+	public static boolean LOGGING = true;
 	public static final int LOC_UPDATE_INTERVAL = 5000;
 	public static float lat = (float)0.0;
 	public static float lon = (float)0.0;
