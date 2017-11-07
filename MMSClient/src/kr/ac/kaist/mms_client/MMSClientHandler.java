@@ -193,7 +193,7 @@ public class MMSClientHandler {
 		this.pollHandler.ph.interrupt();
 	}
 	/**
-	 * This method is developing now, so do not use this method.
+	 * This method is being developed now, so do not use this method.
 	 * @param svcMRN
 	 * @param interval
 	 * @throws IOException
