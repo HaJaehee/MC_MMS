@@ -143,7 +143,7 @@ public class MRH_MessageOutputChannel{
     	}
     	
     	HttpUtil.setContentLength(res, responseLen);
-    	System.out.println("Ready to send message in MRH_output");
+    	//System.out.println("Ready to send message in MRH_output");
     	ctx.write(res);
     	ctx.write(textb);
         ChannelFuture future = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
@@ -152,15 +152,8 @@ public class MRH_MessageOutputChannel{
         ctx.close();
         SessionManager.sessionInfo.remove(SESSION_ID);
         
-        // Conditional Logging - sending message is completed
-        System.out.println("SessionID: " + this.SESSION_ID + "\n"
-    			+ "ChannelID: " + ctx.channel().id() + "\n"
-    			+ "Message is sent completely\n");
-        /////////////////////////////////////////////////////
-        
-        logger.trace("SessionID: " + this.SESSION_ID + "\n"
-    			+ "ChannelID: " + ctx.channel().id() + "\n"
-    			+ "Message is sent completely");
+        logger.trace("SessionID: " + this.SESSION_ID + "\n" 
+    			+ "Message is sent completely.");
     }
 	
 //  to do relaying

@@ -79,7 +79,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 //	when coming http message
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
-		System.out.println("Message in channelRead0");
+		//System.out.println("Message in channelRead0");
 		
 		try{
 			req.retain();
@@ -104,7 +104,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	
 	@Override
 	public void channelActive(final ChannelHandlerContext ctx) {
-	    System.out.println("incomming message");
+	    //System.out.println("incomming message");
 		if (ctx.pipeline().get(SslHandler.class) != null){
 			// Once session is secured, send a greeting and register the channel to the global channel
 	        // list so the channel received the messages from others.
