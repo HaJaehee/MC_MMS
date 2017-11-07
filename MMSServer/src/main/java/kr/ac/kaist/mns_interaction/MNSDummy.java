@@ -268,12 +268,12 @@ public class MNSDummy {
         	  MRNtoIP.put(data_sub[1], "127.0.0.1" + ":" + data_sub[2] + ":" + data_sub[3] + ":" + data_sub[4]);
           } else if(data.regionMatches(0, "IP-Request:", 0, 11)){
         	  String address = data.substring(11).split(",")[0];
-        	  System.out.println("Incomming Address: " + address);
+        	  //System.out.println("Incomming Address: " + address);
         	  String[] parseAddress = address.split(":");
         	  String mrn = null;
         	  for(String value : MRNtoIP.keySet()){
         		  String[] parseValue = MRNtoIP.get(value).split(":");
-        		  System.out.println("Value:" + parseValue.toString());
+        		  //System.out.println("Value:" + parseValue.toString());
         		  if(parseAddress[0].equals(parseValue[0]) 
         				  && parseAddress[1].equals(parseValue[1])){
         			  mrn = value;
@@ -282,7 +282,7 @@ public class MNSDummy {
         	  }
         	  
         	  if(mrn == null){
-        		  dataToReply += "Unregistered MRN in MRN";
+        		  dataToReply += "Unregistered MRN in MNS";
         	  } else {
         		  dataToReply += mrn;
         	  }
