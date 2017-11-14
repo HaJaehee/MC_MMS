@@ -62,6 +62,12 @@ Rev. history : 2017-10-25
 Version : 0.6.0
 	Added MMSLogsForDebug features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-15
+Version : 0.6.1
+	Added realtime log functions
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+	Jaehyun Park (jae519@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -96,7 +102,10 @@ class MessageTypeDecider {
 			DST_MRN_IS_THIS_MMS_MRN,
 			SRC_MRN_IS_THIS_MMS_MRN,
 			ADD_MRN_BEING_DEBUGGED,
-			REMOVE_MRN_BEING_DEBUGGED
+			REMOVE_MRN_BEING_DEBUGGED,
+			REALTIME_LOG,
+			ADD_ID_IN_REALTIME_LOG_IDS,
+			REMOVE_ID_IN_REALTIME_LOG_IDS
 	}
 
 	
@@ -117,6 +126,9 @@ class MessageTypeDecider {
 			if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/status", 0, 7)){
 				return msgType.STATUS;
 			}
+			else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/realtime-log?id", 0, 16)){
+				return msgType.REALTIME_LOG;
+			}
 			
 //			when WEB_MANAGING
 		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/add-mns-entry?mrn", 0, 18)){ 
@@ -134,6 +146,12 @@ class MessageTypeDecider {
 		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/remove-mrn-being-debugged?mrn", 0, 24)) {
 		   		return msgType.REMOVE_MRN_BEING_DEBUGGED;
 		   	}
+		   	else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/add-id-realtime-log-ids?id", 0, 27)){
+				return msgType.ADD_ID_IN_REALTIME_LOG_IDS;
+			}
+		   	else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/remove-id-realtime-log-ids?id", 0, 30)){
+				return msgType.REMOVE_ID_IN_REALTIME_LOG_IDS;
+			}
 			
 			return msgType.NULL_MRN;
 		}

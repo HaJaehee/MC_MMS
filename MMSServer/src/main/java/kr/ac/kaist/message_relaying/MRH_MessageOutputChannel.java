@@ -42,6 +42,12 @@ Rev. history : 2017-10-25
 Version : 0.6.0
 	Added MMSLogsForDebug features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-15
+Version : 0.6.1
+	Added realtime log functions
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+	Jaehyun Park (jae519@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -101,6 +107,7 @@ public class MRH_MessageOutputChannel{
 	private static boolean isStoredHeader = false;
 	private HostnameVerifier hv = null;
 	private int responseCode = 200;
+	private boolean realtimeLog = false;
 	
 	MRH_MessageOutputChannel(String sessionId) {
 		// TODO Auto-generated constructor stub
@@ -112,14 +119,23 @@ public class MRH_MessageOutputChannel{
 		storedHeader = storingHeader;
 	}
 	
+	public void replyToSender(ChannelHandlerContext ctx, byte[] data, boolean realtimeLog) {
+		this.realtimeLog = realtimeLog;
+		replyToSender(ctx, data);
+	}
+	
 	public void replyToSender(ChannelHandlerContext ctx, byte[] data) {
     	ByteBuf textb = Unpooled.copiedBuffer(data);
-    	logger.info("SessionID="+this.SESSION_ID+" Reply to sender.");
-    	if(MMSConfiguration.WEB_LOG_PROVIDING) {
-    		String log = "SessionID="+this.SESSION_ID+" Reply to sender.";
-    		MMSLog.addBriefLogForStatus(log);
-    		MMSLogsForDebug.addLog(this.SESSION_ID, log);
-    	}
+
+		if (!realtimeLog) {
+	    	logger.info("SessionID="+this.SESSION_ID+" Reply to sender.");
+	    	if(MMSConfiguration.WEB_LOG_PROVIDING) {
+	    		String log = "SessionID="+this.SESSION_ID+" Reply to sender.";
+	    		MMSLog.addBriefLogForStatus(log);
+	    		MMSLogsForDebug.addLog(this.SESSION_ID, log);
+	    	}
+		}
+    	
     	long responseLen = data.length;
     	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, getHttpResponseStatus(responseCode));
     	if (isStoredHeader){

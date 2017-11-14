@@ -76,6 +76,12 @@ Rev. history : 2017-10-25
 Version : 0.6.0
 	Added MMSLogsForDebug features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-15
+Version : 0.6.1
+	Added realtime log functions
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+	Jaehyun Park (jae519@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -158,18 +164,21 @@ public class MessageRelayingHandler  {
 		MMSLogsForDebug.addSessionId(srcMRN, this.SESSION_ID);
 		MMSLogsForDebug.addSessionId(dstMRN, this.SESSION_ID);
 		
-		logger.info("SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
-		if(MMSConfiguration.WEB_LOG_PROVIDING) {
-			String log = "SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".";
-			MMSLog.addBriefLogForStatus(log);
-			MMSLogsForDebug.addLog(this.SESSION_ID, log);
-		}
+		if (type != MessageTypeDecider.msgType.REALTIME_LOG) {
+			logger.info("SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
+			if(MMSConfiguration.WEB_LOG_PROVIDING) {
+				String log = "SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".";
+				MMSLog.addBriefLogForStatus(log);
+				MMSLogsForDebug.addLog(this.SESSION_ID, log);
+			}
 		
-		logger.trace("SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));	
-		if(MMSConfiguration.WEB_LOG_PROVIDING&&logger.isTraceEnabled()) {
-			String log = "SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim());
-			MMSLog.addBriefLogForStatus(log);
-			MMSLogsForDebug.addLog(this.SESSION_ID, log);
+		
+			logger.trace("SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));	
+			if(MMSConfiguration.WEB_LOG_PROVIDING&&logger.isTraceEnabled()) {
+				String log = "SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim());
+				MMSLog.addBriefLogForStatus(log);
+				MMSLogsForDebug.addLog(this.SESSION_ID, log);
+			}
 		}
 		
 		byte[] message = null;
@@ -284,6 +293,46 @@ public class MessageRelayingHandler  {
 				catch (IOException e) {
 					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 				}
+    		}
+		}
+		else if (type == MessageTypeDecider.msgType.REALTIME_LOG){
+    		String realtimeLog = "";
+    		String callback = "";
+    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+    		Map<String,List<String>> params = qsd.parameters();
+    		if (params.get("id") != null & params.get("callback") != null) {
+    			callback = params.get("callback").get(0);
+    			realtimeLog = MMSLog.getRealtimeLog(params.get("id").get(0));
+    			
+    			
+    		}
+    		else {
+    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
+    		}
+			System.out.println(realtimeLog);
+			message = (callback+"("+realtimeLog+")").getBytes(Charset.forName("UTF-8"));
+		}
+		else if (type == MessageTypeDecider.msgType.ADD_ID_IN_REALTIME_LOG_IDS) {
+			
+    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+    		Map<String,List<String>> params = qsd.parameters();
+    		if (params.get("id") != null) {
+    			MMSLog.addIdToBriefRealtimeLogEachIDs(params.get("id").get(0));
+    			message = "OK".getBytes(Charset.forName("UTF-8"));
+    		}
+    		else {
+    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
+    		}
+		}
+		else if (type == MessageTypeDecider.msgType.REMOVE_ID_IN_REALTIME_LOG_IDS) {
+    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+    		Map<String,List<String>> params = qsd.parameters();
+    		if (params.get("id") != null) {
+    			MMSLog.removeIdFromBriefRealtimeLogEachIDs(params.get("id").get(0));
+    			message = "OK".getBytes(Charset.forName("UTF-8"));
+    		}
+    		else {
+    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
     		}
 		}
 		else if (type == MessageTypeDecider.msgType.ADD_MRN_BEING_DEBUGGED) {
@@ -409,7 +458,7 @@ public class MessageRelayingHandler  {
 			message = "INVALID MESSAGE.".getBytes();
 			logger.info("SessionID="+this.SESSION_ID+" "+"INVALID MESSAGE.");
 		}
-		outputChannel.replyToSender(ctx, message);
+		outputChannel.replyToSender(ctx, message, true);
 	}
 	
 
