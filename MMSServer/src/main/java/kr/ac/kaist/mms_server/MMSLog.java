@@ -67,8 +67,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
@@ -84,6 +86,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -185,18 +188,25 @@ public class MMSLog {
   }
 	public static String getRealtimeLog (String id) {
 		StringBuffer realtimeLog = new StringBuffer();
-		realtimeLog.append("[");
+
+		realtimeLog.append("{\"message\":[");
 		if (briefRealtimeLogEachIDs.get(id)!=null) {
 			ArrayList<String> logs = (ArrayList<String>) briefRealtimeLogEachIDs.get(id);
 			while (!logs.isEmpty()) {
-				realtimeLog.append("\""+logs.get(0)+"\",");
+				try {
+					realtimeLog.append("\""+URLEncoder.encode(logs.get(0),"UTF-8")+"\",");
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				logs.remove(0);
 			}
 		}
 		else {
 			realtimeLog.append("\"The ID does not exist in Realtime log service consumer IDs\"");
 		}
-		realtimeLog.append("]");
+	
+		realtimeLog.append("]}");
 		return realtimeLog.toString();
 	}
 	

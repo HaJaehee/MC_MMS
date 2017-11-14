@@ -288,16 +288,20 @@ public class MessageRelayingHandler  {
 		}
 		else if (type == MessageTypeDecider.msgType.REALTIME_LOG){
     		String realtimeLog = "";
+    		String callback = "";
     		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
-    		if (params.get("id") != null) {
+    		if (params.get("id") != null & params.get("callback") != null) {
+    			callback = params.get("callback").get(0);
     			realtimeLog = MMSLog.getRealtimeLog(params.get("id").get(0));
+    			
+    			
     		}
     		else {
     			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
     		}
-			
-			message = realtimeLog.getBytes(Charset.forName("UTF-8"));
+			System.out.println(realtimeLog);
+			message = (callback+"("+realtimeLog+")").getBytes(Charset.forName("UTF-8"));
 		}
 		else if (type == MessageTypeDecider.msgType.ADD_ID_IN_REALTIME_LOG_IDS) {
 			
