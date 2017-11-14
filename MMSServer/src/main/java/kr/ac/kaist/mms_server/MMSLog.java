@@ -75,9 +75,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -96,6 +99,7 @@ public class MMSLog {
 	//public static StringBuffer queueLogForClient = new StringBuffer();
 	
 	private static ArrayList<String> briefLogForStatus = new ArrayList<String>();
+	private static Map<String,List<String>> briefRealtimeLogEachIDs = new HashMap<String,List<String>>();
 	
 	public static String getStatus (String mrn)  throws UnknownHostException, IOException{
 		  	
@@ -146,6 +150,18 @@ public class MMSLog {
 			status.append("None<br/>");
 		}
 		status.append("<br/>");
+		
+		status.append("<strong>Realtime log service consumer IDs:</strong><br/>");
+		if (!briefRealtimeLogEachIDs.isEmpty()) {
+			SortedSet<String> keys = new TreeSet<String>(briefRealtimeLogEachIDs.keySet());
+			for (String key : keys) {
+				status.append(key+"<br/>");
+			}
+		}
+		else {
+			status.append("None<br/>");
+		}
+		status.append("<br/>");
 
 		if (mrn.equals("")) {
 			status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE+"):</strong><br/>");
@@ -167,6 +183,22 @@ public class MMSLog {
   	
   	return status.toString();
   }
+	public static String getRealtimeLog (String id) {
+		StringBuffer realtimeLog = new StringBuffer();
+		realtimeLog.append("[");
+		if (briefRealtimeLogEachIDs.get(id)!=null) {
+			ArrayList<String> logs = (ArrayList<String>) briefRealtimeLogEachIDs.get(id);
+			while (!logs.isEmpty()) {
+				realtimeLog.append("\""+logs.get(0)+"\",");
+				logs.remove(0);
+			}
+		}
+		else {
+			realtimeLog.append("\"The ID does not exist in Realtime log service consumer IDs\"");
+		}
+		realtimeLog.append("]");
+		return realtimeLog.toString();
+	}
 	
 //  When LOGGING MNS
 	public static String dumpMNS() throws UnknownHostException, IOException{ //
@@ -207,12 +239,47 @@ public class MMSLog {
   	return dumpedMNS;
   }
 	public static void addBriefLogForStatus (String arg) {
+		SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
+		arg = sdf.format(new Date()) + " " + arg;
+
 		if (briefLogForStatus.size() > MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE) {
 			briefLogForStatus.remove(0);
 		}
-		SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
-		arg = sdf.format(new Date()) + " " + arg;
 		briefLogForStatus.add(arg);
+		
+		if (!briefRealtimeLogEachIDs.isEmpty()) {
+			Set<String> keys = briefRealtimeLogEachIDs.keySet();
+			for (String key : keys) {
+				if (briefRealtimeLogEachIDs.get(key).size() > MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE) {
+					briefRealtimeLogEachIDs.get(key).remove(0);
+				}
+				briefRealtimeLogEachIDs.get(key).add(arg);
+			}
+		}
+	}
+
+	public static void addIdToBriefRealtimeLogEachIDs (String id) {
+		if (briefRealtimeLogEachIDs.get(id)!=null) {
+			
+		}
+		else {
+			List<String> logs = new ArrayList<String>();
+			briefRealtimeLogEachIDs.put(id, logs);
+		}
+		
 	}
 	
+	public static void removeIdFromBriefRealtimeLogEachIDs (String id) {
+		if (briefRealtimeLogEachIDs.get(id)==null) {
+			
+		}
+		else {
+			if (!briefRealtimeLogEachIDs.get(id).isEmpty())
+			{
+				briefRealtimeLogEachIDs.clear();
+			}
+			briefRealtimeLogEachIDs.remove(id);
+		}
+	}
+
 }

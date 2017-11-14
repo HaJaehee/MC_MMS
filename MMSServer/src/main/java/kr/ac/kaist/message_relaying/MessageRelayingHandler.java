@@ -286,6 +286,42 @@ public class MessageRelayingHandler  {
 				}
     		}
 		}
+		else if (type == MessageTypeDecider.msgType.REALTIME_LOG){
+    		String realtimeLog = "";
+    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+    		Map<String,List<String>> params = qsd.parameters();
+    		if (params.get("id") != null) {
+    			realtimeLog = MMSLog.getRealtimeLog(params.get("id").get(0));
+    		}
+    		else {
+    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
+    		}
+			
+			message = realtimeLog.getBytes(Charset.forName("UTF-8"));
+		}
+		else if (type == MessageTypeDecider.msgType.ADD_ID_IN_REALTIME_LOG_IDS) {
+			
+    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+    		Map<String,List<String>> params = qsd.parameters();
+    		if (params.get("id") != null) {
+    			MMSLog.addIdToBriefRealtimeLogEachIDs(params.get("id").get(0));
+    			message = "OK".getBytes(Charset.forName("UTF-8"));
+    		}
+    		else {
+    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
+    		}
+		}
+		else if (type == MessageTypeDecider.msgType.REMOVE_ID_IN_REALTIME_LOG_IDS) {
+    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+    		Map<String,List<String>> params = qsd.parameters();
+    		if (params.get("id") != null) {
+    			MMSLog.removeIdFromBriefRealtimeLogEachIDs(params.get("id").get(0));
+    			message = "OK".getBytes(Charset.forName("UTF-8"));
+    		}
+    		else {
+    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
+    		}
+		}
 		else if (type == MessageTypeDecider.msgType.ADD_MRN_BEING_DEBUGGED) {
     		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
     		Map<String,List<String>> params = qsd.parameters();
