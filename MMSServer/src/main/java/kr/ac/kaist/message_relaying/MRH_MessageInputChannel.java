@@ -1,7 +1,4 @@
 package kr.ac.kaist.message_relaying;
-
-import java.io.IOException;
-
 /* -------------------------------------------------------- */
 /** 
 File name : MRH_MessageInputChannel.java
@@ -35,6 +32,12 @@ Rev. history : 2017-09-26
 Version : 0.6.0
 	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-15
+Version : 0.6.1
+	Added realtime log functions
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+	Jaehyun Park (jae519@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -61,6 +64,8 @@ import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogsForDebug;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
+import java.io.IOException;
+
 
 public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHttpRequest>{
 	

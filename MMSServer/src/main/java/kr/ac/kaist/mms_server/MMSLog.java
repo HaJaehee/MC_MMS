@@ -58,6 +58,12 @@ Rev. history : 2017-10-25
 Version : 0.6.0
 	Added MMSLogsForDebug features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-15
+Version : 0.6.1
+	Added realtime log functions
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+	Jaehyun Park (jae519@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
