@@ -59,6 +59,7 @@ import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
+import kr.ac.kaist.mms_server.MMSLogsForDebug;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 
 public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHttpRequest>{
@@ -222,7 +223,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 
   //		System.out.println("srcIP: " + reqInfo[0]);
   //		System.out.println("srcMRN: " +  reqInfo[1]);
-        errorlog += "srcIP=" + reqInfo[0] + " srcMRN=" + reqInfo[1];
+        errorlog += " srcIP=" + reqInfo[0] + " srcMRN=" + reqInfo[1];
       if (reqInfo.length == 5){
   //			System.out.println("dstIP: " +  reqInfo[2]);
   //			System.out.println("dstMRN: " +  reqInfo[3]);
@@ -231,6 +232,11 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
       }
   //    	System.out.println("/*****************************************/");
 		
-		  logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected, " + errorlog + ".");
+      errorlog = "SessionID="+this.SESSION_ID+" The client is disconnected, " + errorlog + ".";
+		  logger.warn(errorlog);
+		  if(MMSConfiguration.WEB_LOG_PROVIDING) {
+				MMSLog.addBriefLogForStatus(errorlog);
+				MMSLogsForDebug.addLog(this.SESSION_ID, errorlog);
+		}
     }
 }
