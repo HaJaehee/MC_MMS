@@ -158,18 +158,21 @@ public class MessageRelayingHandler  {
 		MMSLogsForDebug.addSessionId(srcMRN, this.SESSION_ID);
 		MMSLogsForDebug.addSessionId(dstMRN, this.SESSION_ID);
 		
-		logger.info("SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
-		if(MMSConfiguration.WEB_LOG_PROVIDING) {
-			String log = "SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".";
-			MMSLog.addBriefLogForStatus(log);
-			MMSLogsForDebug.addLog(this.SESSION_ID, log);
-		}
+		if (type != MessageTypeDecider.msgType.REALTIME_LOG) {
+			logger.info("SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
+			if(MMSConfiguration.WEB_LOG_PROVIDING) {
+				String log = "SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".";
+				MMSLog.addBriefLogForStatus(log);
+				MMSLogsForDebug.addLog(this.SESSION_ID, log);
+			}
 		
-		logger.trace("SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));	
-		if(MMSConfiguration.WEB_LOG_PROVIDING&&logger.isTraceEnabled()) {
-			String log = "SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim());
-			MMSLog.addBriefLogForStatus(log);
-			MMSLogsForDebug.addLog(this.SESSION_ID, log);
+		
+			logger.trace("SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));	
+			if(MMSConfiguration.WEB_LOG_PROVIDING&&logger.isTraceEnabled()) {
+				String log = "SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim());
+				MMSLog.addBriefLogForStatus(log);
+				MMSLogsForDebug.addLog(this.SESSION_ID, log);
+			}
 		}
 		
 		byte[] message = null;
@@ -449,7 +452,7 @@ public class MessageRelayingHandler  {
 			message = "INVALID MESSAGE.".getBytes();
 			logger.info("SessionID="+this.SESSION_ID+" "+"INVALID MESSAGE.");
 		}
-		outputChannel.replyToSender(ctx, message);
+		outputChannel.replyToSender(ctx, message, true);
 	}
 	
 
