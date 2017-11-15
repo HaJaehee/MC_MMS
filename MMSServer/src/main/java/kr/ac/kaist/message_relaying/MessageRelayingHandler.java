@@ -309,7 +309,7 @@ public class MessageRelayingHandler  {
     		else {
     			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
     		}
-			System.out.println(realtimeLog);
+			
 			message = (callback+"("+realtimeLog+")").getBytes(Charset.forName("UTF-8"));
 		}
 		else if (type == MessageTypeDecider.msgType.ADD_ID_IN_REALTIME_LOG_IDS) {
