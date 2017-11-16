@@ -121,6 +121,7 @@ public class SC_OnBoardTest extends JFrame {
 	}
 	
 	public static void main(String args[]) throws Exception{
+		//myMRN = "urn:mrn:smart:vessel:imo-no:mof:onBoardVesselKAIST";
 		myMRN = "urn:mrn:smart:vessel:imo-no:mof:onBoardVessel";
 		//myMRN = args[0];
 		
@@ -133,6 +134,7 @@ public class SC_OnBoardTest extends JFrame {
 		pollInterval = 1000;
 				
 		dstMRN = "urn:mrn:smart-navi:device:mms1";
+		//svcMRN = "urn:mrn:smart:service:instance:mof:onKAIST";
 		svcMRN = "urn:mrn:smart:service:instance:mof:onEarthServer";
 		polling.startPolling(dstMRN, svcMRN, pollInterval, new MMSClientHandler.PollingResponseCallback() {
 			//Response Callback from the polling message

@@ -39,7 +39,9 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 public class SP_OnBoardTest {
 	static int start = 0;
 	public static void main(String args[]) throws Exception{
+		//String myMRN = "urn:mrn:smart:service:instance:mof:onKAIST";
 		String myMRN = "urn:mrn:smart:service:instance:mof:onEarthServer";
+		
 		int port = 8902;
 
 		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
