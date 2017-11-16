@@ -92,7 +92,7 @@ public class SC_OnBoardTest extends JFrame {
 		this.add(button_Disable);
 			
 		//프레임 크기 지정
-		this.setSize(300, 300);
+		this.setSize(260, 300);
 				
 		//프레임 보이기
 		this.setVisible(true);
@@ -106,15 +106,15 @@ public class SC_OnBoardTest extends JFrame {
 		//myMRN = args[0];
 		
 		MMSConfiguration.LOGGING = false;
-		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
 		
 		//Service Consumer cannot be HTTP server and should poll from MMS. 
 		polling = new MMSClientHandler(myMRN);
 		
 		pollInterval = 1000;
 				
-		dstMRN = "urn:mrn:smart:service:instance:mof:mms1";
-		svcMRN = "urn:mrn:smart:service:instance:mof:tm-server";
+		dstMRN = "urn:mrn:smart-navi:device:mms1";
+		svcMRN = "urn:mrn:smart:service:instance:mof:onEarthServer";
 		polling.startPolling(dstMRN, svcMRN, pollInterval, new MMSClientHandler.PollingResponseCallback() {
 			//Response Callback from the polling message
 			//it is called when client receives a message
