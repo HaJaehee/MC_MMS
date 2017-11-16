@@ -8,6 +8,7 @@ import kr.ac.kaist.mms_client.MMSClientHandler;
 import kr.ac.kaist.mms_client.MMSConfiguration;
 
 import java.awt.Button;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -84,15 +85,33 @@ public class SC_OnBoardTest extends JFrame {
 		
 		this.setLayout(null);
 		//프레임에 컴포넌트 추가
-		rect = new Rectangle(10, 10, 220, 100);
-		rect2 = new Rectangle(10, 140, 220, 100);
+		int xpos = 10;
+		int ypos = 10;
+		int width = 220;
+		int height = 100;
+		int fontsize = 12;
+		
+		
+		//############################
+		int multiplier = 4;
+		//############################
+		
+		rect = new Rectangle(xpos*multiplier, ypos*multiplier, width*multiplier, height*multiplier);
+		
+		ypos = ypos + height + 10;
+		
+		rect2 = new Rectangle(xpos*multiplier, ypos*multiplier, width*multiplier, height*multiplier);
 		button_Enable.setBounds(rect);
+		button_Enable.setFont(new Font("Arial", Font.PLAIN, fontsize*multiplier));
 		button_Disable.setBounds(rect2);
+		button_Disable.setFont(new Font("Arial", Font.PLAIN, fontsize*multiplier));
 		this.add(button_Enable);
 		this.add(button_Disable);
 			
 		//프레임 크기 지정
-		this.setSize(260, 300);
+		ypos = ypos + height + 20;
+		xpos = xpos + width + 20;
+		this.setSize(xpos*multiplier, ypos*multiplier);
 				
 		//프레임 보이기
 		this.setVisible(true);
