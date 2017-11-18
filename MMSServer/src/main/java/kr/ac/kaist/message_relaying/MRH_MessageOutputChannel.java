@@ -94,7 +94,7 @@ import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
-import kr.ac.kaist.mms_server.MMSLogsForDebug;
+import kr.ac.kaist.mms_server.MMSLogForDebug;
 
 public class MRH_MessageOutputChannel{
 	
@@ -132,7 +132,7 @@ public class MRH_MessageOutputChannel{
 	    	if(MMSConfiguration.WEB_LOG_PROVIDING) {
 	    		String log = "SessionID="+this.SESSION_ID+" Reply to sender.";
 	    		MMSLog.addBriefLogForStatus(log);
-	    		MMSLogsForDebug.addLog(this.SESSION_ID, log);
+	    		MMSLogForDebug.addLog(this.SESSION_ID, log);
 	    	}
 		}
     	
@@ -182,7 +182,7 @@ public class MRH_MessageOutputChannel{
 		if(MMSConfiguration.WEB_LOG_PROVIDING) {
 			String log = "SessionID="+this.SESSION_ID+" Try connecting to url="+url;
 			MMSLog.addBriefLogForStatus(log);
-			MMSLogsForDebug.addLog(this.SESSION_ID, log);
+			MMSLogForDebug.addLog(this.SESSION_ID, log);
 		}
 		HttpHeaders httpHeaders = req.headers();
 		
@@ -242,7 +242,7 @@ public class MRH_MessageOutputChannel{
 		if(MMSConfiguration.WEB_LOG_PROVIDING) {
 			String log = "SessionID="+this.SESSION_ID+" Received a response.";
 			MMSLog.addBriefLogForStatus(log);
-			MMSLogsForDebug.addLog(this.SESSION_ID, log);
+			MMSLogForDebug.addLog(this.SESSION_ID, log);
 		}
 		
 		return retBuffer;
@@ -265,7 +265,7 @@ public class MRH_MessageOutputChannel{
 		if(MMSConfiguration.WEB_LOG_PROVIDING) {
 			String log = "SessionID="+this.SESSION_ID+" Try connecting to url="+url;
 			MMSLog.addBriefLogForStatus(log);
-			MMSLogsForDebug.addLog(this.SESSION_ID, log);
+			MMSLogForDebug.addLog(this.SESSION_ID, log);
 		}
 		con.setHostnameVerifier(hv);
 		
@@ -329,7 +329,7 @@ public class MRH_MessageOutputChannel{
 		if(MMSConfiguration.WEB_LOG_PROVIDING) {
 			String log = "SessionID="+this.SESSION_ID+" Received a response.";
 			MMSLog.addBriefLogForStatus(log);
-			MMSLogsForDebug.addLog(this.SESSION_ID, log);
+			MMSLogForDebug.addLog(this.SESSION_ID, log);
 		}
 		return retBuffer;
 	

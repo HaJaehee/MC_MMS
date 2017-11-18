@@ -12,7 +12,7 @@ import com.rabbitmq.client.ConnectionFactory;
 
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
-import kr.ac.kaist.mms_server.MMSLogsForDebug;
+import kr.ac.kaist.mms_server.MMSLogForDebug;
 
 /* -------------------------------------------------------- */
 /** 
@@ -54,7 +54,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-10-25
 Version : 0.6.0
-	Added MMSLogsForDebug features.
+	Added MMSLogForDebug features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -78,7 +78,7 @@ class MessageQueueEnqueuer {
 		 if(MMSConfiguration.WEB_LOG_PROVIDING) {
 			 String log = "SessionID="+SESSION_ID+" Enqueue="+queueName+".";
 			 MMSLog.addBriefLogForStatus(log);
-			 MMSLogsForDebug.addLog(this.SESSION_ID, log);
+			 MMSLogForDebug.addLog(this.SESSION_ID, log);
 		 }
 		 logger.debug("SessionID="+this.SESSION_ID+" Enqueue="+queueName+" .");
 		 logger.trace("SessionID="+this.SESSION_ID+" Enqueue, queue name="+queueName +" Message=" + message +".");

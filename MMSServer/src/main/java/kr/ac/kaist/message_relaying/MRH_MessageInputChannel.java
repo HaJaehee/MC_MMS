@@ -62,7 +62,7 @@ import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
-import kr.ac.kaist.mms_server.MMSLogsForDebug;
+import kr.ac.kaist.mms_server.MMSLogForDebug;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 import java.io.IOException;
 
@@ -241,7 +241,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		  logger.warn(errorlog);
 		  if(MMSConfiguration.WEB_LOG_PROVIDING) {
 				MMSLog.addBriefLogForStatus(errorlog);
-				MMSLogsForDebug.addLog(this.SESSION_ID, errorlog);
+				MMSLogForDebug.addLog(this.SESSION_ID, errorlog);
 		}
     }
 }

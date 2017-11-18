@@ -74,7 +74,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-10-25
 Version : 0.6.0
-	Added MMSLogsForDebug features.
+	Added MMSLogForDebug features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-11-15
@@ -107,7 +107,7 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
-import kr.ac.kaist.mms_server.MMSLogsForDebug;
+import kr.ac.kaist.mms_server.MMSLogForDebug;
 import kr.ac.kaist.seamless_roaming.PollingMethodRegDummy;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
@@ -161,15 +161,15 @@ public class MessageRelayingHandler  {
 		String dstIP = parser.getDstIP();
 		int dstPort = parser.getDstPort();
 		
-		MMSLogsForDebug.addSessionId(srcMRN, this.SESSION_ID);
-		MMSLogsForDebug.addSessionId(dstMRN, this.SESSION_ID);
+		MMSLogForDebug.addSessionId(srcMRN, this.SESSION_ID);
+		MMSLogForDebug.addSessionId(dstMRN, this.SESSION_ID);
 		
 		if (type != MessageTypeDecider.msgType.REALTIME_LOG) {
 			logger.info("SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
 			if(MMSConfiguration.WEB_LOG_PROVIDING) {
 				String log = "SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".";
 				MMSLog.addBriefLogForStatus(log);
-				MMSLogsForDebug.addLog(this.SESSION_ID, log);
+				MMSLogForDebug.addLog(this.SESSION_ID, log);
 			}
 		
 		
@@ -177,7 +177,7 @@ public class MessageRelayingHandler  {
 			if(MMSConfiguration.WEB_LOG_PROVIDING&&logger.isTraceEnabled()) {
 				String log = "SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim());
 				MMSLog.addBriefLogForStatus(log);
-				MMSLogsForDebug.addLog(this.SESSION_ID, log);
+				MMSLogForDebug.addLog(this.SESSION_ID, log);
 			}
 		}
 		
@@ -200,13 +200,13 @@ public class MessageRelayingHandler  {
 			int srcModel = parser.getSrcModel();
 			String svcMRN = parser.getSvcMRN();
 		
-			MMSLogsForDebug.addSessionId(svcMRN, this.SESSION_ID);
+			MMSLogForDebug.addSessionId(svcMRN, this.SESSION_ID);
 
 			if(MMSConfiguration.WEB_LOG_PROVIDING) {
-				if(MMSLogsForDebug.isItsLogListNull(this.SESSION_ID)) {
-					MMSLogsForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
+				if(MMSLogForDebug.isItsLogListNull(this.SESSION_ID)) {
+					MMSLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
 					if(logger.isTraceEnabled()) {
-						MMSLogsForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));
+						MMSLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));
 					}
 				}
 			}
@@ -340,7 +340,7 @@ public class MessageRelayingHandler  {
     		Map<String,List<String>> params = qsd.parameters();
     		if (params.get("mrn")!=null) {
     			String mrn = params.get("mrn").get(0);
-    			MMSLogsForDebug.addMrn(mrn);
+    			MMSLogForDebug.addMrn(mrn);
     			logger.warn("SessionID="+this.SESSION_ID+" Added a MRN being debugged="+mrn+".");
     			message = "OK".getBytes(Charset.forName("UTF-8"));
     		}
@@ -353,7 +353,7 @@ public class MessageRelayingHandler  {
     		Map<String,List<String>> params = qsd.parameters();
     		if (params.get("mrn")!=null) {
     			String mrn = params.get("mrn").get(0);
-    			MMSLogsForDebug.removeMrn(mrn);
+    			MMSLogForDebug.removeMrn(mrn);
     			logger.warn("SessionID="+this.SESSION_ID+" Removed debug MRN="+mrn+".");
     			message = "OK".getBytes(Charset.forName("UTF-8"));
     		}

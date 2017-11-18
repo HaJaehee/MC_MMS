@@ -64,6 +64,11 @@ Version : 0.6.1
 	Added realtime log functions
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 	Jaehyun Park (jae519@kaist.ac.kr)
+	
+Rev. history : 2017-11-18
+Version : 0.6.1
+	Fixed bugs due to null pointer execptions.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -114,73 +119,73 @@ public class MMSLog {
 		  	
 		StringBuffer status = new StringBuffer();
 
-		status.append("<strong>Maritime Name System Dummy:</strong><br/>");
-		status.append(dumpMNS());
-		status.append("<br/>");
-		
-		status.append("<strong>Polling method:</strong><br/>");
-		if (!PollingMethodRegDummy.pollingMethodReg.isEmpty()){
-			SortedSet<String> keys = new TreeSet<String>(PollingMethodRegDummy.pollingMethodReg.keySet());
-			for (String key : keys){
-				int value = PollingMethodRegDummy.pollingMethodReg.get(key);
-				status.append(key+", "+((value==PollingMethodRegDummy.NORMAL_POLLING)?"normal":"long")+" polling<br/>");
+		if (mrn.equals("")) {
+			status.append("<strong>Maritime Name System Dummy:</strong><br/>");
+			status.append(dumpMNS());
+			status.append("<br/>");
+			
+			status.append("<strong>Polling method:</strong><br/>");
+			if (!PollingMethodRegDummy.pollingMethodReg.isEmpty()){
+				SortedSet<String> keys = new TreeSet<String>(PollingMethodRegDummy.pollingMethodReg.keySet());
+				for (String key : keys){
+					int value = PollingMethodRegDummy.pollingMethodReg.get(key);
+					status.append(key+", "+((value==PollingMethodRegDummy.NORMAL_POLLING)?"normal":"long")+" polling<br/>");
+				}
+				status.append("Other services, normal polling<br/>");
+			} else {
+				status.append("All services, normal polling<br/>");
 			}
-			status.append("Other services, normal polling<br/>");
-		} else {
-			status.append("All services, normal polling<br/>");
-		}
-		status.append("<br/>");
+			status.append("<br/>");
+		
+			status.append("<strong>Sessions waiting for a message:</strong><br/>");
+			int nPollingSessions = 0;
+			if (!SessionManager.sessionInfo.isEmpty()){
+				SortedSet<String> keys = new TreeSet<String>(SessionManager.sessionInfo.keySet());
+				for (String key : keys){
+					if (SessionManager.sessionInfo.get(key).equals("p")) {
+						status.append("SessionID="+key+"<br/>");
+						nPollingSessions++;
+					}
+				}
+			} 
+			if (nPollingSessions == 0){
+				status.append("None<br/>");
+			}
+			status.append("<br/>");
+			
 	
-		status.append("<strong>Sessions waiting for a message:</strong><br/>");
-		int nPollingSessions = 0;
-		if (!SessionManager.sessionInfo.isEmpty()){
-			SortedSet<String> keys = new TreeSet<String>(SessionManager.sessionInfo.keySet());
-			for (String key : keys){
-				if (SessionManager.sessionInfo.get(key).equals("p")) {
-					status.append("SessionID="+key+"<br/>");
-					nPollingSessions++;
+			status.append("<strong>MRNs being debugged:</strong><br/>");
+			if (!MMSLogForDebug.getMrnSet().isEmpty()) {
+				SortedSet<String> keys = new TreeSet<String>(MMSLogForDebug.getMrnSet());
+				for (String key : keys) {
+					status.append(key+"<br/>");
 				}
 			}
-		} 
-		if (nPollingSessions == 0){
-			status.append("None<br/>");
-		}
-		status.append("<br/>");
-		
-
-		status.append("<strong>MRNs being debugged:</strong><br/>");
-		if (!MMSLogsForDebug.getMrnSet().isEmpty()) {
-			SortedSet<String> keys = new TreeSet<String>(MMSLogsForDebug.getMrnSet());
-			for (String key : keys) {
-				status.append(key+"<br/>");
+			else {
+				status.append("None<br/>");
 			}
-		}
-		else {
-			status.append("None<br/>");
-		}
-		status.append("<br/>");
-		
-		status.append("<strong>Realtime log service consumer IDs:</strong><br/>");
-		if (!briefRealtimeLogEachIDs.isEmpty()) {
-			SortedSet<String> keys = new TreeSet<String>(briefRealtimeLogEachIDs.keySet());
-			for (String key : keys) {
-				status.append(key+"<br/>");
+			status.append("<br/>");
+			
+			status.append("<strong>Realtime log service consumer IDs:</strong><br/>");
+			if (!briefRealtimeLogEachIDs.isEmpty()) {
+				SortedSet<String> keys = new TreeSet<String>(briefRealtimeLogEachIDs.keySet());
+				for (String key : keys) {
+					status.append(key+"<br/>");
+				}
 			}
-		}
-		else {
-			status.append("None<br/>");
-		}
-		status.append("<br/>");
+			else {
+				status.append("None<br/>");
+			}
+			status.append("<br/>");
 
-		if (mrn.equals("")) {
 			status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE+"):</strong><br/>");
 			for (String log : briefLogForStatus) {
 				status.append(log+"<br/>");
 			}
 		} 
 		else {
-			status.append("<strong>MMS Brief Log for MRN="+mrn+"<br/>(Maximum session count:"+MMSLogsForDebug.getMaxSessionCount()+"):</strong><br/>");
-			String log = MMSLogsForDebug.getLog(mrn);
+			status.append("<strong>MMS Brief Log for MRN="+mrn+"<br/>(Maximum session count:"+MMSLogForDebug.getMaxSessionCount()+"):</strong><br/>");
+			String log = MMSLogForDebug.getLog(mrn);
 			if (log != null) {
 				status.append(log);
 			}

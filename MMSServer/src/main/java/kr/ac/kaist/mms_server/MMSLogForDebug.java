@@ -1,5 +1,19 @@
 package kr.ac.kaist.mms_server;
+/* -------------------------------------------------------- */
+/** 
+File name : MMSLogForDebug.java
+	It contains filtered logs by related MRN and session IDs.
+Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2017-10-25
+Version : 0.6.0
 
+Rev. history : 2017-11-18
+Version : 0.6.1
+	Fixed bugs due to null pointer execptions.
+	Replaced class name from MMSLogsForDebug to MMSLogForDebug 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+*/
+/* -------------------------------------------------------- */
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,23 +24,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-/* -------------------------------------------------------- */
-/** 
-File name : MMSLogsForDebug.java
-	It contains filtered logs by related MRN and session IDs.
-Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2017-10-25
-Version : 0.6.0
-*/
-/* -------------------------------------------------------- */
-public class MMSLogsForDebug {
+import ch.qos.logback.classic.jul.JULHelper;
+
+
+public class MMSLogForDebug {
 	private static Map<String,List<String>> sessionIdLogMapper = new HashMap<String,List<String>>();
 	private static Map<String,List<String>> mrnSessionIdMapper = new HashMap<String,List<String>>();
 	private static Map<String,List<String>> sessionIdMrnMapper = new HashMap<String,List<String>>();
 	private static int maxSessionCount = 100;
-	private static MMSLogsForDebug inst = null;
+	private static MMSLogForDebug inst = null;
 	
-	private MMSLogsForDebug () {
+	private MMSLogForDebug () {
 		addMrn("urn:mrn:smart:service:instance:mof:S10");
 		addMrn("urn:mrn:smart:service:instance:mof:S11");
 		addMrn("urn:mrn:smart:service:instance:mof:S20");
@@ -45,9 +53,9 @@ public class MMSLogsForDebug {
 		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp520fors52");
 	}
 	
-	public static MMSLogsForDebug getInstance() {
+	public static MMSLogForDebug getInstance() {
 		if (inst == null) {
-			inst = new MMSLogsForDebug();
+			inst = new MMSLogForDebug();
 		}
 		return inst;
 	}
@@ -62,13 +70,13 @@ public class MMSLogsForDebug {
 						logs.append(log+"<br/>");
 					}
 				} 
-				else {
+				else { // sessionIdLogMapper.get(sessionId)==null
 					return "";
 				}
 			}
 			return logs.toString();
 		} 
-		else {
+		else { // mrnSessionIdMapper.get(mrn)==null
 			if (mrnSessionIdMapper.containsKey(mrn)) {
 				return "";
 			}
@@ -94,14 +102,15 @@ public class MMSLogsForDebug {
 		else if (mrnSessionIdMapper.containsKey(mrn)) {
 			return;
 		}
-		mrnSessionIdMapper.put(mrn, null);
+		List<String> sessionIdList = new ArrayList<String>();
+		mrnSessionIdMapper.put(mrn, sessionIdList);
 	}
 	
 	
-	public static void removeMrn (String mrn) {
-		if (mrnSessionIdMapper.containsKey(mrn)&&mrnSessionIdMapper.get(mrn)!=null) {
+	public static void removeMrn (String mrn){
+		if (mrnSessionIdMapper.get(mrn)!=null) {
 			for (String sessionId : mrnSessionIdMapper.get(mrn)) {
-				if (sessionIdMrnMapper.get(sessionId)!=null&&sessionIdMrnMapper.get(sessionId).contains(mrn)) {
+				if (sessionIdMrnMapper.get(sessionId)!=null) {
 					sessionIdMrnMapper.get(sessionId).remove(mrn);
 					if (sessionIdMrnMapper.get(sessionId).isEmpty()) {
 						if (sessionIdLogMapper.get(sessionId)!=null) {
@@ -121,59 +130,58 @@ public class MMSLogsForDebug {
 		return mrnSessionIdMapper.keySet();
 	}
 	
-	public static void addSessionId (String mrn, String sessionId) {
-		if (mrnSessionIdMapper.containsKey(mrn)) {
-			if (mrnSessionIdMapper.get(mrn)!=null) {
-				List<String> sessionIdList = mrnSessionIdMapper.get(mrn);
-				while (sessionIdList.size() > maxSessionCount) {
-					String lruSession = mrnSessionIdMapper.get(mrn).get(0);
-					sessionIdMrnMapper.get(lruSession).remove(mrn);
-					if (sessionIdMrnMapper.get(lruSession).isEmpty()) {
-						if (sessionIdLogMapper.get(lruSession)!=null) {
-							sessionIdLogMapper.get(lruSession).clear();
-							sessionIdLogMapper.remove(lruSession);
-						}
-						sessionIdMrnMapper.remove(lruSession);
+	public static void addSessionId (String mrn, String sessionId){
+	
+		if (mrnSessionIdMapper.get(mrn)!=null) {
+			List<String> sessionIdList = mrnSessionIdMapper.get(mrn);
+			
+			while (sessionIdList.size() > maxSessionCount) {
+				String lruSession = mrnSessionIdMapper.get(mrn).get(0);
+				sessionIdMrnMapper.get(lruSession).remove(mrn);
+				if (sessionIdMrnMapper.get(lruSession).isEmpty()) {
+					if (sessionIdLogMapper.get(lruSession)!=null) {
+						sessionIdLogMapper.get(lruSession).clear();
+						sessionIdLogMapper.remove(lruSession);
 					}
-					mrnSessionIdMapper.get(mrn).remove(0);
+					sessionIdMrnMapper.remove(lruSession);
 				}
-				sessionIdList.add(sessionId);
-				mrnSessionIdMapper.put(mrn, sessionIdList);
-				sessionIdLogMapper.put(sessionId, null);
-			} 
-			else {
-				List<String> sessionIdList = new ArrayList<String>();
-				sessionIdList.add(sessionId);
-				mrnSessionIdMapper.put(mrn, sessionIdList);
-				sessionIdLogMapper.put(sessionId, null);
-
+				sessionIdList.remove(0);
 			}
-			if (sessionIdMrnMapper.get(sessionId)==null) {
-				List<String> mrnList = new ArrayList<String>();
-				mrnList.add(mrn);
-				sessionIdMrnMapper.put(sessionId, mrnList);
-			} 
-			else {
-				sessionIdMrnMapper.get(sessionId).add(mrn);
-			}
+			
+			sessionIdList.add(sessionId);
+			mrnSessionIdMapper.put(mrn, sessionIdList);
+		} 
+		else { //mrnSessionIdMapper.get(mrn)==null
+			List<String> sessionIdList = new ArrayList<String>();
+			sessionIdList.add(sessionId);
+			mrnSessionIdMapper.put(mrn, sessionIdList);
+		}
+		if (sessionIdMrnMapper.get(sessionId)==null) {
+			List<String> mrnList = new ArrayList<String>();
+			mrnList.add(mrn);
+			sessionIdMrnMapper.put(sessionId, mrnList);
+		} 
+		else { //sessionIdMrnMapper.get(sessionId)!=null
+			sessionIdMrnMapper.get(sessionId).add(mrn);
+		}
+		if (sessionIdLogMapper.get(sessionId)==null)
+		{
+			List<String> logList = new ArrayList<String>();
+			sessionIdLogMapper.put(sessionId, logList);
 		}
 	}
 	
 	public static void addLog (String sessionId, String log) {
+		SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
+		log = sdf.format(new Date()) + " " + log;
 		
-		if (sessionIdLogMapper.containsKey(sessionId)) {
-			if (sessionIdLogMapper.get(sessionId)!=null) {
-				SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
-				log = sdf.format(new Date()) + " " + log;
-				sessionIdLogMapper.get(sessionId).add(log);
-			} 
-			else {
-				List<String> logList = new ArrayList<String>();
-				SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
-				log = sdf.format(new Date()) + " " + log;
-				logList.add(log);
-				sessionIdLogMapper.put(sessionId, logList);
-			}
+		if (sessionIdLogMapper.get(sessionId)!=null) {
+			sessionIdLogMapper.get(sessionId).add(log);
+		}
+		else { //sessionIdLogMapper.get(sessionId)==null
+			List<String> logList = new ArrayList<String>();
+			logList.add(log);
+			sessionIdLogMapper.put(sessionId, logList);
 		}
 	}
 
