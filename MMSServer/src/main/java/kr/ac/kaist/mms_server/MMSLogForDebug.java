@@ -10,7 +10,7 @@ Version : 0.6.0
 Rev. history : 2017-11-18
 Version : 0.6.1
 	Fixed bugs due to null pointer execptions.
-	Replaced class name from MMSLogsForDebug to MMSLogForDebug 
+	Replaced class name from MMSLogsForDebug to MMSLogForDebug. 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
