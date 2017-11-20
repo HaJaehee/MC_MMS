@@ -174,11 +174,11 @@ class MessageQueueDequeuer extends Thread{
 				if (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null
 						 || PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING) {
 					if(MMSConfiguration.WEB_LOG_PROVIDING) {
-						String log = "SessionID="+this.SESSION_ID+" Queue="+queueName+" is emtpy.";
+						String log = "SessionID="+this.SESSION_ID+" Empty queue="+queueName+".";
 						MMSLog.addBriefLogForStatus(log);
 						MMSLogForDebug.addLog(this.SESSION_ID, log);
 					}
-					logger.debug("SessionID="+this.SESSION_ID+" Queue="+queueName+" is emtpy.");
+					logger.debug("SessionID="+this.SESSION_ID+" Empty queue="+queueName+".");
 			    	if (SessionManager.sessionInfo.get(this.SESSION_ID) != null) {
 			    		SessionManager.sessionInfo.remove(this.SESSION_ID);
 			    	}
