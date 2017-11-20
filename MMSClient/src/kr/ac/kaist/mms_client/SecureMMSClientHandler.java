@@ -1,5 +1,4 @@
 package kr.ac.kaist.mms_client;
-
 /* -------------------------------------------------------- */
 /** 
 File name : SecureMMSClientHandler.java
@@ -61,6 +60,12 @@ Rev. history : 2017-09-23
 Version : 0.6.0
 	Polling interval could be 0.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-16
+Version : 0.6.1
+	adding the code for marking a variable, "interrupted", of pollingHandler. 
+	added code: "this.pollHandler.ph.markInterrupted();" in the method stopPolling()
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -85,6 +90,7 @@ public class SecureMMSClientHandler {
 	private int clientPort = 0;
 	private Map<String,List<String>> headerField = null;
 	private GeoReporter geoReporter = null;
+	
 	
 	/**
 	 * The Constructor of SecureMMSClientHandler class
@@ -180,6 +186,7 @@ public class SecureMMSClientHandler {
 	 * This method is that stop polling requests using interrupt signal. 
 	 */
 	public void stopPolling (){
+		this.pollHandler.ph.markInterrupted();
 		this.pollHandler.ph.interrupt();
 	}
 	/**

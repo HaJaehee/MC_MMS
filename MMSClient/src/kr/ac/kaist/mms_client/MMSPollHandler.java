@@ -97,11 +97,11 @@ class MMSPollHandler {
     	
     	public void run(){
     		try{
-	    		while (!Thread.currentThread().isInterrupted() && interrupted == false){
+	    		while (!Thread.currentThread().isInterrupted() && !interrupted){
 	    			Thread.sleep(interval);
 		    		Poll();
 	    		}
-	    		if (interrupted == true){
+	    		if (interrupted){
 	    			System.out.println("[ERROR]Thread is dead");
 	    		}
     		} catch (InterruptedException e){

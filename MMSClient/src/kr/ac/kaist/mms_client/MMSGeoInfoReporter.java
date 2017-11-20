@@ -20,11 +20,19 @@ import java.util.Set;
 import kr.ac.kaist.mms_client.MMSPollHandler.PollHandler;
 /** 
 File name : MMSGeoInfoReporter.java
-	Processing Geo-information 
+	Processing Geo-information.
 Author : Jaehyun Park (jae519@kaist.ac.kr)
-	
 Creation Date : 2017-06-27
+Version : 0.6.0
 **/
+
+/**
+ * It is an object that processes geo-information and registers it to MMS.
+ * It is being developed, please do not use it.
+ * @version 0.6.1
+ * @see MMSClientHandler
+ * @see SecureMMSClientHandler
+ */
 public class MMSGeoInfoReporter {
 	GeoInfoReporter gr = null;
 	//HJH

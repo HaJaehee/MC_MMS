@@ -102,7 +102,6 @@ public class MRH_MessageOutputChannel{
 	
 
 	private String SESSION_ID = "";
-	private final String USER_AGENT = "MMSClient/0.6.0";
 	private static Map<String,List<String>> storedHeader = null;
 	private static boolean isStoredHeader = false;
 	private HostnameVerifier hv = null;

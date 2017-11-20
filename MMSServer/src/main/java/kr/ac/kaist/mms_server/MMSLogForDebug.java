@@ -59,13 +59,13 @@ public class MMSLogForDebug {
 	}
 	
 	public static MMSLogForDebug getInstance() {
-		if (inst == null) {
+		if (inst==null) {
 			inst = new MMSLogForDebug();
 		}
 		return inst;
 	}
 	public static String getLog (String mrn){
-		if (mrnSessionIdMapper.get(mrn)!=null) {
+		if (mrn!=null&&mrnSessionIdMapper.get(mrn)!=null) {
 			List<String> sessionIdList = mrnSessionIdMapper.get(mrn);
 			StringBuilder logs = new StringBuilder();
 			for (String sessionId : sessionIdList) {
@@ -101,10 +101,7 @@ public class MMSLogForDebug {
 	}
 	
 	public static void addMrn (String mrn) {
-		if (mrn == null) {
-			return;
-		}
-		else if (mrnSessionIdMapper.containsKey(mrn)) {
+		if (mrn==null||mrnSessionIdMapper.containsKey(mrn)) {
 			return;
 		}
 		List<String> sessionIdList = new ArrayList<String>();
@@ -127,8 +124,8 @@ public class MMSLogForDebug {
 				}
 			}
 			mrnSessionIdMapper.get(mrn).clear();
+			mrnSessionIdMapper.remove(mrn);
 		}
-		mrnSessionIdMapper.remove(mrn);
 	}
 	
 	public static Set<String> getMrnSet () {
