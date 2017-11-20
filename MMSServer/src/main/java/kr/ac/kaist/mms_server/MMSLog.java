@@ -69,6 +69,11 @@ Rev. history : 2017-11-18
 Version : 0.6.1
 	Fixed bugs due to null pointer execptions.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-18
+Version : 0.6.1
+	Divided each section.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -121,10 +126,13 @@ public class MMSLog {
 		StringBuffer status = new StringBuffer();
 		
 		if (mrn.equals("")) {
+			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
 			status.append("<strong>Maritime Name System Dummy:</strong><br/>");
 			status.append(dumpMNS());
+			status.append("</div>");
 			status.append("<br/>");
 			
+			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
 			status.append("<strong>Polling method:</strong><br/>");
 			if (!PollingMethodRegDummy.pollingMethodReg.isEmpty()){
 				SortedSet<String> keys = new TreeSet<String>(PollingMethodRegDummy.pollingMethodReg.keySet());
@@ -136,8 +144,10 @@ public class MMSLog {
 			} else {
 				status.append("All services, normal polling<br/>");
 			}
+			status.append("</div>");
 			status.append("<br/>");
 			
+			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
 			status.append("<strong>Sessions waiting for a message:</strong><br/>");
 			int nPollingSessions = 0;
 			if (!SessionManager.sessionInfo.isEmpty()){
@@ -152,8 +162,10 @@ public class MMSLog {
 			if (nPollingSessions == 0){
 				status.append("None<br/>");
 			}
+			status.append("</div>");
 			status.append("<br/>");
 			
+			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
 			status.append("<strong>MRNs being debugged:</strong><br/>");
 			if (!MMSLogForDebug.getMrnSet().isEmpty()) {
 				SortedSet<String> keys = new TreeSet<String>(MMSLogForDebug.getMrnSet());
@@ -164,8 +176,10 @@ public class MMSLog {
 			else {
 				status.append("None<br/>");
 			}
+			status.append("</div>");
 			status.append("<br/>");
 			
+			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
 			status.append("<strong>Realtime log service consumer IDs:</strong><br/>");
 			if (!briefRealtimeLogEachIDs.isEmpty()) {
 				SortedSet<String> keys = new TreeSet<String>(briefRealtimeLogEachIDs.keySet());
@@ -176,7 +190,9 @@ public class MMSLog {
 			else {
 				status.append("None<br/>");
 			}
+			status.append("</div>");
 			status.append("<br/>");
+			
 			status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE+"):</strong><br/>");
 			for (String log : briefLogForStatus) {
 				status.append(log+"<br/>");
