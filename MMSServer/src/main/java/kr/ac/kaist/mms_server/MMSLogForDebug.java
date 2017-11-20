@@ -12,6 +12,11 @@ Version : 0.6.1
 	Fixed bugs due to null pointer execptions.
 	Replaced class name from MMSLogsForDebug to MMSLogForDebug. 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-20
+Version : 0.6.1
+	Arguments must be checked if it is null.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
