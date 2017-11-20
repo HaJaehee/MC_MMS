@@ -126,14 +126,16 @@ public class MMSLog {
 		StringBuffer status = new StringBuffer();
 		
 		if (mrn.equals("")) {
-			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
+			
 			status.append("<strong>Maritime Name System Dummy:</strong><br/>");
+			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
 			status.append(dumpMNS());
 			status.append("</div>");
 			status.append("<br/>");
 			
-			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
+			
 			status.append("<strong>Polling method:</strong><br/>");
+			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
 			if (!PollingMethodRegDummy.pollingMethodReg.isEmpty()){
 				SortedSet<String> keys = new TreeSet<String>(PollingMethodRegDummy.pollingMethodReg.keySet());
 				for (String key : keys){
@@ -147,8 +149,9 @@ public class MMSLog {
 			status.append("</div>");
 			status.append("<br/>");
 			
-			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
+			
 			status.append("<strong>Sessions waiting for a message:</strong><br/>");
+			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
 			int nPollingSessions = 0;
 			if (!SessionManager.sessionInfo.isEmpty()){
 				SortedSet<String> keys = new TreeSet<String>(SessionManager.sessionInfo.keySet());
@@ -165,8 +168,9 @@ public class MMSLog {
 			status.append("</div>");
 			status.append("<br/>");
 			
-			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
+			
 			status.append("<strong>MRNs being debugged:</strong><br/>");
+			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
 			if (!MMSLogForDebug.getMrnSet().isEmpty()) {
 				SortedSet<String> keys = new TreeSet<String>(MMSLogForDebug.getMrnSet());
 				for (String key : keys) {
@@ -179,8 +183,9 @@ public class MMSLog {
 			status.append("</div>");
 			status.append("<br/>");
 			
-			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
+			
 			status.append("<strong>Realtime log service consumer IDs:</strong><br/>");
+			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
 			if (!briefRealtimeLogEachIDs.isEmpty()) {
 				SortedSet<String> keys = new TreeSet<String>(briefRealtimeLogEachIDs.keySet());
 				for (String key : keys) {
