@@ -182,6 +182,7 @@ public class MessageRelayingHandler  {
 		}
 		
 		byte[] message = null;
+		boolean isRealtimeLog = false;
 		
 		if (type == MessageTypeDecider.msgType.NULL_MRN) {
 			message = "Error: Null MRNs.".getBytes(Charset.forName("UTF-8"));
@@ -303,7 +304,7 @@ public class MessageRelayingHandler  {
     		if (params.get("id") != null & params.get("callback") != null) {
     			callback = params.get("callback").get(0);
     			realtimeLog = MMSLog.getRealtimeLog(params.get("id").get(0));
-    			
+    			isRealtimeLog = true;
     			
     		}
     		else {
@@ -458,7 +459,7 @@ public class MessageRelayingHandler  {
 			message = "INVALID MESSAGE.".getBytes();
 			logger.info("SessionID="+this.SESSION_ID+" "+"INVALID MESSAGE.");
 		}
-		outputChannel.replyToSender(ctx, message, true);
+		outputChannel.replyToSender(ctx, message, isRealtimeLog);
 	}
 	
 

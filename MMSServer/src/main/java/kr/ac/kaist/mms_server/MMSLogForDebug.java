@@ -108,7 +108,7 @@ public class MMSLogForDebug {
 	
 	
 	public static void removeMrn (String mrn){
-		if (mrnSessionIdMapper.get(mrn)!=null) {
+		if (mrn!=null&&mrnSessionIdMapper.get(mrn)!=null) {
 			for (String sessionId : mrnSessionIdMapper.get(mrn)) {
 				if (sessionIdMrnMapper.get(sessionId)!=null) {
 					sessionIdMrnMapper.get(sessionId).remove(mrn);
@@ -132,61 +132,65 @@ public class MMSLogForDebug {
 	
 	public static void addSessionId (String mrn, String sessionId){
 	
-		if (mrnSessionIdMapper.get(mrn)!=null) {
-			List<String> sessionIdList = mrnSessionIdMapper.get(mrn);
-			
-			while (sessionIdList.size() > maxSessionCount) {
-				String lruSession = mrnSessionIdMapper.get(mrn).get(0);
-				sessionIdMrnMapper.get(lruSession).remove(mrn);
-				if (sessionIdMrnMapper.get(lruSession).isEmpty()) {
-					if (sessionIdLogMapper.get(lruSession)!=null) {
-						sessionIdLogMapper.get(lruSession).clear();
-						sessionIdLogMapper.remove(lruSession);
+		if(mrn!=null&&sessionId!=null) {
+			if (mrnSessionIdMapper.get(mrn)!=null) {
+				List<String> sessionIdList = mrnSessionIdMapper.get(mrn);
+				
+				while (sessionIdList.size() > maxSessionCount) {
+					String lruSession = mrnSessionIdMapper.get(mrn).get(0);
+					sessionIdMrnMapper.get(lruSession).remove(mrn);
+					if (sessionIdMrnMapper.get(lruSession).isEmpty()) {
+						if (sessionIdLogMapper.get(lruSession)!=null) {
+							sessionIdLogMapper.get(lruSession).clear();
+							sessionIdLogMapper.remove(lruSession);
+						}
+						sessionIdMrnMapper.remove(lruSession);
 					}
-					sessionIdMrnMapper.remove(lruSession);
+					sessionIdList.remove(0);
 				}
-				sessionIdList.remove(0);
+				
+				sessionIdList.add(sessionId);
+				mrnSessionIdMapper.put(mrn, sessionIdList);
+			} 
+			else { //mrnSessionIdMapper.get(mrn)==null
+				List<String> sessionIdList = new ArrayList<String>();
+				sessionIdList.add(sessionId);
+				mrnSessionIdMapper.put(mrn, sessionIdList);
 			}
-			
-			sessionIdList.add(sessionId);
-			mrnSessionIdMapper.put(mrn, sessionIdList);
-		} 
-		else { //mrnSessionIdMapper.get(mrn)==null
-			List<String> sessionIdList = new ArrayList<String>();
-			sessionIdList.add(sessionId);
-			mrnSessionIdMapper.put(mrn, sessionIdList);
-		}
-		if (sessionIdMrnMapper.get(sessionId)==null) {
-			List<String> mrnList = new ArrayList<String>();
-			mrnList.add(mrn);
-			sessionIdMrnMapper.put(sessionId, mrnList);
-		} 
-		else { //sessionIdMrnMapper.get(sessionId)!=null
-			sessionIdMrnMapper.get(sessionId).add(mrn);
-		}
-		if (sessionIdLogMapper.get(sessionId)==null)
-		{
-			List<String> logList = new ArrayList<String>();
-			sessionIdLogMapper.put(sessionId, logList);
+			if (sessionIdMrnMapper.get(sessionId)==null) {
+				List<String> mrnList = new ArrayList<String>();
+				mrnList.add(mrn);
+				sessionIdMrnMapper.put(sessionId, mrnList);
+			} 
+			else { //sessionIdMrnMapper.get(sessionId)!=null
+				sessionIdMrnMapper.get(sessionId).add(mrn);
+			}
+			if (sessionIdLogMapper.get(sessionId)==null)
+			{
+				List<String> logList = new ArrayList<String>();
+				sessionIdLogMapper.put(sessionId, logList);
+			}
 		}
 	}
 	
 	public static void addLog (String sessionId, String log) {
-		SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
-		log = sdf.format(new Date()) + " " + log;
-		
-		if (sessionIdLogMapper.get(sessionId)!=null) {
-			sessionIdLogMapper.get(sessionId).add(log);
-		}
-		else { //sessionIdLogMapper.get(sessionId)==null
-			List<String> logList = new ArrayList<String>();
-			logList.add(log);
-			sessionIdLogMapper.put(sessionId, logList);
+		if(sessionId!=null)	{
+			SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
+			log = sdf.format(new Date()) + " " + log;
+			
+			if (sessionIdLogMapper.get(sessionId)!=null) {
+				sessionIdLogMapper.get(sessionId).add(log);
+			}
+			else { //sessionIdLogMapper.get(sessionId)==null
+				List<String> logList = new ArrayList<String>();
+				logList.add(log);
+				sessionIdLogMapper.put(sessionId, logList);
+			}
 		}
 	}
 
 	public static boolean isItsLogListNull (String sessionId) {
-		if (sessionIdLogMapper.get(sessionId)==null) {
+		if (sessionId!=null&&sessionIdLogMapper.get(sessionId)==null) {
 			return true;
 		}
 		else {

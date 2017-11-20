@@ -117,8 +117,9 @@ public class MMSLog {
 	
 	public static String getStatus (String mrn)  throws UnknownHostException, IOException{
 		  	
+		
 		StringBuffer status = new StringBuffer();
-
+		
 		if (mrn.equals("")) {
 			status.append("<strong>Maritime Name System Dummy:</strong><br/>");
 			status.append(dumpMNS());
@@ -136,7 +137,7 @@ public class MMSLog {
 				status.append("All services, normal polling<br/>");
 			}
 			status.append("<br/>");
-		
+			
 			status.append("<strong>Sessions waiting for a message:</strong><br/>");
 			int nPollingSessions = 0;
 			if (!SessionManager.sessionInfo.isEmpty()){
@@ -153,7 +154,6 @@ public class MMSLog {
 			}
 			status.append("<br/>");
 			
-	
 			status.append("<strong>MRNs being debugged:</strong><br/>");
 			if (!MMSLogForDebug.getMrnSet().isEmpty()) {
 				SortedSet<String> keys = new TreeSet<String>(MMSLogForDebug.getMrnSet());
@@ -177,13 +177,13 @@ public class MMSLog {
 				status.append("None<br/>");
 			}
 			status.append("<br/>");
-
 			status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE+"):</strong><br/>");
 			for (String log : briefLogForStatus) {
 				status.append(log+"<br/>");
 			}
 		} 
 		else {
+			
 			status.append("<strong>MMS Brief Log for MRN="+mrn+"<br/>(Maximum session count:"+MMSLogForDebug.getMaxSessionCount()+"):</strong><br/>");
 			String log = MMSLogForDebug.getLog(mrn);
 			if (log != null) {
@@ -193,7 +193,6 @@ public class MMSLog {
 				status.append("Invalid MRN being debugged.<br/>");
 			}
 		}
-		
   	
   	return status.toString();
   }
