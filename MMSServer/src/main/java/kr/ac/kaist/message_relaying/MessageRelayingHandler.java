@@ -165,17 +165,17 @@ public class MessageRelayingHandler  {
 		MMSLogForDebug.addSessionId(dstMRN, this.SESSION_ID);
 		
 		if (type != MessageTypeDecider.msgType.REALTIME_LOG) {
-			logger.info("SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
+			logger.info("SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
 			if(MMSConfiguration.WEB_LOG_PROVIDING) {
-				String log = "SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".";
+				String log = "SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+", dstMRN="+dstMRN+".";
 				MMSLog.addBriefLogForStatus(log);
 				MMSLogForDebug.addLog(this.SESSION_ID, log);
 			}
 		
 		
-			logger.trace("SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));	
+			logger.trace("SessionID="+this.SESSION_ID+" Payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));	
 			if(MMSConfiguration.WEB_LOG_PROVIDING&&logger.isTraceEnabled()) {
-				String log = "SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim());
+				String log = "SessionID="+this.SESSION_ID+" Payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim());
 				MMSLog.addBriefLogForStatus(log);
 				MMSLogForDebug.addLog(this.SESSION_ID, log);
 			}
