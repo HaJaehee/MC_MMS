@@ -1,8 +1,10 @@
 package kr.ac.kaist.message_queue;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +83,7 @@ class MessageQueueEnqueuer {
 			 MMSLogForDebug.addLog(this.SESSION_ID, log);
 		 }
 		 logger.debug("SessionID="+this.SESSION_ID+" Enqueue="+queueName+" .");
-		 logger.trace("SessionID="+this.SESSION_ID+" Enqueue, queue name="+queueName +" Message=" + message +".");
+		 logger.trace("SessionID="+this.SESSION_ID+" Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(message));
 		
 		try {
 			ConnectionFactory factory = new ConnectionFactory();
