@@ -110,7 +110,7 @@ public class MMSLogForDebug {
 	
 	
 	public static void removeMrn (String mrn){
-		if (mrn!=null&&mrnSessionIdMapper.get(mrn)!=null) {
+		if (mrnSessionIdMapper.get(mrn)!=null) {
 			for (String sessionId : mrnSessionIdMapper.get(mrn)) {
 				if (sessionIdMrnMapper.get(sessionId)!=null) {
 					sessionIdMrnMapper.get(sessionId).remove(mrn);
@@ -124,8 +124,8 @@ public class MMSLogForDebug {
 				}
 			}
 			mrnSessionIdMapper.get(mrn).clear();
-			mrnSessionIdMapper.remove(mrn);
 		}
+		mrnSessionIdMapper.remove(mrn);
 	}
 	
 	public static Set<String> getMrnSet () {
