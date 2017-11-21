@@ -26,7 +26,7 @@ Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 
 Rev. history : 2017-11-21
 Version : 0.6.1
-	MMSServer will start after waiting initiation of SecureMMSServer.  
+	MMSServer will start after waiting initialization of SecureMMSServer.  
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
