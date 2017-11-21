@@ -23,6 +23,11 @@ Rev. history : 2017-07-24
 Version : 0.5.9
 	Set MEX_CONTENT_SIZE to HttpObjectAggregator
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2017-11-21
+Version : 0.6.1
+	MMSServer will start after waiting initiation of SecureMMSServer.  
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -36,20 +41,27 @@ public class MMSServer {
 
 	private static final Logger logger = LoggerFactory.getLogger(MMSServer.class);
 	
-	public static void main(String[] args) throws Exception{
+	public static void main(String[] args){
 		
-		
-		new SecureMMSServer().runServer(); // Thread
-		MMSLogForDebug.getInstance(); //initialize MMSLogsForDebug
-		
-		logger.error("Now starting MMS HTTP server.");
-		NettyStartupUtil.runServer(MMSConfiguration.HTTP_PORT, pipeline -> {   //runServer(int port, Consumer<ChannelPipeline> initializer)
-			pipeline.addLast(new HttpServerCodec());
-			pipeline.addLast(new HttpObjectAggregator(MMSConfiguration.MAX_CONTENT_SIZE));
-            pipeline.addLast(new MRH_MessageInputChannel("http"));
-        });
-		
-		
+		try {
+			new SecureMMSServer().runServer(); // Thread
+			MMSLogForDebug.getInstance(); //initialize MMSLogsForDebug
+			
+			Thread.sleep(2000);
+			
+			logger.error("Now starting MMS HTTP server.");
+			NettyStartupUtil.runServer(MMSConfiguration.HTTP_PORT, pipeline -> {   //runServer(int port, Consumer<ChannelPipeline> initializer)
+				pipeline.addLast(new HttpServerCodec());
+				pipeline.addLast(new HttpObjectAggregator(MMSConfiguration.MAX_CONTENT_SIZE));
+	            pipeline.addLast(new MRH_MessageInputChannel("http"));
+	        });
+		}
+		catch (InterruptedException e) {
+			logger.warn(e.getMessage());
+		}
+		catch (Exception e) {
+			logger.warn(e.getMessage());
+		}
 	}
 }
 

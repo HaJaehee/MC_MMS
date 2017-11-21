@@ -87,6 +87,11 @@ Rev. history : 2017-11-20
 Version : 0.6.1
 	Revised logs slightly.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-21
+Version : 0.6.1
+	Revised logs slightly.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -210,9 +215,9 @@ public class MessageRelayingHandler  {
 
 			if(MMSConfiguration.WEB_LOG_PROVIDING) {
 				if(MMSLogForDebug.isItsLogListNull(this.SESSION_ID)) {
-					MMSLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" srcMRN="+srcMRN+",dstMRN="+dstMRN+".");
+					MMSLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" Header srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
 					if(logger.isTraceEnabled()) {
-						MMSLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));
+						MMSLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" Payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));
 					}
 				}
 			}
