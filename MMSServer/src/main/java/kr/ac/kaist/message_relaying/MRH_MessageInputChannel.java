@@ -75,11 +75,15 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 
 	private MessageParser parser;
 	private String protocol = "";
+	private MMSLog mmsLog = null;
+	private MMSLogForDebug mmsLogForDebug = null;
 	
 	public MRH_MessageInputChannel(String protocol) {
 		super();
 		this.protocol = protocol;
 		this.parser = new MessageParser();
+		mmsLog = MMSLog.getInstance();
+		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 	
 //	when coming http message
@@ -240,8 +244,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
       errorlog = "SessionID="+this.SESSION_ID+" The client is disconnected, " + errorlog + ".";
 		  logger.warn(errorlog);
 		  if(MMSConfiguration.WEB_LOG_PROVIDING) {
-				MMSLog.addBriefLogForStatus(errorlog);
-				MMSLogForDebug.addLog(this.SESSION_ID, errorlog);
+				mmsLog.addBriefLogForStatus(errorlog);
+				mmsLogForDebug.addLog(this.SESSION_ID, errorlog);
 		}
     }
 }

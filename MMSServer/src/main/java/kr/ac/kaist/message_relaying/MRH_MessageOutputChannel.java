@@ -107,10 +107,14 @@ public class MRH_MessageOutputChannel{
 	private HostnameVerifier hv = null;
 	private int responseCode = 200;
 	private boolean realtimeLog = false;
+	private MMSLogForDebug mmsLogForDebug = null;
+	private MMSLog mmsLog = null;
 	
 	MRH_MessageOutputChannel(String sessionId) {
 		// TODO Auto-generated constructor stub
 		this.SESSION_ID = sessionId;
+		mmsLogForDebug = MMSLogForDebug.getInstance();
+		mmsLog = MMSLog.getInstance();
 	}
 	
 	void setResponseHeader(Map<String, List<String>> storingHeader){
@@ -130,8 +134,8 @@ public class MRH_MessageOutputChannel{
 	    	logger.info("SessionID="+this.SESSION_ID+" Reply to sender.");
 	    	if(MMSConfiguration.WEB_LOG_PROVIDING) {
 	    		String log = "SessionID="+this.SESSION_ID+" Reply to sender.";
-	    		MMSLog.addBriefLogForStatus(log);
-	    		MMSLogForDebug.addLog(this.SESSION_ID, log);
+	    		mmsLog.addBriefLogForStatus(log);
+	    		mmsLogForDebug.addLog(this.SESSION_ID, log);
 	    	}
 		}
     	
@@ -180,8 +184,8 @@ public class MRH_MessageOutputChannel{
 		logger.info("SessionID="+this.SESSION_ID+" Try connecting to url="+url);
 		if(MMSConfiguration.WEB_LOG_PROVIDING) {
 			String log = "SessionID="+this.SESSION_ID+" Try connecting to url="+url;
-			MMSLog.addBriefLogForStatus(log);
-			MMSLogForDebug.addLog(this.SESSION_ID, log);
+			mmsLog.addBriefLogForStatus(log);
+			mmsLogForDebug.addLog(this.SESSION_ID, log);
 		}
 		HttpHeaders httpHeaders = req.headers();
 		
@@ -240,8 +244,8 @@ public class MRH_MessageOutputChannel{
 		logger.info("SessionID="+this.SESSION_ID+" Received a response.");
 		if(MMSConfiguration.WEB_LOG_PROVIDING) {
 			String log = "SessionID="+this.SESSION_ID+" Received a response.";
-			MMSLog.addBriefLogForStatus(log);
-			MMSLogForDebug.addLog(this.SESSION_ID, log);
+			mmsLog.addBriefLogForStatus(log);
+			mmsLogForDebug.addLog(this.SESSION_ID, log);
 		}
 		
 		return retBuffer;
@@ -263,8 +267,8 @@ public class MRH_MessageOutputChannel{
 		logger.info("SessionID="+this.SESSION_ID+" Try connecting to url="+url);
 		if(MMSConfiguration.WEB_LOG_PROVIDING) {
 			String log = "SessionID="+this.SESSION_ID+" Try connecting to url="+url;
-			MMSLog.addBriefLogForStatus(log);
-			MMSLogForDebug.addLog(this.SESSION_ID, log);
+			mmsLog.addBriefLogForStatus(log);
+			mmsLogForDebug.addLog(this.SESSION_ID, log);
 		}
 		con.setHostnameVerifier(hv);
 		
@@ -327,8 +331,8 @@ public class MRH_MessageOutputChannel{
 		logger.info("SessionID="+this.SESSION_ID+" Received a response.");
 		if(MMSConfiguration.WEB_LOG_PROVIDING) {
 			String log = "SessionID="+this.SESSION_ID+" Received a response.";
-			MMSLog.addBriefLogForStatus(log);
-			MMSLogForDebug.addLog(this.SESSION_ID, log);
+			mmsLog.addBriefLogForStatus(log);
+			mmsLogForDebug.addLog(this.SESSION_ID, log);
 		}
 		return retBuffer;
 	

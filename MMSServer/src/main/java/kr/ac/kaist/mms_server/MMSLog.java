@@ -74,6 +74,11 @@ Rev. history : 2017-11-18
 Version : 0.6.1
 	Divided each section.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-18
+Version : 0.6.1
+	Replaced this class from static class to singleton class.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -117,10 +122,24 @@ public class MMSLog {
 	//public static String MNSLog = "";
 	//public static StringBuffer queueLogForClient = new StringBuffer();
 	
-	private static ArrayList<String> briefLogForStatus = new ArrayList<String>();
-	private static Map<String,List<String>> briefRealtimeLogEachIDs = new HashMap<String,List<String>>();
+	private ArrayList<String> briefLogForStatus = new ArrayList<String>();
+	private Map<String,List<String>> briefRealtimeLogEachIDs = new HashMap<String,List<String>>();
+	private MMSLogForDebug logForDebug = null;
 	
-	public static String getStatus (String mrn)  throws UnknownHostException, IOException{
+	private MMSLog() {
+		logForDebug = MMSLogForDebug.getInstance();
+	}
+	
+	public static MMSLog getInstance() { //double check synchronization.
+		return LazyHolder.INSTANCE;
+	}
+	
+	private static class LazyHolder {
+		private static final MMSLog INSTANCE = new MMSLog();
+	}
+	
+	
+	public String getStatus (String mrn)  throws UnknownHostException, IOException{
 		  	
 		
 		StringBuffer status = new StringBuffer();
@@ -171,8 +190,8 @@ public class MMSLog {
 			
 			status.append("<strong>MRNs being debugged:</strong><br/>");
 			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
-			if (!MMSLogForDebug.getMrnSet().isEmpty()) {
-				SortedSet<String> keys = new TreeSet<String>(MMSLogForDebug.getMrnSet());
+			if (!logForDebug.getMrnSet().isEmpty()) {
+				SortedSet<String> keys = new TreeSet<String>(logForDebug.getMrnSet());
 				for (String key : keys) {
 					status.append(key+"<br/>");
 				}
@@ -205,8 +224,8 @@ public class MMSLog {
 		} 
 		else {
 			
-			status.append("<strong>MMS Brief Log for MRN="+mrn+"<br/>(Maximum session count:"+MMSLogForDebug.getMaxSessionCount()+"):</strong><br/>");
-			String log = MMSLogForDebug.getLog(mrn);
+			status.append("<strong>MMS Brief Log for MRN="+mrn+"<br/>(Maximum session count:"+logForDebug.getMaxSessionCount()+"):</strong><br/>");
+			String log = logForDebug.getLog(mrn);
 			if (log != null) {
 				status.append(log);
 			}
@@ -217,7 +236,7 @@ public class MMSLog {
   	
   	return status.toString();
   }
-	public static String getRealtimeLog (String id) {
+	public String getRealtimeLog (String id) {
 		StringBuffer realtimeLog = new StringBuffer();
 
 		realtimeLog.append("{\"message\":[");
@@ -242,7 +261,7 @@ public class MMSLog {
 	}
 	
 //  When LOGGING MNS
-	public static String dumpMNS() throws UnknownHostException, IOException{ //
+	private String dumpMNS() throws UnknownHostException, IOException{ //
   	
   	//String modifiedSentence;
   	String dumpedMNS = "";
@@ -279,7 +298,7 @@ public class MMSLog {
   	dumpedMNS = dumpedMNS.substring(15);
   	return dumpedMNS;
   }
-	public static void addBriefLogForStatus (String arg) {
+	public void addBriefLogForStatus (String arg) {
 		SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
 		arg = sdf.format(new Date()) + " " + arg;
 
@@ -299,7 +318,7 @@ public class MMSLog {
 		}
 	}
 
-	public static void addIdToBriefRealtimeLogEachIDs (String id) {
+	public void addIdToBriefRealtimeLogEachIDs (String id) {
 		if (briefRealtimeLogEachIDs.get(id)!=null) {
 			
 		}
@@ -310,7 +329,7 @@ public class MMSLog {
 		
 	}
 	
-	public static void removeIdFromBriefRealtimeLogEachIDs (String id) {
+	public void removeIdFromBriefRealtimeLogEachIDs (String id) {
 		if (briefRealtimeLogEachIDs.get(id)==null) {
 			
 		}

@@ -66,9 +66,13 @@ class MessageQueueEnqueuer {
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueEnqueuer.class);
 	private String SESSION_ID = "";
 	
+	private MMSLog mmsLog = null;
+	private MMSLogForDebug mmsLogForDebug = null;
+	
 	MessageQueueEnqueuer (String sessionId) {
 		this.SESSION_ID = sessionId;
-
+		mmsLog = MMSLog.getInstance();
+		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 	
 	
@@ -79,8 +83,8 @@ class MessageQueueEnqueuer {
 		 
 		 if(MMSConfiguration.WEB_LOG_PROVIDING) {
 			 String log = "SessionID="+SESSION_ID+" Enqueue="+queueName+".";
-			 MMSLog.addBriefLogForStatus(log);
-			 MMSLogForDebug.addLog(this.SESSION_ID, log);
+			 mmsLog.addBriefLogForStatus(log);
+			 mmsLogForDebug.addLog(this.SESSION_ID, log);
 		 }
 		 logger.debug("SessionID="+this.SESSION_ID+" Enqueue="+queueName+" .");
 		 logger.trace("SessionID="+this.SESSION_ID+" Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(message));

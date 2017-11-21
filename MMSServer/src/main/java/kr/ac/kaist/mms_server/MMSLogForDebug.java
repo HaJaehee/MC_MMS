@@ -17,6 +17,11 @@ Rev. history : 2017-11-20
 Version : 0.6.1
 	Arguments must be checked if it is null.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-18
+Version : 0.6.1
+	Replaced this class from static class to singleton class.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -33,11 +38,10 @@ import ch.qos.logback.classic.jul.JULHelper;
 
 
 public class MMSLogForDebug {
-	private static Map<String,List<String>> sessionIdLogMapper = new HashMap<String,List<String>>();
-	private static Map<String,List<String>> mrnSessionIdMapper = new HashMap<String,List<String>>();
-	private static Map<String,List<String>> sessionIdMrnMapper = new HashMap<String,List<String>>();
-	private static int maxSessionCount = 50;
-	private static MMSLogForDebug inst = null;
+	private Map<String,List<String>> sessionIdLogMapper = new HashMap<String,List<String>>();
+	private Map<String,List<String>> mrnSessionIdMapper = new HashMap<String,List<String>>();
+	private Map<String,List<String>> sessionIdMrnMapper = new HashMap<String,List<String>>();
+	private int maxSessionCount = 50;
 	
 	private MMSLogForDebug () {
 		addMrn("urn:mrn:smart:service:instance:mof:S10");
@@ -58,13 +62,15 @@ public class MMSLogForDebug {
 		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp520fors52");
 	}
 	
-	public static MMSLogForDebug getInstance() {
-		if (inst==null) {
-			inst = new MMSLogForDebug();
-		}
-		return inst;
+	public static MMSLogForDebug getInstance() { //double check synchronization.
+		return LazyHolder.INSTANCE;
 	}
-	public static String getLog (String mrn){
+	
+	private static class LazyHolder {
+		private static final MMSLogForDebug INSTANCE = new MMSLogForDebug();
+	}
+	
+	public String getLog (String mrn){
 		if (mrn!=null&&mrnSessionIdMapper.get(mrn)!=null) {
 			List<String> sessionIdList = mrnSessionIdMapper.get(mrn);
 			StringBuilder logs = new StringBuilder();
@@ -91,7 +97,7 @@ public class MMSLogForDebug {
 		}
 	}
 	
-	public static boolean containsSessionId (String sessionId){
+	public boolean containsSessionId (String sessionId){
 		if (sessionIdLogMapper.containsKey(sessionId)&&sessionIdMrnMapper.containsKey(sessionId)) {
 			return true;
 		} 
@@ -100,7 +106,7 @@ public class MMSLogForDebug {
 		}
 	}
 	
-	public static void addMrn (String mrn) {
+	public void addMrn (String mrn) {
 		if (mrn==null||mrnSessionIdMapper.containsKey(mrn)) {
 			return;
 		}
@@ -109,7 +115,7 @@ public class MMSLogForDebug {
 	}
 	
 	
-	public static void removeMrn (String mrn){
+	public void removeMrn (String mrn){
 		if (mrnSessionIdMapper.get(mrn)!=null) {
 			for (String sessionId : mrnSessionIdMapper.get(mrn)) {
 				if (sessionIdMrnMapper.get(sessionId)!=null) {
@@ -128,11 +134,11 @@ public class MMSLogForDebug {
 		mrnSessionIdMapper.remove(mrn);
 	}
 	
-	public static Set<String> getMrnSet () {
+	public Set<String> getMrnSet () {
 		return mrnSessionIdMapper.keySet();
 	}
 	
-	public static void addSessionId (String mrn, String sessionId){
+	public void addSessionId (String mrn, String sessionId){
 	
 		if(mrn!=null&&sessionId!=null) {
 			if (mrnSessionIdMapper.get(mrn)!=null) {
@@ -175,7 +181,7 @@ public class MMSLogForDebug {
 		}
 	}
 	
-	public static void addLog (String sessionId, String log) {
+	public void addLog (String sessionId, String log) {
 		if(sessionId!=null)	{
 			SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
 			log = sdf.format(new Date()) + " " + log;
@@ -191,7 +197,7 @@ public class MMSLogForDebug {
 		}
 	}
 
-	public static boolean isItsLogListNull (String sessionId) {
+	public boolean isItsLogListNull (String sessionId) {
 		if (sessionId!=null&&sessionIdLogMapper.get(sessionId)==null) {
 			return true;
 		}
@@ -199,7 +205,7 @@ public class MMSLogForDebug {
 			return false;
 		}
 	}
-	public static int getMaxSessionCount ()	{
+	public int getMaxSessionCount ()	{
 		return maxSessionCount;
 	}
 }
