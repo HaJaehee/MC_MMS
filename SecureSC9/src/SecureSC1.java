@@ -7,7 +7,7 @@ import kr.ac.kaist.mms_client.SecureMMSClientHandler;
 
 /* -------------------------------------------------------- */
 /** 
-File name : SC9.java
+File name : SecureSC1.java
 	Service Consumer cannot be HTTPS server and should poll from MMS by HTTPS. 
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-03-21
@@ -25,24 +25,30 @@ Version : 0.5.9
 	Changed from PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, message) 
 	     to PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, List<String> messages) 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-21
+Version : 0.6.1
+	Compatible with MMS Client beta-0.6.1.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
 
-public class SC9 {
+public class SecureSC1 {
 	public static void main(String args[]) throws Exception{
-		String myMRN = "urn:mrn:imo:imo-no:1000009";
+		String myMRN = "urn:mrn:imo:imo-no:secure-1000001";
 		//myMRN = args[0];
 		
-
-		//MMSConfiguration.MMS_URL="winsgkwogml.iptime.org:444";
+		MMSConfiguration.MMS_URL="127.0.0.1:444";
+		MMSConfiguration.LOGGING = false; // If you are debugging client, set this variable true.
+		
 		
 		//Service Consumer cannot be HTTPs server and should poll from MMS by HTTPS. 
-		SecureMMSClientHandler sph = new SecureMMSClientHandler(myMRN);
+		SecureMMSClientHandler securePolling = new SecureMMSClientHandler(myMRN);
 		
-		int pollInterval = 1;
+		int pollInterval = 1000; // Unit is millisecond. 
 		String dstMRN = "urn:mrn:smart-navi:device:mms1";
 		String svcMRN = "urn:mrn:smart-navi:device:secure-tm-server";
-		sph.startPolling(dstMRN, svcMRN, pollInterval, new SecureMMSClientHandler.PollingResponseCallback() {
+		securePolling.startPolling(dstMRN, svcMRN, pollInterval, new SecureMMSClientHandler.PollingResponseCallback() {
 			//Response Callback from the polling message
 			//it is called when client receives a message
 			@Override
@@ -53,5 +59,10 @@ public class SC9 {
 				}
 			}
 		});
+		
+		
+		// Stopping polling example.
+		Thread.sleep(10000); // After 10 seconds,
+		securePolling.stopPolling(); // stop polling.
 	}
 }

@@ -26,6 +26,11 @@ Rev. history : 2017-05-02
 Version : 0.5.4
 	Added setting response header
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-21
+Version : 0.6.1
+	Compatible with MMS Client beta-0.6.1.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
 
@@ -38,8 +43,10 @@ public class SC5 {
 		//port = Integer.parseInt(args[1]);
 		int port = 8906;
 		
-		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
+		MMSConfiguration.LOGGING = false; // If you are debugging client, set this variable true.
 
+		//Server example.
 		MMSClientHandler server = new MMSClientHandler(myMRN);
 		server.setServerPort(port, new MMSClientHandler.RequestCallback() {
 			//Request Callback from the request message

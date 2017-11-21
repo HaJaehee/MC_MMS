@@ -20,6 +20,11 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-04-25
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-21
+Version : 0.6.1
+	Compatible with MMS Client beta-0.6.1.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
 
@@ -35,15 +40,20 @@ public class SC6 {
 		String fileDirectory = "/get/";
 		String fileName = "test.xml";
 		
-		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
+		MMSConfiguration.LOGGING = false; // If you are debugging client, set this variable true.
 
 		MMSClientHandler server = new MMSClientHandler(myMRN);
-		server.setFileServerPort(port,fileDirectory,fileName); //server has a context '/get/test.xml'
+		server.setFileServerPort(port, fileDirectory, fileName); //server has a context '/get/test.xml'
 		/* It is not same with: 
 		* server.setPort(port); //It sets default context as '/'
 		* server.addFileContext(fileDirectory, fileName); //Finally server has two context '/' and '/get/test.xml'
 	    */
-		server.addFileContext(fileDirectory, "mc.png");
-		server.addFileContext(fileDirectory, "pdf.pdf");
+		fileName = "mc.png";
+		server.addFileContext(fileDirectory, fileName);
+		fileName = "pdf.pdf";
+		server.addFileContext(fileDirectory, fileName);
+		fileName = "korean_pdf.pdf";
+		server.addFileContext(fileDirectory, fileName);
 	}
 }
