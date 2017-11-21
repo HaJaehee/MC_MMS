@@ -158,42 +158,30 @@ public class MMSLogForDebug {
 				}
 				
 				sessionIdList.add(sessionId);
-				mrnSessionIdMapper.put(mrn, sessionIdList);
+				
+				if (sessionIdMrnMapper.get(sessionId)==null) {
+					List<String> mrnList = new ArrayList<String>();
+					mrnList.add(mrn);
+					sessionIdMrnMapper.put(sessionId, mrnList);
+				} 
+				else { //sessionIdMrnMapper.get(sessionId)!=null
+					sessionIdMrnMapper.get(sessionId).add(mrn);
+				}
+				if (sessionIdLogMapper.get(sessionId)==null)
+				{
+					List<String> logList = new ArrayList<String>();
+					sessionIdLogMapper.put(sessionId, logList);
+				}
 			} 
-			else { //mrnSessionIdMapper.get(mrn)==null
-				List<String> sessionIdList = new ArrayList<String>();
-				sessionIdList.add(sessionId);
-				mrnSessionIdMapper.put(mrn, sessionIdList);
-			}
-			if (sessionIdMrnMapper.get(sessionId)==null) {
-				List<String> mrnList = new ArrayList<String>();
-				mrnList.add(mrn);
-				sessionIdMrnMapper.put(sessionId, mrnList);
-			} 
-			else { //sessionIdMrnMapper.get(sessionId)!=null
-				sessionIdMrnMapper.get(sessionId).add(mrn);
-			}
-			if (sessionIdLogMapper.get(sessionId)==null)
-			{
-				List<String> logList = new ArrayList<String>();
-				sessionIdLogMapper.put(sessionId, logList);
-			}
 		}
 	}
 	
 	public void addLog (String sessionId, String log) {
-		if(sessionId!=null)	{
+		if(sessionId!=null&&sessionIdLogMapper.get(sessionId)!=null)	{
 			SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
 			log = sdf.format(new Date()) + " " + log;
 			
-			if (sessionIdLogMapper.get(sessionId)!=null) {
-				sessionIdLogMapper.get(sessionId).add(log);
-			}
-			else { //sessionIdLogMapper.get(sessionId)==null
-				List<String> logList = new ArrayList<String>();
-				logList.add(log);
-				sessionIdLogMapper.put(sessionId, logList);
-			}
+			sessionIdLogMapper.get(sessionId).add(log);
 		}
 	}
 
