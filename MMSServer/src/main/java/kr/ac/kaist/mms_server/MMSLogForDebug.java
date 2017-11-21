@@ -36,10 +36,13 @@ public class MMSLogForDebug {
 	private static Map<String,List<String>> sessionIdLogMapper = new HashMap<String,List<String>>();
 	private static Map<String,List<String>> mrnSessionIdMapper = new HashMap<String,List<String>>();
 	private static Map<String,List<String>> sessionIdMrnMapper = new HashMap<String,List<String>>();
-	private static int maxSessionCount = 100;
+	private static int maxSessionCount = 50;
 	private static MMSLogForDebug inst = null;
 	
 	private MMSLogForDebug () {
+		addMrn("urn:mrn:smart-navi:device:mms1");
+		addMrn("urn:mrn:smart-navi:s:kjesv40");
+		addMrn("urn:mrn:smart-navi:service:sv40");
 		addMrn("urn:mrn:smart:service:instance:mof:S10");
 		addMrn("urn:mrn:smart:service:instance:mof:S11");
 		addMrn("urn:mrn:smart:service:instance:mof:S20");
@@ -56,6 +59,8 @@ public class MMSLogForDebug {
 		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp400fors41");
 		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp510fors51");
 		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp520fors52");
+		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp520fors53");
+		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp520fors55");
 	}
 	
 	public static MMSLogForDebug getInstance() {
