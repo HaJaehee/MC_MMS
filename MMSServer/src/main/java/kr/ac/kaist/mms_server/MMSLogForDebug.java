@@ -22,6 +22,11 @@ Rev. history : 2017-11-18
 Version : 0.6.1
 	Replaced this class from static class to singleton class.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-22
+Version : 0.6.1
+	Resolved critical problem caused by duplicated items in the list of mrnSessionIdMapper and sessionIdMrnMapper.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -29,6 +34,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,8 +46,8 @@ import ch.qos.logback.classic.jul.JULHelper;
 
 public class MMSLogForDebug {
 	private Map<String,List<String>> sessionIdLogMapper = new HashMap<String,List<String>>();
-	private Map<String,List<String>> mrnSessionIdMapper = new HashMap<String,List<String>>();
-	private Map<String,List<String>> sessionIdMrnMapper = new HashMap<String,List<String>>();
+	private Map<String,Set<String>> mrnSessionIdMapper = new HashMap<String,Set<String>>();
+	private Map<String,Set<String>> sessionIdMrnMapper = new HashMap<String,Set<String>>();
 	private int maxSessionCount = 50;
 	
 	private MMSLogForDebug () {
@@ -60,6 +67,7 @@ public class MMSLogForDebug {
 		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp400fors41");
 		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp510fors51");
 		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp520fors52");
+		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp520fors55");
 	}
 	
 	public static MMSLogForDebug getInstance() { //double check synchronization.
@@ -72,7 +80,7 @@ public class MMSLogForDebug {
 	
 	public String getLog (String mrn){
 		if (mrn!=null&&mrnSessionIdMapper.get(mrn)!=null) {
-			List<String> sessionIdList = mrnSessionIdMapper.get(mrn);
+			Set<String> sessionIdList = mrnSessionIdMapper.get(mrn);
 			StringBuilder logs = new StringBuilder();
 			for (String sessionId : sessionIdList) {
 				if (sessionIdLogMapper.get(sessionId)!=null) {
@@ -110,7 +118,7 @@ public class MMSLogForDebug {
 		if (mrn==null||mrnSessionIdMapper.containsKey(mrn)) {
 			return;
 		}
-		List<String> sessionIdList = new ArrayList<String>();
+		Set<String> sessionIdList = new LinkedHashSet<String>();
 		mrnSessionIdMapper.put(mrn, sessionIdList);
 	}
 	
@@ -142,10 +150,10 @@ public class MMSLogForDebug {
 	
 		if(mrn!=null&&sessionId!=null) {
 			if (mrnSessionIdMapper.get(mrn)!=null) {
-				List<String> sessionIdList = mrnSessionIdMapper.get(mrn);
-				
+				Set<String> sessionIdList = mrnSessionIdMapper.get(mrn);
 				while (sessionIdList.size() > maxSessionCount) {
-					String lruSession = mrnSessionIdMapper.get(mrn).get(0);
+					Iterator<String> it = sessionIdList.iterator();
+					String lruSession = it.next();
 					sessionIdMrnMapper.get(lruSession).remove(mrn);
 					if (sessionIdMrnMapper.get(lruSession).isEmpty()) {
 						if (sessionIdLogMapper.get(lruSession)!=null) {
@@ -154,13 +162,13 @@ public class MMSLogForDebug {
 						}
 						sessionIdMrnMapper.remove(lruSession);
 					}
-					sessionIdList.remove(0);
+					sessionIdList.remove(lruSession);
 				}
 				
 				sessionIdList.add(sessionId);
 				
 				if (sessionIdMrnMapper.get(sessionId)==null) {
-					List<String> mrnList = new ArrayList<String>();
+					Set<String> mrnList = new LinkedHashSet<String>();
 					mrnList.add(mrn);
 					sessionIdMrnMapper.put(sessionId, mrnList);
 				} 

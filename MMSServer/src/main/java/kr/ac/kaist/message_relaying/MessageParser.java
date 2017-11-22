@@ -1,5 +1,4 @@
 package kr.ac.kaist.message_relaying;
-
 /* -------------------------------------------------------- */
 /** 
 File name : MessageParser.java
@@ -87,7 +86,6 @@ public class MessageParser {
 
 	    srcIP = inetaddress.getHostAddress(); // IP address of client
 		srcMRN = req.headers().get("srcMRN");
-		
 		dstMRN = req.headers().get("dstMRN");
 		
 		uri = req.uri();

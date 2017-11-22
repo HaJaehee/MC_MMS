@@ -171,8 +171,7 @@ public class MRH_MessageOutputChannel{
         ctx.close();
         SessionManager.sessionInfo.remove(SESSION_ID);
         
-        logger.trace("SessionID: " + this.SESSION_ID + "\n" 
-    			+ "Message is sent completely.");
+        logger.trace("SessionID=" + this.SESSION_ID + " Message is sent completely.");
     }
 	
 //  to do relaying
