@@ -486,8 +486,12 @@ public class MessageRelayingHandler  {
 				if (message == null) {
 					message = "INVALID MESSAGE.".getBytes();
 					logger.info("SessionID="+this.SESSION_ID+" "+"INVALID MESSAGE.");
+					outputChannel.replyToSender(ctx, message, isRealtimeLog, 400);
 				}
-				outputChannel.replyToSender(ctx, message, isRealtimeLog);
+				else {
+					outputChannel.replyToSender(ctx, message, isRealtimeLog);
+			
+				}
 			}
 		}
 	}

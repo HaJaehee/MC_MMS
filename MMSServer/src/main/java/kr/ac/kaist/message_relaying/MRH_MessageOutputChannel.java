@@ -122,6 +122,12 @@ public class MRH_MessageOutputChannel{
 		storedHeader = storingHeader;
 	}
 	
+	public void replyToSender(ChannelHandlerContext ctx, byte[] data, boolean realtimeLog, int responseCode) {
+		this.realtimeLog = realtimeLog;
+		this.responseCode = responseCode;
+		replyToSender(ctx, data);
+	}
+	
 	public void replyToSender(ChannelHandlerContext ctx, byte[] data, boolean realtimeLog) {
 		this.realtimeLog = realtimeLog;
 		replyToSender(ctx, data);
