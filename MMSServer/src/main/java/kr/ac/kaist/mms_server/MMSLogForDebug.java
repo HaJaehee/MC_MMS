@@ -45,12 +45,17 @@ import ch.qos.logback.classic.jul.JULHelper;
 
 
 public class MMSLogForDebug {
-	private Map<String,List<String>> sessionIdLogMapper = new HashMap<String,List<String>>();
-	private Map<String,Set<String>> mrnSessionIdMapper = new HashMap<String,Set<String>>();
-	private Map<String,Set<String>> sessionIdMrnMapper = new HashMap<String,Set<String>>();
-	private int maxSessionCount = 50;
+	private HashMap<String,ArrayList<String>> sessionIdLogMapper = null;
+	private HashMap<String,LinkedHashSet<String>> mrnSessionIdMapper = null;
+	private HashMap<String,LinkedHashSet<String>> sessionIdMrnMapper = null;
+	private int maxSessionCount = 0;
 	
 	private MMSLogForDebug () {
+		sessionIdLogMapper = new HashMap<String,ArrayList<String>>();
+		mrnSessionIdMapper = new HashMap<String,LinkedHashSet<String>>();
+		sessionIdMrnMapper = new HashMap<String,LinkedHashSet<String>>();
+		maxSessionCount = 50;
+		
 		addMrn("urn:mrn:smart:service:instance:mof:S10");
 		addMrn("urn:mrn:smart:service:instance:mof:S11");
 		addMrn("urn:mrn:smart:service:instance:mof:S20");
@@ -79,32 +84,41 @@ public class MMSLogForDebug {
 	}
 	
 	public String getLog (String mrn){
-		if (mrn!=null&&mrnSessionIdMapper.get(mrn)!=null) {
-			StringBuilder logs = new StringBuilder();
-			for (String sessionId : mrnSessionIdMapper.get(mrn)) {
-				if (sessionIdLogMapper.get(sessionId)!=null) {
-					for (String log : sessionIdLogMapper.get(sessionId)) {
-						logs.append(log+"<br/>");
+		if (mrn!=null&&mrnSessionIdMapper!=null&&sessionIdLogMapper!=null) {
+			LinkedHashSet<String> sessionIdList = mrnSessionIdMapper.get(mrn);
+			if (sessionIdList!=null) {
+				StringBuilder logs = new StringBuilder();
+				for (String sessionId : sessionIdList) {
+					ArrayList<String> logList = sessionIdLogMapper.get(sessionId);
+					if (logList!=null) {
+						for (String log : logList) {
+							logs.append(log+"<br/>");
+						}
+					} 
+					else { // sessionIdLogMapper.get(sessionId)==null
+						return "";
 					}
-				} 
-				else { // sessionIdLogMapper.get(sessionId)==null
+				}
+				return logs.toString();
+			} 
+			else { // mrnSessionIdMapper.get(mrn)==null
+				if (mrnSessionIdMapper.containsKey(mrn)) {
 					return "";
 				}
+				else {
+					return null;
+				}
 			}
-			return logs.toString();
-		} 
-		else { // mrnSessionIdMapper.get(mrn)==null
-			if (mrnSessionIdMapper.containsKey(mrn)) {
-				return "";
-			}
-			else {
-				return null;
-			}
+		}
+		else {
+			return null;
 		}
 	}
 	
 	public boolean containsSessionId (String sessionId){
-		if (sessionIdLogMapper.containsKey(sessionId)&&sessionIdMrnMapper.containsKey(sessionId)) {
+		if (sessionId!=null&&
+				sessionIdLogMapper!=null&&sessionIdMrnMapper!=null&&
+				sessionIdLogMapper.containsKey(sessionId)&&sessionIdMrnMapper.containsKey(sessionId)) {
 			return true;
 		} 
 		else {
@@ -113,82 +127,116 @@ public class MMSLogForDebug {
 	}
 	
 	public void addMrn (String mrn) {
+		if (mrnSessionIdMapper==null) {
+			mrnSessionIdMapper = new HashMap<String,LinkedHashSet<String>>();
+		}
+			
 		if (mrn==null||mrnSessionIdMapper.containsKey(mrn)) {
 			return;
 		}
-		Set<String> sessionIdList = new LinkedHashSet<String>();
+		
+		LinkedHashSet<String> sessionIdList = new LinkedHashSet<String>();
 		mrnSessionIdMapper.put(mrn, sessionIdList);
 	}
 	
 	
 	public void removeMrn (String mrn){
-		if (mrnSessionIdMapper.get(mrn)!=null) {
-			for (String sessionId : mrnSessionIdMapper.get(mrn)) {
-				if (sessionIdMrnMapper.get(sessionId)!=null) {
-					sessionIdMrnMapper.get(sessionId).remove(mrn);
-					if (sessionIdMrnMapper.get(sessionId).isEmpty()) {
-						if (sessionIdLogMapper.get(sessionId)!=null) {
-							sessionIdLogMapper.get(sessionId).clear();
-							sessionIdLogMapper.remove(sessionId);
+		if (mrnSessionIdMapper!=null) {
+			Set<String> sessionIdList = mrnSessionIdMapper.get(mrn);
+			if (sessionIdList!=null) {
+				for (String sessionId : sessionIdList) {
+					if (sessionIdMrnMapper!=null) {
+						Set<String> mrnList = sessionIdMrnMapper.get(sessionId);
+						if (mrnList!=null) {
+							mrnList.remove(mrn);
+							if (mrnList.isEmpty()) {
+								if (sessionIdLogMapper!=null) {
+									List<String> logList = sessionIdLogMapper.get(sessionId);
+									if (logList!=null) {
+										logList.clear();
+										logList = null;
+										sessionIdLogMapper.remove(sessionId);
+									}
+								}
+								else { //sessionIdLogMapper==null
+									sessionIdLogMapper = new HashMap<String,ArrayList<String>>();
+								}
+								mrnList = null;
+								sessionIdMrnMapper.remove(sessionId);
+							}
 						}
-						sessionIdMrnMapper.remove(sessionId);
+					}
+					else { //sessionIdMrnMapper==null
+						sessionIdMrnMapper = new HashMap<String,LinkedHashSet<String>>();
 					}
 				}
+				sessionIdList.clear();
+				sessionIdList = null;
 			}
-			mrnSessionIdMapper.get(mrn).clear();
+			mrnSessionIdMapper.remove(mrn);
 		}
-		mrnSessionIdMapper.remove(mrn);
+		else { // mrnSessionIdMapper==null
+			mrnSessionIdMapper = new HashMap<String,LinkedHashSet<String>>();
+		}
 	}
 	
 	public Set<String> getMrnSet () {
+		if (mrnSessionIdMapper==null){
+			mrnSessionIdMapper = new HashMap<String,LinkedHashSet<String>>();
+		}
 		return mrnSessionIdMapper.keySet();
 	}
 	
 	public void addSessionId (String mrn, String sessionId){
-	
-		
 		if(mrn!=null&&sessionId!=null) {
 			
 			if (sessionIdLogMapper==null){
-				sessionIdLogMapper = new HashMap<String,List<String>>();
+				sessionIdLogMapper = new HashMap<String,ArrayList<String>>();
 			}
 			if (mrnSessionIdMapper==null){
-				mrnSessionIdMapper = new HashMap<String,Set<String>>();
+				mrnSessionIdMapper = new HashMap<String,LinkedHashSet<String>>();
 			}
 			if (sessionIdMrnMapper==null){
-				sessionIdMrnMapper = new HashMap<String,Set<String>>();
+				sessionIdMrnMapper = new HashMap<String,LinkedHashSet<String>>();
 			}
 			
-			if (mrnSessionIdMapper.get(mrn)!=null) {
-				while (mrnSessionIdMapper.get(mrn).size() > maxSessionCount) {
-					Iterator<String> it = mrnSessionIdMapper.get(mrn).iterator();
-					String lruSession = it.next();
-					if (sessionIdMrnMapper.get(lruSession)!=null) {
-						sessionIdMrnMapper.get(lruSession).remove(mrn);
-						if (sessionIdMrnMapper.get(lruSession).isEmpty()) {
-							if (sessionIdLogMapper.get(lruSession)!=null) {
-								sessionIdLogMapper.get(lruSession).clear();
+			LinkedHashSet<String> sessionIdList = mrnSessionIdMapper.get(mrn);
+			if (sessionIdList!=null) {
+				while (sessionIdList.size() > maxSessionCount) {
+					String lruSession = sessionIdList.iterator().next();
+					LinkedHashSet<String> mrnList = sessionIdMrnMapper.get(lruSession);
+					if (mrnList!=null) {
+						mrnList.remove(mrn);
+						if (mrnList.isEmpty()) {
+							List<String> logList = sessionIdLogMapper.get(lruSession);
+							if (logList!=null) {
+								logList.clear();
+								logList = null;
 								sessionIdLogMapper.remove(lruSession);
 							}
+							mrnList = null;
 							sessionIdMrnMapper.remove(lruSession);
-						}	
+						}
 					}
-					mrnSessionIdMapper.get(mrn).remove(lruSession);
+					sessionIdList.remove(lruSession);
 				}
+				sessionIdList.add(sessionId);
+				mrnSessionIdMapper.put(mrn, sessionIdList);
 				
-				mrnSessionIdMapper.get(mrn).add(sessionId);
-				
-				if (sessionIdMrnMapper.get(sessionId)==null) {
-					Set<String> mrnList = new LinkedHashSet<String>();
+				LinkedHashSet<String> mrnList = sessionIdMrnMapper.get(sessionId);
+				if (mrnList==null) {
+					mrnList = new LinkedHashSet<String>();
 					mrnList.add(mrn);
 					sessionIdMrnMapper.put(sessionId, mrnList);
 				} 
 				else { //sessionIdMrnMapper.get(sessionId)!=null
-					sessionIdMrnMapper.get(sessionId).add(mrn);
+					mrnList.add(mrn);
+					sessionIdMrnMapper.put(sessionId, mrnList);
 				}
-				if (sessionIdLogMapper.get(sessionId)==null)
+				ArrayList<String> logList = sessionIdLogMapper.get(sessionId);
+				if (logList==null)
 				{
-					List<String> logList = new ArrayList<String>();
+					logList = new ArrayList<String>();
 					sessionIdLogMapper.put(sessionId, logList);
 				}
 			} 
@@ -197,7 +245,7 @@ public class MMSLogForDebug {
 	
 	public void addLog (String sessionId, String log) {
 
-		if (sessionId!=null&&sessionIdLogMapper.get(sessionId)!=null)	{
+		if (sessionId!=null&&sessionIdLogMapper!=null&&sessionIdLogMapper.get(sessionId)!=null)	{
 			SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
 			log = sdf.format(new Date()) + " " + log;
 			
@@ -206,7 +254,7 @@ public class MMSLogForDebug {
 	}
 
 	public boolean isItsLogListNull (String sessionId) {
-		if (sessionId!=null&&sessionIdLogMapper.get(sessionId)==null) {
+		if (sessionId!=null&&sessionIdLogMapper!=null&&sessionIdLogMapper.get(sessionId)==null) {
 			return true;
 		}
 		else {
