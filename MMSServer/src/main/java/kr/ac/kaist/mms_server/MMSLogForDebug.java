@@ -80,12 +80,10 @@ public class MMSLogForDebug {
 	
 	public String getLog (String mrn){
 		if (mrn!=null&&mrnSessionIdMapper.get(mrn)!=null) {
-			Set<String> sessionIdList = mrnSessionIdMapper.get(mrn);
 			StringBuilder logs = new StringBuilder();
-			for (String sessionId : sessionIdList) {
+			for (String sessionId : mrnSessionIdMapper.get(mrn)) {
 				if (sessionIdLogMapper.get(sessionId)!=null) {
-					List<String> logList = sessionIdLogMapper.get(sessionId);
-					for (String log : logList) {
+					for (String log : sessionIdLogMapper.get(sessionId)) {
 						logs.append(log+"<br/>");
 					}
 				} 
@@ -148,24 +146,37 @@ public class MMSLogForDebug {
 	
 	public void addSessionId (String mrn, String sessionId){
 	
+		
 		if(mrn!=null&&sessionId!=null) {
+			
+			if (sessionIdLogMapper==null){
+				sessionIdLogMapper = new HashMap<String,List<String>>();
+			}
+			if (mrnSessionIdMapper==null){
+				mrnSessionIdMapper = new HashMap<String,Set<String>>();
+			}
+			if (sessionIdMrnMapper==null){
+				sessionIdMrnMapper = new HashMap<String,Set<String>>();
+			}
+			
 			if (mrnSessionIdMapper.get(mrn)!=null) {
-				Set<String> sessionIdList = mrnSessionIdMapper.get(mrn);
-				while (sessionIdList.size() > maxSessionCount) {
-					Iterator<String> it = sessionIdList.iterator();
+				while (mrnSessionIdMapper.get(mrn).size() > maxSessionCount) {
+					Iterator<String> it = mrnSessionIdMapper.get(mrn).iterator();
 					String lruSession = it.next();
-					sessionIdMrnMapper.get(lruSession).remove(mrn);
-					if (sessionIdMrnMapper.get(lruSession).isEmpty()) {
-						if (sessionIdLogMapper.get(lruSession)!=null) {
-							sessionIdLogMapper.get(lruSession).clear();
-							sessionIdLogMapper.remove(lruSession);
-						}
-						sessionIdMrnMapper.remove(lruSession);
+					if (sessionIdMrnMapper.get(lruSession)!=null) {
+						sessionIdMrnMapper.get(lruSession).remove(mrn);
+						if (sessionIdMrnMapper.get(lruSession).isEmpty()) {
+							if (sessionIdLogMapper.get(lruSession)!=null) {
+								sessionIdLogMapper.get(lruSession).clear();
+								sessionIdLogMapper.remove(lruSession);
+							}
+							sessionIdMrnMapper.remove(lruSession);
+						}	
 					}
-					sessionIdList.remove(lruSession);
+					mrnSessionIdMapper.get(mrn).remove(lruSession);
 				}
 				
-				sessionIdList.add(sessionId);
+				mrnSessionIdMapper.get(mrn).add(sessionId);
 				
 				if (sessionIdMrnMapper.get(sessionId)==null) {
 					Set<String> mrnList = new LinkedHashSet<String>();
@@ -185,7 +196,8 @@ public class MMSLogForDebug {
 	}
 	
 	public void addLog (String sessionId, String log) {
-		if(sessionId!=null&&sessionIdLogMapper.get(sessionId)!=null)	{
+
+		if (sessionId!=null&&sessionIdLogMapper.get(sessionId)!=null)	{
 			SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
 			log = sdf.format(new Date()) + " " + log;
 			
