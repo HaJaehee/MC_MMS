@@ -142,16 +142,16 @@ public class MMSLogForDebug {
 	
 	public void removeMrn (String mrn){
 		if (mrnSessionIdMapper!=null) {
-			Set<String> sessionIdList = mrnSessionIdMapper.get(mrn);
+			LinkedHashSet<String> sessionIdList = mrnSessionIdMapper.get(mrn);
 			if (sessionIdList!=null) {
 				for (String sessionId : sessionIdList) {
 					if (sessionIdMrnMapper!=null) {
-						Set<String> mrnList = sessionIdMrnMapper.get(sessionId);
+						LinkedHashSet<String> mrnList = sessionIdMrnMapper.get(sessionId);
 						if (mrnList!=null) {
 							mrnList.remove(mrn);
 							if (mrnList.isEmpty()) {
 								if (sessionIdLogMapper!=null) {
-									List<String> logList = sessionIdLogMapper.get(sessionId);
+									ArrayList<String> logList = sessionIdLogMapper.get(sessionId);
 									if (logList!=null) {
 										logList.clear();
 										logList = null;
@@ -208,7 +208,7 @@ public class MMSLogForDebug {
 					if (mrnList!=null) {
 						mrnList.remove(mrn);
 						if (mrnList.isEmpty()) {
-							List<String> logList = sessionIdLogMapper.get(lruSession);
+							ArrayList<String> logList = sessionIdLogMapper.get(lruSession);
 							if (logList!=null) {
 								logList.clear();
 								logList = null;
