@@ -253,8 +253,8 @@ public class MMSLogForDebug {
 		}
 	}
 
-	public synchronized boolean isItsLogListNull (String sessionId) {
-		if (sessionId!=null&&sessionIdLogMapper!=null&&sessionIdLogMapper.get(sessionId)==null) {
+	public synchronized boolean isItsLogListEmtpy (String sessionId) {
+		if (sessionId!=null&&sessionIdLogMapper!=null&&sessionIdLogMapper.get(sessionId)!=null&&sessionIdLogMapper.get(sessionId).isEmpty()) {
 			return true;
 		}
 		else {

@@ -252,7 +252,7 @@ public class MessageRelayingHandler  {
 				}
 				
 				if(MMSConfiguration.WEB_LOG_PROVIDING) {
-					if(mmsLogForDebug.isItsLogListNull(this.SESSION_ID)) {
+					if(mmsLogForDebug.isItsLogListEmtpy(this.SESSION_ID)) {
 						mmsLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" Header srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
 						if(logger.isTraceEnabled()) {
 							mmsLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" Payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));
