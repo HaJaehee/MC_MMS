@@ -83,7 +83,7 @@ public class MMSLogForDebug {
 		private static final MMSLogForDebug INSTANCE = new MMSLogForDebug();
 	}
 	
-	public String getLog (String mrn){
+	public synchronized String getLog (String mrn){
 		if (mrn!=null&&mrnSessionIdMapper!=null&&sessionIdLogMapper!=null) {
 			LinkedHashSet<String> sessionIdList = mrnSessionIdMapper.get(mrn);
 			if (sessionIdList!=null) {
@@ -115,7 +115,7 @@ public class MMSLogForDebug {
 		}
 	}
 	
-	public boolean containsSessionId (String sessionId){
+	public synchronized boolean containsSessionId (String sessionId){
 		if (sessionId!=null&&
 				sessionIdLogMapper!=null&&sessionIdMrnMapper!=null&&
 				sessionIdLogMapper.containsKey(sessionId)&&sessionIdMrnMapper.containsKey(sessionId)) {
@@ -126,7 +126,7 @@ public class MMSLogForDebug {
 		}
 	}
 	
-	public void addMrn (String mrn) {
+	public synchronized void addMrn (String mrn) {
 		if (mrnSessionIdMapper==null) {
 			mrnSessionIdMapper = new HashMap<String,LinkedHashSet<String>>();
 		}
@@ -140,7 +140,7 @@ public class MMSLogForDebug {
 	}
 	
 	
-	public void removeMrn (String mrn){
+	public synchronized void removeMrn (String mrn){
 		if (mrnSessionIdMapper!=null) {
 			LinkedHashSet<String> sessionIdList = mrnSessionIdMapper.get(mrn);
 			if (sessionIdList!=null) {
@@ -180,14 +180,14 @@ public class MMSLogForDebug {
 		}
 	}
 	
-	public Set<String> getMrnSet () {
+	public synchronized Set<String> getMrnSet () {
 		if (mrnSessionIdMapper==null){
 			mrnSessionIdMapper = new HashMap<String,LinkedHashSet<String>>();
 		}
 		return mrnSessionIdMapper.keySet();
 	}
 	
-	public void addSessionId (String mrn, String sessionId){
+	public synchronized void addSessionId (String mrn, String sessionId){
 		if(mrn!=null&&sessionId!=null) {
 			
 			if (sessionIdLogMapper==null){
@@ -243,7 +243,7 @@ public class MMSLogForDebug {
 		}
 	}
 	
-	public void addLog (String sessionId, String log) {
+	public synchronized void addLog (String sessionId, String log) {
 
 		if (sessionId!=null&&sessionIdLogMapper!=null&&sessionIdLogMapper.get(sessionId)!=null)	{
 			SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
@@ -253,7 +253,7 @@ public class MMSLogForDebug {
 		}
 	}
 
-	public boolean isItsLogListNull (String sessionId) {
+	public synchronized boolean isItsLogListNull (String sessionId) {
 		if (sessionId!=null&&sessionIdLogMapper!=null&&sessionIdLogMapper.get(sessionId)==null) {
 			return true;
 		}

@@ -185,8 +185,25 @@ public class MessageRelayingHandler  {
 			String dstIP = parser.getDstIP();
 			int dstPort = parser.getDstPort();
 			
-			mmsLogForDebug.addSessionId(srcMRN, this.SESSION_ID);
-			mmsLogForDebug.addSessionId(dstMRN, this.SESSION_ID);
+			try {
+				mmsLogForDebug.addSessionId(srcMRN, this.SESSION_ID);
+			}
+			catch (NullPointerException e) {
+				logger.info("SessionID="+this.SESSION_ID+" MMSLogForDebug problem detected MRN="+srcMRN+".");
+				mmsLogForDebug.removeMrn(srcMRN);
+				mmsLogForDebug.addMrn(srcMRN);
+				mmsLogForDebug.addSessionId(srcMRN, this.SESSION_ID);
+			}
+
+			try {
+				mmsLogForDebug.addSessionId(dstMRN, this.SESSION_ID);
+			}
+			catch (NullPointerException e) {
+				logger.info("SessionID="+this.SESSION_ID+" MMSLogForDebug problem detected MRN="+dstMRN+".");
+				mmsLogForDebug.removeMrn(dstMRN);
+				mmsLogForDebug.addMrn(dstMRN);
+				mmsLogForDebug.addSessionId(dstMRN, this.SESSION_ID);
+			}
 			
 			if (type != MessageTypeDecider.msgType.REALTIME_LOG) {
 				logger.info("SessionID="+this.SESSION_ID+" Header srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
@@ -224,8 +241,16 @@ public class MessageRelayingHandler  {
 				int srcModel = parser.getSrcModel();
 				String svcMRN = parser.getSvcMRN();
 			
-				mmsLogForDebug.addSessionId(svcMRN, this.SESSION_ID);
-	
+				try {
+					mmsLogForDebug.addSessionId(svcMRN, this.SESSION_ID);
+				}
+				catch (NullPointerException e){
+					logger.info("SessionID="+this.SESSION_ID+" MMSLogForDebug problem detected with MRN="+svcMRN+".");
+					mmsLogForDebug.removeMrn(svcMRN);
+					mmsLogForDebug.addMrn(svcMRN);
+					mmsLogForDebug.addSessionId(svcMRN, this.SESSION_ID);
+				}
+				
 				if(MMSConfiguration.WEB_LOG_PROVIDING) {
 					if(mmsLogForDebug.isItsLogListNull(this.SESSION_ID)) {
 						mmsLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" Header srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
@@ -234,7 +259,6 @@ public class MessageRelayingHandler  {
 						}
 					}
 				}
-	
 				
 				SessionManager.sessionInfo.put(SESSION_ID, "p");
 				
