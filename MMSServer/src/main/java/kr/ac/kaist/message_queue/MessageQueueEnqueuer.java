@@ -86,8 +86,12 @@ class MessageQueueEnqueuer {
 			 mmsLog.addBriefLogForStatus(log);
 			 mmsLogForDebug.addLog(this.SESSION_ID, log);
 		 }
-		 logger.debug("SessionID="+this.SESSION_ID+" Enqueue="+queueName+" .");
-		 logger.trace("SessionID="+this.SESSION_ID+" Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(message));
+		 if(!logger.isTraceEnabled()) {
+			 logger.debug("SessionID="+this.SESSION_ID+" Enqueue="+queueName+".");
+		 }
+		 else {
+			 logger.trace("SessionID="+this.SESSION_ID+" Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(message));
+		 }
 		
 		try {
 			ConnectionFactory factory = new ConnectionFactory();

@@ -61,6 +61,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,8 +165,8 @@ class MessageQueueDequeuer extends Thread{
 					mmsLog.addBriefLogForStatus(log);
 					mmsLogForDebug.addLog(this.SESSION_ID, log);
 				}
-				logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+" .");
-		    	
+				logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
+		  
 		    	if (SessionManager.sessionInfo.get(this.SESSION_ID) != null) {
 		    		SessionManager.sessionInfo.remove(this.SESSION_ID);
 		    	}
