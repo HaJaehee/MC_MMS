@@ -318,7 +318,9 @@ public class MessageRelayingHandler  {
 	    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 	    		Map<String,List<String>> params = qsd.parameters();
 				if(MMSConfiguration.WEB_LOG_PROVIDING) {
-					mmsLog.addBriefLogForStatus("SessionID="+this.SESSION_ID+" Get MMS status and logs.");
+					String log = "SessionID="+this.SESSION_ID+" Get MMS status and logs.";
+					logger.info(log);
+					mmsLog.addBriefLogForStatus(log);
 				}
 	    		if (params.get("mrn") == null) {
 	    			try {
