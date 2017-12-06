@@ -1,5 +1,5 @@
 # MC_MMS
-Beta Version 0.7.0 <br/>
+Beta Version 0.7.0 (Release)<br/>
 2017.12.06<br/>
 
 # Web Site
