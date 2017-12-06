@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +21,12 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-04-25
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-06-18
+Version : 0.5.6
+	Changed the variable Map<String,String> headerField to Map<String,List<String>>
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -32,8 +39,12 @@ public class SC8 {
 
 		//Service Consumer which can only send message
 		SecureMMSClientHandler sender = new SecureMMSClientHandler(myMRN);
-		Map<String, String> headerfield = new HashMap<String, String>();
-		headerfield.put("AccessToken", "1234567890");
+		
+		//Service Consumer can set he's HTTP header field
+		Map<String, List<String>> headerfield = new HashMap<String, List<String>>();
+		List<String> valueList = new ArrayList<String>();
+		valueList.add("1234567890");
+		headerfield.put("AccessToken",valueList);
 		sender.setMsgHeader(headerfield);
 		
 		sender.setSender(new SecureMMSClientHandler.ResponseCallback() {
@@ -44,7 +55,7 @@ public class SC8 {
 				Iterator<String> iter = headerField.keySet().iterator();
 				while (iter.hasNext()){
 					String key = iter.next();
-					System.out.println(key+":"+headerField.get(key).toString());
+					System.out.println(key+":"+headerField.get(key).toString());// Print the matched header field and the header contents.
 				}
 				System.out.println(message);
 			}

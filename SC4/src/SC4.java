@@ -48,5 +48,9 @@ public class SC4 {
 		//file transferring
 		String response = sender.requestFile("urn:mrn:imo:imo-no:1000006", "get/test.xml");
 	    System.out.println("Response from SC :" + response);
+	    response = sender.requestFile("urn:mrn:imo:imo-no:1000006", "get/mc.png");
+	    System.out.println("Response from SC :" + response);
+	    response = sender.requestFile("urn:mrn:imo:imo-no:1000006", "get/pdf.pdf");
+	    System.out.println("Response from SC :" + response);
 	}
 }

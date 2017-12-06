@@ -55,6 +55,8 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
+import sun.misc.BASE64Encoder;
+
 class MMSRcvHandler {
 	HttpServer server = null;
 	
@@ -62,7 +64,7 @@ class MMSRcvHandler {
 	//OONI
 	FileReqHandler frh = null;
 	//OONI
-	private static final String USER_AGENT = "MMSClient/0.5.0";
+	private static final String USER_AGENT = "MMSClient/0.6.0";
 	private String TAG = "[MMSRcvHandler";
 	private String clientMRN = null;
 	
@@ -225,18 +227,30 @@ class MMSRcvHandler {
         	
             fileName = System.getProperty("user.dir")+fileName.trim();
             File file = new File (fileName);
-            byte [] bytearray  = new byte [(int)file.length()];
-            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-            bis.read(bytearray, 0, bytearray.length);
+            BASE64Encoder base64Encoder = new BASE64Encoder();
+            InputStream in = new FileInputStream(file);
+
+            ByteArrayOutputStream byteOutStream=new ByteArrayOutputStream();
+
+            int len=0;
+
+            byte[] buf = new byte[1024];
+
+            while((len=in.read(buf)) != -1){
+            	byteOutStream.write(buf, 0, len);
+            }
+
+            byte fileArray[]=byteOutStream.toByteArray();
+            byte encodeBytes[]=base64Encoder.encodeBuffer(fileArray).getBytes(); 
             
+            in.close();
+            byteOutStream.close();
             // ok, we are ready to send the response.
-            t.sendResponseHeaders(200, file.length());
+            t.sendResponseHeaders(200, encodeBytes.length);
             OutputStream os = t.getResponseBody();
-            os.write(bytearray,0,bytearray.length);
+            os.write(encodeBytes,0,encodeBytes.length);
             os.flush();
             os.close();
-            
-            bis.close();
         }
     }
     //OONI end

@@ -23,6 +23,12 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-04-25
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-07-28
+Version : 0.5.9
+	Changed from PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, message) 
+	     to PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, List<String> messages) 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -37,16 +43,18 @@ public class SC1 {
 		//Service Consumer cannot be HTTP server and should poll from MMS. 
 		MMSClientHandler polling = new MMSClientHandler(myMRN);
 		
-		int pollInterval = 1;
+		int pollInterval = 1000;
 		String dstMRN = "urn:mrn:smart-navi:device:mms1";
 		String svcMRN = "urn:mrn:smart-navi:device:tm-server";
 		polling.startPolling(dstMRN, svcMRN, pollInterval, new MMSClientHandler.PollingResponseCallback() {
 			//Response Callback from the polling message
 			//it is called when client receives a message
 			@Override
-			public void callbackMethod(Map<String, List<String>> headerField, String message) {
+			public void callbackMethod(Map<String, List<String>> headerField, List<String> messages) {
 				// TODO Auto-generated method stub
-				System.out.print(message);
+				for (String s : messages) {
+					System.out.print(s);
+				}
 			}
 		});
 	}
