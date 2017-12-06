@@ -54,7 +54,7 @@ import sun.misc.BASE64Decoder;
 class MMSSndHandler {
 	
 	private String TAG = "[MMSSndHandler] ";
-	private final String USER_AGENT = "MMSClient/0.6.1";
+	private final String USER_AGENT = "MMSClient/0.7.0";
 	private String clientMRN = null;
 	private boolean isRgstLoc = false;
 	private MMSClientHandler.ResponseCallback myCallback;

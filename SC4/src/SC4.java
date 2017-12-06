@@ -26,8 +26,8 @@ Rev. history : 2017-04-25
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-11-21
-Version : 0.6.1
-	Compatible with MMS Client beta-0.6.1.
+Version : 0.7.0
+	Compatible with MMS Client beta-0.7.0.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */

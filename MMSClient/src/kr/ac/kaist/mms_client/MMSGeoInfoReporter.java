@@ -29,14 +29,14 @@ Version : 0.6.0
 /**
  * It is an object that processes geo-information and registers it to MMS.
  * It is being developed, please do not use it.
- * @version 0.6.1
+ * @version 0.7.0
  * @see MMSClientHandler
  * @see SecureMMSClientHandler
  */
 public class MMSGeoInfoReporter {
 	GeoInfoReporter gr = null;
 	//HJH
-	private static final String USER_AGENT = "MMSClient/0.6.1";
+	private static final String USER_AGENT = "MMSClient/0.7.0";
 	private String TAG = "[MMSGeoInfoReporter] ";
 	private String clientMRN = null;
 	

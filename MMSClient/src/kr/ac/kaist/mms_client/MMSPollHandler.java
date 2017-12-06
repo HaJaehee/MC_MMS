@@ -21,7 +21,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 
 Rev. history : 2017-11-16
-Version : 0.6.1
+Version : 0.7.0
 	 Add boolean variable "interrupted" in PollHandler. This variable is used to mark that this pollingHandler must be stopped.  
 	 This variable is proofed in the run() method.
 	 changed  from while(!Thread.currentThread().isInterrupted())
@@ -54,7 +54,7 @@ import org.json.simple.parser.ParseException;
 class MMSPollHandler {
 	PollHandler ph = null;
 	//HJH
-	private static final String USER_AGENT = "MMSClient/0.6.1";
+	private static final String USER_AGENT = "MMSClient/0.7.0";
 	private String TAG = "[MMSPollHandler] ";
 	private String clientMRN = null;
 	

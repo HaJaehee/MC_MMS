@@ -8,23 +8,23 @@ Creation Date : 2017-10-25
 Version : 0.6.0
 
 Rev. history : 2017-11-18
-Version : 0.6.1
+Version : 0.7.0
 	Fixed bugs due to null pointer execptions.
 	Replaced class name from MMSLogsForDebug to MMSLogForDebug. 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-11-20
-Version : 0.6.1
+Version : 0.7.0
 	Arguments must be checked if it is null.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-11-18
-Version : 0.6.1
+Version : 0.7.0
 	Replaced this class from static class to singleton class.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-11-22
-Version : 0.6.1
+Version : 0.7.0
 	Resolved critical problem caused by duplicated items in the list of mrnSessionIdMapper and sessionIdMrnMapper.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
