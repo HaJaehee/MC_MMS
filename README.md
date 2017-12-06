@@ -1,6 +1,6 @@
 # MC_MMS
 Beta Version 0.7.0 (Release)<br/>
-2017.12.06<br/>
+2017.12.6<br/>
 
 # Web Site
 www.mms-kaist.com
