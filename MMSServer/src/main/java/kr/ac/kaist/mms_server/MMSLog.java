@@ -60,23 +60,23 @@ Version : 0.6.0
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-11-15
-Version : 0.6.1
+Version : 0.7.0
 	Added realtime log functions
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 	Jaehyun Park (jae519@kaist.ac.kr)
 	
 Rev. history : 2017-11-18
-Version : 0.6.1
+Version : 0.7.0
 	Fixed bugs due to null pointer execptions.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-11-18
-Version : 0.6.1
+Version : 0.7.0
 	Divided each section.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-11-18
-Version : 0.6.1
+Version : 0.7.0
 	Replaced this class from static class to singleton class.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */

@@ -74,7 +74,7 @@ Version : 0.6.0
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-11-16
-Version : 0.6.1
+Version : 0.7.0
 	adding the code for marking a variable, "interrupted", of pollingHandler. 
 	added code: "this.pollHandler.ph.markInterrupted();" in the method stopPolling()
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
@@ -88,7 +88,7 @@ import java.util.Map;
 
 /**
  * It is an object that can communicate to MMS through HTTP and send or receive messages of other objects.
- * @version 0.6.1
+ * @version 0.7.0
  * @see SecureMMSClientHandler
  */
 public class MMSClientHandler {
