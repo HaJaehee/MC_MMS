@@ -18,8 +18,8 @@ Supports saving MMS logs automatically<br/>
 Supports displaying MMS logs on web browser<br/>
 Supports MMS web management<br/>
 Maritime Name System Dummy<br/>
-Service Consumer Dummies<br/>
-Service Provider Dummies<br/>
+Service Consumer Examples<br/>
+Service Provider Examples<br/>
 
 ## Usage
 First of all, configure build path to .jar files in ./External_jars.<br/>
