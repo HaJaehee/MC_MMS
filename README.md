@@ -20,9 +20,6 @@ Supports MMS web management<br/>
 Maritime Name System Dummy<br/>
 Service Consumer Dummies<br/>
 Service Provider Dummies<br/>
-Identity Registry Dummy<br/>
-Service Registry Dummy<br/>
-
 
 ## Usage
 First of all, configure build path to .jar files in ./External_jars.<br/>
