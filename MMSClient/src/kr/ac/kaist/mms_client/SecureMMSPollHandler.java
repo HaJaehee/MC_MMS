@@ -1,4 +1,36 @@
 package kr.ac.kaist.mms_client;
+/* -------------------------------------------------------- */
+/** 
+File name : SecureMMSPollHandler.java
+Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2017-04-25
+Version : 0.5.0
+
+Rev. history : 2017-06-18
+Version : 0.5.7
+	Changed the variable Map<String,String> headerField to Map<String,List<String>>
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-07-28
+Version : 0.5.9
+	MMS replies message array into JSONArray form. And messages are encoded by URLEncoder, UTF-8.
+	SecureMMSPollHandler parses JSONArray and decodes messages by URLDecoder, UTF-8.
+	Changed from PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, message) 
+	     to PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, List<String> messages) 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+
+Rev. history : 2017-11-16
+Version : 0.7.0
+	 Add boolean variable "interrupted" in PollHandler. This variable is used to mark that this pollingHandler must be stopped.  
+	 This variable is proofed in the run() method.
+	 changed  from while(!Thread.currentThread().isInterrupted())
+	           to  while(!Thread.currentThread().isInterrupted() && interrupted == false)
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
+*/
+/* -------------------------------------------------------- */
+
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -25,35 +57,13 @@ import javax.net.ssl.X509TrustManager;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
-/* -------------------------------------------------------- */
-/** 
-File name : SecureMMSPollHandler.java
-Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2017-04-25
-Version : 0.5.0
-
-Rev. history : 2017-06-18
-Version : 0.5.7
-	Changed the variable Map<String,String> headerField to Map<String,List<String>>
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-07-28
-Version : 0.5.9
-	MMS replies message array into JSONArray form. And messages are encoded by URLEncoder, UTF-8.
-	SecureMMSPollHandler parses JSONArray and decodes messages by URLDecoder, UTF-8.
-	Changed from PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, message) 
-	     to PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, List<String> messages) 
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-*/
-/* -------------------------------------------------------- */
 
 class SecureMMSPollHandler {
 
 	SecurePollingHandler ph = null;
 	//HJH
 	private String TAG = "[SecureMMSPollHandler] ";
-	private static final String USER_AGENT = "MMSClient/0.6.0";
+	private static final String USER_AGENT = "MMSClient/0.7.0";
 	private String clientMRN = null;
 	
 	SecureMMSPollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int msgType, Map<String,List<String>> headerField) throws IOException{
@@ -72,6 +82,7 @@ class SecureMMSPollHandler {
 		private Map<String,List<String>> headerField = null;
 		SecureMMSClientHandler.PollingResponseCallback myCallback = null;
 		private HostnameVerifier hv = null;
+		private boolean interrupted=false;
 		
     	SecurePollingHandler (String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int clientModel, Map<String,List<String>> headerField){
     		this.interval = interval;
@@ -88,15 +99,20 @@ class SecureMMSPollHandler {
     	}
     	
     	public void run(){
-    		while (true){
-    			try{
+    		try{
+	    		while (!Thread.currentThread().isInterrupted() && !interrupted){
 	    			Thread.sleep(interval);
-	    			Poll();
-    			}
-    			catch (Exception e) {
-					System.out.print(TAG);
-					e.printStackTrace();
-    			}
+		    		Poll();
+	    		}
+	    		if (interrupted){
+	    			System.out.println("[ERROR]Thread is dead");
+	    		}
+    		} catch (InterruptedException e){
+    			System.out.println("[ERROR]Thread is dead");
+    		} catch (Exception e){
+    			System.out.print(TAG);
+				e.printStackTrace();
+    			
     		}
     	}
     	
@@ -176,6 +192,10 @@ class SecureMMSPollHandler {
     		this.myCallback.callbackMethod(headerField, message);
     	}
 		
+    	void markInterrupted(){
+    		interrupted=true;
+    	}
+    	
 		HostnameVerifier getHV (){
 			// Create a trust manager that does not validate certificate chains
 	        TrustManager[] trustAllCerts = new TrustManager[]{

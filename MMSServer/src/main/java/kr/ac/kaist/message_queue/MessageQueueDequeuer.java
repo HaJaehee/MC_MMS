@@ -52,7 +52,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-10-25
 Version : 0.6.0
-	Added MMSLogsForDebug features.
+	Added MMSLogForDebug features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -61,6 +61,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +83,7 @@ import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.mms_server.Base64Coder;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
-import kr.ac.kaist.mms_server.MMSLogsForDebug;
+import kr.ac.kaist.mms_server.MMSLogForDebug;
 import kr.ac.kaist.seamless_roaming.PollingMethodRegDummy;
 
 
@@ -100,8 +101,13 @@ class MessageQueueDequeuer extends Thread{
 	private Channel channel = null;
 	private Connection connection = null;
 	
+	private MMSLog mmsLog = null;
+	private MMSLogForDebug mmsLogForDebug = null;
+	
 	MessageQueueDequeuer (String sessionId) {
 		this.SESSION_ID = sessionId;
+		mmsLog = MMSLog.getInstance();
+		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 	
 	void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN) {
@@ -126,14 +132,12 @@ class MessageQueueDequeuer extends Thread{
 		// TODO Auto-generated method stub
 		super.run();
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-		logger.debug("SessionID="+this.SESSION_ID+" Dequeue, queue name="+queueName+".");
 	    try {
 			ConnectionFactory factory = new ConnectionFactory();
 			factory.setHost("localhost");
 			connection = factory.newConnection();
 			channel = connection.createChannel();
 			channel.queueDeclare(queueName, true, false, false, null);
-			logger.trace("SessionID="+this.SESSION_ID+" Start dequeueing messages.");
 			
 			GetResponse res = null;
 			StringBuffer message = new StringBuffer();
@@ -158,11 +162,11 @@ class MessageQueueDequeuer extends Thread{
 				
 				if(MMSConfiguration.WEB_LOG_PROVIDING) {
 					String log = "SessionID="+this.SESSION_ID+" Dequeue="+queueName+".";
-					MMSLog.addBriefLogForStatus(log);
-					MMSLogsForDebug.addLog(this.SESSION_ID, log);
+					mmsLog.addBriefLogForStatus(log);
+					mmsLogForDebug.addLog(this.SESSION_ID, log);
 				}
-				logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+" .");
-		    	
+				logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
+		  
 		    	if (SessionManager.sessionInfo.get(this.SESSION_ID) != null) {
 		    		SessionManager.sessionInfo.remove(this.SESSION_ID);
 		    	}
@@ -174,11 +178,11 @@ class MessageQueueDequeuer extends Thread{
 				if (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null
 						 || PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING) {
 					if(MMSConfiguration.WEB_LOG_PROVIDING) {
-						String log = "SessionID="+this.SESSION_ID+" Queue="+queueName+" is emtpy.";
-						MMSLog.addBriefLogForStatus(log);
-						MMSLogsForDebug.addLog(this.SESSION_ID, log);
+						String log = "SessionID="+this.SESSION_ID+" Empty queue="+queueName+".";
+						mmsLog.addBriefLogForStatus(log);
+						mmsLogForDebug.addLog(this.SESSION_ID, log);
 					}
-					logger.debug("SessionID="+this.SESSION_ID+" Queue="+queueName+" is emtpy.");
+					logger.debug("SessionID="+this.SESSION_ID+" Empty queue="+queueName+".");
 			    	if (SessionManager.sessionInfo.get(this.SESSION_ID) != null) {
 			    		SessionManager.sessionInfo.remove(this.SESSION_ID);
 			    	}
@@ -189,10 +193,10 @@ class MessageQueueDequeuer extends Thread{
 					//Enroll a delivery listener to the queue channel in order to get a message from the queue.
 					if(MMSConfiguration.WEB_LOG_PROVIDING) {
 						String log = "SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".";
-						MMSLog.addBriefLogForStatus(log);
-						MMSLogsForDebug.addLog(this.SESSION_ID, log);
+						mmsLog.addBriefLogForStatus(log);
+						mmsLogForDebug.addLog(this.SESSION_ID, log);
 					}
-					logger.debug("SessionID="+this.SESSION_ID+" Client is waiting message.");
+					logger.debug("SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".");
 					QueueingConsumer consumer = new QueueingConsumer(channel);
 					channel.basicConsume(queueName, false, consumer);
 					QueueingConsumer.Delivery delivery = consumer.nextDelivery();
@@ -201,8 +205,8 @@ class MessageQueueDequeuer extends Thread{
 						
 						if(MMSConfiguration.WEB_LOG_PROVIDING) {
 							String log = "SessionID="+this.SESSION_ID+" Dequeue="+queueName+".";
-							MMSLog.addBriefLogForStatus(log);
-							MMSLogsForDebug.addLog(this.SESSION_ID, log);
+							mmsLog.addBriefLogForStatus(log);
+							mmsLogForDebug.addLog(this.SESSION_ID, log);
 						}
 						logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
 				    	
@@ -216,11 +220,11 @@ class MessageQueueDequeuer extends Thread{
 
 						if(MMSConfiguration.WEB_LOG_PROVIDING) {
 							String log = "SessionID="+this.SESSION_ID+" Dequeue="+queueName+".";
-							MMSLog.addBriefLogForStatus(log);
-							MMSLogsForDebug.addLog(this.SESSION_ID, log);
+							mmsLog.addBriefLogForStatus(log);
+							mmsLogForDebug.addLog(this.SESSION_ID, log);
 							log = "SessionID="+this.SESSION_ID+" "+srcMRN+" is disconnected. Requeue.";
-							MMSLog.addBriefLogForStatus(log);
-							MMSLogsForDebug.addLog(this.SESSION_ID, log);
+							mmsLog.addBriefLogForStatus(log);
+							mmsLogForDebug.addLog(this.SESSION_ID, log);
 						}
 						logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
 						logger.warn("SessionID="+this.SESSION_ID+" "+srcMRN+" is disconnected. Requeue.");

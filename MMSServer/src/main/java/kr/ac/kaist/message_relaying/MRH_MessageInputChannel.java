@@ -1,7 +1,4 @@
 package kr.ac.kaist.message_relaying;
-
-import java.io.IOException;
-
 /* -------------------------------------------------------- */
 /** 
 File name : MRH_MessageInputChannel.java
@@ -35,6 +32,12 @@ Rev. history : 2017-09-26
 Version : 0.6.0
 	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-15
+Version : 0.7.0
+	Added realtime log functions
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+	Jaehyun Park (jae519@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -59,7 +62,10 @@ import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
+import kr.ac.kaist.mms_server.MMSLogForDebug;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
+import java.io.IOException;
+
 
 public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHttpRequest>{
 	
@@ -69,11 +75,15 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 
 	private MessageParser parser;
 	private String protocol = "";
+	private MMSLog mmsLog = null;
+	private MMSLogForDebug mmsLogForDebug = null;
 	
 	public MRH_MessageInputChannel(String protocol) {
 		super();
 		this.protocol = protocol;
 		this.parser = new MessageParser();
+		mmsLog = MMSLog.getInstance();
+		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 	
 //	when coming http message
@@ -222,7 +232,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 
   //		System.out.println("srcIP: " + reqInfo[0]);
   //		System.out.println("srcMRN: " +  reqInfo[1]);
-        errorlog += "srcIP=" + reqInfo[0] + " srcMRN=" + reqInfo[1];
+        errorlog += " srcIP=" + reqInfo[0] + " srcMRN=" + reqInfo[1];
       if (reqInfo.length == 5){
   //			System.out.println("dstIP: " +  reqInfo[2]);
   //			System.out.println("dstMRN: " +  reqInfo[3]);
@@ -231,6 +241,11 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
       }
   //    	System.out.println("/*****************************************/");
 		
-		  logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected, " + errorlog + ".");
+      errorlog = "SessionID="+this.SESSION_ID+" The client is disconnected, " + errorlog + ".";
+		  logger.warn(errorlog);
+		  if(MMSConfiguration.WEB_LOG_PROVIDING) {
+				mmsLog.addBriefLogForStatus(errorlog);
+				mmsLogForDebug.addLog(this.SESSION_ID, errorlog);
+		}
     }
 }

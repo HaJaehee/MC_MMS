@@ -72,6 +72,12 @@ Rev. history : 2017-09-23
 Version : 0.6.0
 	Polling interval could be 0.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-16
+Version : 0.7.0
+	adding the code for marking a variable, "interrupted", of pollingHandler. 
+	added code: "this.pollHandler.ph.markInterrupted();" in the method stopPolling()
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -82,7 +88,7 @@ import java.util.Map;
 
 /**
  * It is an object that can communicate to MMS through HTTP and send or receive messages of other objects.
- * @version 0.6.0
+ * @version 0.7.0
  * @see SecureMMSClientHandler
  */
 public class MMSClientHandler {
@@ -190,10 +196,11 @@ public class MMSClientHandler {
 	 * This method is that stop polling requests using interrupt signal. 
 	 */
 	public void stopPolling (){
+		this.pollHandler.ph.markInterrupted();
 		this.pollHandler.ph.interrupt();
 	}
 	/**
-	 * This method is developing now, so do not use this method.
+	 * This method is being developed now, so do not use this method.
 	 * @param svcMRN
 	 * @param interval
 	 * @throws IOException

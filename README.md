@@ -1,6 +1,6 @@
 # MC_MMS
-Beta Version 0.6.0 (Released)<br/>
-2017.11.6<br/>
+Beta Version 0.7.0 (Released)<br/>
+2017.12.6<br/>
 
 # Web Site
 www.mms-kaist.com
@@ -18,11 +18,8 @@ Supports saving MMS logs automatically<br/>
 Supports displaying MMS logs on web browser<br/>
 Supports MMS web management<br/>
 Maritime Name System Dummy<br/>
-Service Consumer Dummies<br/>
-Service Provider Dummies<br/>
-Identity Registry Dummy<br/>
-Service Registry Dummy<br/>
-
+Service Consumer Examples<br/>
+Service Provider Examples<br/>
 
 ## Usage
 First of all, configure build path to .jar files in ./External_jars.<br/>

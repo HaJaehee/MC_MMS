@@ -29,6 +29,11 @@ Version : 0.5.9
 	Changed from PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, message) 
 	     to PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, List<String> messages) 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-21
+Version : 0.7.0
+	Compatible with MMS Client beta-0.7.0.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
 
@@ -38,12 +43,13 @@ public class SC1 {
 		//myMRN = args[0];
 		
 
-		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
+		MMSConfiguration.LOGGING = false; // If you are debugging client, set this variable true.
 		
 		//Service Consumer cannot be HTTP server and should poll from MMS. 
 		MMSClientHandler polling = new MMSClientHandler(myMRN);
 		
-		int pollInterval = 1000;
+		int pollInterval = 1000; // Unit is millisecond. 
 		String dstMRN = "urn:mrn:smart-navi:device:mms1";
 		String svcMRN = "urn:mrn:smart-navi:device:tm-server";
 		polling.startPolling(dstMRN, svcMRN, pollInterval, new MMSClientHandler.PollingResponseCallback() {
@@ -57,5 +63,9 @@ public class SC1 {
 				}
 			}
 		});
+		
+		// Stopping polling example.
+		Thread.sleep(10000); // After 10 seconds,
+		polling.stopPolling(); // stop polling.
 	}
 }

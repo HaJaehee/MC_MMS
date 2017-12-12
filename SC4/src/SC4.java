@@ -24,6 +24,11 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-04-25
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-21
+Version : 0.7.0
+	Compatible with MMS Client beta-0.7.0.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
 
@@ -32,7 +37,8 @@ public class SC4 {
 		String myMRN = "urn:mrn:imo:imo-no:1000004";
 		//myMRN = args[0];
 		
-		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
+		MMSConfiguration.LOGGING = false; // If you are debugging client, set this variable true.
 
 		//Service Consumer which request a file from server 
 		MMSClientHandler sender = new MMSClientHandler(myMRN);
@@ -45,12 +51,24 @@ public class SC4 {
 			}
 			
 		});
-		//file transferring
-		String response = sender.requestFile("urn:mrn:imo:imo-no:1000006", "get/test.xml");
+		
+		
+		// Requests file example
+		String dstMRN = "urn:mrn:imo:imo-no:1000006";
+		String fileLocation = "get/test.xml";
+		String response = sender.requestFile(dstMRN, fileLocation);
 	    System.out.println("Response from SC :" + response);
-	    response = sender.requestFile("urn:mrn:imo:imo-no:1000006", "get/mc.png");
+	    
+	    fileLocation = "get/mc.png";
+	    response = sender.requestFile(dstMRN, fileLocation);
 	    System.out.println("Response from SC :" + response);
-	    response = sender.requestFile("urn:mrn:imo:imo-no:1000006", "get/pdf.pdf");
+	    
+	    fileLocation = "get/pdf.pdf";
+	    response = sender.requestFile(dstMRN, fileLocation);
+	    System.out.println("Response from SC :" + response);
+	    
+	    fileLocation = "get/korean_pdf.pdf";
+	    response = sender.requestFile(dstMRN, fileLocation);
 	    System.out.println("Response from SC :" + response);
 	}
 }

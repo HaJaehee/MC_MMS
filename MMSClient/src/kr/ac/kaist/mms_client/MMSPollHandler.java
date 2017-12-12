@@ -18,6 +18,16 @@ Version : 0.5.9
 	Changed from PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, message) 
 	     to PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, List<String> messages) 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+
+Rev. history : 2017-11-16
+Version : 0.7.0
+	 Add boolean variable "interrupted" in PollHandler. This variable is used to mark that this pollingHandler must be stopped.  
+	 This variable is proofed in the run() method.
+	 changed  from while(!Thread.currentThread().isInterrupted())
+	           to  while(!Thread.currentThread().isInterrupted() && interrupted == false)
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -44,7 +54,7 @@ import org.json.simple.parser.ParseException;
 class MMSPollHandler {
 	PollHandler ph = null;
 	//HJH
-	private static final String USER_AGENT = "MMSClient/0.6.0";
+	private static final String USER_AGENT = "MMSClient/0.7.0";
 	private String TAG = "[MMSPollHandler] ";
 	private String clientMRN = null;
 	
@@ -61,6 +71,7 @@ class MMSPollHandler {
 		private String svcMRN = null;
 		private int clientPort = 0;
 		private int clientModel = 0;
+		private boolean interrupted=false;
 		private Map<String,List<String>> headerField = null;
 		MMSClientHandler.PollingResponseCallback myCallback = null;
 		
@@ -73,17 +84,25 @@ class MMSPollHandler {
     		this.clientPort = clientPort;
     		this.clientModel = clientModel;
     		this.headerField = headerField;
+    		interrupted=false;
     	}
     	
     	void setPollingResponseCallback(MMSClientHandler.PollingResponseCallback callback){
     		this.myCallback = callback;
     	}
     	
+    	void markInterrupted(){
+    		interrupted=true;
+    	}
+    	
     	public void run(){
     		try{
-	    		while (!Thread.currentThread().isInterrupted()){
+	    		while (!Thread.currentThread().isInterrupted() && !interrupted){
 	    			Thread.sleep(interval);
 		    		Poll();
+	    		}
+	    		if (interrupted){
+	    			System.out.println("[ERROR]Thread is dead");
 	    		}
     		} catch (InterruptedException e){
     			System.out.println("[ERROR]Thread is dead");

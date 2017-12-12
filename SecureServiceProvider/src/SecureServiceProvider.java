@@ -26,6 +26,11 @@ Rev. history : 2017-05-02
 Version : 0.5.4
 	Added setting response header
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-21
+Version : 0.7.0
+	Compatible with MMS Client beta-0.7.0.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -33,10 +38,17 @@ public class SecureServiceProvider {
 	public static void main(String args[]) throws Exception{
 		String myMRN = "urn:mrn:smart-navi:device:secure-tm-server";
 		int port = 8902;
+		
+		MMSConfiguration.MMS_URL="127.0.0.1:444";
+		MMSConfiguration.LOGGING = false; // If you are debugging client, set this variable true.
+		
+		
+		// Java Key Store example.
+		// In order to create HTTS server, JKS is necessary. testkey.jks is a self-signed key.
 		String jksDirectory = System.getProperty("user.dir")+"/testkey.jks";
-		String jksPassword = "lovesm13";
+		String jksPassword = "mmsclient";
 
-		//MMSConfiguration.MMS_URL="winsgkwogml.iptime.org:444";
+		
 		
 		SecureMMSClientHandler server = new SecureMMSClientHandler(myMRN);
 		SecureMMSClientHandler sender = new SecureMMSClientHandler(myMRN);
@@ -48,7 +60,9 @@ public class SecureServiceProvider {
 				System.out.println(message);
 			}
 		});
-		server.setServerPort(port, "/forwarding", jksDirectory, jksPassword, new SecureMMSClientHandler.RequestCallback() {
+		
+		String context = "/forwarding";
+		server.setServerPort(port, context, jksDirectory, jksPassword, new SecureMMSClientHandler.RequestCallback() {
 			
 			@Override
 			public int setResponseCode() {
@@ -67,8 +81,9 @@ public class SecureServiceProvider {
 					}
 					System.out.println(message);
 
-					//it only forwards messages to sc having urn:mrn:imo:imo-no:1000009
-					sender.sendPostMsg("urn:mrn:imo:imo-no:1000009", message);
+					//it only forwards messages to sc having urn:mrn:imo:imo-no:secure-1000001
+					String dstMRN = "urn:mrn:imo:imo-no:secure-1000001";
+					sender.sendPostMsg(dstMRN, message);
 
 				} catch (Exception e) {
 					e.printStackTrace();

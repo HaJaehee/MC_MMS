@@ -1,8 +1,10 @@
 package kr.ac.kaist.message_queue;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +14,7 @@ import com.rabbitmq.client.ConnectionFactory;
 
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
-import kr.ac.kaist.mms_server.MMSLogsForDebug;
+import kr.ac.kaist.mms_server.MMSLogForDebug;
 
 /* -------------------------------------------------------- */
 /** 
@@ -54,7 +56,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-10-25
 Version : 0.6.0
-	Added MMSLogsForDebug features.
+	Added MMSLogForDebug features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -64,9 +66,13 @@ class MessageQueueEnqueuer {
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueEnqueuer.class);
 	private String SESSION_ID = "";
 	
+	private MMSLog mmsLog = null;
+	private MMSLogForDebug mmsLogForDebug = null;
+	
 	MessageQueueEnqueuer (String sessionId) {
 		this.SESSION_ID = sessionId;
-
+		mmsLog = MMSLog.getInstance();
+		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 	
 	
@@ -77,11 +83,15 @@ class MessageQueueEnqueuer {
 		 
 		 if(MMSConfiguration.WEB_LOG_PROVIDING) {
 			 String log = "SessionID="+SESSION_ID+" Enqueue="+queueName+".";
-			 MMSLog.addBriefLogForStatus(log);
-			 MMSLogsForDebug.addLog(this.SESSION_ID, log);
+			 mmsLog.addBriefLogForStatus(log);
+			 mmsLogForDebug.addLog(this.SESSION_ID, log);
 		 }
-		 logger.debug("SessionID="+this.SESSION_ID+" Enqueue="+queueName+" .");
-		 logger.trace("SessionID="+this.SESSION_ID+" Enqueue, queue name="+queueName +" Message=" + message +".");
+		 if(!logger.isTraceEnabled()) {
+			 logger.debug("SessionID="+this.SESSION_ID+" Enqueue="+queueName+".");
+		 }
+		 else {
+			 logger.trace("SessionID="+this.SESSION_ID+" Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(message));
+		 }
 		
 		try {
 			ConnectionFactory factory = new ConnectionFactory();

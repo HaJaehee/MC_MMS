@@ -29,6 +29,11 @@ Rev. history : 2017-06-18
 Version : 0.5.6
 	Changed the variable Map<String,String> headerField to Map<String,List<String>>
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2017-11-21
+Version : 0.7.0
+	Compatible with MMS Client beta-0.7.0.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
 
@@ -37,22 +42,25 @@ public class SC2 {
 		String myMRN = "urn:mrn:imo:imo-no:1000002";
 		//myMRN = args[0];
 
-		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
+		MMSConfiguration.LOGGING = false; // If you are debugging client, set this variable true.
 
 		//Service Consumer which can only send message
 		MMSClientHandler sender = new MMSClientHandler(myMRN);
 		
-		//Service Consumer is able to set he's HTTP header field
-		Map<String, List<String>> headerfield = new HashMap<String, List<String>>();
-		List<String> valueList = new ArrayList<String>();
+		//Service Consumer is able to set its HTTP header field
+		Map<String, List<String>> headerfield = new HashMap<String, List<String>>(); // Header field example. You are able to remove this code.
+		List<String> valueList = new ArrayList<String>(); 
 		valueList.add("1234567890");
 		headerfield.put("AccessToken",valueList);
 		sender.setMsgHeader(headerfield);
+		// Header field example ends.
 		
+		// Sender example.
 		sender.setSender(new MMSClientHandler.ResponseCallback (){
-			//Response Callback from the request message
+			// callbackMethod is called when the response message arrives which is related to request message.
 			@Override
-			public void callbackMethod(Map<String, List<String>> headerField, String message) {
+			public void callbackMethod(Map<String, List<String>> headerField, String message) { // headerField and message of the response message.
 				// TODO Auto-generated method stub
 				Iterator<String> iter = headerField.keySet().iterator();
 				while (iter.hasNext()){
@@ -66,13 +74,18 @@ public class SC2 {
 		
 		
 		for (int i = 0; i < 10;i++){
-			sender.sendPostMsg("urn:mrn:smart-navi:device:tm-server", "/forwarding", "¾È³ç hi \"hello\" " + i);
+			String dstMRN = "urn:mrn:smart-navi:device:tm-server";
+			String location = "/forwarding";
+			String message = "¾È³ç hi \"hello\" " + i;
+			sender.sendPostMsg(dstMRN, location, message);
 			//Thread.sleep(100);
 		}
 
 		/*
 		for (int i = 0; i < 10;i++){
-			sender.sendPostMsg("urn:mrn:imo:imo-no:1000005", "¾È³ç hi hello " + i);
+			String dstMRN = "urn:mrn:imo:imo-no:1000005";
+			String message = "¾È³ç hi hello " + i;
+			sender.sendPostMsg(dstMRN, message);
 			//Thread.sleep(100);
 		}*/
 	}

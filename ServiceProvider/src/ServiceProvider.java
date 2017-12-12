@@ -33,6 +33,10 @@ Version : 0.5.4
 	Added setting response header
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history : 2017-11-21
+Version : 0.7.0
+	Compatible with MMS Client beta-0.7.0.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -42,6 +46,7 @@ public class ServiceProvider {
 		int port = 8902;
 
 		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.LOGGING = false; // If you are debugging client, set this variable true.
 		
 		MMSClientHandler server = new MMSClientHandler(myMRN);
 		MMSClientHandler sender = new MMSClientHandler(myMRN);
@@ -53,7 +58,8 @@ public class ServiceProvider {
 				System.out.println(message);
 			}
 		});
-		server.setServerPort(port, "/forwarding", new MMSClientHandler.RequestCallback() {
+		String context = "/forwarding";
+		server.setServerPort(port, context, new MMSClientHandler.RequestCallback() {
 			//Request Callback from the request message
 			//it is called when client receives a message
 			
@@ -74,7 +80,8 @@ public class ServiceProvider {
 					System.out.println(message);
 
 					//it only forwards messages to sc having urn:mrn:imo:imo-no:1000001
-					sender.sendPostMsg("urn:mrn:imo:imo-no:1000001", message);
+					String dstMRN = "urn:mrn:imo:imo-no:1000001";
+					sender.sendPostMsg(dstMRN, message);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
