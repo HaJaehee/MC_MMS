@@ -95,3 +95,4 @@ MC_MMS 0.5.1 new featurs/enhancements & bug-fixes:
 6. Modified sequence of message dequeueing.
 7. MMSClientHandler must set callback interface.
 8. MMSPollHandler is separated from MMSRcvHandler.
+
