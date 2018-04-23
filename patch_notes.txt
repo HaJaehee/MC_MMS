@@ -1,15 +1,19 @@
 Patch Notes
 ***********
 
+23-Apr 2018
+MC_MMS 0.7.1 new features/enhancemants & bug-fixes:
+1. Fixed unsecure codes.
+
 6-Dec 2017
-MC_MMS 0.7.0 new featurs/enhancements & bug-fixes:
+MC_MMS 0.7.0 new features/enhancements & bug-fixes:
 1. Added GUI Clients have starting/stopping connection buttons.
 2. Added realtime logging feature.
 3. Resolved critical bugs related with MMSLogForDebug.
 4. Updated comments of examples of MMSClient.
 
 26-Oct 2017
-MC_MMS 0.6.0 new featurs/enhancements & bug-fixes:
+MC_MMS 0.6.0 new features/enhancements & bug-fixes:
 1. Implemented stopPolling() method in MMSPollHandler.
 2. Updated function adding MRN to MNS dummy.
 3. Updated function providing brief log to MMS status.
@@ -30,7 +34,7 @@ MC_MMS 0.6.0 new featurs/enhancements & bug-fixes:
 18. MNS dummy does not use LogBack framework anymore.
 
 14-Sep 2017
-MC_MMS 0.5.9 new featurs/enhancements & bug-fixes:
+MC_MMS 0.5.9 new features/enhancements & bug-fixes:
 1. Added MAX_CONTENT_SIZE variable in MMSConfiguration as a argument of HttpObjectAggregator.
 2. Added handling code for HTTP 413 error code which is returned when received message size is larger than MAX_CONTENT_SIZE.
 3. Added handling code for 'No device' and 'Null MRN' cases.
@@ -39,7 +43,7 @@ MC_MMS 0.5.9 new featurs/enhancements & bug-fixes:
 6. Defined maven compiler as jdk 1.8.
 
 29-June 2017
-MC_MMS 0.5.8 new featurs/enhancements & bug-fixes:
+MC_MMS 0.5.8 new features/enhancements & bug-fixes:
 1. Implemented example client of geocasting model.
 2. Changed disconnection of client logging level from error to warn.
 3. Replaced deprecated method exceptionCaught() to handlerRemoved().
@@ -47,38 +51,38 @@ MC_MMS 0.5.8 new featurs/enhancements & bug-fixes:
 5. Replaced blank space to special character to &nbsp;.
 
 18-June 2017
-MC_MMS 0.5.7 new featurs/enhancements & bug-fixes:
+MC_MMS 0.5.7 new features/enhancements & bug-fixes:
 1. Revised the MMSServer project as MAVEN project.
 2. Applied LogBack framework to MMSServer.
 3. Wrote MMSClientHandler API JavaDoc.
 
 9-June 2017
-MC_MMS 0.5.6 new featurs/enhancements & bug-fixes:
+MC_MMS 0.5.6 new features/enhancements & bug-fixes:
 1. Added example function of transferring binary files in SC4, SC6.
 2. Added switch function of changing normal polling or long polling.
 3. Made uniformly HTTP header field type Map<String,List<String>>.
 
 22-May 2017
-MC_MMS 0.5.5 new featurs/enhancements & bug-fixes:
+MC_MMS 0.5.5 new features/enhancements & bug-fixes:
 1. Added sessionManager and management session of long polling client.
 
 3-May 2017
-MC_MMS 0.5.4 new featurs/enhancements & bug-fixes:
+MC_MMS 0.5.4 new features/enhancements & bug-fixes:
 1. Added web management features.
 2. Made possible MMS to relay images or byte files.
 3. Information: Linux eclipse default encoder: UTF-8, Windows eclipse default encoder: MS949
 
 29-Apr 2017
-MC_MMS 0.5.3 new featurs/enhancements & bug-fixes:
+MC_MMS 0.5.3 new features/enhancements & bug-fixes:
 1. Fixed bugs related to log auto savers and added setResponseHeader feature.
 
 27-Apr 2017
-MC_MMS 0.5.2 new featurs/enhancements & bug-fixes:
+MC_MMS 0.5.2 new features/enhancements & bug-fixes:
 1. Added MMS status view and API.
 2. Each SC and SP pair has a message queue.
 
 22-Apr 2017
-MC_MMS 0.5.1 new featurs/enhancements & bug-fixes:
+MC_MMS 0.5.1 new features/enhancements & bug-fixes:
 1. Implemented AMQP methodes by utilizing RabbitMQ.
 2. Implemented long polling.
 3. Class names and method names are replaced.
