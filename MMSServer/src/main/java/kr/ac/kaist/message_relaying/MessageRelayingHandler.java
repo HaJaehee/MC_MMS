@@ -94,6 +94,11 @@ Version : 0.7.0
 	Added try/catch statements in processRelaying().
 	Placed replyToSender() method into the finally statement.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed RESOURCE_LEAK hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
 
@@ -531,13 +536,13 @@ public class MessageRelayingHandler  {
   private void emptyMNS() throws UnknownHostException, IOException{ //
 
   	Socket MNSSocket = new Socket("localhost", 1004);
-  	
-  	BufferedWriter outToMNS = new BufferedWriter(
-					new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
+  	OutputStreamWriter osw = new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8"));
+  	BufferedWriter outToMNS = new BufferedWriter(osw);
 
   	logger.info("SessionID="+this.SESSION_ID+" "+"Empty-MNS.");
   	outToMNS.write("Empty-MNS:");
   	outToMNS.flush();
+  	osw.close();
   	outToMNS.close();
   	MNSSocket.close();
   	
@@ -549,13 +554,15 @@ public class MessageRelayingHandler  {
   private void removeEntryMNS(String mrn) throws UnknownHostException, IOException{ //
   	
   	Socket MNSSocket = new Socket("localhost", 1004);
-  	
-  	BufferedWriter outToMNS = new BufferedWriter(
-					new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
+  	OutputStreamWriter osw = new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8"));
+  	BufferedWriter outToMNS = new BufferedWriter(osw);
   	
   	logger.info("SessionID="+this.SESSION_ID+" Remove-Entry="+mrn+".");
   	outToMNS.write("Remove-Entry:"+mrn);
   	outToMNS.flush();
+  	if (osw != null) {
+  		osw.close();
+  	}
   	outToMNS.close();
   	MNSSocket.close();
   	
@@ -567,13 +574,15 @@ public class MessageRelayingHandler  {
   private void addEntryMNS(String mrn, String ip, String port, String model) throws UnknownHostException, IOException {
 	
 	  Socket MNSSocket = new Socket("localhost", 1004);
-	  
-	  BufferedWriter outToMNS = new BufferedWriter(
-				new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
+	  OutputStreamWriter osw = new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8"));
+	  BufferedWriter outToMNS = new BufferedWriter(osw);
 	
 	  logger.info("SessionID="+this.SESSION_ID+" Add-Entry="+mrn+".");
 	  outToMNS.write("Add-Entry:"+mrn+","+ip+","+port+","+model);
 	  outToMNS.flush();
+	  if (osw != null) {
+		  osw.close();
+	  }
 	  outToMNS.close();
 	  MNSSocket.close();
 	

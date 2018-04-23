@@ -16,6 +16,11 @@ Rev. history : 2017-05-02
 Version : 0.5.4
 	Added setting response header
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed FORWARD_NULL, RESOURCE_LEAK hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
 
@@ -65,10 +70,17 @@ class SecureMMSRcvHandler {
 	SecureMMSRcvHandler(int port, String jksDirectory, String jksPassword) throws Exception{
 		httpsServerConfigure(port, jksDirectory, jksPassword);
 		hrh = new HttpsReqHandler();
-        server.createContext("/", hrh);
+		if (hrh != null) {
+			server.createContext("/", hrh);
+		} else {
+			throw new NullPointerException();
+		}
         if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \"/\" is created");
+        
         server.setExecutor(null); // creates a default executor
+        //HttpsServer is in java library. Cannot fix FORWARD_NULL
         server.start();
+        //HttpsServer is in java library. Cannot fix FORWARD_NULL
 	}
 	
 	SecureMMSRcvHandler(int port, String context, String jksDirectory, String jksPassword) throws Exception {
@@ -106,49 +118,58 @@ class SecureMMSRcvHandler {
 	
 	void httpsServerConfigure (int port, String jksDirectory, String jksPassword) throws Exception{
 		
-		server = HttpsServer.create(new InetSocketAddress(port), 0);
-		sslContext = SSLContext.getInstance( "TLS" );
-
-		 // initialise the keystore
-	    char[] jksPwCharArr = jksPassword.toCharArray ();
-	    KeyStore ks = KeyStore.getInstance ( "JKS" );
-	    //FileInputStream fis = new FileInputStream ( System.getProperty("user.dir")+"/testkey.jks" );
-	    FileInputStream fis = new FileInputStream ( jksDirectory );
-	    ks.load ( fis, jksPwCharArr );
-
-	    // setup the key manager factory
-	    KeyManagerFactory kmf = KeyManagerFactory.getInstance ( "SunX509" );
-	    kmf.init ( ks, jksPwCharArr );
-
-	    // setup the trust manager factory
-	    TrustManagerFactory tmf = TrustManagerFactory.getInstance ( "SunX509" );
-	    tmf.init ( ks );
-
-	    // setup the HTTPS context and parameters
-	    sslContext.init ( kmf.getKeyManagers (), tmf.getTrustManagers (), null );
-	    server.setHttpsConfigurator ( new HttpsConfigurator( sslContext )
-	    {
-	        public void configure ( HttpsParameters params )
-	        {
-	            try
-	            {
-	                // initialise the SSL context
-	                SSLContext c = SSLContext.getDefault ();
-	                SSLEngine engine = c.createSSLEngine ();
-	                params.setNeedClientAuth ( false );
-	                params.setCipherSuites ( engine.getEnabledCipherSuites () );
-	                params.setProtocols ( engine.getEnabledProtocols () );
-
-	                // get the default parameters
-	                SSLParameters defaultSSLParameters = c.getDefaultSSLParameters ();
-	                params.setSSLParameters ( defaultSSLParameters );
-	            }
-	            catch ( Exception ex )
-	            {
-	                System.err.println( "Failed to create HTTPS port" );
-	            }
-	        }
-	    } );
+		FileInputStream fis = null;
+		 KeyManagerFactory kmf = null;
+		try {
+			server = HttpsServer.create(new InetSocketAddress(port), 0);
+			sslContext = SSLContext.getInstance( "TLS" );
+			
+			 // initialise the keystore
+		    char[] jksPwCharArr = jksPassword.toCharArray ();
+		    KeyStore ks = KeyStore.getInstance ( "JKS" );
+		    //FileInputStream fis = new FileInputStream ( System.getProperty("user.dir")+"/testkey.jks" );
+		    fis = new FileInputStream ( jksDirectory );
+		    ks.load ( fis, jksPwCharArr );
+	
+		    // setup the key manager factory
+		    kmf = KeyManagerFactory.getInstance ( "SunX509" );
+		    kmf.init ( ks, jksPwCharArr );
+		    
+		    // setup the trust manager factory
+		    TrustManagerFactory tmf = TrustManagerFactory.getInstance ( "SunX509" );
+		    tmf.init ( ks );
+	
+		    // setup the HTTPS context and parameters
+		    sslContext.init ( kmf.getKeyManagers (), tmf.getTrustManagers (), null );
+		    server.setHttpsConfigurator ( new HttpsConfigurator( sslContext )
+		    {
+		        public void configure ( HttpsParameters params )
+		        {
+		            try
+		            {
+		                // initialise the SSL context
+		                SSLContext c = SSLContext.getDefault ();
+		                SSLEngine engine = c.createSSLEngine ();
+		                params.setNeedClientAuth ( false );
+		                params.setCipherSuites ( engine.getEnabledCipherSuites () );
+		                params.setProtocols ( engine.getEnabledProtocols () );
+	
+		                // get the default parameters
+		                SSLParameters defaultSSLParameters = c.getDefaultSSLParameters ();
+		                params.setSSLParameters ( defaultSSLParameters );
+		            }
+		            catch ( Exception ex )
+		            {
+		                System.err.println( "Failed to create HTTPS port" );
+		            }
+		        }
+		    } );
+		} finally {
+			if (fis != null) {
+				fis.close();
+			}
+			kmf = null;
+		}
 	    
 	}
 	
@@ -257,41 +278,60 @@ class SecureMMSRcvHandler {
         	return this.myReqCallback.setResponseHeader();
         }
     }
-    //OONI
+    //Jaehee created
+	//Jaehee modified
     class SecureFileReqHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
-        	URI uri = t.getRequestURI();
-        	String fileName = uri.toString();
-        	if(MMSConfiguration.LOGGING)System.out.println(TAG+"File request: "+fileName);
-        	
-            fileName = System.getProperty("user.dir")+fileName.trim();
-            File file = new File (fileName);
-            BASE64Encoder base64Encoder = new BASE64Encoder();
-            InputStream in = new FileInputStream(file);
-
-            ByteArrayOutputStream byteOutStream=new ByteArrayOutputStream();
-
-            int len=0;
-
-            byte[] buf = new byte[1024];
-
-            while((len=in.read(buf)) != -1){
-            	byteOutStream.write(buf, 0, len);
-            }
-
-            byte fileArray[]=byteOutStream.toByteArray();
-            byte encodeBytes[]=base64Encoder.encodeBuffer(fileArray).getBytes(); 
-            
-            in.close();
-            byteOutStream.close();
-            // ok, we are ready to send the response.
-            t.sendResponseHeaders(200, encodeBytes.length);
-            OutputStream os = t.getResponseBody();
-            os.write(encodeBytes,0,encodeBytes.length);
-            os.flush();
-            os.close();
+        	URI uri = null;
+        	InputStream in = null;
+        	ByteArrayOutputStream byteOutStream = null;
+        	OutputStream os = null;
+        	byte encodeBytes[] = null;
+        	try {
+	        	uri = t.getRequestURI();
+	        	String fileName = uri.toString();
+	        	if(MMSConfiguration.LOGGING)System.out.println(TAG+"File request: "+fileName);
+	        	
+	            fileName = System.getProperty("user.dir")+fileName.trim();
+	            File file = new File (fileName);
+	            BASE64Encoder base64Encoder = new BASE64Encoder();
+	            in = new FileInputStream(file);
+	
+	            byteOutStream=new ByteArrayOutputStream();
+	
+	            int len=0;
+	
+	            byte[] buf = new byte[1024];
+	
+	            while((len=in.read(buf)) != -1){
+	            	byteOutStream.write(buf, 0, len);
+	            }
+	
+	            byte fileArray[]=byteOutStream.toByteArray();
+	            encodeBytes=base64Encoder.encodeBuffer(fileArray).getBytes(); 
+        	} finally {
+        		if (in != null) {
+        			in.close();
+        		}
+        		if (byteOutStream != null) {
+        			byteOutStream.close();
+        		}
+                // ok, we are ready to send the response.
+        	}
+        	try {
+                t.sendResponseHeaders(200, encodeBytes.length);
+                os = t.getResponseBody();
+                if (encodeBytes != null) {
+                	os.write(encodeBytes,0,encodeBytes.length);
+                }
+                os.flush();
+        	} finally {
+        		if (os != null) {
+        			os.close();
+        		}
+        	}
         }
     }
-    //OONI end
+    //Jaehee end
 }

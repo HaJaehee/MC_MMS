@@ -48,6 +48,11 @@ Version : 0.7.0
 	Added realtime log functions
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 	Jaehyun Park (jae519@kaist.ac.kr)
+	
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed RESOURCE_LEAK hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
 

@@ -79,6 +79,11 @@ Rev. history : 2017-11-18
 Version : 0.7.0
 	Replaced this class from static class to singleton class.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed RESOURCE_LEAK hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
 
@@ -267,9 +272,9 @@ public class MMSLog {
   	String dumpedMNS = "";
   	
   	Socket MNSSocket = new Socket("localhost", 1004);
+  	OutputStreamWriter osw = new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8"));
   	
-  	BufferedWriter outToMNS = new BufferedWriter(
-					new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
+  	BufferedWriter outToMNS = new BufferedWriter(osw);
   	
   	logger.debug("Dump-MNS.");
   	ServerSocket Sock = new ServerSocket(0);
@@ -277,6 +282,9 @@ public class MMSLog {
   	logger.debug("Reply port : "+rplPort+".");
   	outToMNS.write("Dump-MNS:"+","+rplPort);
   	outToMNS.flush();
+  	if (osw != null) {
+  		osw.close();
+  	}
   	outToMNS.close();
   	MNSSocket.close();
   	

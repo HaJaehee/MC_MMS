@@ -21,15 +21,22 @@ Rev. history : 2017-09-26
 Version : 0.6.0
 	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed RESOURCE_LEAK hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
@@ -49,30 +56,70 @@ class MIH_MessageOutputChannel {
 
 	}
 	
+	@SuppressWarnings("finally")
 	String sendToMNS(String request) {
+		
+		Socket MNSSocket = null;
+		OutputStreamWriter osw = null;
+		BufferedWriter outToMNS = null;
+		ServerSocket sock = null;
+		Socket replySocket = null;
+		BufferedReader inFromMNS = null;
+		InputStreamReader isr = null;
+		String returnedIP = null;
     	try{
 	    	//String modifiedSentence;
-	    	String returnedIP = null;
+
+	    	MNSSocket = new Socket("localhost", 1004);
+	    	osw = new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8"));
 	    	
-	    	Socket MNSSocket = new Socket("localhost", 1004);
-	    	
-	    	
-	    	BufferedWriter outToMNS = new BufferedWriter(
-						new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
+	    	outToMNS = new BufferedWriter(osw);
 	    	
 	    	logger.trace("SessionID="+this.SESSION_ID+" "+request+".");
-	    	ServerSocket Sock = new ServerSocket(0);
-	    	int rplPort = Sock.getLocalPort();
+	    	sock = new ServerSocket(0);
+	    	int rplPort = sock.getLocalPort();
 	    	logger.trace("SessionID="+this.SESSION_ID+" Reply port="+rplPort+".");
 	    	outToMNS.write(request+","+rplPort);
 	    	outToMNS.flush();
-	    	outToMNS.close();
-	    	MNSSocket.close();
+    	} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+    		logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+    		return null;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+    		return null;
+		} finally {
+    		if (osw != null) {
+    			try {
+					osw.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
+    		if (outToMNS != null) {
+    			try {
+					outToMNS.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
+    		if (MNSSocket != null) {
+    			try {
+					MNSSocket.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
+    	}
 	    	
-	    	
-	    	Socket ReplySocket = Sock.accept();
-	    	BufferedReader inFromMNS = new BufferedReader(
-	    			new InputStreamReader(ReplySocket.getInputStream(),Charset.forName("UTF-8")));
+	    try {
+	    	replySocket = sock.accept();
+	    	isr = new InputStreamReader(replySocket.getInputStream(),Charset.forName("UTF-8"));
+	    	inFromMNS = new BufferedReader(isr);
 			String inputLine;
 			StringBuffer response = new StringBuffer();
 			while ((inputLine = inFromMNS.readLine()) != null) {
@@ -81,7 +128,7 @@ class MIH_MessageOutputChannel {
 			
 	    	returnedIP = response.toString();
 	    	logger.trace("SessionID="+this.SESSION_ID+" From server=" + returnedIP+".");
-	    	inFromMNS.close();
+	    	
 	    	
 	    	if (returnedIP.equals("No")) {
 	    		return "No";
@@ -91,11 +138,40 @@ class MIH_MessageOutputChannel {
 	    	
 	    	returnedIP = returnedIP.substring(15);
 	    	
-	    	return returnedIP;
-    	}
-    	catch (Exception e) {
-    		logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+	    	
+    	} catch (UnknownHostException e) {
+    		logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 			return null;
+		} catch (IOException e) {
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			return null;
+		} finally {
+		
+			if (replySocket != null) {
+				try {
+					replySocket.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if (isr != null) {
+				try {
+					isr.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if (inFromMNS != null) {
+				try {
+					inFromMNS.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			return returnedIP;
 		}
 	}
 }

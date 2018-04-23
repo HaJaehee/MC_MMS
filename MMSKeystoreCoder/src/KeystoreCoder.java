@@ -19,6 +19,11 @@ Rev. history : 2018-01-10
 Version : 0.7.1
 	Replaced from mykeystore.jks to cert.jks.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed RESOURCE_LEAK hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
 import java.io.File;
@@ -33,13 +38,23 @@ public class KeystoreCoder {
 
 	public static void main(String[] args) {
 		 final File original = new File(System.getProperty("user.dir")+"/cert.jks");
-		    
+		 FileInputStream fis = null;
 		 try {
-			System.out.println(Base64Coder.encode(OneUtilsJre.toByteArray(new FileInputStream(original))));
+			fis = new FileInputStream(original);
+			System.out.println(Base64Coder.encode(OneUtilsJre.toByteArray(fis)));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.getMessage();
+		} finally {
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 
 	}

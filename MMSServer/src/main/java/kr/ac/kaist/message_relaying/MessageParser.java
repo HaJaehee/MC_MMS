@@ -27,6 +27,11 @@ Rev. history : 2017-09-26
 Version : 0.6.0
 	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed RESOURCE_LEAK hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
 
@@ -80,11 +85,15 @@ public class MessageParser {
 		svcMRN = null;
 	}
 	
-	void parseMessage(ChannelHandlerContext ctx, FullHttpRequest req) {
+	void parseMessage(ChannelHandlerContext ctx, FullHttpRequest req) throws NullPointerException{
 		InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 	    InetAddress inetaddress = socketAddress.getAddress();
 
-	    srcIP = inetaddress.getHostAddress(); // IP address of client
+	    if (inetaddress != null) {
+	    	srcIP = inetaddress.getHostAddress(); // IP address of client
+	    } else {
+	    	throw new NullPointerException();
+	    }
 		srcMRN = req.headers().get("srcMRN");
 		dstMRN = req.headers().get("dstMRN");
 		

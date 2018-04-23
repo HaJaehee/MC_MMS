@@ -32,6 +32,11 @@ Rev. history : 2017-05-02
 Version : 0.5.4
 	Added setting response header
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed RESOURCE_LEAK hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
 
@@ -217,40 +222,60 @@ class MMSRcvHandler {
         	return this.myReqCallback.setResponseHeader();
         }
     }
-    //OONI
+    //OONI created
+	//Jaehee modified
     class FileReqHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
-        	URI uri = t.getRequestURI();
-        	String fileName = uri.toString();
-        	if(MMSConfiguration.LOGGING)System.out.println(TAG+"File request: "+fileName);
-        	
-            fileName = System.getProperty("user.dir")+fileName.trim();
-            File file = new File (fileName);
-            BASE64Encoder base64Encoder = new BASE64Encoder();
-            InputStream in = new FileInputStream(file);
-
-            ByteArrayOutputStream byteOutStream=new ByteArrayOutputStream();
-
-            int len=0;
-
-            byte[] buf = new byte[1024];
-
-            while((len=in.read(buf)) != -1){
-            	byteOutStream.write(buf, 0, len);
-            }
-
-            byte fileArray[]=byteOutStream.toByteArray();
-            byte encodeBytes[]=base64Encoder.encodeBuffer(fileArray).getBytes(); 
+        	URI uri = null;
+        	InputStream in = null;
+        	ByteArrayOutputStream byteOutStream = null;
+        	OutputStream os = null;
+        	byte encodeBytes[] = null;
+        	try {
+	        	uri = t.getRequestURI();
+	        	String fileName = uri.toString();
+	        	if(MMSConfiguration.LOGGING)System.out.println(TAG+"File request: "+fileName);
+	        	
+	            fileName = System.getProperty("user.dir")+fileName.trim();
+	            File file = new File (fileName);
+	            BASE64Encoder base64Encoder = new BASE64Encoder();
+	            in = new FileInputStream(file);
+	
+	            byteOutStream=new ByteArrayOutputStream();
+	
+	            int len=0;
+	
+	            byte[] buf = new byte[1024];
+	
+	            while((len=in.read(buf)) != -1){
+	            	byteOutStream.write(buf, 0, len);
+	            }
+	
+	            byte fileArray[]=byteOutStream.toByteArray();
+	            encodeBytes=base64Encoder.encodeBuffer(fileArray).getBytes(); 
+        	} finally {
+        		if (in != null) {
+        			in.close();
+        		}
+        		if (byteOutStream != null) {
+        			byteOutStream.close();
+        		}
+                // ok, we are ready to send the response.
+        	}
+        	try {
+                t.sendResponseHeaders(200, encodeBytes.length);
+                os = t.getResponseBody();
+                if (encodeBytes != null) {
+                	os.write(encodeBytes,0,encodeBytes.length);
+                }
+                os.flush();
+        	} finally {
+        		if (os != null) {
+        			os.close();
+        		}
+        	}
             
-            in.close();
-            byteOutStream.close();
-            // ok, we are ready to send the response.
-            t.sendResponseHeaders(200, encodeBytes.length);
-            OutputStream os = t.getResponseBody();
-            os.write(encodeBytes,0,encodeBytes.length);
-            os.flush();
-            os.close();
         }
     }
     //OONI end
