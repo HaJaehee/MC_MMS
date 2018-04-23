@@ -28,6 +28,10 @@ Version : 0.7.0
 	           to  while(!Thread.currentThread().isInterrupted() && interrupted == false)
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION, EXPOSURE_OF_SYSTEM_DATA hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -40,6 +44,8 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -111,7 +117,7 @@ class SecureMMSPollHandler {
     			System.out.println("[ERROR]Thread is dead");
     		} catch (Exception e){
     			System.out.print(TAG);
-				e.printStackTrace();
+				//e.printStackTrace();
     			
     		}
     	}
@@ -219,10 +225,14 @@ class SecureMMSPollHandler {
 	            sc.init(null, trustAllCerts, new java.security.SecureRandom());
 	            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 	        } 
-	        catch (Exception e) {
+	        catch (KeyManagementException e) {
 	        	System.out.println(TAG);
-	        	e.printStackTrace();
-	        }
+	        	//e.printStackTrace();
+	        } catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+	        	System.out.println(TAG);
+	        	//e.printStackTrace();
+			}
 	        
 	        HostnameVerifier hv = new HostnameVerifier() {
 	            public boolean verify(String urlHostName, SSLSession session) {

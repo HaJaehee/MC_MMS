@@ -27,6 +27,11 @@ Rev. history : 2017-06-18
 Version : 0.5.6
 	Changed the variable Map<String,String> headerField to Map<String,List<String>>
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -35,10 +40,13 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -63,7 +71,7 @@ class MMSSndHandler {
 	}
 
 	@Deprecated
-	void registerLocator(int port) throws Exception {
+	void registerLocator(int port) throws IOException {
 		isRgstLoc = true;
 		sendHttpPost("urn:mrn:smart-navi:device:mms1", "/registering", port+":2", null);
 	}
@@ -72,7 +80,7 @@ class MMSSndHandler {
 		this.myCallback = callback;
 	}
 	
-	void sendHttpPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws Exception{
+	void sendHttpPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws IOException  {
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
 			loc = "/" + loc;

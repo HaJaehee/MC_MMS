@@ -82,7 +82,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-04-23
 Version : 0.7.1
-	Removed RESOURCE_LEAK hazard.
+	Removed RESOURCE_LEAK, EXPOSURE_OF_SYSTEM_DATA hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
@@ -252,7 +252,7 @@ public class MMSLog {
 					realtimeLog.append("\""+URLEncoder.encode(logs.get(0),"UTF-8")+"\",");
 				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.info(e.getMessage());
 				}
 				logs.remove(0);
 			}
@@ -288,10 +288,11 @@ public class MMSLog {
   	outToMNS.close();
   	MNSSocket.close();
   	
-  	
   	Socket ReplySocket = Sock.accept();
-  	BufferedReader inFromMNS = new BufferedReader(
-  			new InputStreamReader(ReplySocket.getInputStream(),Charset.forName("UTF-8")));
+  	InputStreamReader isr = new InputStreamReader(ReplySocket.getInputStream(),Charset.forName("UTF-8"));
+  	
+  	
+  	BufferedReader inFromMNS = new BufferedReader(isr);
 		String inputLine;
 		StringBuffer response = new StringBuffer();
 		while ((inputLine = inFromMNS.readLine()) != null) {
@@ -300,12 +301,19 @@ public class MMSLog {
 		
   	dumpedMNS = response.toString();
   	logger.trace("Dumped MNS: " + dumpedMNS+".");
+  	if (isr != null) {
+  		isr.close();
+  	}
   	inFromMNS.close();
   	if (dumpedMNS.equals("No"))
   		return "No MRN to IP mapping.<br/>";
   	dumpedMNS = dumpedMNS.substring(15);
   	return dumpedMNS;
   }
+	
+	
+	
+	
 	public void addBriefLogForStatus (String arg) {
 		SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
 		arg = sdf.format(new Date()) + " " + arg;

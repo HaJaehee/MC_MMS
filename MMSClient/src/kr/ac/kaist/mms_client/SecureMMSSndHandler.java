@@ -19,6 +19,11 @@ Rev. history : 2017-06-18
 Version : 0.5.6
 	Changed the variable Map<String,String> headerField to Map<String,List<String>>
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION, EXPOSURE_OF_SYSTEM_DATA hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -28,12 +33,15 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -66,12 +74,12 @@ class SecureMMSSndHandler {
 	}
 	
 	@Deprecated
-	void registerLocator(int port) throws Exception {
+	void registerLocator(int port) throws IOException {
 		isRgstLoc = true;
 		sendHttpsPost("urn:mrn:smart-navi:device:mms1", "/registering", port+":2", null);
 	}
 	
-	void sendHttpsPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws Exception{
+	void sendHttpsPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws IOException{
         
 		String url = "https://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
@@ -281,9 +289,12 @@ class SecureMMSSndHandler {
             SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        } catch (Exception e) {
+        } catch (NoSuchAlgorithmException e) {
         	System.out.println(TAG);
-        	e.printStackTrace();
+        	//e.printStackTrace();
+        } catch (KeyManagementException e) {
+        	System.out.println(TAG);
+        	//e.printStackTrace();
         }
         
         HostnameVerifier hv = new HostnameVerifier() {

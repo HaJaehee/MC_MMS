@@ -22,7 +22,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-04-23
 Version : 0.7.1
-	Removed RESOURCE_LEAK hazard.
+	Removed RESOURCE_LEAK, EXPOSURE_OF_SYSTEM_DATA hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
@@ -52,7 +52,7 @@ public class KeystoreCoder {
 					fis.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 		}

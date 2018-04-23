@@ -36,6 +36,11 @@ Rev. history : 2017-09-29
 Version : 0.6.0
 	MRNtoIPs are printed into sorted by key(MRN) form .
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed INTEGER_OVERFLOW hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -165,42 +170,58 @@ public class MNSDummy {
           		  float lat = Float.parseFloat(parsedGeoMRN[1]); 
           		  float lon = Float.parseFloat(parsedGeoMRN[3]);
           		  float rad = Float.parseFloat(parsedGeoMRN[5]);
-          		  Set<String> keys = MRNtoIP.keySet();
           		  
-          		  Iterator<String> keysIter = keys.iterator();
-          		  // MRN lists are returned by json format.
-          		  // {"poll":[{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},....]}
-          		  JSONArray objlist = new JSONArray();
-          		  
-          		  
-          		  if (keysIter.hasNext()){
-          			  do{
-          				  String key = keysIter.next();
-          				  String value = MRNtoIP.get(key);
-          				  String[] parsedVal = value.split(":");
-          				  if (parsedVal.length == 4){ // Geo-information exists.
-          					  String[] curGeoMRN = parsedVal[3].split("-");
-          					  float curLat = Float.parseFloat(curGeoMRN[1]); 
-                    		  float curLong = Float.parseFloat(curGeoMRN[3]);
-                    		  if (((lat-curLat)*(lat-curLat) + (lon-curLong)*(lon-curLong)) < rad * rad){
-                    			  JSONObject item = new JSONObject();
-                    			  item.put("dstMRN", key);
-                    			  objlist.add(item);
-                    		  }
-          				  }
-          				  
-          				  
-          			  }while(keysIter.hasNext());
+          		  if ( 20000 <= rad && 90 >= Math.abs(lat) && 180 >= Math.abs(lon)) {
+	          		  Set<String> keys = MRNtoIP.keySet();
+	          		  
+	          		  Iterator<String> keysIter = keys.iterator();
+	          		  // MRN lists are returned by json format.
+	          		  // {"poll":[{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},....]}
+	          		  JSONArray objlist = new JSONArray();
+	          		  
+	          		  
+	          		  if (keysIter.hasNext()){
+	          			  do{
+	          				  String key = keysIter.next();
+	          				  String value = MRNtoIP.get(key);
+	          				  String[] parsedVal = value.split(":");
+	          				  if (parsedVal.length == 4){ // Geo-information exists.
+	          					  String[] curGeoMRN = parsedVal[3].split("-");
+	          					  float curLat = Float.parseFloat(curGeoMRN[1]); 
+	                    		  float curLong = Float.parseFloat(curGeoMRN[3]);
+	                    		  
+	                    		  
+	                    		  if (((lat-curLat)*(lat-curLat) + (lon-curLong)*(lon-curLong)) < rad * rad){
+	                    			  JSONObject item = new JSONObject();
+	                    			  item.put("dstMRN", key);
+	                    			  objlist.add(item);
+	                    		  }
+	          				  }
+	          				  
+	          				  
+	          			  }while(keysIter.hasNext());
+	          		  }
+	          		  JSONObject dstMRNs = new JSONObject();
+	          		  dstMRNs.put("poll", objlist);
+		        	  Socket ReplySocket = new Socket("localhost",rplPort);
+		        	  BufferedWriter out = new BufferedWriter(
+		    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
+		        	  out.write("MNSDummy-Reply:" + dstMRNs.toString());
+		              out.flush();
+		              out.close();
+		              ReplySocket.close();
+          		  } else {
+          			  JSONArray objlist = new JSONArray();
+          			  JSONObject dstMRNs = new JSONObject();
+	          		  dstMRNs.put("poll", objlist);
+		        	  Socket ReplySocket = new Socket("localhost",rplPort);
+		        	  BufferedWriter out = new BufferedWriter(
+		    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
+		        	  out.write("MNSDummy-Reply:" + dstMRNs.toString());
+		              out.flush();
+		              out.close();
+		              ReplySocket.close();
           		  }
-          		  JSONObject dstMRNs = new JSONObject();
-          		  dstMRNs.put("poll", objlist);
-	        	  Socket ReplySocket = new Socket("localhost",rplPort);
-	        	  BufferedWriter out = new BufferedWriter(
-	    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
-	        	  out.write("MNSDummy-Reply:" + dstMRNs.toString());
-	              out.flush();
-	              out.close();
-	              ReplySocket.close();
           	  }
           }else if (data.regionMatches(0, "Location-Update:", 0, 16)){
         	  data = data.substring(16);

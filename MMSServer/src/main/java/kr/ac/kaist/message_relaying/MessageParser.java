@@ -30,7 +30,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-04-23
 Version : 0.7.1
-	Removed RESOURCE_LEAK hazard.
+	Removed RESOURCE_LEAK, PRIVATE_COLLECTION hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
@@ -38,6 +38,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,7 +141,12 @@ public class MessageParser {
 	int getDstModel() { return dstModel; }
 	
 	// Destination Special Information //
-	String[] getMultiDstMRN() { return multiDstMRN; }
+	String[] getMultiDstMRN() { 
+		String[] ret = null;
+		ret = Arrays.copyOf(this.multiDstMRN, this.multiDstMRN.length);
+		
+		return ret; 
+	}
 	
 	// Source Information //
 	String getSrcIP(){ return srcIP; }

@@ -1,4 +1,16 @@
 package kr.ac.kaist.mms_client;
+/** 
+File name : MMSGeoInfoReporter.java
+	Processing Geo-information.
+Author : Jaehyun Park (jae519@kaist.ac.kr)
+Creation Date : 2017-06-27
+Version : 0.6.0
+
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION, EXPOSURE_OF_SYSTEM_DATA hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+**/
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -18,13 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import kr.ac.kaist.mms_client.MMSPollHandler.PollHandler;
-/** 
-File name : MMSGeoInfoReporter.java
-	Processing Geo-information.
-Author : Jaehyun Park (jae519@kaist.ac.kr)
-Creation Date : 2017-06-27
-Version : 0.6.0
-**/
+
 
 /**
  * It is an object that processes geo-information and registers it to MMS.
@@ -69,10 +75,12 @@ public class MMSGeoInfoReporter {
     			try{
 	    			Thread.sleep(interval);
 	    			Report();
-    			} 
-    			catch (Exception e){
+    			} catch (InterruptedException e){
 					System.out.print(TAG);
-					e.printStackTrace();
+					//e.printStackTrace();
+    			} catch (Exception e){
+					System.out.print(TAG);
+					//e.printStackTrace();
     			}
     		}
     	}
@@ -85,17 +93,21 @@ public class MMSGeoInfoReporter {
 		void Report() throws Exception {
 			try{
 		    	Socket MNSSocket = new Socket(MMSConfiguration.MNS_HOST, 1004);
-		    	
-		    	BufferedWriter outToMNS = new BufferedWriter(
-							new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8")));
+		    	OutputStreamWriter osw = new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8"));
+		    	BufferedWriter outToMNS = new BufferedWriter(osw);
 		    	
 		    	outToMNS.write("Geo-location-Update:"+MNSSocket.getLocalSocketAddress()+","+ clientMRN +","+clientPort+",1,"+geoLocationBuilder());
 		    	outToMNS.flush();
+		    	if (osw != null) {
+		    		osw.close();
+		    	}
 		    	outToMNS.close();
 		    	MNSSocket.close();
 		    	
-	    	}
-	    	catch (Exception e) {
+	    	} catch (IOException e) {
+	    		System.out.println("Error during geo-location update");
+				return;
+			} catch (Exception e) {
 	    		System.out.println("Error during geo-location update");
 				return;
 			}

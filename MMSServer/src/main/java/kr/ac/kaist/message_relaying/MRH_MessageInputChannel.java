@@ -38,6 +38,11 @@ Version : 0.7.0
 	Added realtime log functions
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 	Jaehyun Park (jae519@kaist.ac.kr)
+	
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed NULL_RETURN_STD hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -171,7 +176,9 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
             	InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
         	    InetAddress inetaddress = socketAddress.getAddress();
         	    MNSInteractionHandler handler = new MNSInteractionHandler(SESSION_ID);
-        	    srcIP = inetaddress.getHostAddress(); // IP address of client
+        	    if (inetaddress != null) {
+        	    	srcIP = inetaddress.getHostAddress(); // IP address of client
+        	    }
         	    srcPort = socketAddress.getPort(); // port number of client
         	    String request = null;
         	    if(srcPort >= minDynamicPort) {

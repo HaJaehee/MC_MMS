@@ -19,7 +19,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-04-23
 Version : 0.7.1
-	Removed FORWARD_NULL, RESOURCE_LEAK hazard.
+	Removed FORWARD_NULL, RESOURCE_LEAK, IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
@@ -37,6 +37,7 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -145,23 +146,27 @@ class SecureMMSRcvHandler {
 		    {
 		        public void configure ( HttpsParameters params )
 		        {
-		            try
-		            {
+		            
 		                // initialise the SSL context
-		                SSLContext c = SSLContext.getDefault ();
-		                SSLEngine engine = c.createSSLEngine ();
-		                params.setNeedClientAuth ( false );
-		                params.setCipherSuites ( engine.getEnabledCipherSuites () );
-		                params.setProtocols ( engine.getEnabledProtocols () );
-	
-		                // get the default parameters
-		                SSLParameters defaultSSLParameters = c.getDefaultSSLParameters ();
-		                params.setSSLParameters ( defaultSSLParameters );
-		            }
-		            catch ( Exception ex )
-		            {
-		                System.err.println( "Failed to create HTTPS port" );
-		            }
+		                SSLContext c = null;
+						try {
+							c = SSLContext.getDefault ();
+							SSLEngine engine = c.createSSLEngine ();
+			                params.setNeedClientAuth ( false );
+			                params.setCipherSuites ( engine.getEnabledCipherSuites () );
+			                params.setProtocols ( engine.getEnabledProtocols () );
+		
+			                // get the default parameters
+			                SSLParameters defaultSSLParameters = c.getDefaultSSLParameters ();
+			                params.setSSLParameters ( defaultSSLParameters );
+						} catch (NoSuchAlgorithmException e) {
+							// TODO Auto-generated catch block
+			                System.err.println( "Failed to create HTTPS port" );
+							e.printStackTrace();
+						}
+		                
+		            
+		            
 		        }
 		    } );
 		} finally {

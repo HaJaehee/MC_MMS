@@ -97,7 +97,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-04-23
 Version : 0.7.1
-	Removed RESOURCE_LEAK hazard.
+	Removed RESOURCE_LEAK, IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
@@ -298,7 +298,7 @@ public class MessageRelayingHandler  {
 	        			logger.info("SessionID="+this.SESSION_ID+" No protocol.");
 	        		}
 				} 
-	        	catch (Exception e) {
+	        	catch (IOException e) {
 					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 				}
 			} 
@@ -511,11 +511,9 @@ public class MessageRelayingHandler  {
 			else if (type == MessageTypeDecider.msgType.UNKNOWN_MRN) {
 				message = "No Device having that MRN.".getBytes();
 			} 
-		}
-		catch (Exception e) {
+		} catch (NullPointerException e) {
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
-		}
-		finally {
+		} finally {
 			if (type != MessageTypeDecider.msgType.POLLING) {
 				if (message == null) {
 					message = "INVALID MESSAGE.".getBytes();
