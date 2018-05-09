@@ -1,5 +1,9 @@
+# Alert! 
+This branch is being implemented! 
+Source codes in this branch would be modified without any notification.
+
 # MC_MMS
-Beta Version 0.7.0 (Released)<br/>
+Beta Version 0.7.1 <br/>
 2017.12.6<br/>
 
 # Web Site
@@ -20,6 +24,7 @@ Supports MMS web management<br/>
 Maritime Name System Dummy<br/>
 Service Consumer Examples<br/>
 Service Provider Examples<br/>
+
 
 ## Usage
 First of all, configure build path to .jar files in ./External_jars.<br/>

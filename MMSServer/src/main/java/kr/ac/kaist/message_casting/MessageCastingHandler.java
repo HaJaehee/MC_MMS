@@ -35,6 +35,11 @@ Rev. history : 2017-09-26
 Version : 0.6.0
 	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed NULL_RETURN hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -65,7 +70,7 @@ public class MessageCastingHandler {
 	
 	public String requestDstInfo(String dstMRN){
 		String dstInfo = mih.requestDstInfo(dstMRN);
-		if (dstInfo.regionMatches(2, "poll", 0, 4)){ // if the returned dstInfo contains json format do parsing.
+		if (dstInfo != null && dstInfo.regionMatches(2, "poll", 0, 4)){ // if the returned dstInfo contains json format do parsing.
 			logger.debug("SessionID="+this.SESSION_ID+" Multicasting occured.");
 			JSONObject jo = (JSONObject)JSONValue.parse(dstInfo);
 			JSONArray jl = (JSONArray)jo.get("poll");

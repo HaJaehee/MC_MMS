@@ -48,16 +48,24 @@ Version : 0.7.0
 	Added realtime log functions
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 	Jaehyun Park (jae519@kaist.ac.kr)
+	
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed RESOURCE_LEAK, IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 */
 /* -------------------------------------------------------- */
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -67,6 +75,7 @@ import java.util.Set;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLProtocolException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -181,7 +190,7 @@ public class MRH_MessageOutputChannel{
     }
 	
 //  to do relaying
-	byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws Exception { // 
+	byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws IOException { // 
 
 		String url = "http://" + IPAddress + ":" + port + req.uri();
 		URL obj = new URL(url);
@@ -261,7 +270,7 @@ public class MRH_MessageOutputChannel{
 	
 	
 //  to do secure relaying
-	byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws Exception { // 
+	byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws IOException { // 
 
 	  	hv = getHV();
 	  	
@@ -365,9 +374,13 @@ public class MRH_MessageOutputChannel{
             SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        } catch (Exception e) {
-        	logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-        }
+        } catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+        	logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+		} catch (KeyManagementException e) {
+			// TODO Auto-generated catch block
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+		}
         
         HostnameVerifier hv = new HostnameVerifier() {
             public boolean verify(String urlHostName, SSLSession session) {

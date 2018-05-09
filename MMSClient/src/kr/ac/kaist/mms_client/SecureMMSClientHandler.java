@@ -66,6 +66,11 @@ Version : 0.7.0
 	adding the code for marking a variable, "interrupted", of pollingHandler. 
 	added code: "this.pollHandler.ph.markInterrupted();" in the method stopPolling()
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
+Rev. history : 2018-04-23
+Version : 0.7.1
+	Removed IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION, EXPOSURE_OF_SYSTEM_DATA hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -344,9 +349,9 @@ public class SecureMMSClientHandler {
 		try {
 			new SecureMMSSndHandler(clientMRN).registerLocator(port);
 			return;
-		} catch (Exception e) {
+		} catch (IOException e) {
 			System.out.print(TAG);
-			e.printStackTrace();
+			//e.printStackTrace();
 
 			return;
 		}
