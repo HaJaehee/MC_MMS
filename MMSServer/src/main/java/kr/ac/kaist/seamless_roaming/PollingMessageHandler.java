@@ -21,6 +21,11 @@ Rev. history : 2017-09-26
 Version : 0.6.0
 	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-06-06
+Version : 0.7.1
+	Deprecated updateClientInfo
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -47,6 +52,7 @@ class PollingMessageHandler {
 		mqm = new MessageQueueManager(this.SESSION_ID);
 	}
 	
+	@Deprecated
 	void updateClientInfo(MNSInteractionHandler mih, String srcMRN, String srcIP, int srcPort, int srcModel) {
 		mih.updateClientInfo(srcMRN, srcIP, srcPort, srcModel);
 	}

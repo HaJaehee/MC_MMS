@@ -1,5 +1,7 @@
 package kr.ac.kaist.mns_interaction;
 
+import java.text.ParseException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +35,7 @@ public class MNSInteractionHandler {
 	private static final Logger logger = LoggerFactory.getLogger(MNSInteractionHandler.class);
 	private String SESSION_ID = "";
 	private LocatorUpdater locatorUpdater = null;
-	private LocatorQuerier locatorQuerier = null;
+	private MRNInformationQuerier MRNInfoQuerier = null;
 	private MIH_MessageOutputChannel messageOutput = null;
 	
 	public MNSInteractionHandler(String sessionId) {
@@ -43,7 +45,7 @@ public class MNSInteractionHandler {
 	}
 	
 	private void initializeModule(){
-		locatorQuerier = new LocatorQuerier();
+		MRNInfoQuerier = new MRNInformationQuerier();
 		locatorUpdater = new LocatorUpdater(this.SESSION_ID);
 		messageOutput = new MIH_MessageOutputChannel(this.SESSION_ID);
 	}
@@ -55,12 +57,14 @@ public class MNSInteractionHandler {
 		return mrn;
 	}
 	
-	public String requestDstInfo(String dstMRN) {
-		String msg = locatorQuerier.buildQuery(dstMRN);
-		String dstInfo;
-		dstInfo = messageOutput.sendToMNS(msg);
 
-		return dstInfo;
+	public String requestDstInfo(String srcMRN, float geoLat, float geoLong, float geoRadius) {
+		String msg = MRNInfoQuerier.buildQuery("geocasting", srcMRN, geoLat, geoLong, geoRadius);
+		return messageOutput.sendToMNS(msg);
+	}
+	public String requestDstInfo(String srcMRN, String dstMRN, String srcIP){
+		String msg = MRNInfoQuerier.buildQuery("unicasting", srcMRN, dstMRN, srcIP);
+		return messageOutput.sendToMNS(msg);
 	}
 	
 	public String updateClientInfo(String srcMRN, String srcIP, int srcPort, int srcModel){

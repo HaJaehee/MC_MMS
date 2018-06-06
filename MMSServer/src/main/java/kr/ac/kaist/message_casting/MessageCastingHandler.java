@@ -1,6 +1,4 @@
 package kr.ac.kaist.message_casting;
-
-
 /* -------------------------------------------------------- */
 /** 
 File name : MessageCastingHandler.java
@@ -40,14 +38,22 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed NULL_RETURN hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-06-06
+Version : 0.7.1
+	Added geocasting features.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 
+import java.text.ParseException;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,8 +74,18 @@ public class MessageCastingHandler {
 		mih = new MNSInteractionHandler(this.SESSION_ID);
 	}
 	
-	public String requestDstInfo(String dstMRN){
-		String dstInfo = mih.requestDstInfo(dstMRN);
+	public String queryMNSForDstInfo(String srcMRN, String dstMRN, String srcIP) throws ParseException{
+		return processDstInfo (mih.requestDstInfo (srcMRN, dstMRN, srcIP));
+	}
+	
+	public String queryMNSForDstInfo (String srcMRN, float geoLat, float geoLong, float geoRadius) throws ParseException{
+		return processDstInfo (mih.requestDstInfo (srcMRN, geoLat, geoLong, geoRadius));
+	}
+	
+	// TODO: implementation for logging
+	public String processDstInfo (String dstInfo) throws ParseException{
+					
+	
 		if (dstInfo != null && dstInfo.regionMatches(2, "poll", 0, 4)){ // if the returned dstInfo contains json format do parsing.
 			logger.debug("SessionID="+this.SESSION_ID+" Multicasting occured.");
 			JSONObject jo = (JSONObject)JSONValue.parse(dstInfo);
@@ -84,8 +100,8 @@ public class MessageCastingHandler {
 			return ret;
 		}
 		return dstInfo;
+		
 	}
-	
 	public String registerClientInfo (String srcMRN, String srcIP, int srcPort, int srcModel){
 		return mih.registerClientInfo (srcMRN, srcIP, srcPort, srcModel);
 	}

@@ -32,12 +32,18 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed RESOURCE_LEAK, PRIVATE_COLLECTION hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
+
+Rev. history : 2018-06-06
+Version : 0.7.1
+	Added isGeocastingMsg boolean variable and getIsGeocastingMsg method.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.util.Arrays;
 
 import org.slf4j.Logger;
@@ -64,7 +70,9 @@ public class MessageParser {
 	private String uri = null;
 	private HttpMethod httpMethod = null;
 	private String svcMRN = null;
-	
+	private boolean isGeocasting = false;
+	private geolocationInformation geoInfo = null;
+
 
 	MessageParser(){
 		this("");
@@ -84,19 +92,44 @@ public class MessageParser {
 		srcModel = 0;
 		dstModel = 0;
 		svcMRN = null;
+		isGeocasting = false;
+		geoInfo = new geolocationInformation();
 	}
 	
+
+
 	void parseMessage(ChannelHandlerContext ctx, FullHttpRequest req) throws NullPointerException{
 		InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 	    InetAddress inetaddress = socketAddress.getAddress();
 
 	    if (inetaddress != null) {
 	    	srcIP = inetaddress.getHostAddress(); // IP address of client
-	    } else {
+	    } 
+	    else {
 	    	throw new NullPointerException();
 	    }
 		srcMRN = req.headers().get("srcMRN");
 		dstMRN = req.headers().get("dstMRN");
+		
+		if (req.headers().get("geocasting") != null) {
+			if (req.headers().get("geocasting").equals("true")) {
+				isGeocasting = true;
+				try {
+					setGeoInfo(req);
+					logger.debug("SessionID="+this.SESSION_ID+" Geocasting request. Lat="+geoInfo.getGeoLat()+", Long="+geoInfo.getGeoLong()+", Radius="+geoInfo.getGeoRadius()+".");
+				} 
+				catch (ParseException e) {
+					// TODO Auto-generated catch block
+					logger.warn("SessionID="+this.SESSION_ID+" Failed to parse geolocation info.");
+				}
+			} 
+			else {
+				isGeocasting = false;
+			}
+		} 
+		else {
+			isGeocasting = false;
+		}
 		
 		uri = req.uri();
 		httpMethod = req.method();
@@ -139,6 +172,7 @@ public class MessageParser {
 	int getDstPort() { return dstPort; }
 	String getDstMRN() { return dstMRN; }
 	int getDstModel() { return dstModel; }
+
 	
 	// Destination Special Information //
 	String[] getMultiDstMRN() { 
@@ -156,4 +190,24 @@ public class MessageParser {
 	
 	// Service Information //
 	String getSvcMRN (){ return svcMRN; }
+	
+	// Geolocation Information // 
+	public boolean isGeocastingMsg (){
+		return isGeocasting;
+	}
+	
+	public void setGeoInfo (FullHttpRequest req) throws ParseException {
+		try {
+			geoInfo.setGeoLat(Float.parseFloat(req.headers().get("lat")));
+			geoInfo.setGeoLong(Float.parseFloat(req.headers().get("long")));
+			geoInfo.setGeoRadius(Float.parseFloat(req.headers().get("radius")));
+		} 
+		catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	public geolocationInformation getGeoInfo() {
+		return geoInfo;
+	}
 }

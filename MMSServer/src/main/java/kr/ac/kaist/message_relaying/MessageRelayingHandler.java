@@ -99,6 +99,12 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed RESOURCE_LEAK, IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
+
+Rev. history : 2018-06-06
+Version : 0.7.1
+	Added geocasting features.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
+
 */
 /* -------------------------------------------------------- */
 
@@ -109,6 +115,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -155,7 +162,13 @@ public class MessageRelayingHandler  {
 		initializeSubModule();
 		parser.parseMessage(ctx, req);
 		
-		MessageTypeDecider.msgType type = typeDecider.decideType(parser, mch);
+		MessageTypeDecider.msgType type = null;
+		try {
+			type = typeDecider.decideType(parser, mch);
+		} 
+		catch (ParseException e) {
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+		}
 
 		
 		
@@ -188,6 +201,7 @@ public class MessageRelayingHandler  {
 			HttpMethod httpMethod = parser.getHttpMethod();
 			String uri = parser.getUri();
 			String dstIP = parser.getDstIP();
+			String srcIP = parser.getSrcIP();
 			int dstPort = parser.getDstPort();
 			
 			try {
@@ -241,7 +255,6 @@ public class MessageRelayingHandler  {
 			else if (type == MessageTypeDecider.msgType.POLLING) {
 				parser.parseLocInfo(req);
 				
-				String srcIP = parser.getSrcIP();
 				int srcPort = parser.getSrcPort();
 				int srcModel = parser.getSrcModel();
 				String svcMRN = parser.getSvcMRN();
@@ -283,6 +296,7 @@ public class MessageRelayingHandler  {
 				}
 	    		message = "OK".getBytes(Charset.forName("UTF-8"));
 			} 
+			
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
 	        	try {
 	        		if (protocol.equals("http")) {
@@ -302,10 +316,20 @@ public class MessageRelayingHandler  {
 					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 				}
 			} 
+			else if (type == MessageTypeDecider.msgType.GEOCASTING) {
+				try {
+					//TODO: implement here
+					
+				}
+				catch (IOException e) {
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+				}
+			}
+			// TODO this condition has to be deprecated.
 			else if (type == MessageTypeDecider.msgType.REGISTER_CLIENT) {
 				parser.parseLocInfo(req);
 				
-				String srcIP = parser.getSrcIP();
+				
 				int srcPort = parser.getSrcPort();
 				int srcModel = parser.getSrcModel();
 				
@@ -511,6 +535,7 @@ public class MessageRelayingHandler  {
 			else if (type == MessageTypeDecider.msgType.UNKNOWN_MRN) {
 				message = "No Device having that MRN.".getBytes();
 			} 
+			
 		} catch (NullPointerException e) {
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 		} finally {

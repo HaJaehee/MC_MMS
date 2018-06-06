@@ -1,5 +1,4 @@
 package kr.ac.kaist.mns_interaction;
-
 /* -------------------------------------------------------- */
 /** 
 File name : MNSDummy.java
@@ -41,12 +40,18 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed INTEGER_OVERFLOW hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-06-06
+Version : 0.7.1
+	Revised interfaces.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -55,6 +60,7 @@ import java.util.TreeSet;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,7 +141,113 @@ public class MNSDummy {
           }
           String data = buf.toString();
 
-
+          // newly designed interfaces
+          if (data.startsWith("{")) {
+        	  try {
+	        	  String dataToReply = "";
+        		  
+        		  JSONParser queryParser = new JSONParser();
+	        	  JSONObject query = (JSONObject) queryParser.parse(data);
+	        	  
+	        	  if (query.get("unicasting") != null) {
+	        		  JSONObject unicastingQuery = (JSONObject) query.get("unicasting");
+	        		  String srcMRN = unicastingQuery.get("srcMRN").toString();
+	        		  String dstMRN = unicastingQuery.get("dstMRN").toString();
+	        		  String IPAddr = unicastingQuery.get("IPAddr").toString();
+	        		  
+	        		  String dstInfo = (String)MRNtoIP.get(dstMRN);
+	        		  String splittedDstInfo[] = dstInfo.split(":");
+	        		  if (splittedDstInfo[2].equals("1")) { //polling model
+	        			  JSONObject connTypePolling = new JSONObject();
+	        			  connTypePolling.put("connType", "polling");
+	        			  connTypePolling.put("dstMRN", dstMRN);
+	        			  connTypePolling.put("netType", "LTE-M");
+	        			  dataToReply = connTypePolling.toJSONString();
+	        		  }
+	        		  else if (splittedDstInfo[2].equals("2")) { //push model
+	        			  JSONObject connTypePush = new JSONObject();
+	        			  connTypePush.put("connType", "push");
+	        			  connTypePush.put("dstMRN", dstMRN);
+	        			  connTypePush.put("IPAddr", splittedDstInfo[0]);
+	        			  connTypePush.put("portNum", splittedDstInfo[1]);
+	        			  dataToReply = connTypePush.toJSONString();
+	        		  }
+	        			  
+	        		  
+	        	  } 
+	        	  else if (query.get("geocasting") != null) {
+	        		  JSONObject geocastingQuery = (JSONObject) query.get("geocasting");
+	        		  String srcMRN = geocastingQuery.get("srcMRN").toString();
+	        		  String geoLat = geocastingQuery.get("lat").toString();
+	        		  String geoLong = geocastingQuery.get("long").toString();
+	        		  String geoRadius = geocastingQuery.get("radius").toString();
+	        		  
+	        		  
+	        		  String geoMRN = data.substring(34);
+	          		  String[] parsedGeoMRN = geoMRN.split("-");
+	          		  //loggerinfo("Geocasting MRN="+geoMRN+".");
+	          		  float lat = Float.parseFloat(parsedGeoMRN[1]); 
+	          		  float lon = Float.parseFloat(parsedGeoMRN[3]);
+	          		  float rad = Float.parseFloat(parsedGeoMRN[5]);
+	          		  
+	          		  if ( 20000 <= rad && 90 >= Math.abs(lat) && 180 >= Math.abs(lon)) {
+		          		  Set<String> keys = MRNtoIP.keySet();
+		          		  
+		          		  Iterator<String> keysIter = keys.iterator();
+		          		  // MRN lists are returned by json format.
+		          		  // {"poll":[{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},....]}
+		          		  JSONArray objList = new JSONArray();
+		          		  
+		          		  
+		          		  if (keysIter.hasNext()){
+		          			  do{
+		          				  String key = keysIter.next();
+		          				  String value = MRNtoIP.get(key);
+		          				  String[] parsedVal = value.split(":");
+		          				  if (parsedVal.length == 4){ // Geo-information exists.
+		          					  String[] curGeoMRN = parsedVal[3].split("-");
+		          					  float curLat = Float.parseFloat(curGeoMRN[1]); 
+		                    		  float curLong = Float.parseFloat(curGeoMRN[3]);
+		                    		  
+		                    		  
+		                    		  if (((lat-curLat)*(lat-curLat) + (lon-curLong)*(lon-curLong)) < rad * rad){
+		                    			  JSONObject item = new JSONObject();
+		                    			  item.put("dstMRN", key);
+		                    			  item.put("netType", "LTE-M");
+		                    			  if (parsedVal[2].equals("1")) {
+		                    				  item.put("connType", "push");
+		                    			  }
+		                    			  else if (parsedVal[1].equals("2")) {
+		                    				  item.put("connType", "polling");
+		                    			  }
+		                    			  
+		                    			  objList.add(item);
+		                    		  }
+		          				  }
+		          				  
+		          				  
+		          			  }while(keysIter.hasNext());
+		          		  }
+		          		  dataToReply = objList.toJSONString();
+		          		  
+	          		  }
+		        	  else {
+		        	   
+		        	  }
+		        	  Socket ReplySocket = new Socket("localhost",connectionSocket.getPort());
+		        	  
+		        	  BufferedWriter out = new BufferedWriter(
+		    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
+		        	  out.write(dataToReply);
+		              out.flush();
+		              out.close();
+		              ReplySocket.close();
+	        	  }
+        	  }
+        	  catch (Exception e) {
+        		  e.printStackTrace();
+        	  }
+          }
           //logger.debug(data);
 
           String dataToReply = "MNSDummy-Reply:";

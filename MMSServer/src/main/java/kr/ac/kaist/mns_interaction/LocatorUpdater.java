@@ -1,8 +1,4 @@
 package kr.ac.kaist.mns_interaction;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /* -------------------------------------------------------- */
 /** 
 File name : LocatorUpdater.java
@@ -19,11 +15,21 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-06-06
+Version : 0.6.1
+	Deprecated this class.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 import kr.ac.kaist.mms_server.MMSConfiguration;
 
+@Deprecated
 public class LocatorUpdater {
 	
 	private static final Logger logger = LoggerFactory.getLogger(LocatorUpdater.class);
