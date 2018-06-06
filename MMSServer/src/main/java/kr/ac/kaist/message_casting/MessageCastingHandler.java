@@ -82,7 +82,7 @@ public class MessageCastingHandler {
 		return processDstInfo (mih.requestDstInfo (srcMRN, geoLat, geoLong, geoRadius));
 	}
 	
-	// TODO: implementation for logging
+	
 	public String processDstInfo (String dstInfo) throws ParseException{
 					
 	
@@ -102,7 +102,7 @@ public class MessageCastingHandler {
 		return dstInfo;
 		
 	}
-	public String registerClientInfo (String srcMRN, String srcIP, int srcPort, int srcModel){
+	public String registerClientInfo (String srcMRN, String srcIP, int srcPort, String srcModel){
 		return mih.registerClientInfo (srcMRN, srcIP, srcPort, srcModel);
 	}
 }

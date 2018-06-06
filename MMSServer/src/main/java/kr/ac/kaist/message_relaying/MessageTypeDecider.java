@@ -166,11 +166,9 @@ class MessageTypeDecider {
 			// When geocasting
 			if (parser.isGeocastingMsg()) {
 				geolocationInformation geo = parser.getGeoInfo();
-				String dstInfo = mch.queryMNSForDstInfo(srcMRN, geo.getGeoLat(), geo.getGeoLong(), geo.getGeoRadius());
-				
-				// TODO: implement here
-				
-				
+				String geocastInfo = mch.queryMNSForDstInfo(srcMRN, geo.getGeoLat(), geo.getGeoLong(), geo.getGeoRadius());
+				parser.parseGeocastInfo(geocastInfo);
+
 				return msgType.GEOCASTING;
 			}
 			
@@ -211,12 +209,12 @@ class MessageTypeDecider {
         	}
 
         	parser.parseDstInfo(dstInfo);
-        	int model = parser.getDstModel();
+        	String model = parser.getDstModel();
         	
-        	if (model == 2) {//model B (destination MSR, MIR, or MSP as servers)
+        	if (model.equals("push")) {//model B (destination MSR, MIR, or MSP as servers)
         		return msgType.RELAYING_TO_SERVER;
         	} 
-        	else if (model == 1){//when model A, it puts the message into the queue
+        	else if (model.equals("polling")){//when model A, it puts the message into the queue
         		return msgType.RELAYING_TO_SC;
         	}
         	else {

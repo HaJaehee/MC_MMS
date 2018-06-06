@@ -120,7 +120,6 @@ public class MRH_MessageOutputChannel{
 	private MMSLog mmsLog = null;
 	
 	MRH_MessageOutputChannel(String sessionId) {
-		// TODO Auto-generated constructor stub
 		this.SESSION_ID = sessionId;
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 		mmsLog = MMSLog.getInstance();
@@ -375,10 +374,8 @@ public class MRH_MessageOutputChannel{
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
         	logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 		} catch (KeyManagementException e) {
-			// TODO Auto-generated catch block
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 		}
         

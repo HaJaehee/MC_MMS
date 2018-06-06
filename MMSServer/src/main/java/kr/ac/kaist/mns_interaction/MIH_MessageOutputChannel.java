@@ -51,7 +51,6 @@ class MIH_MessageOutputChannel {
 	private String SESSION_ID = "";
 	
 	MIH_MessageOutputChannel(String sessionId) {
-		// TODO Auto-generated constructor stub
 		this.SESSION_ID = sessionId;
 
 	}
@@ -82,11 +81,9 @@ class MIH_MessageOutputChannel {
 	    	outToMNS.write(request+","+rplPort);
 	    	outToMNS.flush();
     	} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
     		logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
     		return null;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
     		return null;
 		} finally {
@@ -94,24 +91,21 @@ class MIH_MessageOutputChannel {
     			try {
 					osw.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 				}
     		}
     		if (outToMNS != null) {
     			try {
 					outToMNS.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 				}
     		}
     		if (MNSSocket != null) {
     			try {
 					MNSSocket.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 				}
     		}
     	}
@@ -151,24 +145,21 @@ class MIH_MessageOutputChannel {
 				try {
 					replySocket.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 				}
 			}
 			if (isr != null) {
 				try {
 					isr.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 				}
 			}
 			if (inFromMNS != null) {
 				try {
 					inFromMNS.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 				}
 			}
 			return returnedIP;

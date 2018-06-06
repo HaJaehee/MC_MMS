@@ -120,7 +120,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringEscapeUtils;
-
+import org.json.simple.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -256,7 +256,7 @@ public class MessageRelayingHandler  {
 				parser.parseLocInfo(req);
 				
 				int srcPort = parser.getSrcPort();
-				int srcModel = parser.getSrcModel();
+				String srcModel = parser.getSrcModel();
 				String svcMRN = parser.getSvcMRN();
 			
 				try {
@@ -318,8 +318,9 @@ public class MessageRelayingHandler  {
 			} 
 			else if (type == MessageTypeDecider.msgType.GEOCASTING) {
 				try {
-					//TODO: implement here
 					
+					JSONArray geoDstInfo = parser.getGeoDstInfo();
+					//TODO: implement here
 				}
 				catch (IOException e) {
 					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
@@ -331,7 +332,7 @@ public class MessageRelayingHandler  {
 				
 				
 				int srcPort = parser.getSrcPort();
-				int srcModel = parser.getSrcModel();
+				String srcModel = parser.getSrcModel();
 				
 				String res = mch.registerClientInfo(srcMRN, srcIP, srcPort, srcModel);
 				if (res.equals("OK")){

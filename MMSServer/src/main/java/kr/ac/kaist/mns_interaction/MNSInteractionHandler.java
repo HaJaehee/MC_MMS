@@ -67,12 +67,12 @@ public class MNSInteractionHandler {
 		return messageOutput.sendToMNS(msg);
 	}
 	
-	public String updateClientInfo(String srcMRN, String srcIP, int srcPort, int srcModel){
+	public String updateClientInfo(String srcMRN, String srcIP, int srcPort, String srcModel){
 		String msg = locatorUpdater.buildUpdate(srcMRN, srcIP, srcPort, srcModel);
 		return messageOutput.sendToMNS(msg);
 	}
 
-	public String registerClientInfo (String srcMRN, String srcIP, int srcPort, int srcModel){
+	public String registerClientInfo (String srcMRN, String srcIP, int srcPort, String srcModel){
 		return updateClientInfo(srcMRN, srcIP, srcPort, srcModel);
 	}
 }

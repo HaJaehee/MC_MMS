@@ -15,7 +15,7 @@ public class geolocationInformation {
 	private float geoRadius = 0;
 	
 	public geolocationInformation() {
-		// TODO Auto-generated constructor stub
+		
 		geoLat = 0;
 		geoLong = 0;
 		geoRadius = 0;

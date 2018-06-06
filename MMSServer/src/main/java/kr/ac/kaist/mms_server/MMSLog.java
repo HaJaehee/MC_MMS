@@ -251,7 +251,6 @@ public class MMSLog {
 				try {
 					realtimeLog.append("\""+URLEncoder.encode(logs.get(0),"UTF-8")+"\",");
 				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
 					logger.info(e.getMessage());
 				}
 				logs.remove(0);

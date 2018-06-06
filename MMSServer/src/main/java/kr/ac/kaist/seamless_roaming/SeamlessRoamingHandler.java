@@ -56,7 +56,7 @@ public class SeamlessRoamingHandler {
 	
 	
 //	poll SC message in queue
-	public void processPollingMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String srcIP, int srcPort, int srcModel, String svcMRN) {
+	public void processPollingMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String srcIP, int srcPort, String srcModel, String svcMRN) {
 		
 		pmh.updateClientInfo(mih, srcMRN, srcIP, srcPort, srcModel);
 		pmh.dequeueSCMessage(outputChannel, ctx, srcMRN, svcMRN);

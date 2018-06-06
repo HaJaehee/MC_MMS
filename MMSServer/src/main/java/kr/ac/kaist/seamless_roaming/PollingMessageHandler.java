@@ -53,7 +53,7 @@ class PollingMessageHandler {
 	}
 	
 	@Deprecated
-	void updateClientInfo(MNSInteractionHandler mih, String srcMRN, String srcIP, int srcPort, int srcModel) {
+	void updateClientInfo(MNSInteractionHandler mih, String srcMRN, String srcIP, int srcPort, String srcModel) {
 		mih.updateClientInfo(srcMRN, srcIP, srcPort, srcModel);
 	}
 	

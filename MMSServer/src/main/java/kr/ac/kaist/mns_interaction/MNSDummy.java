@@ -394,7 +394,7 @@ public class MNSDummy {
         	  
           //Geo-location update function.  
           }else if (data.regionMatches(0, "Geo-location-Update:", 0, 20)){
-        	  //TODO:Processing geo-location update message
+ 
         	  //data format: Geo-location-update:
         	  String[] data_sub = data.split(",");
         	  //loggerdebug("MNSDummy:Geolocationupdate "+data_sub[1]);
