@@ -117,10 +117,12 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -320,9 +322,48 @@ public class MessageRelayingHandler  {
 				try {
 					
 					JSONArray geoDstInfo = parser.getGeoDstInfo();
-					//TODO: implement here
+					
+					if (geoDstInfo != null) {
+						Iterator iter = geoDstInfo.iterator();
+						while (iter.hasNext()) {
+							JSONObject obj = (JSONObject) iter.next(); 
+							String connType = (String) obj.get("connType");
+							if (connType.equals("polling")) {
+								//TODO: implement here
+								String dstMRNInGeoDstInfo = (String) obj.get("dstMRN");
+								String netTypeInGeoDstInfo = (String) obj.get("netType");
+								srh.putSCMessage(srcMRN, dstMRNInGeoDstInfo, req.content().toString(Charset.forName("UTF-8")).trim());
+					    		
+							}
+							else if (connType.equals("push")) {
+								//TODO: implement here
+					        	try {
+					        		String dstMRNInGeoDstInfo = (String) obj.get("dstMRN");
+					        		String dstIPInGeoDstInfo = (String) obj.get("IPAddr");
+					        		int dstPortInGeoDstInfo = Integer.parseInt((String) obj.get("portNum"));
+					        		
+					        		if (protocol.equals("http")) {
+									    outputChannel.sendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod);
+									    logger.info("SessionID="+this.SESSION_ID+" HTTP.");
+					        		} 
+					        		else if (protocol.equals("https")) { 
+					        			outputChannel.secureSendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod);
+					        			logger.info("SessionID="+this.SESSION_ID+" HTTPS.");
+					        		} 
+					        		else {
+					        			
+					        			logger.info("SessionID="+this.SESSION_ID+" No protocol.");
+					        		}
+								} 
+					        	catch (IOException e) {
+									logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+								}
+							}
+						}
+						message = "OK".getBytes(Charset.forName("UTF-8"));
+					}
 				}
-				catch (IOException e) {
+				catch (Exception e) {
 					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 				}
 			}
