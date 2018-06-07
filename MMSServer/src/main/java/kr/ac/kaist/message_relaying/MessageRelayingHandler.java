@@ -227,9 +227,9 @@ public class MessageRelayingHandler  {
 			}
 			
 			if (type != MessageTypeDecider.msgType.REALTIME_LOG) {
-				logger.info("SessionID="+this.SESSION_ID+" Header srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
+				logger.info("SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
 				if(MMSConfiguration.WEB_LOG_PROVIDING) {
-					String log = "SessionID="+this.SESSION_ID+" Header srcMRN="+srcMRN+", dstMRN="+dstMRN+".";
+					String log = "SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".";
 					mmsLog.addBriefLogForStatus(log);
 					mmsLogForDebug.addLog(this.SESSION_ID, log);
 				}
@@ -273,7 +273,7 @@ public class MessageRelayingHandler  {
 				
 				if(MMSConfiguration.WEB_LOG_PROVIDING) {
 					if(mmsLogForDebug.isItsLogListEmtpy(this.SESSION_ID)) {
-						mmsLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" Header srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
+						mmsLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
 						if(logger.isTraceEnabled()) {
 							mmsLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" Payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));
 						}

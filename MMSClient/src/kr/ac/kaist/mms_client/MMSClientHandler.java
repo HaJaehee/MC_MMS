@@ -112,7 +112,11 @@ public class MMSClientHandler {
 	 * @param	clientMRN		the MRN of client
 	 * @throws	IOException 	if exception occurs
 	 */	
-	public MMSClientHandler(String clientMRN) throws IOException{
+	public MMSClientHandler(String clientMRN) throws IOException, NullPointerException{
+		if (clientMRN == null) {
+			System.out.println(TAG+"Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		this.clientMRN = clientMRN;
 		rcvHandler = null;
 		pollHandler = null;

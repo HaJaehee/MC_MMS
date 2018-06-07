@@ -198,15 +198,11 @@ public class MNSDummy {
 	        		  String geoLong = geocastingQuery.get("long").toString();
 	        		  String geoRadius = geocastingQuery.get("radius").toString();
 	        		  
-	        		  
-	        		  String geoMRN = data.substring(34);
-	          		  String[] parsedGeoMRN = geoMRN.split("-");
-	          		  //loggerinfo("Geocasting MRN="+geoMRN+".");
-	          		  float lat = Float.parseFloat(parsedGeoMRN[1]); 
-	          		  float lon = Float.parseFloat(parsedGeoMRN[3]);
-	          		  float rad = Float.parseFloat(parsedGeoMRN[5]);
+	          		  float lat = Float.parseFloat(geoLat); 
+	          		  float lon = Float.parseFloat(geoLat);
+	          		  float rad = Float.parseFloat(geoRadius);
 	          		  
-	          		  if ( 20000 <= rad && 90 >= Math.abs(lat) && 180 >= Math.abs(lon)) {
+	          		  if ( 20000 >= rad && 90 >= Math.abs(lat) && 180 >= Math.abs(lon)) {
 		          		  Set<String> keys = MRNtoIP.keySet();
 		          		  
 		          		  Iterator<String> keysIter = keys.iterator();
@@ -231,12 +227,12 @@ public class MNSDummy {
 		                    			  item.put("dstMRN", key);
 		                    			  item.put("netType", "LTE-M");
 		                    			  if (parsedVal[2].equals("1")) {
-		                    				  item.put("connType", "push");
-		                    			  }
-		                    			  else if (parsedVal[1].equals("2")) {
 		                    				  item.put("connType", "polling");
 		                    			  }
-		                    			  
+		                    			  else if (parsedVal[1].equals("2")) {
+		                    				  item.put("connType", "push");
+		                    			  }
+		                    			  System.out.println(item.toJSONString());
 		                    			  objList.add(item);
 		                    		  }
 		          				  }
@@ -367,9 +363,6 @@ public class MNSDummy {
               System.out.println("done\n");
         	  
           }else if (data.regionMatches(0, "Dump-MNS:", 0, 9)){
-
-        	  //loggerdebug("MNSDummy:data=" + data);
-        	  
 
         	  if (!MRNtoIP.isEmpty()){
         		  SortedSet<String> keys = new TreeSet<String>(MRNtoIP.keySet());

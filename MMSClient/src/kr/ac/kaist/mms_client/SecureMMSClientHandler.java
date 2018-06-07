@@ -102,7 +102,11 @@ public class SecureMMSClientHandler {
 	 * @param	clientMRN		the MRN of client
 	 * @throws	IOException 	if exception occurs
 	 */	
-	public SecureMMSClientHandler(String clientMRN) throws IOException{
+	public SecureMMSClientHandler(String clientMRN) throws IOException, NullPointerException{
+		if (clientMRN == null) {
+			System.out.println(TAG+"Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		this.clientMRN = clientMRN;
 		rcvHandler = null;
 		pollHandler = null;

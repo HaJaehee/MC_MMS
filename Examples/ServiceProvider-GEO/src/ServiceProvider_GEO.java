@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +37,26 @@ public class ServiceProvider_GEO {
 				System.out.println(message);
 			}
 		});
-		sender.sendPostMsg("urn:mrn:mcs:casting:geocast:smart:lat-1-long-1-radius-3", "Hello Geocast");
+		
+		
+		// It is able to set its HTTP header field
+		Map<String, List<String>> headerfield = new HashMap<String, List<String>>(); // Header field example. You are able to remove this code.
+		List<String> geoTrue = new ArrayList<String>(); 
+		geoTrue.add("true");
+		headerfield.put("geocasting",geoTrue);
+		List<String> latValue = new ArrayList<String>();
+		latValue.add("1");
+		headerfield.put("lat", latValue);
+		List<String> longValue = new ArrayList<String>();
+		longValue.add("1");
+		headerfield.put("long", longValue);
+		List<String> radiusValue = new ArrayList<String>(); 
+		radiusValue.add("3");
+		headerfield.put("radius",radiusValue);
+		sender.setMsgHeader(headerfield);
+		// Header field example ends.
+		
+		sender.sendPostMsg(null, "Hello Geocast");
 		server.setServerPort(port, "/forwarding", new MMSClientHandler.RequestCallback() {
 			//Request Callback from the request message
 			//it is called when client receives a message

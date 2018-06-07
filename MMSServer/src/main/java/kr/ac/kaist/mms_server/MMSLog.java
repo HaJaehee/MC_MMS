@@ -93,6 +93,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -265,49 +266,52 @@ public class MMSLog {
 	}
 	
 //  When LOGGING MNS
+	@Deprecated
 	private String dumpMNS() throws UnknownHostException, IOException{ //
   	
-  	//String modifiedSentence;
-  	String dumpedMNS = "";
-  	
-  	Socket MNSSocket = new Socket("localhost", 1004);
-  	OutputStreamWriter osw = new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8"));
-  	
-  	BufferedWriter outToMNS = new BufferedWriter(osw);
-  	
-  	logger.debug("Dump-MNS.");
-  	ServerSocket Sock = new ServerSocket(0);
-  	int rplPort = Sock.getLocalPort();
-  	logger.debug("Reply port : "+rplPort+".");
-  	outToMNS.write("Dump-MNS:"+","+rplPort);
-  	outToMNS.flush();
-  	if (osw != null) {
-  		osw.close();
-  	}
-  	outToMNS.close();
-  	MNSSocket.close();
-  	
-  	Socket ReplySocket = Sock.accept();
-  	InputStreamReader isr = new InputStreamReader(ReplySocket.getInputStream(),Charset.forName("UTF-8"));
-  	
-  	
-  	BufferedReader inFromMNS = new BufferedReader(isr);
+	  	//String modifiedSentence;
+	  	String dumpedMNS = "";
+	  	
+	  	Socket MNSSocket = new Socket("localhost", 1004);
+	  	PrintWriter pw = new PrintWriter(MNSSocket.getOutputStream());
+	  	InputStreamReader isr = new InputStreamReader(MNSSocket.getInputStream());
+	  	BufferedReader br = new BufferedReader(isr);
+	  	
+	  	logger.debug("Dump-MNS.");
+	  	pw.println("Dump-MNS:");
+	  	pw.flush();
+	
+	  	if (!MNSSocket.isOutputShutdown()) {
+	  		MNSSocket.shutdownOutput();
+	  	}
+
 		String inputLine;
 		StringBuffer response = new StringBuffer();
-		while ((inputLine = inFromMNS.readLine()) != null) {
+		while ((inputLine = br.readLine()) != null) {
 			response.append(inputLine.trim());
 		}
-		
-  	dumpedMNS = response.toString();
-  	logger.trace("Dumped MNS: " + dumpedMNS+".");
-  	if (isr != null) {
-  		isr.close();
-  	}
-  	inFromMNS.close();
-  	if (dumpedMNS.equals("No"))
-  		return "No MRN to IP mapping.<br/>";
-  	dumpedMNS = dumpedMNS.substring(15);
-  	return dumpedMNS;
+			
+	  	dumpedMNS = response.toString();
+	  	logger.trace("Dumped MNS: " + dumpedMNS+".");
+	  	
+	  	if (dumpedMNS.equals("No")) {
+	  		return "No MRN to IP mapping.<br/>";
+	  	}
+	  	
+	  	dumpedMNS = dumpedMNS.substring(15);
+	  	if (pw != null) {
+	  		pw.close();
+	  	}
+	  	if (isr != null) {
+	  		isr.close();
+	  	}
+	  	if (br != null) {
+	  		br.close();
+	  	}
+	  	if (MNSSocket != null) {
+	  		MNSSocket.close();
+	  	}
+	  	return dumpedMNS;
   }
 	
 	

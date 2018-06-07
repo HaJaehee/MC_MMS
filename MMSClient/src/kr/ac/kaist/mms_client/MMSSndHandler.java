@@ -95,7 +95,9 @@ class MMSSndHandler {
 		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 		con.setRequestProperty("srcMRN", clientMRN);
-		con.setRequestProperty("dstMRN", dstMRN);
+		if (dstMRN != null) {
+			con.setRequestProperty("dstMRN", dstMRN);
+		}
 		//con.addRequestProperty("Connection","keep-alive");
 		
 		if (headerField != null) {
@@ -175,7 +177,9 @@ class MMSSndHandler {
 		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 		con.setRequestProperty("srcMRN", clientMRN);
-		con.setRequestProperty("dstMRN", dstMRN);
+		if (dstMRN != null) {
+			con.setRequestProperty("dstMRN", dstMRN);
+		}
 		if (headerField != null) {
 			con = addCustomHeaderField(con, headerField);
 		}
@@ -235,7 +239,9 @@ class MMSSndHandler {
 		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 		con.setRequestProperty("srcMRN", clientMRN);
-		con.setRequestProperty("dstMRN", dstMRN);
+		if (dstMRN != null) {
+			con.setRequestProperty("dstMRN", dstMRN);
+		}
 		if (headerField != null) {
 			con = addCustomHeaderField(con, headerField);
 		}
