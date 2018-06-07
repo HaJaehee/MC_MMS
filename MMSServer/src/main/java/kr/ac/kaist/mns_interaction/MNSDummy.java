@@ -71,6 +71,7 @@ public class MNSDummy {
 	private static int GEOCASTING = 2;
 	private static int GROUPCASTING = 3;
 	
+	
 	//private static final Logger logger = LoggerFactory.getLogger(MNSDummy.class);
 	//All MRN to IP Mapping is in hashmap 
 	private static HashMap<String, String> MRNtoIP = new HashMap<String, String>();
@@ -78,8 +79,8 @@ public class MNSDummy {
 	
 	public static void main(String argv[]) throws Exception
     {
+		 ServerSocket Sock = new ServerSocket(1004);
        
-       ServerSocket Sock = new ServerSocket(1004);
        //logger.error("MNSDummy started.");
 //       -------------Put MRN --> IP Information -------------
 //		 MRN table structure:           IP_Address:PortNumber:Model
@@ -128,25 +129,33 @@ public class MNSDummy {
        
        while(true)
        {
+    	 
           Socket connectionSocket = Sock.accept();
-
+          
+          
           //logger.debug("Packet incomming.");
-          BufferedReader dataReceived =
-             new BufferedReader(new InputStreamReader(connectionSocket.getInputStream(),Charset.forName("UTF-8")));
-
+          BufferedReader in =
+             new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+          PrintWriter out = new PrintWriter(
+					new OutputStreamWriter(connectionSocket.getOutputStream()));
+          
           String inputLine;
           StringBuffer buf = new StringBuffer();
-          while ((inputLine = dataReceived.readLine()) != null) {
+          while ((inputLine = in.readLine()) != null) {
         	  buf.append(inputLine.trim());
           }
+          if (!connectionSocket.isInputShutdown()) {
+        	  connectionSocket.shutdownInput();
+          }
           String data = buf.toString();
-
+          System.out.println(data);
           // newly designed interfaces
           if (data.startsWith("{")) {
         	  try {
 	        	  String dataToReply = "";
         		  
         		  JSONParser queryParser = new JSONParser();
+        		 
 	        	  JSONObject query = (JSONObject) queryParser.parse(data);
 	        	  
 	        	  if (query.get("unicasting") != null) {
@@ -156,21 +165,28 @@ public class MNSDummy {
 	        		  String IPAddr = unicastingQuery.get("IPAddr").toString();
 	        		  
 	        		  String dstInfo = (String)MRNtoIP.get(dstMRN);
-	        		  String splittedDstInfo[] = dstInfo.split(":");
-	        		  if (splittedDstInfo[2].equals("1")) { //polling model
-	        			  JSONObject connTypePolling = new JSONObject();
-	        			  connTypePolling.put("connType", "polling");
-	        			  connTypePolling.put("dstMRN", dstMRN);
-	        			  connTypePolling.put("netType", "LTE-M");
-	        			  dataToReply = connTypePolling.toJSONString();
+	        		  System.out.println(dstInfo);
+	        		  if (dstInfo != null) {
+	        			  String splittedDstInfo[] = dstInfo.split(":");
+		        		  if (splittedDstInfo[2].equals("1")) { //polling model
+		        			  JSONObject connTypePolling = new JSONObject();
+		        			  connTypePolling.put("connType", "polling");
+		        			  connTypePolling.put("dstMRN", dstMRN);
+		        			  connTypePolling.put("netType", "LTE-M");
+		        			  dataToReply = connTypePolling.toJSONString();
+		        		  }
+		        		  else if (splittedDstInfo[2].equals("2")) { //push model
+		        			  JSONObject connTypePush = new JSONObject();
+		        			  connTypePush.put("connType", "push");
+		        			  connTypePush.put("dstMRN", dstMRN);
+		        			  connTypePush.put("IPAddr", splittedDstInfo[0]);
+		        			  connTypePush.put("portNum", splittedDstInfo[1]);
+		        			  dataToReply = connTypePush.toJSONString();
+		        			  System.out.println(dataToReply);
+		        		  }
 	        		  }
-	        		  else if (splittedDstInfo[2].equals("2")) { //push model
-	        			  JSONObject connTypePush = new JSONObject();
-	        			  connTypePush.put("connType", "push");
-	        			  connTypePush.put("dstMRN", dstMRN);
-	        			  connTypePush.put("IPAddr", splittedDstInfo[0]);
-	        			  connTypePush.put("portNum", splittedDstInfo[1]);
-	        			  dataToReply = connTypePush.toJSONString();
+	        		  else {
+	        			  dataToReply = "No";
 	        		  }
 	        			  
 	        		  
@@ -234,15 +250,15 @@ public class MNSDummy {
 		        	  else {
 		        	   
 		        	  }
-		        	  Socket ReplySocket = new Socket("localhost",connectionSocket.getPort());
-		        	  
-		        	  BufferedWriter out = new BufferedWriter(
-		    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
-		        	  out.write(dataToReply);
-		              out.flush();
-		              out.close();
-		              ReplySocket.close();
+
+	          		  
 	        	  }
+	        	  System.out.println(dataToReply);
+	        	  out.println(dataToReply);
+	              out.flush();
+	              out.close();
+	              in.close();
+	              connectionSocket.close();
         	  }
         	  catch (Exception e) {
         		  e.printStackTrace();
@@ -255,8 +271,8 @@ public class MNSDummy {
           if (data.regionMatches(0, "MRN-Request:", 0, 12)){
 
         	  data = data.substring(12);
-        	  int rplPort = Integer.parseInt(data.split(",")[1]);
-        	  data = data.split(",")[0];
+        	  
+        	  
         	  
         	  //loggerdebug("MNSDummy:data=" + data);
         	  if (!data.regionMatches(0, "urn:mrn:mcs:casting:geocast:smart:",0,34)){
@@ -267,14 +283,13 @@ public class MNSDummy {
 	        		  dataToReply = "No";
 	        	  }
 	              //loggerdebug(dataToReply);
-	        	  Socket ReplySocket = new Socket("localhost",rplPort);
-	        	  
-	        	  BufferedWriter out = new BufferedWriter(
-	    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
+
+	        	  System.out.println(dataToReply);
 	        	  out.write(dataToReply);
 	              out.flush();
 	              out.close();
-	              ReplySocket.close();
+	              in.close();
+	              connectionSocket.close();
           	  }else{ // if geocasting (urn:mrn:mcs:casting:geocasting:smart:-)
           		  String geoMRN = data.substring(34);
           		  String[] parsedGeoMRN = geoMRN.split("-");
@@ -315,24 +330,24 @@ public class MNSDummy {
 	          		  }
 	          		  JSONObject dstMRNs = new JSONObject();
 	          		  dstMRNs.put("poll", objlist);
-		        	  Socket ReplySocket = new Socket("localhost",rplPort);
-		        	  BufferedWriter out = new BufferedWriter(
-		    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
+
+	          		  System.out.println(dataToReply+"\n");
 		        	  out.write("MNSDummy-Reply:" + dstMRNs.toString());
 		              out.flush();
 		              out.close();
-		              ReplySocket.close();
+		              in.close();
+		              connectionSocket.close();
           		  } else {
           			  JSONArray objlist = new JSONArray();
           			  JSONObject dstMRNs = new JSONObject();
 	          		  dstMRNs.put("poll", objlist);
-		        	  Socket ReplySocket = new Socket("localhost",rplPort);
-		        	  BufferedWriter out = new BufferedWriter(
-		    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
+
+	          		  System.out.println(dataToReply+"\n");
 		        	  out.write("MNSDummy-Reply:" + dstMRNs.toString());
 		              out.flush();
 		              out.close();
-		              ReplySocket.close();
+		              in.close();
+		              connectionSocket.close();
           		  }
           	  }
           }else if (data.regionMatches(0, "Location-Update:", 0, 16)){
@@ -342,20 +357,19 @@ public class MNSDummy {
         	  String[] data_sub = data.split(",");
         	  // data_sub = IP_address, MRN, Port
         	  MRNtoIP.put(data_sub[1], data_sub[0] + ":" + data_sub[2] + ":" + data_sub[3]);
-        	  int rplPort = Integer.parseInt(data_sub[4]);
-        	  Socket ReplySocket = new Socket("localhost",rplPort);
-        	  
-        	  BufferedWriter out = new BufferedWriter(
-    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
-        	  out.write("OK");
+
+        	  System.out.println("OK");
+        	  out.println("OK");
               out.flush();
               out.close();
-              ReplySocket.close();
+              in.close();
+              connectionSocket.close();
+              System.out.println("done\n");
         	  
           }else if (data.regionMatches(0, "Dump-MNS:", 0, 9)){
 
         	  //loggerdebug("MNSDummy:data=" + data);
-        	  int rplPort = Integer.parseInt(data.split(",")[1]);
+        	  
 
         	  if (!MRNtoIP.isEmpty()){
         		  SortedSet<String> keys = new TreeSet<String>(MRNtoIP.keySet());
@@ -368,14 +382,13 @@ public class MNSDummy {
         	  	  //loggerdebug("No MRN to IP Mapping.");
         		  dataToReply = "No";
         	  }
-        	  Socket ReplySocket = new Socket("localhost",rplPort);
-        	  
-        	  BufferedWriter out = new BufferedWriter(
-    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
-        	  out.write(dataToReply);
+
+        	  System.out.println(dataToReply);
+        	  out.println(dataToReply);
               out.flush();
               out.close();
-              ReplySocket.close();
+              in.close();
+              connectionSocket.close();
               
           }else if (data.equals("Empty-MNS:") && MMSConfiguration.WEB_MANAGING){
         	  MRNtoIP.clear();
@@ -420,15 +433,12 @@ public class MNSDummy {
         		  dataToReply += mrn;
         	  }
         	  
-        	  int rplPort = Integer.parseInt(data.split(",")[1]);
-        	  Socket ReplySocket = new Socket("localhost", rplPort);
-        	  
-        	  BufferedWriter out = new BufferedWriter(
-    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
-        	  out.write(dataToReply);
+        	  System.out.println(dataToReply);
+        	  out.println(dataToReply);
               out.flush();
               out.close();
-              ReplySocket.close();
+              in.close();
+              connectionSocket.close();
           }
        }
     }
