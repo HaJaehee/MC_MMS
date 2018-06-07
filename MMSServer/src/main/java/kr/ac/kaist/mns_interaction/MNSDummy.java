@@ -272,9 +272,10 @@ public class MNSDummy {
         	  
         	  //loggerdebug("MNSDummy:data=" + data);
         	  if (!data.regionMatches(0, "urn:mrn:mcs:casting:geocast:smart:",0,34)){
-	        	  if (MRNtoIP.containsKey(data))
+	        	  if (MRNtoIP.containsKey(data)) {
 	        		  dataToReply += MRNtoIP.get(data);
-	        	  else{
+	        	  }
+	        	  else {
 	        	  	  //loggerdebug("No MRN to IP Mapping.");
 	        		  dataToReply = "No";
 	        	  }
@@ -286,7 +287,8 @@ public class MNSDummy {
 	              out.close();
 	              in.close();
 	              connectionSocket.close();
-          	  }else{ // if geocasting (urn:mrn:mcs:casting:geocasting:smart:-)
+          	  }
+        	  else { // if geocasting (urn:mrn:mcs:casting:geocasting:smart:-)
           		  String geoMRN = data.substring(34);
           		  String[] parsedGeoMRN = geoMRN.split("-");
           		  //loggerinfo("Geocasting MRN="+geoMRN+".");
@@ -322,7 +324,7 @@ public class MNSDummy {
 	          				  }
 	          				  
 	          				  
-	          			  }while(keysIter.hasNext());
+	          			  } while(keysIter.hasNext());
 	          		  }
 	          		  JSONObject dstMRNs = new JSONObject();
 	          		  dstMRNs.put("poll", objlist);
@@ -333,7 +335,8 @@ public class MNSDummy {
 		              out.close();
 		              in.close();
 		              connectionSocket.close();
-          		  } else {
+          		  } 
+          		  else {
           			  JSONArray objlist = new JSONArray();
           			  JSONObject dstMRNs = new JSONObject();
 	          		  dstMRNs.put("poll", objlist);
@@ -346,7 +349,8 @@ public class MNSDummy {
 		              connectionSocket.close();
           		  }
           	  }
-          }else if (data.regionMatches(0, "Location-Update:", 0, 16)){
+          } 
+          else if (data.regionMatches(0, "Location-Update:", 0, 16)){
         	  data = data.substring(16);
         	
         	  //loggerinfo("MNSDummy:data=" + data);
@@ -362,7 +366,8 @@ public class MNSDummy {
               connectionSocket.close();
               System.out.println("done\n");
         	  
-          }else if (data.regionMatches(0, "Dump-MNS:", 0, 9)){
+          } 
+          else if (data.regionMatches(0, "Dump-MNS:", 0, 9)){
 
         	  if (!MRNtoIP.isEmpty()){
         		  SortedSet<String> keys = new TreeSet<String>(MRNtoIP.keySet());
@@ -383,15 +388,18 @@ public class MNSDummy {
               in.close();
               connectionSocket.close();
               
-          }else if (data.equals("Empty-MNS:") && MMSConfiguration.WEB_MANAGING){
+          }
+          else if (data.equals("Empty-MNS:") && MMSConfiguration.WEB_MANAGING){
         	  MRNtoIP.clear();
         	  //loggerwarn("MNSDummy:EMPTY.");
             
-          }else if (data.regionMatches(0, "Remove-Entry:", 0, 13) && MMSConfiguration.WEB_MANAGING){
+          }
+          else if (data.regionMatches(0, "Remove-Entry:", 0, 13) && MMSConfiguration.WEB_MANAGING){
         	  String mrn = data.substring(13);
         	  MRNtoIP.remove(mrn);
         	  //loggerwarn("MNSDummy:REMOVE="+mrn+".");
-          }else if (data.regionMatches(0, "Add-Entry:", 0, 10) && MMSConfiguration.WEB_MANAGING){
+          }
+          else if (data.regionMatches(0, "Add-Entry:", 0, 10) && MMSConfiguration.WEB_MANAGING){
         	  String[] params = data.substring(10).split(",");
         	  String mrn = params[0];
         	  String locator = params[1] +":"+ params[2] +":"+ params[3];
@@ -399,13 +407,15 @@ public class MNSDummy {
         	  //loggerwarn("MNSDummy:ADD="+mrn+".");
         	  
           //Geo-location update function.  
-          }else if (data.regionMatches(0, "Geo-location-Update:", 0, 20)){
+          }
+          else if (data.regionMatches(0, "Geo-location-Update:", 0, 20)){
  
         	  //data format: Geo-location-update:
         	  String[] data_sub = data.split(",");
         	  //loggerdebug("MNSDummy:Geolocationupdate "+data_sub[1]);
         	  MRNtoIP.put(data_sub[1], "127.0.0.1" + ":" + data_sub[2] + ":" + data_sub[3] + ":" + data_sub[4]);
-          } else if(data.regionMatches(0, "IP-Request:", 0, 11)){
+          } 
+          else if(data.regionMatches(0, "IP-Request:", 0, 11)){
         	  String address = data.substring(11).split(",")[0];
         	  //System.out.println("Incomming Address: " + address);
         	  String[] parseAddress = address.split(":");
@@ -422,7 +432,8 @@ public class MNSDummy {
         	  
         	  if(mrn == null){
         		  dataToReply += "Unregistered MRN in MNS";
-        	  } else {
+        	  } 
+        	  else {
         		  dataToReply += mrn;
         	  }
         	  
