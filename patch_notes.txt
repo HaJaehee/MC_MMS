@@ -1,5 +1,8 @@
 Patch Notes
 ***********
+6-June 2018
+MC_MMS 0.7.1 new features/enhancemants & bug-fixes:
+1. Updated interfaces between MMS and MNS.
 
 23-Apr 2018
 MC_MMS 0.7.1 new features/enhancemants & bug-fixes:
