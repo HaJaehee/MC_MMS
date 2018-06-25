@@ -44,7 +44,7 @@ public class MMSConfiguration {
 	//-------------------------------------------------------------------
 	public static final int HTTP_PORT = 8088;
 	public static final int HTTPS_PORT = 444;
-	public static final int UDP_PORT = 8089;
+	//public static final int UDP_PORT = 8089;
 	//-------------------------------------------------------------------
 	public static final String MMS_MRN = "urn:mrn:smart-navi:device:mms1";
 	//-------------------------------------------------------------------

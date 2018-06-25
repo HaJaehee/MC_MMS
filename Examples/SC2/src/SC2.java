@@ -72,19 +72,27 @@ public class SC2 {
 			
 		});
 		
+		/*
+		for (int i = 0; i < 10;i++){
+			String dstMRN = "urn:mrn:imo:imo-no:1000001";
+			String message = "안녕 hi \"hello\" "+ i;
+			sender.sendPostMsg(dstMRN, message);
+			//Thread.sleep(100);
+		}*/
+		
 		
 		for (int i = 0; i < 10;i++){
 			String dstMRN = "urn:mrn:smart-navi:device:tm-server";
 			String location = "/forwarding";
-			String message = "�ȳ� hi \"hello\" " + i;
+			String message = "안녕 hi \"hello\" " + i;
 			sender.sendPostMsg(dstMRN, location, message);
 			//Thread.sleep(100);
 		}
-
+		
 		/*
 		for (int i = 0; i < 10;i++){
 			String dstMRN = "urn:mrn:imo:imo-no:1000005";
-			String message = "�ȳ� hi hello " + i;
+			String message = "안녕 hi \"hello\" " + i;
 			sender.sendPostMsg(dstMRN, message);
 			//Thread.sleep(100);
 		}*/

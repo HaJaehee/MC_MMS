@@ -22,7 +22,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="External Jars/amqp-client-4.0.2.jar"/>
 	<classpathentry kind="lib" path="External Jars/json-simple-1.1.jar"/>
 	<classpathentry kind="lib" path="External Jars/logback-classic-1.2.3.jar"/>
 	<classpathentry kind="lib" path="External Jars/logback-core-1.2.3.jar"/>
@@ -31,6 +30,7 @@
 	<classpathentry kind="lib" path="External Jars/slf4j-api-1.7.21.jar"/>
 	<classpathentry kind="lib" path="External Jars/slf4j-simple-1.7.22.jar"/>
 	<classpathentry kind="lib" path="External Jars/commons-lang3-3.6.jar"/>
+	<classpathentry kind="lib" path="External Jars/amqp-client-5.3.0.jar"/>
 	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
