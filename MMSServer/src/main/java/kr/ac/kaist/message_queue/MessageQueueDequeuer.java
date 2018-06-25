@@ -248,7 +248,6 @@ class MessageQueueDequeuer extends Thread{
 								logger.warn("SessionID="+SESSION_ID+" "+e.getMessage()+".");
 							}
 
-						    //System.out.println(" [x] Received '" + message + "'");
 						  }
 					};
 					channel.basicConsume(queueName, false, consumer);
@@ -361,7 +360,7 @@ class MessageQueueDequeuer extends Thread{
 //			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 //		} 
 	    finally {
-	    	if (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING) {
+	    	if (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) != null && PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING) {
 	    		if (channel != null) {
 		    		try {
 						channel.close();
