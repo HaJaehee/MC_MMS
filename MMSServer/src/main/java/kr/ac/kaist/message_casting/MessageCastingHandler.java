@@ -102,6 +102,8 @@ public class MessageCastingHandler {
 		return dstInfo;
 		
 	}
+	
+	@Deprecated
 	public String registerClientInfo (String srcMRN, String srcIP, int srcPort, String srcModel){
 		return mih.registerClientInfo (srcMRN, srcIP, srcPort, srcModel);
 	}
