@@ -189,7 +189,7 @@ public class MRH_MessageOutputChannel{
     }
 	
 //  to do relaying
-	byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws IOException { // 
+	public byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws IOException { // 
 
 		String url = "http://" + IPAddress + ":" + port + req.uri();
 		URL obj = new URL(url);
@@ -269,7 +269,7 @@ public class MRH_MessageOutputChannel{
 	
 	
 //  to do secure relaying
-	byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws IOException { // 
+	public byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws IOException { // 
 
 	  	hv = getHV();
 	  	

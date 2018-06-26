@@ -279,9 +279,7 @@ public class MessageRelayingHandler  {
 						}
 					}
 				}
-				
-				SessionManager.sessionInfo.put(SESSION_ID, "p");
-				
+
 				srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, srcPort, srcModel, svcMRN);
 				
 				return;
@@ -292,80 +290,18 @@ public class MessageRelayingHandler  {
 			} 
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_MULTIPLE_SC){
 				String [] dstMRNs = parser.getMultiDstMRN();
-				logger.debug("SessionID="+this.SESSION_ID+" multicast.");
-				for (int i = 0; i < dstMRNs.length;i++){
-					srh.putSCMessage(srcMRN, dstMRNs[i], req.content().toString(Charset.forName("UTF-8")).trim());
-				}
-	    		message = "OK".getBytes(Charset.forName("UTF-8"));
+				
+				message = mch.castMsgsToMultipleCS(srcMRN, dstMRNs, req.content().toString(Charset.forName("UTF-8")).trim());
 			} 
 			
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
-	        	try {
-	        		if (protocol.equals("http")) {
-					    message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod);
-					    logger.info("SessionID="+this.SESSION_ID+" HTTP.");
-	        		} 
-	        		else if (protocol.equals("https")) { 
-	        			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod);
-	        			logger.info("SessionID="+this.SESSION_ID+" HTTPS.");
-	        		} 
-	        		else {
-	        			message = "".getBytes();
-	        			logger.info("SessionID="+this.SESSION_ID+" No protocol.");
-	        		}
-				} 
-	        	catch (IOException e) {
-					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-				}
+	        	message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod);
 			} 
 			else if (type == MessageTypeDecider.msgType.GEOCASTING) {
-				try {
-					
-					JSONArray geoDstInfo = parser.getGeoDstInfo();
-					
-					if (geoDstInfo != null) {
-						Iterator iter = geoDstInfo.iterator();
-						while (iter.hasNext()) {
-							JSONObject obj = (JSONObject) iter.next(); 
-							String connType = (String) obj.get("connType");
-							if (connType.equals("polling")) {
-								//TODO: implement here
-								String dstMRNInGeoDstInfo = (String) obj.get("dstMRN");
-								String netTypeInGeoDstInfo = (String) obj.get("netType");
-								srh.putSCMessage(srcMRN, dstMRNInGeoDstInfo, req.content().toString(Charset.forName("UTF-8")).trim());
-					    		
-							}
-							else if (connType.equals("push")) {
-								//TODO: implement here
-					        	try {
-					        		String dstMRNInGeoDstInfo = (String) obj.get("dstMRN");
-					        		String dstIPInGeoDstInfo = (String) obj.get("IPAddr");
-					        		int dstPortInGeoDstInfo = Integer.parseInt((String) obj.get("portNum"));
-					        		
-					        		if (protocol.equals("http")) {
-									    outputChannel.sendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod);
-									    logger.info("SessionID="+this.SESSION_ID+" HTTP.");
-					        		} 
-					        		else if (protocol.equals("https")) { 
-					        			outputChannel.secureSendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod);
-					        			logger.info("SessionID="+this.SESSION_ID+" HTTPS.");
-					        		} 
-					        		else {
-					        			
-					        			logger.info("SessionID="+this.SESSION_ID+" No protocol.");
-					        		}
-								} 
-					        	catch (IOException e) {
-									logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-								}
-							}
-						}
-						message = "OK".getBytes(Charset.forName("UTF-8"));
-					}
-				}
-				catch (Exception e) {
-					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-				}
+				
+				JSONArray geoDstInfo = parser.getGeoDstInfo();
+				message = mch.geocast(outputChannel, req, srcMRN, geoDstInfo, protocol, httpMethod);
+				
 			}
 			// TODO this condition has to be deprecated.
 			else if (type == MessageTypeDecider.msgType.REGISTER_CLIENT) {

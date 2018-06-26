@@ -67,11 +67,13 @@ public class MNSInteractionHandler {
 		return messageOutput.sendToMNS(msg);
 	}
 	
+	@Deprecated
 	public String updateClientInfo(String srcMRN, String srcIP, int srcPort, String srcModel){
 		String msg = locatorUpdater.buildUpdate(srcMRN, srcIP, srcPort, srcModel);
 		return messageOutput.sendToMNS(msg);
 	}
 
+	@Deprecated
 	public String registerClientInfo (String srcMRN, String srcIP, int srcPort, String srcModel){
 		return updateClientInfo(srcMRN, srcIP, srcPort, srcModel);
 	}
