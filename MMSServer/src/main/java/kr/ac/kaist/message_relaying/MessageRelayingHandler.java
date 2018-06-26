@@ -105,6 +105,10 @@ Version : 0.7.1
 	Added geocasting features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 
+Rev. history : 2018-06-26
+Version : 0.7.1
+	Moved jobs related to the casting from MessageRelayingHandler to MessageCastingHandler.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
