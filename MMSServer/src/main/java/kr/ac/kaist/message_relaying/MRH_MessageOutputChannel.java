@@ -52,7 +52,15 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed RESOURCE_LEAK, IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-06-27
+Version : 0.7.1
+	Fixed large response issues.
+	The temporal solution MUST be revised. (TODO)
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
+	Jaehyun Park (jae519@kaist.ac.kr)
+	KyungJun Park (kjpark525@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -178,6 +186,8 @@ public class MRH_MessageOutputChannel{
     	HttpUtil.setContentLength(res, responseLen);
     	//System.out.println("Ready to send message in MRH_output");
     	ctx.writeAndFlush(res);
+    	
+    	//TODO: This is not efficient. MUST be revised.
        	while (textb.isReadable()) {
     		if (textb.readableBytes() > 100) {
     			ctx.writeAndFlush(textb.readBytes(100));
