@@ -177,8 +177,16 @@ public class MRH_MessageOutputChannel{
     	
     	HttpUtil.setContentLength(res, responseLen);
     	//System.out.println("Ready to send message in MRH_output");
-    	ctx.write(res);
-    	ctx.write(textb);
+    	ctx.writeAndFlush(res);
+       	while (textb.isReadable()) {
+    		if (textb.readableBytes() > 100) {
+    			ctx.writeAndFlush(textb.readBytes(100));
+    		}
+    		else {
+    			ctx.writeAndFlush(textb.readBytes(textb.readableBytes()));
+    		}
+    	}
+       	
         ChannelFuture future = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
         future.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
         future.addListener(ChannelFutureListener.CLOSE);
