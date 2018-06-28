@@ -59,7 +59,7 @@ import org.json.simple.parser.ParseException;
 class MMSPollHandler {
 	PollHandler ph = null;
 	//HJH
-	private static final String USER_AGENT = "MMSClient/0.7.0";
+	private static final String USER_AGENT = "MMSClient/0.7.1";
 	private String TAG = "[MMSPollHandler] ";
 	private String clientMRN = null;
 	

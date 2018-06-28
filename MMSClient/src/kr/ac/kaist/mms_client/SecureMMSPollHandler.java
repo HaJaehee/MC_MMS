@@ -69,7 +69,7 @@ class SecureMMSPollHandler {
 	SecurePollingHandler ph = null;
 	//HJH
 	private String TAG = "[SecureMMSPollHandler] ";
-	private static final String USER_AGENT = "MMSClient/0.7.0";
+	private static final String USER_AGENT = "MMSClient/0.7.1";
 	private String clientMRN = null;
 	
 	SecureMMSPollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int msgType, Map<String,List<String>> headerField) throws IOException{

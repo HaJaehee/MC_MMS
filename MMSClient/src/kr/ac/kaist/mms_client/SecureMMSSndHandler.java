@@ -58,7 +58,7 @@ import javax.net.ssl.*;
 
 class SecureMMSSndHandler {
 	private String TAG = "[SecureMMSSndHandler] ";
-	private final String USER_AGENT = "MMSClient/0.7.0";
+	private final String USER_AGENT = "MMSClient/0.7.1";
 	private String clientMRN = null;
 	private boolean isRgstLoc = false;
 	private SecureMMSClientHandler.ResponseCallback myCallback;
