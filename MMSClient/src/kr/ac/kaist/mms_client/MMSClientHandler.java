@@ -359,8 +359,9 @@ public class MMSClientHandler {
 			return;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			if(MMSConfiguration.LOGGING){
-				System.out.print(TAG);
+			if(MMSConfiguration.DEBUG){
+				System.out.print(TAG+" Exception: "+ e.getLocalizedMessage());
+				e.printStackTrace();
 			}
 			
 			return;

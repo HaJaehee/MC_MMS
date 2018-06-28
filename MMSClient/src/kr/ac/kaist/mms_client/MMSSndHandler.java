@@ -108,14 +108,14 @@ class MMSSndHandler {
 		String urlParameters = data;
 		
 
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"urlParameters: "+urlParameters);
+		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"urlParameters: "+urlParameters);}
 		
 		// Send post request
 		con.setDoOutput(true);
 		BufferedWriter wr = new BufferedWriter(
 				new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
 		
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Trying to send message");
+		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Trying to send message");}
 		wr.write(urlParameters);
 		wr.flush();
 		wr.close();
@@ -138,7 +138,7 @@ class MMSSndHandler {
 		responseCodes.add(responseCode+"");
 		inH.put("Response-code", responseCodes);
 		
-		if(MMSConfiguration.LOGGING){
+		if(MMSConfiguration.DEBUG){
 			System.out.println("\n"+TAG+"Sending 'POST' request to URL : " + url);
 			System.out.println(TAG+"Post parameters : " + urlParameters);
 			System.out.println(TAG+"Response Code : " + responseCode);
@@ -153,7 +153,7 @@ class MMSSndHandler {
 		}
 		
 		in.close();
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response: " + response.toString() + "\n");
+		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Response: " + response.toString() + "\n");}
 		receiveResponse(inH, response.toString());
 		
 		return;
@@ -186,8 +186,10 @@ class MMSSndHandler {
 		//con.addRequestProperty("Connection","keep-alive");
 
 		int responseCode = con.getResponseCode();
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"\nSending 'GET' request to URL : " + url);
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response Code : " + responseCode + "\n");
+		if(MMSConfiguration.DEBUG) {
+			System.out.println(TAG+"\nSending 'GET' request to URL : " + url);
+			System.out.println(TAG+"Response Code : " + responseCode + "\n");
+			}
 		
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream()));
@@ -254,8 +256,10 @@ class MMSSndHandler {
 		responseCodes.add(responseCode+"");
 		inH.put("Response-code", responseCodes);
 		
-		if(MMSConfiguration.LOGGING)System.out.println("\n"+TAG+"Sending 'GET' request to URL : " + url);
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response Code : " + responseCode);
+		if(MMSConfiguration.DEBUG) {
+			System.out.println("\n"+TAG+"Sending 'GET' request to URL : " + url);
+			System.out.println(TAG+"Response Code : " + responseCode);
+		 }
 		
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
@@ -269,7 +273,7 @@ class MMSSndHandler {
 		
 		
 		in.close();
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response: " + response.toString() + "\n");
+		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Response: " + response.toString() + "\n");}
 		
 		receiveResponse(inH, response.toString());
 		return;
@@ -302,16 +306,16 @@ class MMSSndHandler {
 	
 	private HttpURLConnection addCustomHeaderField (HttpURLConnection con, Map<String,List<String>> headerField) {
 		HttpURLConnection retCon = con;
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
+		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"set headerfield[");}
 		for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 			String key = (String) keys.next();
 			List<String> valueList = (List<String>) headerField.get(key);
 			for (String value : valueList) {
-				if(MMSConfiguration.LOGGING)System.out.println(key+":"+value);
+				if(MMSConfiguration.DEBUG) {System.out.println(key+":"+value);}
 				retCon.addRequestProperty(key, value);
 			}
 		}
-		if(MMSConfiguration.LOGGING)System.out.println("]");
+		if(MMSConfiguration.DEBUG) {System.out.println("]");}
 		return retCon;
 	}
 	//HJH end

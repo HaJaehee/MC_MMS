@@ -77,7 +77,7 @@ class MMSRcvHandler {
 		server = HttpServer.create(new InetSocketAddress(port), 0);
 		hrh = new HttpReqHandler();
         server.createContext("/", hrh);
-        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \"/\" is created");
+        if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \"/\" is created");}
         server.setExecutor(null); // creates a default executor
         server.start();
 	}
@@ -90,7 +90,7 @@ class MMSRcvHandler {
 		}
 		
         server.createContext(context, hrh);
-        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+context+"\" is created");
+        if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \""+context+"\" is created");}
         server.setExecutor(null); // creates a default executor
         server.start();
 	}
@@ -109,7 +109,7 @@ class MMSRcvHandler {
         	fileName = fileName.substring(1);
         }
         server.createContext(fileDirectory+fileName, frh);
-        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is created");
+        if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is created");}
         //OONI
         server.setExecutor(null); // creates a default executor
         server.start();
@@ -127,7 +127,7 @@ class MMSRcvHandler {
 			context = "/" + context;
 		}
         server.createContext(context, hrh);
-        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+context+"\" is added");
+        if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \""+context+"\" is added");}
 	}
 	
 	void addFileContext (String fileDirectory, String fileName) {
@@ -148,7 +148,7 @@ class MMSRcvHandler {
         	fileName = fileName.substring(1);
         }
         server.createContext(fileDirectory+fileName, frh);
-        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is added");
+        if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is added");}
 	}
 	
 	class HttpReqHandler implements HttpHandler {
@@ -188,14 +188,14 @@ class MMSRcvHandler {
             Map<String,List<String>> resHdr = t.getResponseHeaders();
             
     		if (myHdr != null) {
-    			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
+    			if(MMSConfiguration.DEBUG) {System.out.println(TAG+"set headerfield[");}
     			for (Iterator keys = myHdr.keySet().iterator() ; keys.hasNext() ;) {
     				String key = (String) keys.next();
     				ArrayList<String> value = (ArrayList<String>) myHdr.get(key);
-    				if(MMSConfiguration.LOGGING)System.out.println(key+":"+value);
+    				if(MMSConfiguration.DEBUG) {System.out.println(key+":"+value);}
     				resHdr.put(key, value);
     			}
-    			if(MMSConfiguration.LOGGING)System.out.println("]");
+    			if(MMSConfiguration.DEBUG) {System.out.println("]");}
     			
     		} 
             
@@ -235,7 +235,7 @@ class MMSRcvHandler {
         	try {
 	        	uri = t.getRequestURI();
 	        	String fileName = uri.toString();
-	        	if(MMSConfiguration.LOGGING)System.out.println(TAG+"File request: "+fileName);
+	        	if(MMSConfiguration.DEBUG) {System.out.println(TAG+"File request: "+fileName);}
 	        	
 	            fileName = System.getProperty("user.dir")+fileName.trim();
 	            File file = new File (fileName);

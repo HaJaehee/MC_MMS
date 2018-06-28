@@ -40,7 +40,7 @@ public class SecureServiceProvider {
 		int port = 8902;
 		
 		MMSConfiguration.MMS_URL="127.0.0.1:444";
-		MMSConfiguration.LOGGING = false; // If you are debugging client, set this variable true.
+		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 		
 		
 		// Java Key Store example.

@@ -125,7 +125,7 @@ public class SC_OnBoardTest extends JFrame {
 		myMRN = "urn:mrn:smart:vessel:imo-no:mof:onBoardVessel";
 		//myMRN = args[0];
 		
-		MMSConfiguration.LOGGING = false;
+		MMSConfiguration.DEBUG = false;
 		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
 		
 		//Service Consumer cannot be HTTP server and should poll from MMS. 

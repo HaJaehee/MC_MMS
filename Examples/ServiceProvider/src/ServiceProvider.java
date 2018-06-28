@@ -46,7 +46,7 @@ public class ServiceProvider {
 		int port = 8902;
 
 		MMSConfiguration.MMS_URL="127.0.0.1:8088";
-		MMSConfiguration.LOGGING = false; // If you are debugging client, set this variable true.
+		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 		
 		MMSClientHandler server = new MMSClientHandler(myMRN);
 		MMSClientHandler sender = new MMSClientHandler(myMRN);

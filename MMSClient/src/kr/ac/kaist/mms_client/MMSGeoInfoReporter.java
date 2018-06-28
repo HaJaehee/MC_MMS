@@ -48,7 +48,7 @@ public class MMSGeoInfoReporter {
 	
 	MMSGeoInfoReporter(String clientMRN, String svcMRN, int interval, int clientPort, int msgType) throws IOException{
 		gr = new GeoInfoReporter(clientMRN, svcMRN, interval, clientPort, msgType);
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Geocasting Information Reporter is created");
+		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Geocasting Information Reporter is created");}
 	}
 	
 	//PJH
@@ -76,11 +76,11 @@ public class MMSGeoInfoReporter {
 	    			Thread.sleep(interval);
 	    			Report();
     			} catch (InterruptedException e){
-					System.out.print(TAG);
-					//e.printStackTrace();
+    				System.out.print(TAG+" Exception: "+ e.getLocalizedMessage());
+					if(MMSConfiguration.DEBUG){e.printStackTrace();}
     			} catch (Exception e){
-					System.out.print(TAG);
-					//e.printStackTrace();
+    				System.out.print(TAG+" Exception: "+ e.getLocalizedMessage());
+					if(MMSConfiguration.DEBUG){e.printStackTrace();}
     			}
     		}
     	}

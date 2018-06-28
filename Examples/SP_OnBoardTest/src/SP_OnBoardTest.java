@@ -45,7 +45,7 @@ public class SP_OnBoardTest {
 		int port = 8902;
 
 		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
-		MMSConfiguration.LOGGING = false;
+		MMSConfiguration.DEBUG = false;
 		MMSClientHandler server = new MMSClientHandler(myMRN);
 		
 			
