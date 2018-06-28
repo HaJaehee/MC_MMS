@@ -1,10 +1,6 @@
-# Alert! 
-This branch is being implemented! 
-Source codes in this branch would be modified without any notification.
-
 # MC_MMS
 Beta Version 0.7.1 <br/>
-2018.6.6<br/>
+2018.6.28<br/>
 
 # Web Site
 www.mms-kaist.com
