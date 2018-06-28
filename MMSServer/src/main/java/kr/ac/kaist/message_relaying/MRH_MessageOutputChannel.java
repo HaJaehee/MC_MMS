@@ -57,10 +57,15 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2018-06-27
 Version : 0.7.1
 	Fixed large response issues.
-	The temporal solution MUST be revised. (TODO)
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 	Jaehyun Park (jae519@kaist.ac.kr)
 	KyungJun Park (kjpark525@kaist.ac.kr)
+	
+Rev. history : 2018-06-28
+Version : 0.7.1
+	Fixed large response issues.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
+	Jaehyun Park (jae519@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -83,7 +88,6 @@ import java.util.Set;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLProtocolException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -91,24 +95,19 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelOutboundHandler;
-import io.netty.channel.ChannelOutboundHandlerAdapter;
-import io.netty.channel.ChannelPromise;
-import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
-import io.netty.handler.codec.http.LastHttpContent;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -150,9 +149,7 @@ public class MRH_MessageOutputChannel{
 	}
 	
 	public void replyToSender(ChannelHandlerContext ctx, byte[] data) {
-    	ByteBuf textb = Unpooled.copiedBuffer(data);
-
-		if (!realtimeLog) {
+    	if (!realtimeLog) {
 	    	logger.info("SessionID="+this.SESSION_ID+" Reply to sender.");
 	    	if(MMSConfiguration.WEB_LOG_PROVIDING) {
 	    		String log = "SessionID="+this.SESSION_ID+" Reply to sender.";
@@ -162,7 +159,7 @@ public class MRH_MessageOutputChannel{
 		}
     	
     	long responseLen = data.length;
-    	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, getHttpResponseStatus(responseCode));
+    	FullHttpResponse res = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, getHttpResponseStatus(responseCode), Unpooled.copiedBuffer(data));
     	if (isStoredHeader){
 			Set<String> resHeaderKeyset = storedHeader.keySet(); 
 			for (Iterator<String> resHeaderIterator = resHeaderKeyset.iterator();resHeaderIterator.hasNext();) {
@@ -184,23 +181,16 @@ public class MRH_MessageOutputChannel{
     	}
     	
     	HttpUtil.setContentLength(res, responseLen);
-    	//System.out.println("Ready to send message in MRH_output");
-    	ctx.writeAndFlush(res);
+    	final ChannelFuture f = ctx.writeAndFlush(res);
+    	f.addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) {
+                assert f == future;
+                
+                ctx.close();
+            }
+        });
     	
-    	//TODO: This is not efficient. MUST be revised.
-       	while (textb.isReadable()) {
-    		if (textb.readableBytes() > 100) {
-    			ctx.writeAndFlush(textb.readBytes(100));
-    		}
-    		else {
-    			ctx.writeAndFlush(textb.readBytes(textb.readableBytes()));
-    		}
-    	}
-       	
-        ChannelFuture future = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
-        future.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
-        future.addListener(ChannelFutureListener.CLOSE);
-        ctx.close();
         SessionManager.sessionInfo.remove(SESSION_ID);
         
         logger.trace("SessionID=" + this.SESSION_ID + " Message is sent completely.");
