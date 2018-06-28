@@ -3,6 +3,8 @@ Patch Notes
 6-June 2018
 MC_MMS 0.7.1 new features/enhancemants & bug-fixes:
 1. Updated interfaces between MMS and MNS.
+2. Fixed large response issues.
+3. Updated API of RabbitMQ Client from version 4.0 to version 5.3.
 
 23-Apr 2018
 MC_MMS 0.7.1 new features/enhancemants & bug-fixes:
