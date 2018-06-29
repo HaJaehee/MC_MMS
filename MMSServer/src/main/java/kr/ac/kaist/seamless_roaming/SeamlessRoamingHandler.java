@@ -24,6 +24,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
+import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,11 +57,11 @@ public class SeamlessRoamingHandler {
 	
 	
 //	poll SC message in queue
-	public void processPollingMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String srcIP, int srcPort, int srcModel, String svcMRN) {
+	public void processPollingMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String srcIP, int srcPort, String srcModel, String svcMRN) {
 		
+		SessionManager.sessionInfo.put(SESSION_ID, "p");
 		pmh.updateClientInfo(mih, srcMRN, srcIP, srcPort, srcModel);
 		pmh.dequeueSCMessage(outputChannel, ctx, srcMRN, svcMRN);
-		
 	}
 	
 //	save SC message into queue

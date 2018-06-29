@@ -43,7 +43,7 @@ public class SC2 {
 		//myMRN = args[0];
 
 		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
-		MMSConfiguration.LOGGING = false; // If you are debugging client, set this variable true.
+		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 
 		//Service Consumer which can only send message
 		MMSClientHandler sender = new MMSClientHandler(myMRN);
@@ -76,15 +76,26 @@ public class SC2 {
 		for (int i = 0; i < 10;i++){
 			String dstMRN = "urn:mrn:smart-navi:device:tm-server";
 			String location = "/forwarding";
-			String message = "�ȳ� hi \"hello\" " + i;
+			String message = "안녕 hi \"hello\" " + i;
 			sender.sendPostMsg(dstMRN, location, message);
 			//Thread.sleep(100);
 		}
+		
+		
+		/*
+		for (int i = 0; i < 10;i++){
+			String dstMRN = "urn:mrn:imo:imo-no:1000001";
+			String message = "안녕 hi \"hello\" "+ i;
+			sender.sendPostMsg(dstMRN, message);
+			//Thread.sleep(100);
+		}*/
+		
 
+		
 		/*
 		for (int i = 0; i < 10;i++){
 			String dstMRN = "urn:mrn:imo:imo-no:1000005";
-			String message = "�ȳ� hi hello " + i;
+			String message = "안녕 hi \"hello\" " + i;
 			sender.sendPostMsg(dstMRN, message);
 			//Thread.sleep(100);
 		}*/

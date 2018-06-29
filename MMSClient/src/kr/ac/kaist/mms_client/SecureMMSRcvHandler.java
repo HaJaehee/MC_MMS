@@ -65,7 +65,7 @@ class SecureMMSRcvHandler {
 	//OONI
 
 	private String TAG = "[SecureMMSRcvHandler] ";
-	private static final String USER_AGENT = "MMSClient/0.7.0";
+	private static final String USER_AGENT = "MMSClient/0.7.1";
 	private String clientMRN = null;
 	
 	SecureMMSRcvHandler(int port, String jksDirectory, String jksPassword) throws Exception{
@@ -76,7 +76,7 @@ class SecureMMSRcvHandler {
 		} else {
 			throw new NullPointerException();
 		}
-        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \"/\" is created");
+        if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \"/\" is created");}
         
         server.setExecutor(null); // creates a default executor
         //HttpsServer is in java library. Cannot fix FORWARD_NULL
@@ -92,7 +92,7 @@ class SecureMMSRcvHandler {
 		}
 		
         server.createContext(context, hrh);
-        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+context+"\" is created");
+        if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \""+context+"\" is created");}
         server.setExecutor(null); // creates a default executor
         server.start();
 	}
@@ -111,7 +111,7 @@ class SecureMMSRcvHandler {
         	fileName = fileName.substring(1);
         }
         server.createContext(fileDirectory+fileName, frh);
-        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is created");
+        if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is created");}
         //OONI
         server.setExecutor(null); // creates a default executor
         server.start();
@@ -190,7 +190,7 @@ class SecureMMSRcvHandler {
 			context = "/" + context;
 		}
         server.createContext(context, hrh);
-        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+context+"\" is added");
+        if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \""+context+"\" is added");}
 	}
 	
 	void addFileContext (String fileDirectory, String fileName) {
@@ -211,7 +211,7 @@ class SecureMMSRcvHandler {
         	fileName = fileName.substring(1);
         }
         server.createContext(fileDirectory+fileName, frh);
-        if(MMSConfiguration.LOGGING)System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is added");
+        if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is added");}
 	}
 	
 	class HttpsReqHandler implements HttpHandler {
@@ -250,14 +250,14 @@ class SecureMMSRcvHandler {
             Map<String,List<String>> resHdr = t.getResponseHeaders();
             
     		if (myHdr != null) {
-    			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
+    			if(MMSConfiguration.DEBUG) {System.out.println(TAG+"set headerfield[");}
     			for (Iterator keys = myHdr.keySet().iterator() ; keys.hasNext() ;) {
     				String key = (String) keys.next();
     				ArrayList<String> value = (ArrayList<String>) myHdr.get(key);
-    				if(MMSConfiguration.LOGGING)System.out.println(key+":"+value);
+    				if(MMSConfiguration.DEBUG) {System.out.println(key+":"+value);}
     				resHdr.put(key, value);
     			}
-    			if(MMSConfiguration.LOGGING)System.out.println("]");
+    			if(MMSConfiguration.DEBUG) {System.out.println("]");}
     			
     		} 
            
@@ -296,7 +296,7 @@ class SecureMMSRcvHandler {
         	try {
 	        	uri = t.getRequestURI();
 	        	String fileName = uri.toString();
-	        	if(MMSConfiguration.LOGGING)System.out.println(TAG+"File request: "+fileName);
+	        	if(MMSConfiguration.DEBUG) {System.out.println(TAG+"File request: "+fileName);}
 	        	
 	            fileName = System.getProperty("user.dir")+fileName.trim();
 	            File file = new File (fileName);

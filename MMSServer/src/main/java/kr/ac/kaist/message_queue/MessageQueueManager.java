@@ -34,7 +34,7 @@ public class MessageQueueManager {
 	private String SESSION_ID = "";
 	
 	public MessageQueueManager(String sessionId) {
-		// TODO Auto-generated constructor stub
+		
 		this.SESSION_ID = sessionId;
 	}
 	

@@ -41,7 +41,7 @@ public class SC6 {
 		String fileName = "test.xml";
 		
 		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
-		MMSConfiguration.LOGGING = false; // If you are debugging client, set this variable true.
+		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 
 		MMSClientHandler server = new MMSClientHandler(myMRN);
 		server.setFileServerPort(port, fileDirectory, fileName); //server has a context '/get/test.xml'

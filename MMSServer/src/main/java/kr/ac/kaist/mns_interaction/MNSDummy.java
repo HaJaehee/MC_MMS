@@ -1,5 +1,4 @@
 package kr.ac.kaist.mns_interaction;
-
 /* -------------------------------------------------------- */
 /** 
 File name : MNSDummy.java
@@ -41,12 +40,18 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed INTEGER_OVERFLOW hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-06-06
+Version : 0.7.1
+	Revised interfaces.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -55,6 +60,7 @@ import java.util.TreeSet;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +71,7 @@ public class MNSDummy {
 	private static int GEOCASTING = 2;
 	private static int GROUPCASTING = 3;
 	
+	
 	//private static final Logger logger = LoggerFactory.getLogger(MNSDummy.class);
 	//All MRN to IP Mapping is in hashmap 
 	private static HashMap<String, String> MRNtoIP = new HashMap<String, String>();
@@ -72,8 +79,8 @@ public class MNSDummy {
 	
 	public static void main(String argv[]) throws Exception
     {
+		 ServerSocket Sock = new ServerSocket(1004);
        
-       ServerSocket Sock = new ServerSocket(1004);
        //logger.error("MNSDummy started.");
 //       -------------Put MRN --> IP Information -------------
 //		 MRN table structure:           IP_Address:PortNumber:Model
@@ -122,20 +129,137 @@ public class MNSDummy {
        
        while(true)
        {
+    	 
           Socket connectionSocket = Sock.accept();
-
+          
+          
           //logger.debug("Packet incomming.");
-          BufferedReader dataReceived =
-             new BufferedReader(new InputStreamReader(connectionSocket.getInputStream(),Charset.forName("UTF-8")));
-
+          BufferedReader in =
+             new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+          PrintWriter out = new PrintWriter(
+					new OutputStreamWriter(connectionSocket.getOutputStream()));
+          
           String inputLine;
           StringBuffer buf = new StringBuffer();
-          while ((inputLine = dataReceived.readLine()) != null) {
+          while ((inputLine = in.readLine()) != null) {
         	  buf.append(inputLine.trim());
           }
+          if (!connectionSocket.isInputShutdown()) {
+        	  connectionSocket.shutdownInput();
+          }
           String data = buf.toString();
+          System.out.println(data);
+          // newly designed interfaces
+          if (data.startsWith("{")) {
+        	  try {
+	        	  String dataToReply = "";
+        		  
+        		  JSONParser queryParser = new JSONParser();
+        		 
+	        	  JSONObject query = (JSONObject) queryParser.parse(data);
+	        	  
+	        	  if (query.get("unicasting") != null) {
+	        		  JSONObject unicastingQuery = (JSONObject) query.get("unicasting");
+	        		  String srcMRN = unicastingQuery.get("srcMRN").toString();
+	        		  String dstMRN = unicastingQuery.get("dstMRN").toString();
+	        		  String IPAddr = unicastingQuery.get("IPAddr").toString();
+	        		  
+	        		  String dstInfo = (String)MRNtoIP.get(dstMRN);
+	        		  System.out.println(dstInfo);
+	        		  if (dstInfo != null) {
+	        			  String splittedDstInfo[] = dstInfo.split(":");
+		        		  if (splittedDstInfo[2].equals("1")) { //polling model
+		        			  JSONObject connTypePolling = new JSONObject();
+		        			  connTypePolling.put("connType", "polling");
+		        			  connTypePolling.put("dstMRN", dstMRN);
+		        			  connTypePolling.put("netType", "LTE-M");
+		        			  dataToReply = connTypePolling.toJSONString();
+		        		  }
+		        		  else if (splittedDstInfo[2].equals("2")) { //push model
+		        			  JSONObject connTypePush = new JSONObject();
+		        			  connTypePush.put("connType", "push");
+		        			  connTypePush.put("dstMRN", dstMRN);
+		        			  connTypePush.put("IPAddr", splittedDstInfo[0]);
+		        			  connTypePush.put("portNum", splittedDstInfo[1]);
+		        			  dataToReply = connTypePush.toJSONString();
+		        			  System.out.println(dataToReply);
+		        		  }
+	        		  }
+	        		  else {
+	        			  dataToReply = "No";
+	        		  }
+	        			  
+	        		  
+	        	  } 
+	        	  else if (query.get("geocasting") != null) {
+	        		  JSONObject geocastingQuery = (JSONObject) query.get("geocasting");
+	        		  String srcMRN = geocastingQuery.get("srcMRN").toString();
+	        		  String geoLat = geocastingQuery.get("lat").toString();
+	        		  String geoLong = geocastingQuery.get("long").toString();
+	        		  String geoRadius = geocastingQuery.get("radius").toString();
+	        		  
+	          		  float lat = Float.parseFloat(geoLat); 
+	          		  float lon = Float.parseFloat(geoLat);
+	          		  float rad = Float.parseFloat(geoRadius);
+	          		  
+	          		  if ( 20000 >= rad && 90 >= Math.abs(lat) && 180 >= Math.abs(lon)) {
+		          		  Set<String> keys = MRNtoIP.keySet();
+		          		  
+		          		  Iterator<String> keysIter = keys.iterator();
+		          		  // MRN lists are returned by json format.
+		          		  // {"poll":[{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},....]}
+		          		  JSONArray objList = new JSONArray();
+		          		  
+		          		  
+		          		  if (keysIter.hasNext()){
+		          			  do{
+		          				  String key = keysIter.next();
+		          				  String value = MRNtoIP.get(key);
+		          				  String[] parsedVal = value.split(":");
+		          				  if (parsedVal.length == 4){ // Geo-information exists.
+		          					  String[] curGeoMRN = parsedVal[3].split("-");
+		          					  float curLat = Float.parseFloat(curGeoMRN[1]); 
+		                    		  float curLong = Float.parseFloat(curGeoMRN[3]);
+		                    		  
+		                    		  
+		                    		  if (((lat-curLat)*(lat-curLat) + (lon-curLong)*(lon-curLong)) < rad * rad){
+		                    			  JSONObject item = new JSONObject();
+		                    			  item.put("dstMRN", key);
+		                    			  item.put("netType", "LTE-M");
+		                    			  if (parsedVal[2].equals("1")) {
+		                    				  item.put("connType", "polling");
+		                    			  }
+		                    			  else if (parsedVal[1].equals("2")) {
+		                    				  item.put("connType", "push");
+		                    			  }
+		                    			  System.out.println(item.toJSONString());
+		                    			  objList.add(item);
+		                    		  }
+		          				  }
+		          				  
+		          				  
+		          			  }while(keysIter.hasNext());
+		          		  }
+		          		  dataToReply = objList.toJSONString();
+		          		  
+	          		  }
+		        	  else {
+		        	   
+		        	  }
 
-
+	          		  
+	        	  }
+	        	  System.out.println(dataToReply);
+	        	  out.println(dataToReply);
+	              out.flush();
+	              out.close();
+	              in.close();
+	              connectionSocket.close();
+        	  }
+        	  catch (Exception e) {
+        		  e.printStackTrace();
+        	  }
+          }
           //logger.debug(data);
 
           String dataToReply = "MNSDummy-Reply:";
@@ -143,27 +267,28 @@ public class MNSDummy {
           if (data.regionMatches(0, "MRN-Request:", 0, 12)){
 
         	  data = data.substring(12);
-        	  int rplPort = Integer.parseInt(data.split(",")[1]);
-        	  data = data.split(",")[0];
+        	  
+        	  
         	  
         	  //loggerdebug("MNSDummy:data=" + data);
         	  if (!data.regionMatches(0, "urn:mrn:mcs:casting:geocast:smart:",0,34)){
-	        	  if (MRNtoIP.containsKey(data))
+	        	  if (MRNtoIP.containsKey(data)) {
 	        		  dataToReply += MRNtoIP.get(data);
-	        	  else{
+	        	  }
+	        	  else {
 	        	  	  //loggerdebug("No MRN to IP Mapping.");
 	        		  dataToReply = "No";
 	        	  }
 	              //loggerdebug(dataToReply);
-	        	  Socket ReplySocket = new Socket("localhost",rplPort);
-	        	  
-	        	  BufferedWriter out = new BufferedWriter(
-	    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
+
+	        	  System.out.println(dataToReply);
 	        	  out.write(dataToReply);
 	              out.flush();
 	              out.close();
-	              ReplySocket.close();
-          	  }else{ // if geocasting (urn:mrn:mcs:casting:geocasting:smart:-)
+	              in.close();
+	              connectionSocket.close();
+          	  }
+        	  else { // if geocasting (urn:mrn:mcs:casting:geocasting:smart:-)
           		  String geoMRN = data.substring(34);
           		  String[] parsedGeoMRN = geoMRN.split("-");
           		  //loggerinfo("Geocasting MRN="+geoMRN+".");
@@ -199,51 +324,50 @@ public class MNSDummy {
 	          				  }
 	          				  
 	          				  
-	          			  }while(keysIter.hasNext());
+	          			  } while(keysIter.hasNext());
 	          		  }
 	          		  JSONObject dstMRNs = new JSONObject();
 	          		  dstMRNs.put("poll", objlist);
-		        	  Socket ReplySocket = new Socket("localhost",rplPort);
-		        	  BufferedWriter out = new BufferedWriter(
-		    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
+
+	          		  System.out.println(dataToReply+"\n");
 		        	  out.write("MNSDummy-Reply:" + dstMRNs.toString());
 		              out.flush();
 		              out.close();
-		              ReplySocket.close();
-          		  } else {
+		              in.close();
+		              connectionSocket.close();
+          		  } 
+          		  else {
           			  JSONArray objlist = new JSONArray();
           			  JSONObject dstMRNs = new JSONObject();
 	          		  dstMRNs.put("poll", objlist);
-		        	  Socket ReplySocket = new Socket("localhost",rplPort);
-		        	  BufferedWriter out = new BufferedWriter(
-		    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
+
+	          		  System.out.println(dataToReply+"\n");
 		        	  out.write("MNSDummy-Reply:" + dstMRNs.toString());
 		              out.flush();
 		              out.close();
-		              ReplySocket.close();
+		              in.close();
+		              connectionSocket.close();
           		  }
           	  }
-          }else if (data.regionMatches(0, "Location-Update:", 0, 16)){
+          } 
+          else if (data.regionMatches(0, "Location-Update:", 0, 16)){
         	  data = data.substring(16);
         	
         	  //loggerinfo("MNSDummy:data=" + data);
         	  String[] data_sub = data.split(",");
         	  // data_sub = IP_address, MRN, Port
         	  MRNtoIP.put(data_sub[1], data_sub[0] + ":" + data_sub[2] + ":" + data_sub[3]);
-        	  int rplPort = Integer.parseInt(data_sub[4]);
-        	  Socket ReplySocket = new Socket("localhost",rplPort);
-        	  
-        	  BufferedWriter out = new BufferedWriter(
-    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
-        	  out.write("OK");
+
+        	  System.out.println("OK");
+        	  out.println("OK");
               out.flush();
               out.close();
-              ReplySocket.close();
+              in.close();
+              connectionSocket.close();
+              System.out.println("done\n");
         	  
-          }else if (data.regionMatches(0, "Dump-MNS:", 0, 9)){
-
-        	  //loggerdebug("MNSDummy:data=" + data);
-        	  int rplPort = Integer.parseInt(data.split(",")[1]);
+          } 
+          else if (data.regionMatches(0, "Dump-MNS:", 0, 9)){
 
         	  if (!MRNtoIP.isEmpty()){
         		  SortedSet<String> keys = new TreeSet<String>(MRNtoIP.keySet());
@@ -256,24 +380,26 @@ public class MNSDummy {
         	  	  //loggerdebug("No MRN to IP Mapping.");
         		  dataToReply = "No";
         	  }
-        	  Socket ReplySocket = new Socket("localhost",rplPort);
-        	  
-        	  BufferedWriter out = new BufferedWriter(
-    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
-        	  out.write(dataToReply);
+
+        	  System.out.println(dataToReply);
+        	  out.println(dataToReply);
               out.flush();
               out.close();
-              ReplySocket.close();
+              in.close();
+              connectionSocket.close();
               
-          }else if (data.equals("Empty-MNS:") && MMSConfiguration.WEB_MANAGING){
+          }
+          else if (data.equals("Empty-MNS:") && MMSConfiguration.WEB_MANAGING){
         	  MRNtoIP.clear();
         	  //loggerwarn("MNSDummy:EMPTY.");
             
-          }else if (data.regionMatches(0, "Remove-Entry:", 0, 13) && MMSConfiguration.WEB_MANAGING){
+          }
+          else if (data.regionMatches(0, "Remove-Entry:", 0, 13) && MMSConfiguration.WEB_MANAGING){
         	  String mrn = data.substring(13);
         	  MRNtoIP.remove(mrn);
         	  //loggerwarn("MNSDummy:REMOVE="+mrn+".");
-          }else if (data.regionMatches(0, "Add-Entry:", 0, 10) && MMSConfiguration.WEB_MANAGING){
+          }
+          else if (data.regionMatches(0, "Add-Entry:", 0, 10) && MMSConfiguration.WEB_MANAGING){
         	  String[] params = data.substring(10).split(",");
         	  String mrn = params[0];
         	  String locator = params[1] +":"+ params[2] +":"+ params[3];
@@ -281,13 +407,15 @@ public class MNSDummy {
         	  //loggerwarn("MNSDummy:ADD="+mrn+".");
         	  
           //Geo-location update function.  
-          }else if (data.regionMatches(0, "Geo-location-Update:", 0, 20)){
-        	  //TODO:Processing geo-location update message
+          }
+          else if (data.regionMatches(0, "Geo-location-Update:", 0, 20)){
+ 
         	  //data format: Geo-location-update:
         	  String[] data_sub = data.split(",");
         	  //loggerdebug("MNSDummy:Geolocationupdate "+data_sub[1]);
         	  MRNtoIP.put(data_sub[1], "127.0.0.1" + ":" + data_sub[2] + ":" + data_sub[3] + ":" + data_sub[4]);
-          } else if(data.regionMatches(0, "IP-Request:", 0, 11)){
+          } 
+          else if(data.regionMatches(0, "IP-Request:", 0, 11)){
         	  String address = data.substring(11).split(",")[0];
         	  //System.out.println("Incomming Address: " + address);
         	  String[] parseAddress = address.split(":");
@@ -304,19 +432,17 @@ public class MNSDummy {
         	  
         	  if(mrn == null){
         		  dataToReply += "Unregistered MRN in MNS";
-        	  } else {
+        	  } 
+        	  else {
         		  dataToReply += mrn;
         	  }
         	  
-        	  int rplPort = Integer.parseInt(data.split(",")[1]);
-        	  Socket ReplySocket = new Socket("localhost", rplPort);
-        	  
-        	  BufferedWriter out = new BufferedWriter(
-    					new OutputStreamWriter(ReplySocket.getOutputStream(),Charset.forName("UTF-8")));
-        	  out.write(dataToReply);
+        	  System.out.println(dataToReply);
+        	  out.println(dataToReply);
               out.flush();
               out.close();
-              ReplySocket.close();
+              in.close();
+              connectionSocket.close();
           }
        }
     }

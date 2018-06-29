@@ -99,6 +99,16 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed RESOURCE_LEAK, IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
+
+Rev. history : 2018-06-06
+Version : 0.7.1
+	Added geocasting features.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
+
+Rev. history : 2018-06-26
+Version : 0.7.1
+	Moved jobs, related to the casting feature, from MessageRelayingHandler to MessageCastingHandler.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -109,11 +119,14 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringEscapeUtils;
-
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,7 +168,13 @@ public class MessageRelayingHandler  {
 		initializeSubModule();
 		parser.parseMessage(ctx, req);
 		
-		MessageTypeDecider.msgType type = typeDecider.decideType(parser, mch);
+		MessageTypeDecider.msgType type = null;
+		try {
+			type = typeDecider.decideType(parser, mch);
+		} 
+		catch (ParseException e) {
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+		}
 
 		
 		
@@ -188,6 +207,7 @@ public class MessageRelayingHandler  {
 			HttpMethod httpMethod = parser.getHttpMethod();
 			String uri = parser.getUri();
 			String dstIP = parser.getDstIP();
+			String srcIP = parser.getSrcIP();
 			int dstPort = parser.getDstPort();
 			
 			try {
@@ -211,9 +231,9 @@ public class MessageRelayingHandler  {
 			}
 			
 			if (type != MessageTypeDecider.msgType.REALTIME_LOG) {
-				logger.info("SessionID="+this.SESSION_ID+" Header srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
+				logger.info("SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
 				if(MMSConfiguration.WEB_LOG_PROVIDING) {
-					String log = "SessionID="+this.SESSION_ID+" Header srcMRN="+srcMRN+", dstMRN="+dstMRN+".";
+					String log = "SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".";
 					mmsLog.addBriefLogForStatus(log);
 					mmsLogForDebug.addLog(this.SESSION_ID, log);
 				}
@@ -241,9 +261,8 @@ public class MessageRelayingHandler  {
 			else if (type == MessageTypeDecider.msgType.POLLING) {
 				parser.parseLocInfo(req);
 				
-				String srcIP = parser.getSrcIP();
 				int srcPort = parser.getSrcPort();
-				int srcModel = parser.getSrcModel();
+				String srcModel = parser.getSrcModel();
 				String svcMRN = parser.getSvcMRN();
 			
 				try {
@@ -258,15 +277,13 @@ public class MessageRelayingHandler  {
 				
 				if(MMSConfiguration.WEB_LOG_PROVIDING) {
 					if(mmsLogForDebug.isItsLogListEmtpy(this.SESSION_ID)) {
-						mmsLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" Header srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
+						mmsLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
 						if(logger.isTraceEnabled()) {
 							mmsLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" Payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));
 						}
 					}
 				}
-				
-				SessionManager.sessionInfo.put(SESSION_ID, "p");
-				
+
 				srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, srcPort, srcModel, svcMRN);
 				
 				return;
@@ -277,37 +294,26 @@ public class MessageRelayingHandler  {
 			} 
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_MULTIPLE_SC){
 				String [] dstMRNs = parser.getMultiDstMRN();
-				logger.debug("SessionID="+this.SESSION_ID+" multicast.");
-				for (int i = 0; i < dstMRNs.length;i++){
-					srh.putSCMessage(srcMRN, dstMRNs[i], req.content().toString(Charset.forName("UTF-8")).trim());
-				}
-	    		message = "OK".getBytes(Charset.forName("UTF-8"));
+				
+				message = mch.castMsgsToMultipleCS(srcMRN, dstMRNs, req.content().toString(Charset.forName("UTF-8")).trim());
 			} 
+			
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
-	        	try {
-	        		if (protocol.equals("http")) {
-					    message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod);
-					    logger.info("SessionID="+this.SESSION_ID+" HTTP.");
-	        		} 
-	        		else if (protocol.equals("https")) { 
-	        			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod);
-	        			logger.info("SessionID="+this.SESSION_ID+" HTTPS.");
-	        		} 
-	        		else {
-	        			message = "".getBytes();
-	        			logger.info("SessionID="+this.SESSION_ID+" No protocol.");
-	        		}
-				} 
-	        	catch (IOException e) {
-					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-				}
+	        	message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod);
 			} 
+			else if (type == MessageTypeDecider.msgType.GEOCASTING) {
+				
+				JSONArray geoDstInfo = parser.getGeoDstInfo();
+				message = mch.geocast(outputChannel, req, srcMRN, geoDstInfo, protocol, httpMethod);
+				
+			}
+			// TODO this condition has to be deprecated.
 			else if (type == MessageTypeDecider.msgType.REGISTER_CLIENT) {
 				parser.parseLocInfo(req);
 				
-				String srcIP = parser.getSrcIP();
+				
 				int srcPort = parser.getSrcPort();
-				int srcModel = parser.getSrcModel();
+				String srcModel = parser.getSrcModel();
 				
 				String res = mch.registerClientInfo(srcMRN, srcIP, srcPort, srcModel);
 				if (res.equals("OK")){
@@ -376,6 +382,7 @@ public class MessageRelayingHandler  {
 	    		Map<String,List<String>> params = qsd.parameters();
 	    		if (params.get("id") != null) {
 	    			mmsLog.addIdToBriefRealtimeLogEachIDs(params.get("id").get(0));
+				logger.warn("SessionID="+this.SESSION_ID+" Added an ID using realtime log service="+params.get("id").get(0)+".");
 	    			message = "OK".getBytes(Charset.forName("UTF-8"));
 	    		}
 	    		else {
@@ -387,6 +394,7 @@ public class MessageRelayingHandler  {
 	    		Map<String,List<String>> params = qsd.parameters();
 	    		if (params.get("id") != null) {
 	    			mmsLog.removeIdFromBriefRealtimeLogEachIDs(params.get("id").get(0));
+				logger.warn("SessionID="+this.SESSION_ID+" Removed an ID using realtime log service="+params.get("id").get(0)+".");
 	    			message = "OK".getBytes(Charset.forName("UTF-8"));
 	    		}
 	    		else {
@@ -511,6 +519,7 @@ public class MessageRelayingHandler  {
 			else if (type == MessageTypeDecider.msgType.UNKNOWN_MRN) {
 				message = "No Device having that MRN.".getBytes();
 			} 
+			
 		} catch (NullPointerException e) {
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 		} finally {

@@ -59,13 +59,13 @@ import org.json.simple.parser.ParseException;
 class MMSPollHandler {
 	PollHandler ph = null;
 	//HJH
-	private static final String USER_AGENT = "MMSClient/0.7.0";
+	private static final String USER_AGENT = "MMSClient/0.7.1";
 	private String TAG = "[MMSPollHandler] ";
 	private String clientMRN = null;
 	
 	MMSPollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int msgType, Map<String,List<String>> headerField) throws IOException{
 		ph = new PollHandler(clientMRN, dstMRN, svcMRN, interval, clientPort, msgType, headerField);
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Polling handler is created");
+		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Polling handler is created");}
 	}
 	
 	//HJH
@@ -112,8 +112,8 @@ class MMSPollHandler {
     		} catch (InterruptedException e){
     			System.out.println("[ERROR]Thread is dead");
     		} catch (Exception e){
-    			System.out.print(TAG);
-				//e.printStackTrace();
+    			System.out.print(TAG+" Exception: "+ e.getLocalizedMessage());
+				if(MMSConfiguration.DEBUG){e.printStackTrace();}
     			
     		}
     	}
@@ -153,7 +153,7 @@ class MMSPollHandler {
 				int responseCode = con.getResponseCode();
 				List<String> responseCodes = new ArrayList<String>();
 				responseCodes.add(responseCode+"");
-				if(MMSConfiguration.LOGGING){
+				if(MMSConfiguration.DEBUG){
 					System.out.println("\n"+TAG+"Sending 'POST' request to URL : " + url);
 					System.out.println(TAG+"Polling...");
 					System.out.println(TAG+"Response Code : " + responseCode);
@@ -188,11 +188,11 @@ class MMSPollHandler {
 			}
 			catch (IOException e) {
 				System.out.print(TAG);
-				//e.printStackTrace();
+				if(MMSConfiguration.DEBUG){e.printStackTrace();}
 			}
 			catch (ParseException e) {
 				System.out.print(TAG);
-				//e.printStackTrace();
+				if(MMSConfiguration.DEBUG){e.printStackTrace();}
 			}
 		}
 		
@@ -213,16 +213,16 @@ class MMSPollHandler {
 		}
 		private HttpURLConnection addCustomHeaderField (HttpURLConnection con, Map<String,List<String>> headerField) {
 			HttpURLConnection retCon = con;
-			if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
+			if(MMSConfiguration.DEBUG) {System.out.println(TAG+"set headerfield[");}
 			for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 				String key = (String) keys.next();
 				List<String> valueList = (List<String>) headerField.get(key);
 				for (String value : valueList) {
-					if(MMSConfiguration.LOGGING)System.out.println(key+":"+value);
+					if(MMSConfiguration.DEBUG) {System.out.println(key+":"+value);}
 					retCon.addRequestProperty(key, value);
 				}
 			}
-			if(MMSConfiguration.LOGGING)System.out.println("]");
+			if(MMSConfiguration.DEBUG) {System.out.println("]");}
 			return retCon;
 		}
 	}

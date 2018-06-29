@@ -71,6 +71,8 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import java.text.ParseException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.netty.handler.codec.http.HttpMethod;
@@ -105,7 +107,8 @@ class MessageTypeDecider {
 			REMOVE_MRN_BEING_DEBUGGED,
 			REALTIME_LOG,
 			ADD_ID_IN_REALTIME_LOG_IDS,
-			REMOVE_ID_IN_REALTIME_LOG_IDS
+			REMOVE_ID_IN_REALTIME_LOG_IDS,
+			GEOCASTING
 	}
 
 	
@@ -113,7 +116,7 @@ class MessageTypeDecider {
 		this.SESSION_ID = sessionId;
 	}
 	
-	msgType decideType(MessageParser parser, MessageCastingHandler mch) {
+	msgType decideType(MessageParser parser, MessageCastingHandler mch) throws ParseException{
 		String srcMRN = parser.getSrcMRN();
 		String dstMRN = parser.getDstMRN();
 		HttpMethod httpMethod = parser.getHttpMethod();
@@ -159,6 +162,16 @@ class MessageTypeDecider {
 			return msgType.NULL_SRC_MRN;
 		}
 		else if (dstMRN == null) {
+			
+			// When geocasting
+			if (parser.isGeocastingMsg()) {
+				geolocationInformation geo = parser.getGeoInfo();
+				String geocastInfo = mch.queryMNSForDstInfo(srcMRN, geo.getGeoLat(), geo.getGeoLong(), geo.getGeoRadius());
+				parser.parseGeocastInfo(geocastInfo);
+
+				return msgType.GEOCASTING;
+			}
+			
 			return msgType.NULL_DST_MRN;
 		}
 	   	
@@ -185,7 +198,7 @@ class MessageTypeDecider {
     	
 //    	When relaying
     	else {
-    		String dstInfo = mch.requestDstInfo(dstMRN);
+    		String dstInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, parser.getSrcIP());
     		
         	if (dstInfo.equals("No")) {
         		return msgType.UNKNOWN_MRN;
@@ -196,12 +209,12 @@ class MessageTypeDecider {
         	}
 
         	parser.parseDstInfo(dstInfo);
-        	int model = parser.getDstModel();
+        	String model = parser.getDstModel();
         	
-        	if (model == 2) {//model B (destination MSR, MIR, or MSP as servers)
+        	if (model.equals("push")) {//model B (destination MSR, MIR, or MSP as servers)
         		return msgType.RELAYING_TO_SERVER;
         	} 
-        	else if (model == 1){//when model A, it puts the message into the queue
+        	else if (model.equals("polling")){//when model A, it puts the message into the queue
         		return msgType.RELAYING_TO_SC;
         	}
         	else {
