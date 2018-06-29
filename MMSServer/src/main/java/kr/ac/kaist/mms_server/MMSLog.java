@@ -84,6 +84,11 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed RESOURCE_LEAK, EXPOSURE_OF_SYSTEM_DATA hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
+
+Rev. history : 2018-06-29
+Version : 0.7.2
+	Fixed a bug of realtime log service related to removing an ID.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 

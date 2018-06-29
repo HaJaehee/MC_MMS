@@ -109,6 +109,11 @@ Rev. history : 2018-06-26
 Version : 0.7.1
 	Moved jobs, related to the casting feature, from MessageRelayingHandler to MessageCastingHandler.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-06-29
+Version : 0.7.2
+	Fixed a bug of realtime log service related to removing an ID.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -382,7 +387,7 @@ public class MessageRelayingHandler  {
 	    		Map<String,List<String>> params = qsd.parameters();
 	    		if (params.get("id") != null) {
 	    			mmsLog.addIdToBriefRealtimeLogEachIDs(params.get("id").get(0));
-				logger.warn("SessionID="+this.SESSION_ID+" Added an ID using realtime log service="+params.get("id").get(0)+".");
+	    			logger.warn("SessionID="+this.SESSION_ID+" Added an ID using realtime log service="+params.get("id").get(0)+".");
 	    			message = "OK".getBytes(Charset.forName("UTF-8"));
 	    		}
 	    		else {
@@ -394,7 +399,7 @@ public class MessageRelayingHandler  {
 	    		Map<String,List<String>> params = qsd.parameters();
 	    		if (params.get("id") != null) {
 	    			mmsLog.removeIdFromBriefRealtimeLogEachIDs(params.get("id").get(0));
-				logger.warn("SessionID="+this.SESSION_ID+" Removed an ID using realtime log service="+params.get("id").get(0)+".");
+	    			logger.warn("SessionID="+this.SESSION_ID+" Removed an ID using realtime log service="+params.get("id").get(0)+".");
 	    			message = "OK".getBytes(Charset.forName("UTF-8"));
 	    		}
 	    		else {
