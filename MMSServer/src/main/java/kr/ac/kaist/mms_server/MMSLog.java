@@ -355,7 +355,7 @@ public class MMSLog {
 		else {
 			if (!briefRealtimeLogEachIDs.get(id).isEmpty())
 			{
-				briefRealtimeLogEachIDs.clear();
+				briefRealtimeLogEachIDs.get(id).clear();
 			}
 			briefRealtimeLogEachIDs.remove(id);
 		}
