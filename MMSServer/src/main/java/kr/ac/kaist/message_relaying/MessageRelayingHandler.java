@@ -382,6 +382,7 @@ public class MessageRelayingHandler  {
 	    		Map<String,List<String>> params = qsd.parameters();
 	    		if (params.get("id") != null) {
 	    			mmsLog.addIdToBriefRealtimeLogEachIDs(params.get("id").get(0));
+				logger.warn("SessionID="+this.SESSION_ID+" Added an ID using realtime log service="+params.get("id").get(0)+".");
 	    			message = "OK".getBytes(Charset.forName("UTF-8"));
 	    		}
 	    		else {
@@ -393,6 +394,7 @@ public class MessageRelayingHandler  {
 	    		Map<String,List<String>> params = qsd.parameters();
 	    		if (params.get("id") != null) {
 	    			mmsLog.removeIdFromBriefRealtimeLogEachIDs(params.get("id").get(0));
+				logger.warn("SessionID="+this.SESSION_ID+" Removed an ID using realtime log service="+params.get("id").get(0)+".");
 	    			message = "OK".getBytes(Charset.forName("UTF-8"));
 	    		}
 	    		else {
