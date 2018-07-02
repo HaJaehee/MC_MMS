@@ -60,6 +60,11 @@ Version : 0.7.1
 	Updated AMQP client to version 5.3.0.
 	Revised long polling mechanism.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-06-25
+Version : 0.7.2
+	Fixed closing channel connection problem.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -360,7 +365,7 @@ class MessageQueueDequeuer extends Thread{
 //			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 //		} 
 	    finally {
-	    	if (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) != null && PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING) {
+	    	if ((PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null) || (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) != null && PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING)) { // Default polling method: normal polling
 	    		if (channel != null) {
 		    		try {
 						channel.close();
