@@ -360,7 +360,7 @@ class MessageQueueDequeuer extends Thread{
 //			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 //		} 
 	    finally {
-	    	if (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) != null && PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING) {
+	    	if ((PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null) || (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) != null && PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING)) { // Default polling method: normal polling
 	    		if (channel != null) {
 		    		try {
 						channel.close();
