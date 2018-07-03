@@ -28,7 +28,7 @@ public class SessionManager {
 	
 
 	public static HashMap<String, String> sessionInfo = new HashMap<>(); //If client is a polling client, value is "p" otherwise ""
-	public static HashMap<String, List<SessionIdAndThr>> sessionWatingRes = new HashMap<>();
+	public static HashMap<String, List<SessionIdAndThr>> sessionWatingRes = new HashMap<>(); //This is used for handling input messages by FIFO scheduling.
 
 	
 	
