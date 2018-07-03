@@ -321,19 +321,19 @@ public class MessageRelayingHandler  {
 				if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN) == null || 
 						SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).size() == 0 ||
 						SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0) == null ||
-						SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionBlocker() == null) {
+						SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionBlocker() == null) { //Check null pointer exception.
 					throw new NullPointerException();
 				}
 				
-				while (true) {
+				while (true) { 
 					try {
-						if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionId().equals(this.SESSION_ID)) {
+						if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionId().equals(this.SESSION_ID)) { //Execute this relaying process if it's this relaying process' turn.
 							throw new InterruptedException();
 						}
-						sessionBlocker.sleep(3000);
+						sessionBlocker.sleep(3000); //Block (by sleep) this relaying process if it's not this relaying process' turn.
 					} 
 					catch (InterruptedException e) {
-						message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN);
+						message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); //Execute this relaying process
 						break;
 					}
 				}
