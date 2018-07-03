@@ -48,6 +48,11 @@ Rev. history : 2018-06-26
 Version : 0.7.1
 	Moved jobs, related to the casting feature, from MessageRelayingHandler to MessageCastingHandler.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-03
+Version : 0.7.2
+	Added handling input messages by FIFO scheduling.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -134,7 +139,7 @@ public class MessageCastingHandler {
 			    logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTP.");
     		} 
     		else if (protocol.equals("https")) { 
-    			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod);
+    			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
     			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTPS.");
     		} 
     		else {
@@ -171,11 +176,11 @@ public class MessageCastingHandler {
 		        		
 		        		if (protocol.equals("http")) {
 						    outputChannel.sendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
-						    logger.info("SessionID="+this.SESSION_ID+" HTTP.");
+						    logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTP.");
 		        		} 
 		        		else if (protocol.equals("https")) { 
-		        			outputChannel.secureSendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod);
-		        			logger.info("SessionID="+this.SESSION_ID+" HTTPS.");
+		        			outputChannel.secureSendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
+		        			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTPS.");
 		        		} 
 		        		else {
 		        			

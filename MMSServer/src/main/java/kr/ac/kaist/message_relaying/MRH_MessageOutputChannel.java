@@ -202,7 +202,7 @@ public class MRH_MessageOutputChannel{
     }
 	
 //  to do relaying
-	public byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException { // 
+	public byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
 
 		String url = "http://" + IPAddress + ":" + port + req.uri();
 		URL obj = new URL(url);
@@ -275,26 +275,7 @@ public class MRH_MessageOutputChannel{
 			mmsLogForDebug.addLog(this.SESSION_ID, log);
 		}
 		
-		if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN) == null || 
-				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).size() == 0 ||
-				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0) == null ||
-				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionBlocker() == null) {
-			throw new NullPointerException();
-		}
-
-		if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionId().equals(this.SESSION_ID)) {
-	
-			if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN) != null && 
-					SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).size() > 1 && 
-					SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(1) != null && 
-					SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(1).getSessionBlocker() != null) {
-				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(1).getSessionBlocker().interrupt();
-			}
-			SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).remove(0);
-		}
-		else {
-			throw new IOException();
-		}
+		rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcMRN, dstMRN);
 		
 		return retBuffer;
 	}
@@ -304,7 +285,7 @@ public class MRH_MessageOutputChannel{
 	
 	
 //  to do secure relaying
-	public byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws IOException { // 
+	public byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws NullPointerException, IOException { // 
 
 	  	hv = getHV();
 	  	
@@ -382,6 +363,9 @@ public class MRH_MessageOutputChannel{
 			mmsLog.addBriefLogForStatus(log);
 			mmsLogForDebug.addLog(this.SESSION_ID, log);
 		}
+		
+		rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcMRN, dstMRN);
+		
 		return retBuffer;
 	
 	}
@@ -422,6 +406,30 @@ public class MRH_MessageOutputChannel{
         };
         
         return hv;
+	}
+	
+	private void rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked (String srcMRN, String dstMRN) throws IOException, NullPointerException{
+		if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN) == null || 
+				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).size() == 0 ||
+				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0) == null ||
+				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionBlocker() == null) { //Check null pointer exception.
+			throw new NullPointerException();
+		}
+
+		if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionId().equals(this.SESSION_ID)) { 
+	
+			if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN) != null && 
+					SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).size() > 1 && 
+					SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(1) != null && 
+					SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(1).getSessionBlocker() != null) { //Wake up next relaying process blocked if exist.
+				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(1).getSessionBlocker().interrupt();
+			}
+			SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).remove(0); //Remove current relaying process from the schedule. 
+		}
+		else {
+			throw new IOException();
+		}
+		return;
 	}
 	
 	private HttpResponseStatus getHttpResponseStatus(int responseCode) {
