@@ -105,6 +105,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			SESSION_ID = ctx.channel().id().asShortText();
 
 			SessionManager.sessionInfo.put(SESSION_ID, "");
+			
 
 			new MessageRelayingHandler(ctx, req, protocol, SESSION_ID);
 		} finally {

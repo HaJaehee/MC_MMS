@@ -114,6 +114,11 @@ Rev. history : 2018-06-29
 Version : 0.7.2
 	Fixed a bug of realtime log service related to removing an ID.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-03
+Version : 0.7.2
+	Added handling input messages by FIFO scheduling.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -152,6 +157,7 @@ public class MessageRelayingHandler  {
 	private static final Logger logger = LoggerFactory.getLogger(MessageRelayingHandler.class);
 
 	private String SESSION_ID = "";
+	private Thread sessionBlocker = null;
 
 	private MessageParser parser = null;
 	private MessageTypeDecider typeDecider = null;
@@ -196,6 +202,7 @@ public class MessageRelayingHandler  {
 	
 	private void initializeSubModule() {
 //		parser = new MessageParser(this.SESSION_ID);
+		sessionBlocker = new Thread();
 		parser = new MessageParser();
 		typeDecider = new MessageTypeDecider(this.SESSION_ID);
 		outputChannel = new MRH_MessageOutputChannel(this.SESSION_ID);
@@ -252,6 +259,12 @@ public class MessageRelayingHandler  {
 				}
 			}
 			
+			if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
+				if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN) == null) {
+					SessionManager.sessionWatingRes.put(srcMRN+"::"+dstMRN, new ArrayList<SessionIdAndThr>());	
+				}
+				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).add(new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker));
+			}
 			
 			
 			if (type == MessageTypeDecider.msgType.NULL_MRN) {
@@ -304,8 +317,27 @@ public class MessageRelayingHandler  {
 			} 
 			
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
-	        	message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod);
-			} 
+				
+				if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN) == null || 
+						SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).size() == 0 ||
+						SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0) == null ||
+						SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionBlocker() == null) {
+					throw new NullPointerException();
+				}
+				
+				while (true) {
+					try {
+						if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionId().equals(this.SESSION_ID)) {
+							throw new InterruptedException();
+						}
+						sessionBlocker.sleep(3000);
+					} 
+					catch (InterruptedException e) {
+						message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN);
+						break;
+					}
+				}
+			}
 			else if (type == MessageTypeDecider.msgType.GEOCASTING) {
 				
 				JSONArray geoDstInfo = parser.getGeoDstInfo();
@@ -432,7 +464,7 @@ public class MessageRelayingHandler  {
 	    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
 	    		}
 			}
-	
+			// TODO this condition has to be deprecated.
 			else if (type == MessageTypeDecider.msgType.REMOVE_MNS_ENTRY) {
 	    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 	    		Map<String,List<String>> params = qsd.parameters();
@@ -453,6 +485,7 @@ public class MessageRelayingHandler  {
 					message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
 				}
 			} 
+			// TODO this condition has to be deprecated.
 			else if (type == MessageTypeDecider.msgType.ADD_MNS_ENTRY) {
 				QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 				Map<String,List<String>> params = qsd.parameters();

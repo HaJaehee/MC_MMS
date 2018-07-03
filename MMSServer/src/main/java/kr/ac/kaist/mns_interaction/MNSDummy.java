@@ -45,6 +45,11 @@ Rev. history : 2018-06-06
 Version : 0.7.1
 	Revised interfaces.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-03
+Version : 0.7.2
+	Removed console prints.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -148,7 +153,6 @@ public class MNSDummy {
         	  connectionSocket.shutdownInput();
           }
           String data = buf.toString();
-          System.out.println(data);
           // newly designed interfaces
           if (data.startsWith("{")) {
         	  try {
@@ -165,7 +169,6 @@ public class MNSDummy {
 	        		  String IPAddr = unicastingQuery.get("IPAddr").toString();
 	        		  
 	        		  String dstInfo = (String)MRNtoIP.get(dstMRN);
-	        		  System.out.println(dstInfo);
 	        		  if (dstInfo != null) {
 	        			  String splittedDstInfo[] = dstInfo.split(":");
 		        		  if (splittedDstInfo[2].equals("1")) { //polling model
@@ -182,7 +185,6 @@ public class MNSDummy {
 		        			  connTypePush.put("IPAddr", splittedDstInfo[0]);
 		        			  connTypePush.put("portNum", splittedDstInfo[1]);
 		        			  dataToReply = connTypePush.toJSONString();
-		        			  System.out.println(dataToReply);
 		        		  }
 	        		  }
 	        		  else {
@@ -232,7 +234,6 @@ public class MNSDummy {
 		                    			  else if (parsedVal[1].equals("2")) {
 		                    				  item.put("connType", "push");
 		                    			  }
-		                    			  System.out.println(item.toJSONString());
 		                    			  objList.add(item);
 		                    		  }
 		          				  }
@@ -249,7 +250,6 @@ public class MNSDummy {
 
 	          		  
 	        	  }
-	        	  System.out.println(dataToReply);
 	        	  out.println(dataToReply);
 	              out.flush();
 	              out.close();
@@ -281,7 +281,6 @@ public class MNSDummy {
 	        	  }
 	              //loggerdebug(dataToReply);
 
-	        	  System.out.println(dataToReply);
 	        	  out.write(dataToReply);
 	              out.flush();
 	              out.close();
@@ -329,7 +328,6 @@ public class MNSDummy {
 	          		  JSONObject dstMRNs = new JSONObject();
 	          		  dstMRNs.put("poll", objlist);
 
-	          		  System.out.println(dataToReply+"\n");
 		        	  out.write("MNSDummy-Reply:" + dstMRNs.toString());
 		              out.flush();
 		              out.close();
@@ -341,7 +339,6 @@ public class MNSDummy {
           			  JSONObject dstMRNs = new JSONObject();
 	          		  dstMRNs.put("poll", objlist);
 
-	          		  System.out.println(dataToReply+"\n");
 		        	  out.write("MNSDummy-Reply:" + dstMRNs.toString());
 		              out.flush();
 		              out.close();
@@ -358,14 +355,11 @@ public class MNSDummy {
         	  // data_sub = IP_address, MRN, Port
         	  MRNtoIP.put(data_sub[1], data_sub[0] + ":" + data_sub[2] + ":" + data_sub[3]);
 
-        	  System.out.println("OK");
         	  out.println("OK");
               out.flush();
               out.close();
               in.close();
-              connectionSocket.close();
-              System.out.println("done\n");
-        	  
+              connectionSocket.close();       	  
           } 
           else if (data.regionMatches(0, "Dump-MNS:", 0, 9)){
 
@@ -381,7 +375,6 @@ public class MNSDummy {
         		  dataToReply = "No";
         	  }
 
-        	  System.out.println(dataToReply);
         	  out.println(dataToReply);
               out.flush();
               out.close();
@@ -417,12 +410,10 @@ public class MNSDummy {
           } 
           else if(data.regionMatches(0, "IP-Request:", 0, 11)){
         	  String address = data.substring(11).split(",")[0];
-        	  //System.out.println("Incomming Address: " + address);
         	  String[] parseAddress = address.split(":");
         	  String mrn = null;
         	  for(String value : MRNtoIP.keySet()){
         		  String[] parseValue = MRNtoIP.get(value).split(":");
-        		  //System.out.println("Value:" + parseValue.toString());
         		  if(parseAddress[0].equals(parseValue[0]) 
         				  && parseAddress[1].equals(parseValue[1])){
         			  mrn = value;
@@ -437,7 +428,6 @@ public class MNSDummy {
         		  dataToReply += mrn;
         	  }
         	  
-        	  System.out.println(dataToReply);
         	  out.println(dataToReply);
               out.flush();
               out.close();

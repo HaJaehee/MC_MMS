@@ -66,6 +66,11 @@ Version : 0.7.1
 	Fixed large response issues.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 	Jaehyun Park (jae519@kaist.ac.kr)
+	
+Rev. history : 2018-07-03
+Version : 0.7.2
+	Added handling input messages by FIFO scheduling.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -185,7 +190,7 @@ public class MRH_MessageOutputChannel{
     	f.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) {
-                assert f == future;
+                assert f == future; //TODO Requeueing function MUST be implemented.  
                 
                 ctx.close();
             }
@@ -197,7 +202,7 @@ public class MRH_MessageOutputChannel{
     }
 	
 //  to do relaying
-	public byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws IOException { // 
+	public byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException { // 
 
 		String url = "http://" + IPAddress + ":" + port + req.uri();
 		URL obj = new URL(url);
@@ -263,10 +268,32 @@ public class MRH_MessageOutputChannel{
 
 		is.close();
 		logger.info("SessionID="+this.SESSION_ID+" Received a response.");
+		logger.trace("SessionID="+this.SESSION_ID+" Response="+new String(retBuffer));
 		if(MMSConfiguration.WEB_LOG_PROVIDING) {
 			String log = "SessionID="+this.SESSION_ID+" Received a response.";
 			mmsLog.addBriefLogForStatus(log);
 			mmsLogForDebug.addLog(this.SESSION_ID, log);
+		}
+		
+		if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN) == null || 
+				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).size() == 0 ||
+				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0) == null ||
+				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionBlocker() == null) {
+			throw new NullPointerException();
+		}
+
+		if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionId().equals(this.SESSION_ID)) {
+	
+			if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN) != null && 
+					SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).size() > 1 && 
+					SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(1) != null && 
+					SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(1).getSessionBlocker() != null) {
+				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(1).getSessionBlocker().interrupt();
+			}
+			SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).remove(0);
+		}
+		else {
+			throw new IOException();
 		}
 		
 		return retBuffer;
