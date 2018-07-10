@@ -606,22 +606,13 @@ public class MessageRelayingHandler  {
 		  logger.trace("SessionID="+this.SESSION_ID+" From server=" + queryReply+".");
 
 
-		  if (queryReply.equals("No")) {
-			  return;
-		  } else if (queryReply.equals("OK")) {
-			  return;
-		  }    	
-
 	  } catch (UnknownHostException e) {
 		  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-		  return;
+		  
 	  } catch (IOException e) {
 		  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-		  return;
+		  
 	  } finally {
-
-
-
 		  if (pw != null) {
 			  pw.close();
 		  }
@@ -646,8 +637,8 @@ public class MessageRelayingHandler  {
 				  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 			  }
 		  }
-		  return;
 	  }
+	  return;
   }
   
 //This method will be
@@ -689,19 +680,12 @@ public class MessageRelayingHandler  {
 		  queryReply = response.toString();
 		  logger.trace("SessionID="+this.SESSION_ID+" From server=" + queryReply+".");
 
-
-		  if (queryReply.equals("No")) {
-			  return;
-		  } else if (queryReply.equals("OK")) {
-			  return;
-		  }    	
-
 	  } catch (UnknownHostException e) {
 		  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-		  return;
+		 
 	  } catch (IOException e) {
 		  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-		  return;
+		  
 	  } finally {
 		  if (pw != null) {
 			  pw.close();
@@ -727,8 +711,8 @@ public class MessageRelayingHandler  {
 				  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 			  }
 		  }
-		  return;
 	  }
+	  return;
   }
   
   
