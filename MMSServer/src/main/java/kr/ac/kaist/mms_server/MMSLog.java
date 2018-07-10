@@ -89,6 +89,11 @@ Rev. history : 2018-06-29
 Version : 0.7.2
 	Fixed a bug of realtime log service related to removing an ID.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-10
+Version : 0.7.2
+	Fixed unsecure codes.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -299,11 +304,6 @@ public class MMSLog {
 	  	dumpedMNS = response.toString();
 	  	logger.trace("Dumped MNS: " + dumpedMNS+".");
 	  	
-	  	if (dumpedMNS.equals("No")) {
-	  		return "No MRN to IP mapping.<br/>";
-	  	}
-	  	
-	  	dumpedMNS = dumpedMNS.substring(15);
 	  	if (pw != null) {
 	  		pw.close();
 	  	}
@@ -316,6 +316,14 @@ public class MMSLog {
 	  	if (MNSSocket != null) {
 	  		MNSSocket.close();
 	  	}
+	  	
+	  	if (dumpedMNS.equals("No")) {
+	  		String ret = "No MRN to IP mapping.<br/>";
+	  		return ret;
+	  	}
+	  	
+	  	dumpedMNS = dumpedMNS.substring(15);
+
 	  	return dumpedMNS;
   }
 	

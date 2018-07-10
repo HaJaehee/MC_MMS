@@ -112,9 +112,6 @@ class MIH_MessageOutputChannel {
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 			return null;
 		} finally {
-		
-
-
     		if (pw != null) {
     			pw.close();
     		}

@@ -45,6 +45,11 @@ Rev. history : 2018-06-06
 Version : 0.7.1
 	Revised interfaces.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-10
+Version : 0.7.2
+	Fixed unsecure codes.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -127,323 +132,494 @@ public class MNSDummy {
 
        //-----------------------------------------------------
        
-       while(true)
-       {
-    	 
-          Socket connectionSocket = Sock.accept();
-          
-          
-          //logger.debug("Packet incomming.");
-          BufferedReader in =
-             new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-          PrintWriter out = new PrintWriter(
-					new OutputStreamWriter(connectionSocket.getOutputStream()));
-          
-          String inputLine;
-          StringBuffer buf = new StringBuffer();
-          while ((inputLine = in.readLine()) != null) {
-        	  buf.append(inputLine.trim());
-          }
-          if (!connectionSocket.isInputShutdown()) {
-        	  connectionSocket.shutdownInput();
-          }
-          String data = buf.toString();
-          System.out.println(data);
-          // newly designed interfaces
-          if (data.startsWith("{")) {
-        	  try {
-	        	  String dataToReply = "";
-        		  
-        		  JSONParser queryParser = new JSONParser();
-        		 
-	        	  JSONObject query = (JSONObject) queryParser.parse(data);
-	        	  
-	        	  if (query.get("unicasting") != null) {
-	        		  JSONObject unicastingQuery = (JSONObject) query.get("unicasting");
-	        		  String srcMRN = unicastingQuery.get("srcMRN").toString();
-	        		  String dstMRN = unicastingQuery.get("dstMRN").toString();
-	        		  String IPAddr = unicastingQuery.get("IPAddr").toString();
-	        		  
-	        		  String dstInfo = (String)MRNtoIP.get(dstMRN);
-	        		  System.out.println(dstInfo);
-	        		  if (dstInfo != null) {
-	        			  String splittedDstInfo[] = dstInfo.split(":");
-		        		  if (splittedDstInfo[2].equals("1")) { //polling model
-		        			  JSONObject connTypePolling = new JSONObject();
-		        			  connTypePolling.put("connType", "polling");
-		        			  connTypePolling.put("dstMRN", dstMRN);
-		        			  connTypePolling.put("netType", "LTE-M");
-		        			  dataToReply = connTypePolling.toJSONString();
-		        		  }
-		        		  else if (splittedDstInfo[2].equals("2")) { //push model
-		        			  JSONObject connTypePush = new JSONObject();
-		        			  connTypePush.put("connType", "push");
-		        			  connTypePush.put("dstMRN", dstMRN);
-		        			  connTypePush.put("IPAddr", splittedDstInfo[0]);
-		        			  connTypePush.put("portNum", splittedDstInfo[1]);
-		        			  dataToReply = connTypePush.toJSONString();
-		        			  System.out.println(dataToReply);
-		        		  }
-	        		  }
-	        		  else {
-	        			  dataToReply = "No";
-	        		  }
-	        			  
-	        		  
-	        	  } 
-	        	  else if (query.get("geocasting") != null) {
-	        		  JSONObject geocastingQuery = (JSONObject) query.get("geocasting");
-	        		  String srcMRN = geocastingQuery.get("srcMRN").toString();
-	        		  String geoLat = geocastingQuery.get("lat").toString();
-	        		  String geoLong = geocastingQuery.get("long").toString();
-	        		  String geoRadius = geocastingQuery.get("radius").toString();
-	        		  
-	          		  float lat = Float.parseFloat(geoLat); 
-	          		  float lon = Float.parseFloat(geoLat);
-	          		  float rad = Float.parseFloat(geoRadius);
-	          		  
-	          		  if ( 20000 >= rad && 90 >= Math.abs(lat) && 180 >= Math.abs(lon)) {
-		          		  Set<String> keys = MRNtoIP.keySet();
-		          		  
-		          		  Iterator<String> keysIter = keys.iterator();
-		          		  // MRN lists are returned by json format.
-		          		  // {"poll":[{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},....]}
-		          		  JSONArray objList = new JSONArray();
-		          		  
-		          		  
-		          		  if (keysIter.hasNext()){
-		          			  do{
-		          				  String key = keysIter.next();
-		          				  String value = MRNtoIP.get(key);
-		          				  String[] parsedVal = value.split(":");
-		          				  if (parsedVal.length == 4){ // Geo-information exists.
-		          					  String[] curGeoMRN = parsedVal[3].split("-");
-		          					  float curLat = Float.parseFloat(curGeoMRN[1]); 
-		                    		  float curLong = Float.parseFloat(curGeoMRN[3]);
-		                    		  
-		                    		  
-		                    		  if (((lat-curLat)*(lat-curLat) + (lon-curLong)*(lon-curLong)) < rad * rad){
-		                    			  JSONObject item = new JSONObject();
-		                    			  item.put("dstMRN", key);
-		                    			  item.put("netType", "LTE-M");
-		                    			  if (parsedVal[2].equals("1")) {
-		                    				  item.put("connType", "polling");
-		                    			  }
-		                    			  else if (parsedVal[1].equals("2")) {
-		                    				  item.put("connType", "push");
-		                    			  }
-		                    			  System.out.println(item.toJSONString());
-		                    			  objList.add(item);
-		                    		  }
-		          				  }
-		          				  
-		          				  
-		          			  }while(keysIter.hasNext());
-		          		  }
-		          		  dataToReply = objList.toJSONString();
-		          		  
-	          		  }
-		        	  else {
-		        	   
-		        	  }
+		 while(true)
+		 {
 
-	          		  
-	        	  }
-	        	  System.out.println(dataToReply);
-	        	  out.println(dataToReply);
-	              out.flush();
-	              out.close();
-	              in.close();
-	              connectionSocket.close();
-        	  }
-        	  catch (Exception e) {
-        		  e.printStackTrace();
-        	  }
-          }
-          //logger.debug(data);
+			 Socket connectionSocket = Sock.accept();
 
-          String dataToReply = "MNSDummy-Reply:";
-       
-          if (data.regionMatches(0, "MRN-Request:", 0, 12)){
 
-        	  data = data.substring(12);
-        	  
-        	  
-        	  
-        	  //loggerdebug("MNSDummy:data=" + data);
-        	  if (!data.regionMatches(0, "urn:mrn:mcs:casting:geocast:smart:",0,34)){
-	        	  if (MRNtoIP.containsKey(data)) {
-	        		  dataToReply += MRNtoIP.get(data);
-	        	  }
-	        	  else {
-	        	  	  //loggerdebug("No MRN to IP Mapping.");
-	        		  dataToReply = "No";
-	        	  }
-	              //loggerdebug(dataToReply);
+			 //logger.debug("Packet incomming.");
+			 
+			 InputStreamReader in = new InputStreamReader(connectionSocket.getInputStream());
+			 BufferedReader br = new BufferedReader(in);
+			 PrintWriter pw = new PrintWriter(connectionSocket.getOutputStream());
 
-	        	  System.out.println(dataToReply);
-	        	  out.write(dataToReply);
-	              out.flush();
-	              out.close();
-	              in.close();
-	              connectionSocket.close();
-          	  }
-        	  else { // if geocasting (urn:mrn:mcs:casting:geocasting:smart:-)
-          		  String geoMRN = data.substring(34);
-          		  String[] parsedGeoMRN = geoMRN.split("-");
-          		  //loggerinfo("Geocasting MRN="+geoMRN+".");
-          		  float lat = Float.parseFloat(parsedGeoMRN[1]); 
-          		  float lon = Float.parseFloat(parsedGeoMRN[3]);
-          		  float rad = Float.parseFloat(parsedGeoMRN[5]);
-          		  
-          		  if ( 20000 <= rad && 90 >= Math.abs(lat) && 180 >= Math.abs(lon)) {
-	          		  Set<String> keys = MRNtoIP.keySet();
-	          		  
-	          		  Iterator<String> keysIter = keys.iterator();
-	          		  // MRN lists are returned by json format.
-	          		  // {"poll":[{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},....]}
-	          		  JSONArray objlist = new JSONArray();
-	          		  
-	          		  
-	          		  if (keysIter.hasNext()){
-	          			  do{
-	          				  String key = keysIter.next();
-	          				  String value = MRNtoIP.get(key);
-	          				  String[] parsedVal = value.split(":");
-	          				  if (parsedVal.length == 4){ // Geo-information exists.
-	          					  String[] curGeoMRN = parsedVal[3].split("-");
-	          					  float curLat = Float.parseFloat(curGeoMRN[1]); 
-	                    		  float curLong = Float.parseFloat(curGeoMRN[3]);
-	                    		  
-	                    		  
-	                    		  if (((lat-curLat)*(lat-curLat) + (lon-curLong)*(lon-curLong)) < rad * rad){
-	                    			  JSONObject item = new JSONObject();
-	                    			  item.put("dstMRN", key);
-	                    			  objlist.add(item);
-	                    		  }
-	          				  }
-	          				  
-	          				  
-	          			  } while(keysIter.hasNext());
-	          		  }
-	          		  JSONObject dstMRNs = new JSONObject();
-	          		  dstMRNs.put("poll", objlist);
+			 String inputLine;
+			 StringBuffer buf = new StringBuffer();
+			 while ((inputLine = br.readLine()) != null) {
+				 buf.append(inputLine.trim());
+			 }
+			 if (!connectionSocket.isInputShutdown()) {
+				 connectionSocket.shutdownInput();
+			 }
+			 String data = buf.toString();
+			 // newly designed interfaces
+			 if (data.startsWith("{")) {
+				 try {
+					 String dataToReply = "";
 
-	          		  System.out.println(dataToReply+"\n");
-		        	  out.write("MNSDummy-Reply:" + dstMRNs.toString());
-		              out.flush();
-		              out.close();
-		              in.close();
-		              connectionSocket.close();
-          		  } 
-          		  else {
-          			  JSONArray objlist = new JSONArray();
-          			  JSONObject dstMRNs = new JSONObject();
-	          		  dstMRNs.put("poll", objlist);
+					 JSONParser queryParser = new JSONParser();
 
-	          		  System.out.println(dataToReply+"\n");
-		        	  out.write("MNSDummy-Reply:" + dstMRNs.toString());
-		              out.flush();
-		              out.close();
-		              in.close();
-		              connectionSocket.close();
-          		  }
-          	  }
-          } 
-          else if (data.regionMatches(0, "Location-Update:", 0, 16)){
-        	  data = data.substring(16);
-        	
-        	  //loggerinfo("MNSDummy:data=" + data);
-        	  String[] data_sub = data.split(",");
-        	  // data_sub = IP_address, MRN, Port
-        	  MRNtoIP.put(data_sub[1], data_sub[0] + ":" + data_sub[2] + ":" + data_sub[3]);
+					 JSONObject query = (JSONObject) queryParser.parse(data);
 
-        	  System.out.println("OK");
-        	  out.println("OK");
-              out.flush();
-              out.close();
-              in.close();
-              connectionSocket.close();
-              System.out.println("done\n");
-        	  
-          } 
-          else if (data.regionMatches(0, "Dump-MNS:", 0, 9)){
+					 if (query.get("unicasting") != null) {
+						 JSONObject unicastingQuery = (JSONObject) query.get("unicasting");
+						 String srcMRN = unicastingQuery.get("srcMRN").toString();
+						 String dstMRN = unicastingQuery.get("dstMRN").toString();
+						 String IPAddr = unicastingQuery.get("IPAddr").toString();
 
-        	  if (!MRNtoIP.isEmpty()){
-        		  SortedSet<String> keys = new TreeSet<String>(MRNtoIP.keySet());
-            	  for (String key : keys) {
-            		  String value = MRNtoIP.get(key);
-            		  dataToReply = dataToReply + key + "," + value + "<br/>";
-            	  }
-        	  }
-        	  else{
-        	  	  //loggerdebug("No MRN to IP Mapping.");
-        		  dataToReply = "No";
-        	  }
+						 String dstInfo = (String)MRNtoIP.get(dstMRN);
+						 if (dstInfo != null) {
+							 String splittedDstInfo[] = dstInfo.split(":");
+							 if (splittedDstInfo[2].equals("1")) { //polling model
+								 JSONObject connTypePolling = new JSONObject();
+								 connTypePolling.put("connType", "polling");
+								 connTypePolling.put("dstMRN", dstMRN);
+								 connTypePolling.put("netType", "LTE-M");
+								 dataToReply = connTypePolling.toJSONString();
+							 }
+							 else if (splittedDstInfo[2].equals("2")) { //push model
+								 JSONObject connTypePush = new JSONObject();
+								 connTypePush.put("connType", "push");
+								 connTypePush.put("dstMRN", dstMRN);
+								 connTypePush.put("IPAddr", splittedDstInfo[0]);
+								 connTypePush.put("portNum", splittedDstInfo[1]);
+								 dataToReply = connTypePush.toJSONString();
+							 }
+						 }
+						 else {
+							 dataToReply = "No";
+						 }
 
-        	  System.out.println(dataToReply);
-        	  out.println(dataToReply);
-              out.flush();
-              out.close();
-              in.close();
-              connectionSocket.close();
-              
-          }
-          else if (data.equals("Empty-MNS:") && MMSConfiguration.WEB_MANAGING){
-        	  MRNtoIP.clear();
-        	  //loggerwarn("MNSDummy:EMPTY.");
-            
-          }
-          else if (data.regionMatches(0, "Remove-Entry:", 0, 13) && MMSConfiguration.WEB_MANAGING){
-        	  String mrn = data.substring(13);
-        	  MRNtoIP.remove(mrn);
-        	  //loggerwarn("MNSDummy:REMOVE="+mrn+".");
-          }
-          else if (data.regionMatches(0, "Add-Entry:", 0, 10) && MMSConfiguration.WEB_MANAGING){
-        	  String[] params = data.substring(10).split(",");
-        	  String mrn = params[0];
-        	  String locator = params[1] +":"+ params[2] +":"+ params[3];
-        	  MRNtoIP.put(mrn, locator);
-        	  //loggerwarn("MNSDummy:ADD="+mrn+".");
-        	  
-          //Geo-location update function.  
-          }
-          else if (data.regionMatches(0, "Geo-location-Update:", 0, 20)){
- 
-        	  //data format: Geo-location-update:
-        	  String[] data_sub = data.split(",");
-        	  //loggerdebug("MNSDummy:Geolocationupdate "+data_sub[1]);
-        	  MRNtoIP.put(data_sub[1], "127.0.0.1" + ":" + data_sub[2] + ":" + data_sub[3] + ":" + data_sub[4]);
-          } 
-          else if(data.regionMatches(0, "IP-Request:", 0, 11)){
-        	  String address = data.substring(11).split(",")[0];
-        	  //System.out.println("Incomming Address: " + address);
-        	  String[] parseAddress = address.split(":");
-        	  String mrn = null;
-        	  for(String value : MRNtoIP.keySet()){
-        		  String[] parseValue = MRNtoIP.get(value).split(":");
-        		  //System.out.println("Value:" + parseValue.toString());
-        		  if(parseAddress[0].equals(parseValue[0]) 
-        				  && parseAddress[1].equals(parseValue[1])){
-        			  mrn = value;
-        			  break;
-        		  }
-        	  }
-        	  
-        	  if(mrn == null){
-        		  dataToReply += "Unregistered MRN in MNS";
-        	  } 
-        	  else {
-        		  dataToReply += mrn;
-        	  }
-        	  
-        	  System.out.println(dataToReply);
-        	  out.println(dataToReply);
-              out.flush();
-              out.close();
-              in.close();
-              connectionSocket.close();
-          }
-       }
+
+					 } 
+					 else if (query.get("geocasting") != null) {
+						 JSONObject geocastingQuery = (JSONObject) query.get("geocasting");
+						 String srcMRN = geocastingQuery.get("srcMRN").toString();
+						 String geoLat = geocastingQuery.get("lat").toString();
+						 String geoLong = geocastingQuery.get("long").toString();
+						 String geoRadius = geocastingQuery.get("radius").toString();
+
+						 float lat = Float.parseFloat(geoLat); 
+						 float lon = Float.parseFloat(geoLat);
+						 float rad = Float.parseFloat(geoRadius);
+
+						 if ( 20000 >= rad && 90 >= Math.abs(lat) && 180 >= Math.abs(lon)) {
+							 Set<String> keys = MRNtoIP.keySet();
+
+							 Iterator<String> keysIter = keys.iterator();
+							 // MRN lists are returned by json format.
+							 // {"poll":[{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},....]}
+							 JSONArray objList = new JSONArray();
+
+
+							 if (keysIter.hasNext()){
+								 do{
+									 String key = keysIter.next();
+									 String value = MRNtoIP.get(key);
+									 String[] parsedVal = value.split(":");
+									 if (parsedVal.length == 4){ // Geo-information exists.
+										 String[] curGeoMRN = parsedVal[3].split("-");
+										 float curLat = Float.parseFloat(curGeoMRN[1]); 
+										 float curLong = Float.parseFloat(curGeoMRN[3]);
+
+
+										 if (((lat-curLat)*(lat-curLat) + (lon-curLong)*(lon-curLong)) < rad * rad){
+											 JSONObject item = new JSONObject();
+											 item.put("dstMRN", key);
+											 item.put("netType", "LTE-M");
+											 if (parsedVal[2].equals("1")) {
+												 item.put("connType", "polling");
+											 }
+											 else if (parsedVal[1].equals("2")) {
+												 item.put("connType", "push");
+											 }
+											 objList.add(item);
+										 }
+									 }
+
+
+								 }while(keysIter.hasNext());
+							 }
+							 dataToReply = objList.toJSONString();
+						 }
+					 }
+					 pw.println(dataToReply);
+					 pw.flush();
+				 }
+				 catch (Exception e) {
+					 e.printStackTrace();
+				 }
+				 finally {
+					if (pw != null) {
+						pw.close();
+					}
+					if (br != null) {
+						br.close();						
+					}
+					if (in != null) {
+						in.close();
+					}
+					if (connectionSocket != null) {
+						connectionSocket.close();
+					}
+				}
+			 }
+			 //logger.debug(data);
+
+			 String dataToReply = "MNSDummy-Reply:";
+
+			 if (data.regionMatches(0, "MRN-Request:", 0, 12)){
+
+				 data = data.substring(12);
+
+
+
+				 //loggerdebug("MNSDummy:data=" + data);
+				 if (!data.regionMatches(0, "urn:mrn:mcs:casting:geocast:smart:",0,34)){
+					 try {
+						 if (MRNtoIP.containsKey(data)) {
+							 dataToReply += MRNtoIP.get(data);
+						 }
+						 else {
+							 //loggerdebug("No MRN to IP Mapping.");
+							 dataToReply = "No";
+						 }
+						 //loggerdebug(dataToReply);
+	
+						 pw.println(dataToReply);
+						 pw.flush();
+					 }
+					 catch (Exception e) {
+						 e.printStackTrace();
+					 }
+					 finally {
+						if (pw != null) {
+							pw.close();
+						}
+						if (br != null) {
+							br.close();						
+						}
+						if (in != null) {
+							in.close();
+						}
+						if (connectionSocket != null) {
+							connectionSocket.close();
+						}
+					}
+				 }
+				 else { // if geocasting (urn:mrn:mcs:casting:geocasting:smart:-)
+					 
+					 
+					 String geoMRN = data.substring(34);
+					 String[] parsedGeoMRN = geoMRN.split("-");
+					 //loggerinfo("Geocasting MRN="+geoMRN+".");
+					 float lat = Float.parseFloat(parsedGeoMRN[1]); 
+					 float lon = Float.parseFloat(parsedGeoMRN[3]);
+					 float rad = Float.parseFloat(parsedGeoMRN[5]);
+
+					 if ( 20000 <= rad && 90 >= Math.abs(lat) && 180 >= Math.abs(lon)) {
+						 try {
+							 Set<String> keys = MRNtoIP.keySet();
+	
+							 Iterator<String> keysIter = keys.iterator();
+							 // MRN lists are returned by json format.
+							 // {"poll":[{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},....]}
+							 JSONArray objlist = new JSONArray();
+	
+	
+							 if (keysIter.hasNext()){
+								 do{
+									 String key = keysIter.next();
+									 String value = MRNtoIP.get(key);
+									 String[] parsedVal = value.split(":");
+									 if (parsedVal.length == 4){ // Geo-information exists.
+										 String[] curGeoMRN = parsedVal[3].split("-");
+										 float curLat = Float.parseFloat(curGeoMRN[1]); 
+										 float curLong = Float.parseFloat(curGeoMRN[3]);
+	
+	
+										 if (((lat-curLat)*(lat-curLat) + (lon-curLong)*(lon-curLong)) < rad * rad){
+											 JSONObject item = new JSONObject();
+											 item.put("dstMRN", key);
+											 objlist.add(item);
+										 }
+									 }
+	
+	
+								 } while(keysIter.hasNext());
+							 }
+							 JSONObject dstMRNs = new JSONObject();
+							 dstMRNs.put("poll", objlist);
+	
+							 pw.println("MNSDummy-Reply:" + dstMRNs.toString());
+							 pw.flush();
+						 }
+						 catch (Exception e) {
+							 e.printStackTrace();
+						 }
+						 finally {
+							if (pw != null) {
+								pw.close();
+							}
+							if (br != null) {
+								br.close();						
+							}
+							if (in != null) {
+								in.close();
+							}
+							if (connectionSocket != null) {
+								connectionSocket.close();
+							}
+						}
+					 } 
+					 else {
+						 try {
+							 JSONArray objlist = new JSONArray();
+							 JSONObject dstMRNs = new JSONObject();
+							 dstMRNs.put("poll", objlist);
+	
+							 pw.println("MNSDummy-Reply:" + dstMRNs.toString());
+							 pw.flush();
+						 }
+						 catch (Exception e) {
+							 e.printStackTrace();
+						 }
+						 finally {
+							if (pw != null) {
+								pw.close();
+							}
+							if (br != null) {
+								br.close();						
+							}
+							if (in != null) {
+								in.close();
+							}
+							if (connectionSocket != null) {
+								connectionSocket.close();
+							}
+						}
+					 }
+				 }
+			 } 
+			 else if (data.regionMatches(0, "Location-Update:", 0, 16)){
+				 try {
+					 data = data.substring(16);
+	
+					 //loggerinfo("MNSDummy:data=" + data);
+					 String[] data_sub = data.split(",");
+					 // data_sub = IP_address, MRN, Port
+					 MRNtoIP.put(data_sub[1], data_sub[0] + ":" + data_sub[2] + ":" + data_sub[3]);
+	
+					 pw.println("OK");
+					 pw.flush();
+				 }
+				 catch (Exception e) {
+					 e.printStackTrace();
+				 }
+				 finally {
+					if (pw != null) {
+						pw.close();
+					}
+					if (br != null) {
+						br.close();						
+					}
+					if (in != null) {
+						in.close();
+					}
+					if (connectionSocket != null) {
+						connectionSocket.close();
+					}
+				}
+
+			 } 
+			 else if (data.regionMatches(0, "Dump-MNS:", 0, 9)){
+				 try {
+					 if (!MRNtoIP.isEmpty()){
+						 SortedSet<String> keys = new TreeSet<String>(MRNtoIP.keySet());
+						 for (String key : keys) {
+							 String value = MRNtoIP.get(key);
+							 dataToReply = dataToReply + key + "," + value + "<br/>";
+						 }
+					 }
+					 else{
+						 //loggerdebug("No MRN to IP Mapping.");
+						 dataToReply = "No";
+					 }
+	
+					 pw.println(dataToReply);
+					 pw.flush();
+				 }
+				 catch (Exception e) {
+					 e.printStackTrace();
+				 }
+				 finally {
+					if (pw != null) {
+						pw.close();
+					}
+					if (br != null) {
+						br.close();						
+					}
+					if (in != null) {
+						in.close();
+					}
+					if (connectionSocket != null) {
+						connectionSocket.close();
+					}
+				}
+
+			 }
+			 else if (data.equals("Empty-MNS:") && MMSConfiguration.WEB_MANAGING){
+				 try {
+					 MRNtoIP.clear();
+					 //loggerwarn("MNSDummy:EMPTY.");
+					 pw.println("");
+					 pw.flush();
+				 }
+				 catch (Exception e) {
+					 e.printStackTrace();
+				 }
+				 finally {
+					if (pw != null) {
+						pw.close();
+					}
+					if (br != null) {
+						br.close();						
+					}
+					if (in != null) {
+						in.close();
+					}
+					if (connectionSocket != null) {
+						connectionSocket.close();
+					}
+				}
+
+			 }
+			 else if (data.regionMatches(0, "Remove-Entry:", 0, 13) && MMSConfiguration.WEB_MANAGING){
+				 try {
+					 String mrn = data.substring(13);
+					 MRNtoIP.remove(mrn);
+					 //loggerwarn("MNSDummy:REMOVE="+mrn+".");
+					 pw.println("");
+					 pw.flush();
+				 }
+				 catch (Exception e) {
+					 e.printStackTrace();
+				 }
+				 finally {
+					if (pw != null) {
+						pw.close();
+					}
+					if (br != null) {
+						br.close();						
+					}
+					if (in != null) {
+						in.close();
+					}
+					if (connectionSocket != null) {
+						connectionSocket.close();
+					}
+				}
+			 }
+			 else if (data.regionMatches(0, "Add-Entry:", 0, 10) && MMSConfiguration.WEB_MANAGING){
+				 try {
+					 String[] params = data.substring(10).split(",");
+					 String mrn = params[0];
+					 String locator = params[1] +":"+ params[2] +":"+ params[3];
+					 MRNtoIP.put(mrn, locator);
+					 //loggerwarn("MNSDummy:ADD="+mrn+".");
+	
+					 //Geo-location update function.  
+					 pw.println("");
+					 pw.flush();
+				 }
+				 catch (Exception e) {
+					 e.printStackTrace();
+				 }
+				 finally {
+					if (pw != null) {
+						pw.close();
+					}
+					if (br != null) {
+						br.close();						
+					}
+					if (in != null) {
+						in.close();
+					}
+					if (connectionSocket != null) {
+						connectionSocket.close();
+					}
+				}
+			 }
+			 else if (data.regionMatches(0, "Geo-location-Update:", 0, 20)){
+				 try {
+					 //data format: Geo-location-update:
+					 String[] data_sub = data.split(",");
+					 //loggerdebug("MNSDummy:Geolocationupdate "+data_sub[1]);
+					 MRNtoIP.put(data_sub[1], "127.0.0.1" + ":" + data_sub[2] + ":" + data_sub[3] + ":" + data_sub[4]);
+					 pw.println("");
+					 pw.flush();
+				 }
+				 catch (Exception e) {
+					 e.printStackTrace();
+				 }
+				 finally {
+					if (pw != null) {
+						pw.close();
+					}
+					if (br != null) {
+						br.close();						
+					}
+					if (in != null) {
+						in.close();
+					}
+					if (connectionSocket != null) {
+						connectionSocket.close();
+					}
+				}
+			 } 
+			 else if(data.regionMatches(0, "IP-Request:", 0, 11)){
+				 try {
+					 String address = data.substring(11).split(",")[0];
+					 String[] parseAddress = address.split(":");
+					 String mrn = null;
+					 for(String value : MRNtoIP.keySet()){
+						 String[] parseValue = MRNtoIP.get(value).split(":");
+						 if(parseAddress[0].equals(parseValue[0]) 
+								 && parseAddress[1].equals(parseValue[1])){
+							 mrn = value;
+							 break;
+						 }
+					 }
+	
+					 if(mrn == null){
+						 dataToReply += "Unregistered MRN in MNS";
+					 } 
+					 else {
+						 dataToReply += mrn;
+					 }
+	
+					 pw.println(dataToReply);
+					 pw.flush();
+				 }
+				 catch (Exception e) {
+					 e.printStackTrace();
+				 }
+				 finally {
+					if (pw != null) {
+						pw.close();
+					}
+					if (br != null) {
+						br.close();						
+					}
+					if (in != null) {
+						in.close();
+					}
+					if (connectionSocket != null) {
+						connectionSocket.close();
+					}
+				}
+			 }
+		 }
     }
 }

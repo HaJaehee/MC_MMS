@@ -114,24 +114,28 @@ Rev. history : 2018-06-29
 Version : 0.7.2
 	Fixed a bug of realtime log service related to removing an ID.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-10
+Version : 0.7.2
+	Fixed unsecure codes.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
-import java.awt.TrayIcon.MessageType;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -542,7 +546,7 @@ public class MessageRelayingHandler  {
 		}
 	}
 	
-
+/*
 //This method will be
   @Deprecated
   private void emptyMNS() throws UnknownHostException, IOException{ //
@@ -560,44 +564,172 @@ public class MessageRelayingHandler  {
   	
   	return;
   }
+  */
   
 //This method will be
   @Deprecated
   private void removeEntryMNS(String mrn) throws UnknownHostException, IOException{ //
-  	
-  	Socket MNSSocket = new Socket("localhost", 1004);
-  	OutputStreamWriter osw = new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8"));
-  	BufferedWriter outToMNS = new BufferedWriter(osw);
-  	
-  	logger.info("SessionID="+this.SESSION_ID+" Remove-Entry="+mrn+".");
-  	outToMNS.write("Remove-Entry:"+mrn);
-  	outToMNS.flush();
-  	if (osw != null) {
-  		osw.close();
-  	}
-  	outToMNS.close();
-  	MNSSocket.close();
-  	
-  	return;
+
+
+	  Socket MNSSocket = null;
+	  PrintWriter pw = null;	
+	  InputStreamReader isr = null;
+	  BufferedReader br = null;
+	  String queryReply = null;
+	  try{
+		  //String modifiedSentence;
+
+		  MNSSocket = new Socket("127.0.0.1", 1004);
+		  MNSSocket.setSoTimeout(5000);
+		  pw = new PrintWriter(MNSSocket.getOutputStream());
+		  isr = new InputStreamReader(MNSSocket.getInputStream());
+		  br = new BufferedReader(isr);
+		  String inputLine = null;
+		  StringBuffer response = new StringBuffer();
+
+
+		  logger.warn("SessionID="+this.SESSION_ID+" Remove-Entry="+mrn+".");
+
+		  pw.println("Remove-Entry:"+mrn);
+		  pw.flush();
+		  if (!MNSSocket.isOutputShutdown()) {
+			  MNSSocket.shutdownOutput();
+		  }
+
+
+		  while ((inputLine = br.readLine()) != null) {
+			  response.append(inputLine);
+		  }
+
+
+		  queryReply = response.toString();
+		  logger.trace("SessionID="+this.SESSION_ID+" From server=" + queryReply+".");
+
+
+		  if (queryReply.equals("No")) {
+			  return;
+		  } else if (queryReply.equals("OK")) {
+			  return;
+		  }    	
+
+	  } catch (UnknownHostException e) {
+		  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+		  return;
+	  } catch (IOException e) {
+		  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+		  return;
+	  } finally {
+
+
+
+		  if (pw != null) {
+			  pw.close();
+		  }
+		  if (isr != null) {
+			  try {
+				  isr.close();
+			  } catch (IOException e) {
+				  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			  }
+		  }
+		  if (br != null) {
+			  try {
+				  br.close();
+			  } catch (IOException e) {
+				  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			  }
+		  }
+		  if (MNSSocket != null) {
+			  try {
+				  MNSSocket.close();
+			  } catch (IOException e) {
+				  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			  }
+		  }
+		  return;
+	  }
   }
   
 //This method will be
   @Deprecated
   private void addEntryMNS(String mrn, String ip, String port, String model) throws UnknownHostException, IOException {
-	
-	  Socket MNSSocket = new Socket("localhost", 1004);
-	  OutputStreamWriter osw = new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8"));
-	  BufferedWriter outToMNS = new BufferedWriter(osw);
-	
-	  logger.info("SessionID="+this.SESSION_ID+" Add-Entry="+mrn+".");
-	  outToMNS.write("Add-Entry:"+mrn+","+ip+","+port+","+model);
-	  outToMNS.flush();
-	  if (osw != null) {
-		  osw.close();
+
+
+	  Socket MNSSocket = null;
+	  PrintWriter pw = null;	
+	  InputStreamReader isr = null;
+	  BufferedReader br = null;
+	  String queryReply = null;
+	  try{
+		  //String modifiedSentence;
+
+		  MNSSocket = new Socket("127.0.0.1", 1004);
+		  MNSSocket.setSoTimeout(5000);
+		  pw = new PrintWriter(MNSSocket.getOutputStream());
+		  isr = new InputStreamReader(MNSSocket.getInputStream());
+		  br = new BufferedReader(isr);
+		  String inputLine = null;
+		  StringBuffer response = new StringBuffer();
+
+
+		  logger.warn("SessionID="+this.SESSION_ID+" Add-Entry="+mrn+".");
+
+		  pw.println("Add-Entry:"+mrn+","+ip+","+port+","+model);
+		  pw.flush();
+		  if (!MNSSocket.isOutputShutdown()) {
+			  MNSSocket.shutdownOutput();
+		  }
+
+
+		  while ((inputLine = br.readLine()) != null) {
+			  response.append(inputLine);
+		  }
+
+
+		  queryReply = response.toString();
+		  logger.trace("SessionID="+this.SESSION_ID+" From server=" + queryReply+".");
+
+
+		  if (queryReply.equals("No")) {
+			  return;
+		  } else if (queryReply.equals("OK")) {
+			  return;
+		  }    	
+
+	  } catch (UnknownHostException e) {
+		  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+		  return;
+	  } catch (IOException e) {
+		  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+		  return;
+	  } finally {
+		  if (pw != null) {
+			  pw.close();
+		  }
+		  if (isr != null) {
+			  try {
+				  isr.close();
+			  } catch (IOException e) {
+				  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			  }
+		  }
+		  if (br != null) {
+			  try {
+				  br.close();
+			  } catch (IOException e) {
+				  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			  }
+		  }
+		  if (MNSSocket != null) {
+			  try {
+				  MNSSocket.close();
+			  } catch (IOException e) {
+				  logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			  }
+		  }
+		  return;
 	  }
-	  outToMNS.close();
-	  MNSSocket.close();
-	
-	  return;
   }
+  
+  
 }
