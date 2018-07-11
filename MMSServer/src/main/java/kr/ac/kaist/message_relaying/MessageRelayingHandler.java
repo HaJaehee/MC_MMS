@@ -551,7 +551,7 @@ public class MessageRelayingHandler  {
   @Deprecated
   private void emptyMNS() throws UnknownHostException, IOException{ //
 
-  	Socket MNSSocket = new Socket("localhost", 1004);
+  	Socket MNSSocket = new Socket(MMSConfiguration.MNS_HOST, MMSConfiguration.MNS_PORT);
   	OutputStreamWriter osw = new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8"));
   	BufferedWriter outToMNS = new BufferedWriter(osw);
 
@@ -579,7 +579,7 @@ public class MessageRelayingHandler  {
 	  try{
 		  //String modifiedSentence;
 
-		  MNSSocket = new Socket("127.0.0.1", 1004);
+		  MNSSocket = new Socket(MMSConfiguration.MNS_HOST, MMSConfiguration.MNS_PORT);
 		  MNSSocket.setSoTimeout(5000);
 		  pw = new PrintWriter(MNSSocket.getOutputStream());
 		  isr = new InputStreamReader(MNSSocket.getInputStream());
@@ -654,7 +654,7 @@ public class MessageRelayingHandler  {
 	  try{
 		  //String modifiedSentence;
 
-		  MNSSocket = new Socket("127.0.0.1", 1004);
+		  MNSSocket = new Socket(MMSConfiguration.MNS_HOST, MMSConfiguration.MNS_PORT);
 		  MNSSocket.setSoTimeout(5000);
 		  pw = new PrintWriter(MNSSocket.getOutputStream());
 		  isr = new InputStreamReader(MNSSocket.getInputStream());

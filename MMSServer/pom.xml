@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -9,7 +10,7 @@
 	<artifactId>mms</artifactId>
 	<packaging>jar</packaging>
 	<properties>
-	    <mms.lib>${basedir}/External Jars</mms.lib>
+		<mms.lib>${basedir}/External Jars</mms.lib>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -74,39 +75,39 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-        	<groupId>io.netty</groupId>        
-        	<artifactId>io.netty</artifactId>   
-        	<version>4.1.25</version>        
-        	<scope>system</scope>
-        	<systemPath>${mms.lib}/netty-all-4.1.25.Final.jar</systemPath>
-        </dependency>
-        <dependency>
-        	<groupId>io.netty.source</groupId>        
-        	<artifactId>io.netty.source</artifactId>   
-        	<version>4.1.25</version>        
-        	<scope>system</scope>
-        	<systemPath>${mms.lib}/netty-all-4.1.25.Final-sources.jar</systemPath>
-    	</dependency>
-    	<dependency>
-        	<groupId>org.apache.commons.lang3</groupId>        
-        	<artifactId>org.apache.commons.lang3</artifactId>   
-        	<version>3.6</version>        
-        	<scope>system</scope>
-        	<systemPath>${mms.lib}/commons-lang3-3.6.jar</systemPath>
-		</dependency>
-    	<dependency>
-        	<groupId>org.json.simple</groupId>        
-        	<artifactId>org.json.simple</artifactId>   
-        	<version>1.1</version>        
-        	<scope>system</scope>
-        	<systemPath>${mms.lib}/json-simple-1.1.jar</systemPath>
+			<groupId>io.netty</groupId>
+			<artifactId>io.netty</artifactId>
+			<version>4.1.25</version>
+			<scope>system</scope>
+			<systemPath>${mms.lib}/netty-all-4.1.25.Final.jar</systemPath>
 		</dependency>
 		<dependency>
-        	<groupId>com.rabbitmq.client</groupId>        
-        	<artifactId>com.rabbitmq.client</artifactId>   
-        	<version>5.3.0</version>        
-        	<scope>system</scope>
-        	<systemPath>${mms.lib}/amqp-client-5.3.0.jar</systemPath>
+			<groupId>io.netty.source</groupId>
+			<artifactId>io.netty.source</artifactId>
+			<version>4.1.25</version>
+			<scope>system</scope>
+			<systemPath>${mms.lib}/netty-all-4.1.25.Final-sources.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons.lang3</groupId>
+			<artifactId>org.apache.commons.lang3</artifactId>
+			<version>3.6</version>
+			<scope>system</scope>
+			<systemPath>${mms.lib}/commons-lang3-3.6.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.json.simple</groupId>
+			<artifactId>org.json.simple</artifactId>
+			<version>1.1</version>
+			<scope>system</scope>
+			<systemPath>${mms.lib}/json-simple-1.1.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>com.rabbitmq.client</groupId>
+			<artifactId>com.rabbitmq.client</artifactId>
+			<version>5.3.0</version>
+			<scope>system</scope>
+			<systemPath>${mms.lib}/amqp-client-5.3.0.jar</systemPath>
 		</dependency>
 	</dependencies>
 
@@ -153,6 +154,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.1.0</version>
 				<configuration>
 					<archive>
 						<manifestFile>
@@ -171,57 +173,19 @@
 					</execution>
 				</executions>
 			</plugin>
-<!-- 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.ant</groupId>
-						<artifactId>ant-junit</artifactId>
-						<version>1.8.1</version>
-					</dependency>
-					<dependency>
-						<groupId>junit</groupId>
-						<artifactId>junit</artifactId>
-						<version>${junit.version}</version>
-					</dependency>
-				</dependencies>
-
-				<executions>
-					<execution>
-						<id>ant-osgi-test</id>
-						<phase>package</phase>
-						<configuration>
-							<target>
-								<property name="currentVersion" value="${project.version}" />
-								<property name="slf4j.version" value="${slf4j.version}" />
-								<property name="basedir" value="${basedir}" />
-								<ant antfile="${basedir}/osgi-build.xml" />
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-
-					<execution>
-						<id>ant-integration-test</id>
-						<phase>package</phase>
-						<configuration>
-							<target>
-								<property name="slf4j.version" value="${slf4j.version}" />
-								<ant antfile="${basedir}/integration.xml" />
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
- -->
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-antrun-plugin</artifactId> 
+				<version>1.8</version> <dependencies> <dependency> <groupId>org.apache.ant</groupId> 
+				<artifactId>ant-junit</artifactId> <version>1.8.1</version> </dependency> 
+				<dependency> <groupId>junit</groupId> <artifactId>junit</artifactId> <version>${junit.version}</version> 
+				</dependency> </dependencies> <executions> <execution> <id>ant-osgi-test</id> 
+				<phase>package</phase> <configuration> <target> <property name="currentVersion" 
+				value="${project.version}" /> <property name="slf4j.version" value="${slf4j.version}" 
+				/> <property name="basedir" value="${basedir}" /> <ant antfile="${basedir}/osgi-build.xml" 
+				/> </target> </configuration> <goals> <goal>run</goal> </goals> </execution> 
+				<execution> <id>ant-integration-test</id> <phase>package</phase> <configuration> 
+				<target> <property name="slf4j.version" value="${slf4j.version}" /> <ant 
+				antfile="${basedir}/integration.xml" /> </target> </configuration> <goals> 
+				<goal>run</goal> </goals> </execution> </executions> </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -243,24 +207,12 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.4.5</version>
-				<configuration>
-					<imageName>mmsdocker</imageName>
-					<baseImage>java</baseImage>
-					<entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
-					<resources>
-						<resource>
-							<targetPath>/</targetPath>
-							<directory>${project.build.directory}</directory>
-							<include>${project.build.finalName}.jar</include>
-						</resource>
-					</resources>
-				</configuration>
-			</plugin>
-
+			<!-- <plugin> <groupId>com.spotify</groupId> <artifactId>docker-maven-plugin</artifactId> 
+				<version>0.4.5</version> <configuration> <imageName>mmsdocker</imageName> 
+				<baseImage>java</baseImage> <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint> 
+				<resources> <resource> <targetPath>/</targetPath> <directory>${project.build.directory}</directory> 
+				<include>${project.build.finalName}.jar</include> </resource> </resources> 
+				</configuration> </plugin> -->
 		</plugins>
 		<pluginManagement>
 			<plugins>

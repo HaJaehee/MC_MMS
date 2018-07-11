@@ -33,6 +33,11 @@ Rev. history : 2017-07-24
 Version : 0.5.9
 	Updated max http contents size
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2018-07-11
+Version : 0.7.2
+	Added MNS_HOST and MNS_PORT.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -44,7 +49,8 @@ public class MMSConfiguration {
 	//-------------------------------------------------------------------
 	public static final int HTTP_PORT = 8088;
 	public static final int HTTPS_PORT = 444;
-	//public static final int UDP_PORT = 8089;
+	public static final String MNS_HOST = "192.168.175.132";
+	public static final int MNS_PORT = 8588;
 	//-------------------------------------------------------------------
 	public static final String MMS_MRN = "urn:mrn:smart-navi:device:mms1";
 	//-------------------------------------------------------------------

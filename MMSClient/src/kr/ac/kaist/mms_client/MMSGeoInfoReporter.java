@@ -92,7 +92,7 @@ public class MMSGeoInfoReporter {
     	}
 		void Report() throws Exception {
 			try{
-		    	Socket MNSSocket = new Socket(MMSConfiguration.MNS_HOST, 1004);
+		    	Socket MNSSocket = new Socket(MMSConfiguration.MNS_HOST, MMSConfiguration.MNS_PORT);
 		    	OutputStreamWriter osw = new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8"));
 		    	BufferedWriter outToMNS = new BufferedWriter(osw);
 		    	

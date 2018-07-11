@@ -43,6 +43,8 @@ import java.net.UnknownHostException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import kr.ac.kaist.mms_server.MMSConfiguration;
+
 class MIH_MessageOutputChannel {
 
 	private static final Logger logger = LoggerFactory.getLogger(MIH_MessageOutputChannel.class);
@@ -64,7 +66,7 @@ class MIH_MessageOutputChannel {
     	try{
 	    	//String modifiedSentence;
 
-	    	MNSSocket = new Socket("127.0.0.1", 1004);
+	    	MNSSocket = new Socket(MMSConfiguration.MNS_HOST, MMSConfiguration.MNS_PORT);
 	    	MNSSocket.setSoTimeout(5000);
 	    	pw = new PrintWriter(MNSSocket.getOutputStream());
 	    	isr = new InputStreamReader(MNSSocket.getInputStream());
