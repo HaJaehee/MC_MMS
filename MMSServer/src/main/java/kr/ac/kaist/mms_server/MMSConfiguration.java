@@ -37,7 +37,7 @@ Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 Rev. history : 2018-07-11
 Version : 0.7.2
 	Added MNS_HOST and MNS_PORT.
-Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
