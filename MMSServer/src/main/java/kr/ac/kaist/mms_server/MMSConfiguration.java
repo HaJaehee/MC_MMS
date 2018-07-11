@@ -49,7 +49,7 @@ public class MMSConfiguration {
 	//-------------------------------------------------------------------
 	public static final int HTTP_PORT = 8088;
 	public static final int HTTPS_PORT = 444;
-	public static final String MNS_HOST = "192.168.175.132";
+	public static final String MNS_HOST = "127.0.0.1";
 	public static final int MNS_PORT = 8588;
 	//-------------------------------------------------------------------
 	public static final String MMS_MRN = "urn:mrn:smart-navi:device:mms1";
