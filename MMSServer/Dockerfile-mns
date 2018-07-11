@@ -1,4 +1,0 @@
-FROM java:8
-EXPOSE 8588
-ADD /target/mns-0.7.2.jar mns-0.7.2.jar
-ENTRYPOINT ["java","-jar","mns-0.7.2.jar"]
