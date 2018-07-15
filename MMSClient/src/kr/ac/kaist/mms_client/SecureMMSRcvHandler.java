@@ -162,7 +162,7 @@ class SecureMMSRcvHandler {
 						} catch (NoSuchAlgorithmException e) {
 							// TODO Auto-generated catch block
 			                System.err.println( "Failed to create HTTPS port" );
-							e.printStackTrace();
+							//e.printStackTrace();
 						}
 		                
 		            

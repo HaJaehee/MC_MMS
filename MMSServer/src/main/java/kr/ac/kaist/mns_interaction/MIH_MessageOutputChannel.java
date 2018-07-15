@@ -35,21 +35,15 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.charset.Charset;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.ac.kaist.mms_server.MMSConfiguration;
-import kr.ac.kaist.mms_server.MMSLog;
 
 class MIH_MessageOutputChannel {
 
@@ -61,7 +55,7 @@ class MIH_MessageOutputChannel {
 
 	}
 	
-	@SuppressWarnings("finally")
+
 	String sendToMNS(String request) {
 		
 		Socket MNSSocket = null;
@@ -72,7 +66,7 @@ class MIH_MessageOutputChannel {
     	try{
 	    	//String modifiedSentence;
 
-	    	MNSSocket = new Socket("127.0.0.1", 1004);
+	    	MNSSocket = new Socket(MMSConfiguration.MNS_HOST, MMSConfiguration.MNS_PORT);
 	    	MNSSocket.setSoTimeout(5000);
 	    	pw = new PrintWriter(MNSSocket.getOutputStream());
 	    	isr = new InputStreamReader(MNSSocket.getInputStream());
@@ -97,24 +91,12 @@ class MIH_MessageOutputChannel {
 	    	
 	    	queryReply = response.toString();
 	    	logger.trace("SessionID="+this.SESSION_ID+" From server=" + queryReply+".");
-	    	
-	    	
-	    	if (queryReply.equals("No")) {
-	    		return "No";
-	    	} else if (queryReply.equals("OK")) {
-	    		return "OK";
-	    	}    	
-	    	
+
     	} catch (UnknownHostException e) {
     		logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-			return null;
 		} catch (IOException e) {
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-			return null;
 		} finally {
-		
-
-
     		if (pw != null) {
     			pw.close();
     		}
@@ -139,8 +121,7 @@ class MIH_MessageOutputChannel {
 					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 				}
     		}
-    		
-			return queryReply;
 		}
+    	return queryReply;
 	}
 }
