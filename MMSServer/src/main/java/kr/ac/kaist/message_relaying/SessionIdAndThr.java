@@ -67,7 +67,7 @@ public class SessionIdAndThr {
 		return nextSeqNum;
 	}
 
-	public boolean getExceptionFlag() {
+	public boolean isExceptionOccured() {
 		return exceptionFlag;
 	}
 

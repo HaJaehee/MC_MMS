@@ -233,6 +233,7 @@ public class MessageRelayingHandler  {
 			String dstIP = parser.getDstIP();
 			String srcIP = parser.getSrcIP();
 			int dstPort = parser.getDstPort();
+			String srcDstPair = srcMRN+"::"+dstMRN;
 			
 			try {
 				mmsLogForDebug.addSessionId(srcMRN, this.SESSION_ID);
@@ -272,24 +273,31 @@ public class MessageRelayingHandler  {
 			}
 			
 			if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
-				boolean initialized = false;
+				boolean isMapSrcDstPairAndSessionInfoInitialized = false;
 				
-				if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN) == null ) { //Initialization
-					SessionManager.mapSrcDstPairAndSessionInfo.put(srcMRN+"::"+dstMRN, new ArrayList<SessionIdAndThr>());	
-					initialized = true;
+				if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair) == null ) { //Initialization
+					SessionManager.mapSrcDstPairAndSessionInfo.put(srcDstPair, new ArrayList<SessionIdAndThr>());	
+					isMapSrcDstPairAndSessionInfoInitialized = true;
 				}
-				if (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcMRN+"::"+dstMRN) == null ) { //Initialization
-					SessionManager.mapSrcDstPairAndLastSeqNum.put(srcMRN+"::"+dstMRN, (double) 0);
-					initialized = true;
+				if (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == null ) { //Initialization
+					SessionManager.mapSrcDstPairAndLastSeqNum.put(srcDstPair, (double) -1);
 				}
-				if (parser.getSeqNum() == 0 ) { //Initialization
-					if (!initialized) {
-						SessionManager.mapSrcDstPairAndSessionInfo.put(srcMRN+"::"+dstMRN, new ArrayList<SessionIdAndThr>());
-						SessionManager.mapSrcDstPairAndLastSeqNum.put(srcMRN+"::"+dstMRN, (double) 0);
+				if (parser.getSeqNum() == 0 ) { //Reset sessions in SessionManager related to srcMRN and dstMRN pair.
+					
+					while (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).size() > 0) {
+						SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).setExceptionFlag(true);
+						SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getSessionBlocker().interrupt();
 					}
-					//TODO
+					
+					if (isMapSrcDstPairAndSessionInfoInitialized) { 
+						SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).clear();
+					} 
+					else {
+						SessionManager.mapSrcDstPairAndSessionInfo.put(srcDstPair, new ArrayList<SessionIdAndThr>());	
+					}
+					SessionManager.mapSrcDstPairAndLastSeqNum.put(srcDstPair, (double) -1);
 				}
-				SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).add(new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, parser.getSeqNum()));
+				SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).add(new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, parser.getSeqNum()));
 			}
 			
 			
@@ -349,23 +357,44 @@ public class MessageRelayingHandler  {
 			
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
 				
-				if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN) == null || 
-						SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).size() == 0 ||
-						SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).get(0) == null ||
-						SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).get(0).getSessionBlocker() == null) { //Check null pointer exception.
+				if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair) == null || 
+						SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).size() == 0 ||
+						SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0) == null ||
+						SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getSessionBlocker() == null) { //Check null pointer exception.
 					throw new NullPointerException();
 				}
 				
 				while (true) { 
 					try {
-						if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).get(0).getSessionId().equals(this.SESSION_ID)) { //Execute this relaying process if it's this relaying process' turn.
-							throw new InterruptedException();
+						if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getSessionId().equals(this.SESSION_ID)) {
+							if (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getPreSeqNum() 
+									||	SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getWaitingCount() > 0) {
+							throw new InterruptedException();	
+							}
+							else {
+								SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).incWaitingCount();
+							}
 						}
-						sessionBlocker.sleep(3000); //Block (by sleep) this relaying process if it's not this relaying process' turn.
+						else {
+							sessionBlocker.sleep(3000); //Block (by sleep) this relaying process if it's not this relaying process' turn.
+						}
 					} 
 					catch (InterruptedException e) {
-						message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); //Execute this relaying process
-						break;
+						if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getSessionId().equals(this.SESSION_ID)) {
+							if (!SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).isExceptionOccured()){
+								message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); //Execute this relaying process
+							}
+							else if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).isExceptionOccured()) {
+								logger.warn("SessionID="+this.SESSION_ID+" Message order exception is occured. Message sequence is reset 0.");
+								if(MMSConfiguration.WEB_LOG_PROVIDING) {
+									String log = "SessionID="+this.SESSION_ID+" Message order exception is occured. Message sequence is reset 0.";
+									mmsLog.addBriefLogForStatus(log);
+									mmsLogForDebug.addLog(this.SESSION_ID, log);
+								}
+								SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).remove(0);
+							}
+							break;
+						}
 					}
 				}
 			}
