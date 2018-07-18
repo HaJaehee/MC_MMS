@@ -37,9 +37,15 @@ Rev. history : 2018-06-06
 Version : 0.7.1
 	Added isGeocastingMsg boolean variable and getIsGeocastingMsg method.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-18
+Version : 0.7.2
+	Added handling input messages by reordering policy.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
@@ -77,6 +83,7 @@ public class MessageParser {
 	private boolean isGeocasting = false;
 	private geolocationInformation geoInfo = null;
 	private JSONArray geoDstInfo = null;
+	private double seqNum = -1;
 
 
 	MessageParser(){
@@ -101,6 +108,7 @@ public class MessageParser {
 		isGeocasting = false;
 		geoInfo = new geolocationInformation();
 		geoDstInfo = null;
+		seqNum = -1;
 	}
 	
 
@@ -117,6 +125,23 @@ public class MessageParser {
 	    }
 		srcMRN = req.headers().get("srcMRN");
 		dstMRN = req.headers().get("dstMRN");
+		Object o = req.headers().get("seqNum");
+		if (o != null) {
+			try {
+				//seqNum must be positive and lower than MAXIMUM VALUE of double. seqNum must be checked.
+				seqNum = Double.parseDouble((String)o);
+				new BigInteger((String)o);
+				if (seqNum < 0) {
+					throw new NumberFormatException();
+				}
+			}
+			catch (NumberFormatException e) {
+				throw e;
+			}
+			
+		}
+		
+		
 		
 		if (req.headers().get("geocasting") != null) {
 			if (req.headers().get("geocasting").equals("true")) {
@@ -206,7 +231,7 @@ public class MessageParser {
 	int getDstPort() { return dstPort; }
 	String getDstMRN() { return dstMRN; }
 	String getDstModel() { return dstModel; }
-
+	double getSeqNum() { return seqNum;	}
 	
 	// Destination Special Information //
 	String[] getMultiDstMRN() { 

@@ -115,25 +115,31 @@ Version : 0.7.2
 	Fixed a bug of realtime log service related to removing an ID.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
-<<<<<<< HEAD
 Rev. history : 2018-07-03
 Version : 0.7.2
 	Added handling input messages by FIFO scheduling.
-=======
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 Rev. history : 2018-07-10
 Version : 0.7.2
-	Fixed unsecure codes.
->>>>>>> beta-0.7.2-alpha+active
+	Fixed insecure codes.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-18
+Version : 0.7.2
+	Added handling input messages by reordering policy.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import java.awt.TrayIcon.MessageType;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.lang.management.MemoryType;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
@@ -265,11 +271,25 @@ public class MessageRelayingHandler  {
 				}
 			}
 			
-			if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
-				if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN) == null) {
-					SessionManager.sessionWatingRes.put(srcMRN+"::"+dstMRN, new ArrayList<SessionIdAndThr>());	
+			if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
+				boolean initialized = false;
+				
+				if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN) == null ) { //Initialization
+					SessionManager.mapSrcDstPairAndSessionInfo.put(srcMRN+"::"+dstMRN, new ArrayList<SessionIdAndThr>());	
+					initialized = true;
 				}
-				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).add(new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker));
+				if (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcMRN+"::"+dstMRN) == null ) { //Initialization
+					SessionManager.mapSrcDstPairAndLastSeqNum.put(srcMRN+"::"+dstMRN, (double) 0);
+					initialized = true;
+				}
+				if (parser.getSeqNum() == 0 ) { //Initialization
+					if (!initialized) {
+						SessionManager.mapSrcDstPairAndSessionInfo.put(srcMRN+"::"+dstMRN, new ArrayList<SessionIdAndThr>());
+						SessionManager.mapSrcDstPairAndLastSeqNum.put(srcMRN+"::"+dstMRN, (double) 0);
+					}
+					//TODO
+				}
+				SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).add(new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, parser.getSeqNum()));
 			}
 			
 			
@@ -312,6 +332,11 @@ public class MessageRelayingHandler  {
 				
 				return;
 			} 
+			//TODO
+			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
+				srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
+	    		message = "OK".getBytes(Charset.forName("UTF-8"));
+			} 
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC) {
 				srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
 	    		message = "OK".getBytes(Charset.forName("UTF-8"));
@@ -322,18 +347,18 @@ public class MessageRelayingHandler  {
 				message = mch.castMsgsToMultipleCS(srcMRN, dstMRNs, req.content().toString(Charset.forName("UTF-8")).trim());
 			} 
 			
-			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
+			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
 				
-				if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN) == null || 
-						SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).size() == 0 ||
-						SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0) == null ||
-						SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionBlocker() == null) { //Check null pointer exception.
+				if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN) == null || 
+						SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).size() == 0 ||
+						SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).get(0) == null ||
+						SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).get(0).getSessionBlocker() == null) { //Check null pointer exception.
 					throw new NullPointerException();
 				}
 				
 				while (true) { 
 					try {
-						if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionId().equals(this.SESSION_ID)) { //Execute this relaying process if it's this relaying process' turn.
+						if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).get(0).getSessionId().equals(this.SESSION_ID)) { //Execute this relaying process if it's this relaying process' turn.
 							throw new InterruptedException();
 						}
 						sessionBlocker.sleep(3000); //Block (by sleep) this relaying process if it's not this relaying process' turn.
@@ -343,6 +368,9 @@ public class MessageRelayingHandler  {
 						break;
 					}
 				}
+			}
+			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
+				message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); //Execute this relaying process
 			}
 			else if (type == MessageTypeDecider.msgType.GEOCASTING) {
 				
@@ -564,7 +592,7 @@ public class MessageRelayingHandler  {
 				message = "No Device having that MRN.".getBytes();
 			} 
 			
-		} catch (NullPointerException e) {
+		} catch (Exception e) {
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage());
 		} finally {
 			if (type != MessageTypeDecider.msgType.POLLING) {

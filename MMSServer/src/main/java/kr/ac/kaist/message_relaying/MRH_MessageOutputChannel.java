@@ -409,22 +409,22 @@ public class MRH_MessageOutputChannel{
 	}
 	
 	private void rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked (String srcMRN, String dstMRN) throws IOException, NullPointerException{
-		if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN) == null || 
-				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).size() == 0 ||
-				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0) == null ||
-				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionBlocker() == null) { //Check null pointer exception.
+		if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN) == null || 
+				SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).size() == 0 ||
+				SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).get(0) == null ||
+				SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).get(0).getSessionBlocker() == null) { //Check null pointer exception.
 			throw new NullPointerException();
 		}
 
-		if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(0).getSessionId().equals(this.SESSION_ID)) { 
+		if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).get(0).getSessionId().equals(this.SESSION_ID)) { 
 	
-			if (SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN) != null && 
-					SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).size() > 1 && 
-					SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(1) != null && 
-					SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(1).getSessionBlocker() != null) { //Wake up next relaying process blocked if exist.
-				SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).get(1).getSessionBlocker().interrupt();
+			if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN) != null && 
+					SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).size() > 1 && 
+					SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).get(1) != null && 
+					SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).get(1).getSessionBlocker() != null) { //Wake up next relaying process blocked if exist.
+				SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).get(1).getSessionBlocker().interrupt();
 			}
-			SessionManager.sessionWatingRes.get(srcMRN+"::"+dstMRN).remove(0); //Remove current relaying process from the schedule. 
+			SessionManager.mapSrcDstPairAndSessionInfo.get(srcMRN+"::"+dstMRN).remove(0); //Remove current relaying process from the schedule. 
 		}
 		else {
 			throw new IOException();

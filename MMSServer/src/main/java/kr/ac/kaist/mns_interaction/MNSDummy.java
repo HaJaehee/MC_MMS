@@ -53,7 +53,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-07-10
 Version : 0.7.2
-	Fixed unsecure codes.
+	Fixed insecure codes.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */

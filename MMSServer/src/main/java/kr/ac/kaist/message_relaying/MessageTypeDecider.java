@@ -71,7 +71,12 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 	
 Rev. history : 2018-07-10
 Version : 0.7.2
-	Fixed unsecure codes.
+	Fixed insecure codes.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-18
+Version : 0.7.2
+	Added handling input messages by reordering policy.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -93,7 +98,9 @@ class MessageTypeDecider {
 	public static enum msgType {
 			POLLING,
 			RELAYING_TO_SC,
+			RELAYING_TO_SC_SEQUENTIALLY,
 			RELAYING_TO_SERVER,
+			RELAYING_TO_SERVER_SEQUENTIALLY,
 			REGISTER_CLIENT,
 			UNKNOWN_MRN,
 			STATUS,EMPTY_MNSDummy,
@@ -126,6 +133,7 @@ class MessageTypeDecider {
 		String dstMRN = parser.getDstMRN();
 		HttpMethod httpMethod = parser.getHttpMethod();
 		String uri = parser.getUri();
+		double seqNum = parser.getSeqNum();
 		
 //		When MRN(s) is(are) null
 	   	if (srcMRN == null && dstMRN == null) {
@@ -205,10 +213,13 @@ class MessageTypeDecider {
     	else {
     		String dstInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, parser.getSrcIP());
     		
+    		
     		if (dstInfo != null) {
+    			//TODO: Exceptions from MNS must be handled.
 	        	if (dstInfo.equals("No")) {
 	        		return msgType.UNKNOWN_MRN;
 	        	}  
+	        	//TODO: This function must be defined.
 	        	else if (dstInfo.regionMatches(0, "MULTIPLE_MRN,", 0, 9)){
 	        		parser.parseMultiDstInfo(dstInfo);
 	        		return msgType.RELAYING_TO_MULTIPLE_SC;
@@ -218,10 +229,20 @@ class MessageTypeDecider {
 	        	String model = parser.getDstModel();
 	        	
 	        	if (model.equals("push")) {//model B (destination MSR, MIR, or MSP as servers)
-	        		return msgType.RELAYING_TO_SERVER;
+	        		if (seqNum == -1) {
+	        			return msgType.RELAYING_TO_SERVER;
+	        		}
+	        		else {
+	        			return msgType.RELAYING_TO_SERVER_SEQUENTIALLY;
+	        		}
 	        	} 
 	        	else if (model.equals("polling")){//when model A, it puts the message into the queue
-	        		return msgType.RELAYING_TO_SC;
+	        		if (seqNum == -1) {
+	        			return msgType.RELAYING_TO_SC;
+	        		}
+	        		else {
+	        			return msgType.RELAYING_TO_SC_SEQUENTIALLY;
+	        		}
 	        	}
     		}
         	
