@@ -7,12 +7,18 @@ File name : SessionIdAndThr.java
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2017-07-03
 Version : 0.7.2
+
+Rev. history : 2018-07-18
+Version : 0.7.2
+	Added handling input messages by reordering policy.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 public class SessionIdAndThr {
 	private String sessionId = "";
 	private Thread sessionBlocker = null;
+	private Thread waitingDiscardingSessionThr = null;
 	private boolean isWaitingRes = false;
 	private double seqNum = -1;
 	private double preSeqNum = -1;
@@ -29,6 +35,7 @@ public class SessionIdAndThr {
 		waitingCount = 0;
 		isWaitingRes = false;
 		exceptionFlag = false;
+		waitingDiscardingSessionThr = null;
 	}
 
 	public String getSessionId() {
@@ -51,6 +58,11 @@ public class SessionIdAndThr {
 		this.waitingCount++;
 	}
 
+	public void setWaitingRes(boolean isWaitingRes) {
+		this.isWaitingRes = isWaitingRes;
+		return;
+	}
+	
 	public boolean isWaitingRes() {
 		return isWaitingRes;
 	}
@@ -73,6 +85,14 @@ public class SessionIdAndThr {
 
 	public void setExceptionFlag(boolean exceptionFlag) {
 		this.exceptionFlag = exceptionFlag;
+	}
+
+	public Thread getWaitingDiscardingSessionThr() {
+		return waitingDiscardingSessionThr;
+	}
+
+	public void setWaitingDiscardingSessionThr(Thread waitingDiscardingSessionThr) {
+		this.waitingDiscardingSessionThr = waitingDiscardingSessionThr;
 	}
 	
 	

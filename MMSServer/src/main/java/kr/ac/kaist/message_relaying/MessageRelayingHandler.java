@@ -285,8 +285,26 @@ public class MessageRelayingHandler  {
 				if (parser.getSeqNum() == 0 ) { //Reset sessions in SessionManager related to srcMRN and dstMRN pair.
 					
 					while (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).size() > 0) {
+						Thread waitingDiscardingSessionThr = new Thread(); 
+						SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).setWaitingDiscardingSessionThr(waitingDiscardingSessionThr);
 						SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).setExceptionFlag(true);
-						SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getSessionBlocker().interrupt();
+						if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).isWaitingRes()) {
+							try {
+								waitingDiscardingSessionThr.sleep(10000); //TODO Default waiting time MUST be defined.
+							}
+							catch (InterruptedException e) {
+								
+							}
+						}
+						else {
+							SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getSessionBlocker().interrupt();
+						}
+						try {
+							waitingDiscardingSessionThr.sleep(10000); //TODO Default waiting time MUST be defined.
+						}
+						catch (InterruptedException e) {
+							
+						}
 					}
 					
 					if (isMapSrcDstPairAndSessionInfoInitialized) { 
@@ -296,6 +314,10 @@ public class MessageRelayingHandler  {
 						SessionManager.mapSrcDstPairAndSessionInfo.put(srcDstPair, new ArrayList<SessionIdAndThr>());	
 					}
 					SessionManager.mapSrcDstPairAndLastSeqNum.put(srcDstPair, (double) -1);
+				}
+				else if (parser.getSeqNum() != 0) {
+					//TODO MUST be implemented. THIS may cause deadlock because even "if (parser.getSeqNum() == 0)" statement is not completed, THIS statement may be incurred.
+	
 				}
 				SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).add(new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, parser.getSeqNum()));
 			}
@@ -340,7 +362,7 @@ public class MessageRelayingHandler  {
 				
 				return;
 			} 
-			//TODO
+			//TODO MUST be implemented.
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 				srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
 	    		message = "OK".getBytes(Charset.forName("UTF-8"));
@@ -366,10 +388,11 @@ public class MessageRelayingHandler  {
 				
 				while (true) { 
 					try {
-						if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getSessionId().equals(this.SESSION_ID)) {
+						if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
 							if (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getPreSeqNum() 
-									||	SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getWaitingCount() > 0) {
-							throw new InterruptedException();	
+									|| SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getWaitingCount() > 0
+									|| SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).isExceptionOccured()) {
+								throw new InterruptedException();	
 							}
 							else {
 								SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).incWaitingCount();
@@ -380,7 +403,7 @@ public class MessageRelayingHandler  {
 						}
 					} 
 					catch (InterruptedException e) {
-						if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getSessionId().equals(this.SESSION_ID)) {
+						if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
 							if (!SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).isExceptionOccured()){
 								message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); //Execute this relaying process
 							}
@@ -391,6 +414,7 @@ public class MessageRelayingHandler  {
 									mmsLog.addBriefLogForStatus(log);
 									mmsLogForDebug.addLog(this.SESSION_ID, log);
 								}
+								SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getWaitingDiscardingSessionThr().interrupt();
 								SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).remove(0);
 							}
 							break;

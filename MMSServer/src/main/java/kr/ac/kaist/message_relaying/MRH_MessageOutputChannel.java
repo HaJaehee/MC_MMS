@@ -71,6 +71,11 @@ Rev. history : 2018-07-03
 Version : 0.7.2
 	Added handling input messages by FIFO scheduling.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-19
+Version : 0.7.2
+	Added handling input messages by reordering policy.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -203,7 +208,9 @@ public class MRH_MessageOutputChannel{
 	
 //  to do relaying
 	public byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
-
+		
+		setThisSessionWaitingRes (srcMRN, dstMRN);
+		
 		String url = "http://" + IPAddress + ":" + port + req.uri();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -287,6 +294,8 @@ public class MRH_MessageOutputChannel{
 //  to do secure relaying
 	public byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws NullPointerException, IOException { // 
 
+		setThisSessionWaitingRes (srcMRN, dstMRN);
+		
 	  	hv = getHV();
 	  	
 		String url = "https://" + IPAddress + ":" + port + req.uri();
@@ -417,7 +426,7 @@ public class MRH_MessageOutputChannel{
 				SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getSessionBlocker() == null) { //Check null pointer exception.
 			throw new NullPointerException();
 		}
-
+		//TODO MUST be implemented. MUST awake waitingDiscardingSessionThr if it is not null.
 		if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getSessionId().equals(this.SESSION_ID)) { 
 			//TODO Next message having successive seqNum will be relayed.
 			if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair) != null && 
@@ -427,6 +436,25 @@ public class MRH_MessageOutputChannel{
 				SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(1).getSessionBlocker().interrupt();
 			}
 			SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).remove(0); //Remove current relaying process from the schedule. 
+		}
+		else {
+			throw new IOException();
+		}
+		return;
+	}
+	
+	private void setThisSessionWaitingRes (String srcMRN, String dstMRN) throws IOException, NullPointerException{
+		String srcDstPair = srcMRN+"::"+dstMRN;
+		
+		if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair) == null || 
+				SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).size() == 0 ||
+				SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0) == null ||
+				SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getSessionBlocker() == null) { //Check null pointer exception.
+			throw new NullPointerException();
+		}
+		
+		if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getSessionId().equals(this.SESSION_ID)) { //This session is waiting a respond.
+			SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).setWaitingRes(true);
 		}
 		else {
 			throw new IOException();
