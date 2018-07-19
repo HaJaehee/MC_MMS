@@ -201,7 +201,7 @@ public class MessageParser {
 			}
     	
 		} catch (org.json.simple.parser.ParseException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		}
 	}
 	
@@ -212,7 +212,7 @@ public class MessageParser {
 			geoDstInfo = (JSONArray) parser.parse(geocastInfo);
 			
 		} catch (org.json.simple.parser.ParseException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		}
 	}
 	

@@ -409,9 +409,9 @@ public class MRH_MessageOutputChannel{
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (NoSuchAlgorithmException e) {
-        	logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+        	logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		} catch (KeyManagementException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		}
         
         HostnameVerifier hv = new HostnameVerifier() {
@@ -439,16 +439,20 @@ public class MRH_MessageOutputChannel{
 		//TODO MUST be implemented. MUST awake waitingDiscardingSessionThr if it is not null.
 		if (listItem.get(0).getSessionId().equals(this.SESSION_ID)) { 
 			//TODO Next message having successive seqNum will be relayed.
+			boolean checkNextSeq = false; 
 			if (listItem != null && 
 					listItem.size() > 1 && 
 					listItem.get(1) != null && 
 					listItem.get(1).getSessionBlocker() != null &&
-					listItem.get(1).getPreSeqNum() == listItem.get(0).getSeqNum()) { //Wake up next relaying process blocked if exist.
-				listItem.get(1).getSessionBlocker().interrupt();
+					listItem.get(1).getPreSeqNum() == listItem.get(0).getSeqNum()) { // Check next sequence of message.
+				checkNextSeq = true;
 			}
 			SessionManager.mapSrcDstPairAndLastSeqNum.put(srcDstPair, (double) listItem.get(0).getSeqNum());
 			System.out.println("Updated last seq number="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
 			listItem.remove(0); //Remove current relaying process from the schedule. 
+			if (checkNextSeq) { //Wake up next relaying process blocked if exist.
+				listItem.get(0).getSessionBlocker().interrupt();
+			}
 		}
 		else {
 			throw new IOException();

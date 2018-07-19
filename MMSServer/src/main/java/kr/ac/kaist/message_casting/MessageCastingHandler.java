@@ -149,7 +149,7 @@ public class MessageCastingHandler {
     		}
 		} 
     	catch (IOException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass()+" "+e.getMessage()+".");
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		}
 		
 		return message;
@@ -190,7 +190,7 @@ public class MessageCastingHandler {
 		        		}
 					} 
 		        	catch (IOException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass()+" "+e.getMessage()+".");
+						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 					}
 				}
 			}

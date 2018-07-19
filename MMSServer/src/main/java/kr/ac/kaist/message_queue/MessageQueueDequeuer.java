@@ -250,7 +250,7 @@ class MessageQueueDequeuer extends Thread{
 						    		connection.close();
 						    	}
 							} catch (TimeoutException e) {
-								logger.warn("SessionID="+SESSION_ID+" "+e.getMessage()+".");
+								logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 							}
 
 						  }
@@ -350,19 +350,19 @@ class MessageQueueDequeuer extends Thread{
 			
 		} 
 	    catch (IOException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		} 
 	    catch (TimeoutException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		} 
 //	    catch (ShutdownSignalException e) {
-//			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+//			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 //		} 
 	    catch (ConsumerCancelledException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		} 
 //	    catch (InterruptedException e) {
-//			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+//			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 //		} 
 	    finally {
 	    	if ((PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null) || (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) != null && PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING)) { // Default polling method: normal polling
@@ -370,14 +370,14 @@ class MessageQueueDequeuer extends Thread{
 		    		try {
 						channel.close();
 					} catch (IOException | TimeoutException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 					}
 		    	}
 				if (connection != null) {
 					try {
 						connection.close();
 					} catch (IOException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 					}
 				}
 	    	}

@@ -229,6 +229,7 @@ public class MessageRelayingHandler  {
 			String dstIP = parser.getDstIP();
 			String srcIP = parser.getSrcIP();
 			int dstPort = parser.getDstPort();
+			double seqNum = parser.getSeqNum();
 			String srcDstPair = srcMRN+"::"+dstMRN;
 			
 			try {
@@ -252,13 +253,23 @@ public class MessageRelayingHandler  {
 			}
 			
 			if (type != MessageTypeDecider.msgType.REALTIME_LOG) {
-				logger.info("SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
-				if(MMSConfiguration.WEB_LOG_PROVIDING) {
-					String log = "SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".";
-					mmsLog.addBriefLogForStatus(log);
-					mmsLogForDebug.addLog(this.SESSION_ID, log);
+				if (seqNum != -1) {
+					logger.info("SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+", seqNum="+seqNum+".");
+					if(MMSConfiguration.WEB_LOG_PROVIDING) {
+						String log = "SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+", seqNum="+seqNum+".";
+						mmsLog.addBriefLogForStatus(log);
+						mmsLogForDebug.addLog(this.SESSION_ID, log);
+					}
 				}
-			
+				else {
+					logger.info("SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
+					if(MMSConfiguration.WEB_LOG_PROVIDING) {
+						String log = "SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".";
+						mmsLog.addBriefLogForStatus(log);
+						mmsLogForDebug.addLog(this.SESSION_ID, log);
+					}
+				}
+				
 			
 				logger.trace("SessionID="+this.SESSION_ID+" Payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));	
 				if(MMSConfiguration.WEB_LOG_PROVIDING&&logger.isTraceEnabled()) {
@@ -270,71 +281,97 @@ public class MessageRelayingHandler  {
 			
 			if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 				
-				System.out.println("RELAYING_TO_SERVER_SEQUENTIALLY");
-				List <SessionIdAndThr> itemList = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
-				if (itemList == null ) { //Initialization
+				System.out.println("SessionID="+this.SESSION_ID+" RELAYING_TO_SERVER_SEQUENTIALLY INIT");
+				
+				if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair) == null ) { //Initialization
 					SessionManager.mapSrcDstPairAndSessionInfo.put(srcDstPair, new ArrayList<SessionIdAndThr>());	
-					while (itemList == null) {}
+					while (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair) == null) {}
 				}
+				System.out.println("SessionID="+this.SESSION_ID+" init done??");
 				if (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == null ) { //Initialization
 					SessionManager.mapSrcDstPairAndLastSeqNum.put(srcDstPair, (double) -1);
-					while (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == null) {}
+					while (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == null) {
+					}
 				}
-				if (parser.getSeqNum() == 0 ) { //Reset sessions in SessionManager related to srcMRN and dstMRN pair.
-					while (itemList.size() > 0) {
-						Thread waitingDiscardingSessionThr = new Thread(); 
-						itemList.get(0).setWaitingDiscardingSessionThr(waitingDiscardingSessionThr);
-						itemList.get(0).setExceptionFlag(true);
-						if (itemList.get(0).isWaitingRes()) {
+				List <SessionIdAndThr> itemList = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
+				System.out.println("SessionID="+this.SESSION_ID+" RELAYING_TO_SERVER_SEQUENTIALLY START");
+				printSessionsInSessionMng (srcDstPair);
+				if (seqNum == 0) {
+					if (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) != -1) { //Reset sessions in SessionManager related to srcMRN and dstMRN pair.
+						System.out.println("Reset sessions in SessionManager related to srcMRN and dstMRN pair.");
+						while (itemList.size() > 0) {
+							System.out.println("Reset session");
+							Thread waitingDiscardingSessionThr = new Thread(); 
+							itemList.get(0).setWaitingDiscardingSessionThr(waitingDiscardingSessionThr);
+							itemList.get(0).setExceptionFlag(true);
+							if (itemList.get(0).isWaitingRes()) {
+								try {
+									System.out.println("Default waiting time MUST be defined.");
+									waitingDiscardingSessionThr.sleep(10000); //TODO Default waiting time MUST be defined.
+								}
+								catch (InterruptedException e) {
+									//Interrupt waiting discarding session thread.
+									System.out.println("Interrupt waiting discarding session thread.");
+								}
+							}
+							else {
+								itemList.get(0).getSessionBlocker().interrupt();
+							}
 							try {
+								System.out.println("Default waiting time MUST be defined.");
 								waitingDiscardingSessionThr.sleep(10000); //TODO Default waiting time MUST be defined.
 							}
 							catch (InterruptedException e) {
 								//Interrupt waiting discarding session thread.
+								System.out.println("Interrupt waiting discarding session thread.");
 							}
 						}
-						else {
-							itemList.get(0).getSessionBlocker().interrupt();
-						}
-						try {
-							waitingDiscardingSessionThr.sleep(10000); //TODO Default waiting time MUST be defined.
-						}
-						catch (InterruptedException e) {
-							//Interrupt waiting discarding session thread.
-						}
+					
+					
+						itemList.clear();
+						
+						SessionManager.mapSrcDstPairAndLastSeqNum.put(srcDstPair, (double) -1);
+						itemList.add(new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
 					}
-					
-					itemList.clear();
-					
-					SessionManager.mapSrcDstPairAndLastSeqNum.put(srcDstPair, (double) -1);
-					itemList.add(new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, parser.getSeqNum()));
+					else { //SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == -1
+						itemList.add(0, new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
+					}
+
 					System.out.println("SessionID="+itemList.get(0).getSessionId()+" seqNum="+itemList.get(0).getSeqNum());
 					
 				}
-				else if (parser.getSeqNum() != 0) {
-					//TODO MUST be implemented. THIS may cause deadlock because even "if (parser.getSeqNum() == 0)" statement is not completed, THIS statement may be incurred.
+				else if (seqNum != 0) {
+					//TODO MUST be implemented. THIS may cause deadlock because even "if (seqNum == 0)" statement is not completed, THIS statement may be incurred.
 					//TODO Sort messages based on seqNums of messages.
+					System.out.println("seqNum="+seqNum+"!=0");
 					
 					int index = 0;
 					int itemListSize = itemList.size();
-					while (index<itemListSize) {
-						if (parser.getSeqNum() > itemList.get(index).getSeqNum()) {
+					while (index < itemListSize) {
+						if (seqNum > itemList.get(index).getSeqNum()) {
 							index++;
 							itemListSize = itemList.size(); //MUST be updated in every iteration because of multi-thread safety.
 							continue;
 						}
-						else if (parser.getSeqNum() < itemList.get(index).getSeqNum()) {
-							itemList.add(index, new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, parser.getSeqNum()));
+						else if (seqNum < itemList.get(index).getSeqNum()) {
+							itemList.add(index, new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
 							break;
 						}
-						else { //parser.getSeqNum() == itemList.get(index).getSeqNum()
+						else { //seqNum == itemList.get(index).getSeqNum()
+							System.out.println("seqNum="+seqNum+", seqNum in List="+itemList.get(0).getSeqNum());
+							System.out.println("index="+index);
+							System.out.println("Sequence number of message is duplicated.");
 							throw new MessageOrderException("Sequence number of message is duplicated.");
 						}
 					}
+					System.out.println("seqNum="+seqNum+", seqNum in List="+itemList.get(0).getSeqNum());
+					System.out.println("index="+index);
 					if (index == itemListSize) { //This condition contains conditions "index == 0" and "itemListSize == 0".
-						itemList.add(index, new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, parser.getSeqNum()));
+						itemList.add(index, new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
 					}
 				}
+				System.out.println("SessionID="+this.SESSION_ID+" RELAYING_TO_SERVER_SEQUENTIALLY END");
+				printSessionsInSessionMng (srcDstPair);
 			}
 			
 			
@@ -414,6 +451,8 @@ public class MessageRelayingHandler  {
 							}
 						}
 						else {
+							System.out.println("Block (by sleep) this relaying process if it's not this relaying process' turn.");
+							itemList.get(0).incWaitingCount();
 							sessionBlocker.sleep(3000); //Block (by sleep) this relaying process if it's not this relaying process' turn.
 						}
 					} 
@@ -678,6 +717,15 @@ public class MessageRelayingHandler  {
 		}
 	}
 	
+
+	private void printSessionsInSessionMng (String srcDstPair) {
+		List<SessionIdAndThr> itemList = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
+		
+		for (int i = 0 ; i < itemList.size() ; i++) {
+			SessionIdAndThr item = itemList.get(i);
+			System.out.println("index="+i+", SessionID="+item.getSessionId()+", seqNum"+item.getSeqNum()+", waitingCount="+item.getWaitingCount()+", isExceptionOccured="+item.isExceptionOccured());
+		}
+	}
 /*
 //This method will be
   @Deprecated

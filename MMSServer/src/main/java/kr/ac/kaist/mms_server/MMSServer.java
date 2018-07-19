@@ -58,10 +58,10 @@ public class MMSServer {
 	        });
 		}
 		catch (InterruptedException e) {
-			logger.warn(e.getMessage());
+			logger.warn(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		}
 		catch (Exception e) {
-			logger.warn(e.getMessage());
+			logger.warn(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		}
 	}
 }

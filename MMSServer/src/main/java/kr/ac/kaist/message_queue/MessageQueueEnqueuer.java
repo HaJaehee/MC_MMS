@@ -106,9 +106,9 @@ class MessageQueueEnqueuer {
 			channel.close();
 			connection.close();
 		} catch (IOException e) {
-			logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			logger.error("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		} catch (TimeoutException e) {
-			logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			logger.error("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		}
 	}
 }

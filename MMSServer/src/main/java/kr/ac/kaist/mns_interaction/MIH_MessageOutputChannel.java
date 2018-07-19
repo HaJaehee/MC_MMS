@@ -90,12 +90,12 @@ class MIH_MessageOutputChannel {
 		    
 	    	
 	    	queryReply = response.toString();
-	    	logger.trace("SessionID="+this.SESSION_ID+" From server=" + queryReply+".");
+	    	logger.trace("SessionID="+this.SESSION_ID+" From MNS server=" + queryReply+".");
 
     	} catch (UnknownHostException e) {
-    		logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+    		logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		} catch (IOException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		} finally {
     		if (pw != null) {
     			pw.close();
@@ -104,21 +104,21 @@ class MIH_MessageOutputChannel {
 				try {
 					isr.close();
 				} catch (IOException e) {
-					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 				}
 			}
 			if (br != null) {
 				try {
 					br.close();
 				} catch (IOException e) {
-					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 				}
 			}
     		if (MNSSocket != null) {
     			try {
 					MNSSocket.close();
 				} catch (IOException e) {
-					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+					logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 				}
     		}
 		}
