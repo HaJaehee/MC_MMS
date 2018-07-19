@@ -125,12 +125,12 @@ public class MessageParser {
 	    }
 		srcMRN = req.headers().get("srcMRN");
 		dstMRN = req.headers().get("dstMRN");
-		Object o = req.headers().get("seqNum");
+		String o = req.headers().get("seqNum");
 		if (o != null) {
 			try {
 				//seqNum must be positive and lower than MAXIMUM VALUE of double. seqNum must be checked.
-				seqNum = Double.parseDouble((String)o);
-				new BigInteger((String)o);
+				seqNum = Double.parseDouble(o);
+				new BigInteger(o);
 				if (seqNum < 0) {
 					throw new NumberFormatException();
 				}

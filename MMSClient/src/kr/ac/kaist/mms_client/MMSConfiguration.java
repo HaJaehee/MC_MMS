@@ -18,13 +18,19 @@ Rev. history : 2018-06-28
 Version : 0.7.1
 	Replaced LOGGING to DEBUG.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-19
+Version : 0.7.2
+	Updated to 0.7.2.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
 
 /**
  * It is an object that contains values for setting MMSClientHandler and SecureMMSClientHandler.
- * @version 0.7.1
+ * @version 0.7.2
  * @see MMSClientHandler
  * @see SecureMMSClientHandler
  */
@@ -39,4 +45,5 @@ public class MMSConfiguration {
 	public static final int LOC_UPDATE_INTERVAL = 5000;
 	public static float lat = (float)0.0;
 	public static float lon = (float)0.0;
+	public static final String USER_AGENT = "MMSClient/0.7.2";
 }

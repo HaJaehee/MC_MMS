@@ -1,6 +1,4 @@
 package kr.ac.kaist.mms_client;
-
-
 /* -------------------------------------------------------- */
 /** 
 File name : SecureMMSSndHandler.java
@@ -23,6 +21,11 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION, EXPOSURE_OF_SYSTEM_DATA hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-19
+Version : 0.7.2
+	Added API; message sender guarantees message sequence .
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -58,7 +61,7 @@ import javax.net.ssl.*;
 
 class SecureMMSSndHandler {
 	private String TAG = "[SecureMMSSndHandler] ";
-	private final String USER_AGENT = "MMSClient/0.7.1";
+	private final String USER_AGENT = MMSConfiguration.USER_AGENT;
 	private String clientMRN = null;
 	private boolean isRgstLoc = false;
 	private SecureMMSClientHandler.ResponseCallback myCallback;
@@ -78,8 +81,10 @@ class SecureMMSSndHandler {
 		isRgstLoc = true;
 		sendHttpsPost("urn:mrn:smart-navi:device:mms1", "/registering", port+":2", null);
 	}
-	
 	void sendHttpsPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws IOException{
+		sendHttpsPost(dstMRN, loc, data, headerField, -1);
+	}
+	void sendHttpsPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int seqNum) throws IOException{
         
 		String url = "https://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
@@ -101,7 +106,9 @@ class SecureMMSSndHandler {
 			con.setRequestProperty("dstMRN", dstMRN);
 		}
 		//con.addRequestProperty("Connection","keep-alive");
-		
+		if (seqNum != -1) {
+			con.setRequestProperty("seqNum", ""+seqNum);
+		}
 		if (headerField != null) {
 			con = addCustomHeaderField(con, headerField);
 		} 
@@ -216,6 +223,9 @@ class SecureMMSSndHandler {
 	
 	//HJH
 	void sendHttpsGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField) throws Exception {
+		sendHttpsGet(dstMRN, loc, params, headerField, -1);
+	}
+	void sendHttpsGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField, int seqNum) throws Exception {
 
 		String url = "https://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
@@ -245,6 +255,9 @@ class SecureMMSSndHandler {
 		con.setRequestProperty("srcMRN", clientMRN);
 		if (dstMRN != null) {
 			con.setRequestProperty("dstMRN", dstMRN);
+		}
+		if (seqNum != -1) {
+			con.setRequestProperty("seqNum", ""+seqNum);
 		}
 		if (headerField != null) {
 			con = addCustomHeaderField(con, headerField);

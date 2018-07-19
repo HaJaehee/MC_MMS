@@ -71,6 +71,11 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION, EXPOSURE_OF_SYSTEM_DATA hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-19
+Version : 0.7.2
+	Added API; message sender guarantees message sequence .
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -82,7 +87,7 @@ import java.util.Map;
 
 /**
  * It is an object that can communicate to MMS through HTTPS and send or receive messages of other objects.
- * @version 0.7.1
+ * @version 0.7.2
  * @see MMSClientHandler
  */
 public class SecureMMSClientHandler {
@@ -438,6 +443,106 @@ public class SecureMMSClientHandler {
 			this.sendHandler.sendHttpsGet(dstMRN, loc, params, headerField);
 		}
 	}
+	/*-----------------------------------------------------------------------------------
+	 * Message sender supporting message sequence.
+	 -----------------------------------------------------------------------------------*/
+	
+	/**
+	 * Send a POST message to the destination MRN that url matches the location via MMS.
+	 * Message sender guarantees message sequence.
+	 * @param 	dstMRN			the destination MRN to send data
+	 * @param 	loc				url location
+	 * @param 	data			the data to send
+	 * @param 	seqNum			sequence number of message
+	 * @throws 	Exception		if exception occurs
+	 * @see		#sendPostMsg(String, String)
+	 * @see		#setSender(ResponseCallback)
+	 */
+	public void sendPostMsg(String dstMRN, String loc, String data, int seqNum) throws Exception{
+		if (this.sendHandler == null) {
+			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
+		} 
+		else if (seqNum < 0) {
+			System.out.println(TAG+"Failed! seqNum must be equal to or greater than zero.");
+		}
+		else {
+			this.sendHandler.sendHttpsPost(dstMRN, loc, data, headerField, seqNum);
+		}
+	}
+	
+	/**
+	 * Send a POST message to the destination MRN via MMS.
+	 * Message sender guarantees message sequence.
+	 * @param 	dstMRN			the destination MRN to send data
+	 * @param 	data			the data to send
+	 * @param 	seqNum			sequence number of message
+	 * @throws 	Exception		if exception occurs
+	 * @see		#sendPostMsg(String, String, String)
+	 * @see		#setSender(ResponseCallback)
+	 */
+	public void sendPostMsg(String dstMRN, String data, int seqNum) throws Exception{
+		if (this.sendHandler == null) {
+			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
+		} 
+		else if (seqNum < 0) {
+			System.out.println(TAG+"Failed! seqNum must be equal to or greater than zero.");
+		}
+		else {
+			this.sendHandler.sendHttpsPost(dstMRN, "", data, headerField, seqNum);
+		}
+	}
+	
+	//HJH
+	/**
+	 * Send a GET message to the destination MRN via MMS.
+	 * Message sender guarantees message sequence.
+	 * @param 	dstMRN			the destination MRN
+	 * @param 	seqNum			sequence number of message
+	 * @throws 	Exception		if exception occurs
+	 * @see		#sendGetMsg(String, String, String)
+	 * @see		#setSender(ResponseCallback)
+	 */
+	public void sendGetMsg(String dstMRN, int seqNum) throws Exception{
+		if (this.sendHandler == null) {
+			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
+		} 
+		else if (seqNum < 0) {
+			System.out.println(TAG+"Failed! seqNum must be equal to or greater than zero.");
+		}
+		else {
+			this.sendHandler.sendHttpsGet(dstMRN, "", "", headerField, seqNum);
+		}
+	}
+	
+	//HJH
+	/**
+	 * Send a GET message which the destination MRN is that url matches the location via MMS and setting
+	 * parameter.
+	 * Message sender guarantees message sequence.
+	 * @param 	dstMRN			the destination MRN
+	 * @param	loc				url location
+	 * @param	params			parameter
+	 * @param 	seqNum			sequence number of message
+	 * @throws 	Exception		if exception occurs
+	 * @see		#sendGetMsg(String)
+	 * @see		#setSender(ResponseCallback)
+	 */
+	public void sendGetMsg(String dstMRN, String loc, String params, int seqNum) throws Exception{
+		if (this.sendHandler == null) {
+			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
+		} 
+		else if (seqNum < 0) {
+			System.out.println(TAG+"Failed! seqNum must be equal to or greater than zero.");
+		}
+		else {
+			this.sendHandler.sendHttpsGet(dstMRN, loc, params, headerField, seqNum);
+		}
+	}
+	
+	/*-----------------------------------------------------------------------------------
+	 * END. Message sender supporting message sequence. 
+	 -----------------------------------------------------------------------------------*/
+	
 	
 	//OONI
 	/**

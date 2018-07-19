@@ -69,7 +69,7 @@ class MMSRcvHandler {
 	//OONI
 	FileReqHandler frh = null;
 	//OONI
-	private static final String USER_AGENT = "MMSClient/0.7.1";
+	private static final String USER_AGENT = MMSConfiguration.USER_AGENT;
 	private String TAG = "[MMSRcvHandler";
 	private String clientMRN = null;
 	
