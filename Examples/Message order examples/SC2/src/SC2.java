@@ -66,7 +66,7 @@ public class SC2 {
 		}
 		
 		//Shuffle message sequence.
-		int testNum = 0;
+		int testNum = 2;
 		if (testNum == 0) {
 			thrList.get(0).start();
 			Thread.sleep(4000);

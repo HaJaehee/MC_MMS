@@ -11,8 +11,24 @@ Version : 0.7.2
 /* -------------------------------------------------------- */
 import java.util.ArrayList;
 
-public class  SessionList<SessionAndThr> extends ArrayList<SessionAndThr>{
+public class SessionList<SessionAndThr> extends ArrayList<SessionAndThr>{
 
+	public SessionList (){ //Constructor for multi-thread safety.
+	   final SessionList<SessionAndThr> list = this;
+       synchronized(this) {
+          new Thread() {
+             @Override
+             public void run() {
+                // ... Reference 'list,' the object being constructed
+                synchronized(list) {
+                   // do something dangerous with 'list'.
+                }
+             }
+          }.start();
+          // do something dangerous with this
+       }
+	}
+	
 	@Override
 	public void add(int arg0, SessionAndThr arg1) {
 		
