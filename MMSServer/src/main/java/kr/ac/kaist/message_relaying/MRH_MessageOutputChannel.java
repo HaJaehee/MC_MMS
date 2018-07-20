@@ -409,9 +409,15 @@ public class MRH_MessageOutputChannel{
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (NoSuchAlgorithmException e) {
-        	logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+        	logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		} catch (KeyManagementException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		}
         
         HostnameVerifier hv = new HostnameVerifier() {
@@ -444,13 +450,17 @@ public class MRH_MessageOutputChannel{
 					listItem.size() > 1 && 
 					listItem.get(1) != null && 
 					listItem.get(1).getSessionBlocker() != null &&
-					listItem.get(1).getPreSeqNum() == listItem.get(0).getSeqNum()) { // Check next sequence of message.
+					listItem.get(1).getPreSeqNum() == listItem.get(0).getSeqNum() &&
+					!listItem.get(1).isWaitingRes()) { // Check next sequence of message.
 				checkNextSeq = true;
+				System.out.println("index="+1+", SessionID="+listItem.get(1).getSessionId()+", seqNum="+listItem.get(1).getSeqNum()+", waitingCount="+listItem.get(1).getWaitingCount()+", isExceptionOccured="+listItem.get(1).isExceptionOccured());
+
 			}
 			SessionManager.mapSrcDstPairAndLastSeqNum.put(srcDstPair, (double) listItem.get(0).getSeqNum());
 			System.out.println("Updated last seq number="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
 			listItem.remove(0); //Remove current relaying process from the schedule. 
 			if (checkNextSeq) { //Wake up next relaying process blocked if exist.
+				System.out.println("index="+0+", SessionID="+listItem.get(0).getSessionId()+", seqNum="+listItem.get(0).getSeqNum()+", waitingCount="+listItem.get(0).getWaitingCount()+", isExceptionOccured="+listItem.get(0).isExceptionOccured());
 				listItem.get(0).getSessionBlocker().interrupt();
 			}
 		}

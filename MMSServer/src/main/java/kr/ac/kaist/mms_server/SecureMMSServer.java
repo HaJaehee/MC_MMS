@@ -131,6 +131,9 @@ public final class SecureMMSServer extends Thread {
 	            b.bind(MMSConfiguration.HTTPS_PORT).sync().channel().closeFuture().sync();
 	        } catch (InterruptedException e) {
 	        	logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+    				logger.error(e.getStackTrace()[i]+".");
+    			}
 			} finally {
 	            bossGroup.shutdownGracefully();
 	            workerGroup.shutdownGracefully();
@@ -138,16 +141,34 @@ public final class SecureMMSServer extends Thread {
 			
 		} catch (CertificateException e) {
 			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.error(e.getStackTrace()[i]+".");
+			}
 		} catch (SSLException e) {
 			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.error(e.getStackTrace()[i]+".");
+			}
 		} catch (UnrecoverableKeyException e) {
 			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.error(e.getStackTrace()[i]+".");
+			}
 		} catch (KeyStoreException e) {
 			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.error(e.getStackTrace()[i]+".");
+			}
 		} catch (NoSuchAlgorithmException e) {
 			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.error(e.getStackTrace()[i]+".");
+			}
 		} catch (IOException e) {
 			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.error(e.getStackTrace()[i]+".");
+			}
 		}
     }
 }

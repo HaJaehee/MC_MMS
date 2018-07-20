@@ -192,7 +192,10 @@ public class MessageRelayingHandler  {
 			type = typeDecider.decideType(parser, mch);
 		} 
 		catch (ParseException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		}
 
 		
@@ -284,10 +287,10 @@ public class MessageRelayingHandler  {
 				System.out.println("SessionID="+this.SESSION_ID+" RELAYING_TO_SERVER_SEQUENTIALLY INIT");
 				
 				if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair) == null ) { //Initialization
-					SessionManager.mapSrcDstPairAndSessionInfo.put(srcDstPair, new ArrayList<SessionIdAndThr>());	
+					SessionManager.mapSrcDstPairAndSessionInfo.put(srcDstPair, new SessionList<SessionIdAndThr>());	
 					while (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair) == null) {}
 				}
-				System.out.println("SessionID="+this.SESSION_ID+" init done??");
+				
 				if (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == null ) { //Initialization
 					SessionManager.mapSrcDstPairAndLastSeqNum.put(srcDstPair, (double) -1);
 					while (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == null) {
@@ -295,39 +298,19 @@ public class MessageRelayingHandler  {
 				}
 				List <SessionIdAndThr> itemList = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
 				System.out.println("SessionID="+this.SESSION_ID+" RELAYING_TO_SERVER_SEQUENTIALLY START");
-				printSessionsInSessionMng (srcDstPair);
+				//printSessionsInSessionMng (srcDstPair);
 				if (seqNum == 0) {
 					if (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) != -1) { //Reset sessions in SessionManager related to srcMRN and dstMRN pair.
 						System.out.println("Reset sessions in SessionManager related to srcMRN and dstMRN pair.");
-						while (itemList.size() > 0) {
-							System.out.println("Reset session");
-							Thread waitingDiscardingSessionThr = new Thread(); 
-							itemList.get(0).setWaitingDiscardingSessionThr(waitingDiscardingSessionThr);
+						int itemListSize = itemList.size();
+						while (itemListSize > 0) {
+							System.out.println("Reset sessions");
 							itemList.get(0).setExceptionFlag(true);
-							if (itemList.get(0).isWaitingRes()) {
-								try {
-									System.out.println("Default waiting time MUST be defined.");
-									waitingDiscardingSessionThr.sleep(10000); //TODO Default waiting time MUST be defined.
-								}
-								catch (InterruptedException e) {
-									//Interrupt waiting discarding session thread.
-									System.out.println("Interrupt waiting discarding session thread.");
-								}
-							}
-							else {
+							if (!itemList.get(0).isWaitingRes()) {
 								itemList.get(0).getSessionBlocker().interrupt();
 							}
-							try {
-								System.out.println("Default waiting time MUST be defined.");
-								waitingDiscardingSessionThr.sleep(10000); //TODO Default waiting time MUST be defined.
-							}
-							catch (InterruptedException e) {
-								//Interrupt waiting discarding session thread.
-								System.out.println("Interrupt waiting discarding session thread.");
-							}
+							itemListSize = itemList.size(); //MUST be updated in every iteration because of multi-thread safety.
 						}
-					
-					
 						itemList.clear();
 						
 						SessionManager.mapSrcDstPairAndLastSeqNum.put(srcDstPair, (double) -1);
@@ -347,31 +330,40 @@ public class MessageRelayingHandler  {
 					
 					int index = 0;
 					int itemListSize = itemList.size();
-					while (index < itemListSize) {
-						if (seqNum > itemList.get(index).getSeqNum()) {
-							index++;
-							itemListSize = itemList.size(); //MUST be updated in every iteration because of multi-thread safety.
-							continue;
+					if (seqNum > SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair)) {
+						while (index < itemListSize) {
+							try {
+								if (seqNum > itemList.get(index).getSeqNum()) {
+									index++;
+									itemListSize = itemList.size(); //MUST be updated in every iteration because of multi-thread safety.
+									continue;
+								}
+								else if (seqNum < itemList.get(index).getSeqNum()) {
+									itemList.add(index, new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
+									break;
+								}
+								else { //seqNum == itemList.get(index).getSeqNum()
+									System.out.println("index="+index+", seqNum="+seqNum+", seqNum in List="+itemList.get(0).getSeqNum());
+									System.out.println("Sequence number of message is duplicated.");
+									throw new MessageOrderException("Sequence number of message is duplicated.");
+								}
+							}
+							catch (NullPointerException e) {
+								index = 0;
+								itemListSize = itemList.size();
+							}
 						}
-						else if (seqNum < itemList.get(index).getSeqNum()) {
+						if (index == itemListSize) { //This condition contains conditions "index == 0" and "itemListSize == 0".
 							itemList.add(index, new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
-							break;
-						}
-						else { //seqNum == itemList.get(index).getSeqNum()
-							System.out.println("seqNum="+seqNum+", seqNum in List="+itemList.get(0).getSeqNum());
-							System.out.println("index="+index);
-							System.out.println("Sequence number of message is duplicated.");
-							throw new MessageOrderException("Sequence number of message is duplicated.");
 						}
 					}
-					System.out.println("seqNum="+seqNum+", seqNum in List="+itemList.get(0).getSeqNum());
-					System.out.println("index="+index);
-					if (index == itemListSize) { //This condition contains conditions "index == 0" and "itemListSize == 0".
-						itemList.add(index, new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
+					else { //Drop message.
+						throw new MessageOrderException("Sequence number of message is out of ordered.");
 					}
+					System.out.println("index="+index+", seqNum="+seqNum+", seqNum in List="+itemList.get(0).getSeqNum());
 				}
 				System.out.println("SessionID="+this.SESSION_ID+" RELAYING_TO_SERVER_SEQUENTIALLY END");
-				printSessionsInSessionMng (srcDstPair);
+				//printSessionsInSessionMng (srcDstPair);
 			}
 			
 			
@@ -431,48 +423,55 @@ public class MessageRelayingHandler  {
 			
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
 				List<SessionIdAndThr> itemList = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
-				if (itemList == null || 
-						itemList.size() == 0 ||
-						itemList.get(0) == null ||
-						itemList.get(0).getSessionBlocker() == null) { //Check null pointer exception.
-					throw new NullPointerException();
-				}
-				
+
 				while (true) { 
+					if (itemList == null || 
+							itemList.size() == 0 ||
+							itemList.get(0) == null ||
+							itemList.get(0).getSessionBlocker() == null) { //Check null pointer exception.
+						throw new NullPointerException();
+					}
 					try {
+						System.out.println("RELAYING_TO_SERVER_SEQUENTIALLY getSessionID="+itemList.get(0).getSessionId());
 						if (itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
-							if (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair).get(0).getPreSeqNum() || 
+							if (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == itemList.get(0).getPreSeqNum() || 
 									itemList.get(0).getWaitingCount() > 0 ||
 									itemList.get(0).isExceptionOccured()) {
 								throw new InterruptedException();	
 							}
 							else {
+								System.out.println("Block (by sleep) this relaying process if it's not this session's turn with seq num.");
+								printSessionsInSessionMng(srcDstPair);
+								System.out.println("last seq number="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
+								sessionBlocker.sleep(MMSConfiguration.WAITING_MESSAGE_TIMEOUT); //Block (by sleep) this relaying process if it's not this session's turn with sequence number.
 								itemList.get(0).incWaitingCount();
 							}
 						}
 						else {
-							System.out.println("Block (by sleep) this relaying process if it's not this relaying process' turn.");
-							itemList.get(0).incWaitingCount();
-							sessionBlocker.sleep(3000); //Block (by sleep) this relaying process if it's not this relaying process' turn.
+							System.out.println("Block (by sleep) this relaying process if it's not this session's turn.");
+							sessionBlocker.sleep(MMSConfiguration.WAITING_MESSAGE_TIMEOUT); //Block (by sleep) this relaying process if it's not this session's turn.
 						}
 					} 
 					catch (InterruptedException e) {
+						System.out.println("Interrupted! This session ID="+SESSION_ID+", Session ID in list="+itemList.get(0).getSessionId()+", isExceptionOccured="+itemList.get(0).isExceptionOccured()+", seq num="+seqNum+", last seq num="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
 						if (itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
-							if (itemList.get(0).getPreSeqNum() == SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) && 
-									!itemList.get(0).isExceptionOccured()){
+							if ((itemList.get(0).getPreSeqNum() == SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) && 
+									!itemList.get(0).isExceptionOccured()) || itemList.get(0).getWaitingCount() > 0){
 								message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN, true); //Execute this relaying process
+								break;
 							}
 							else if (itemList.get(0).isExceptionOccured()) {
+								printSessionsInSessionMng(srcDstPair);
 								logger.warn("SessionID="+this.SESSION_ID+" Message order exception is occured. Message sequence is reset 0.");
 								if(MMSConfiguration.WEB_LOG_PROVIDING) {
 									String log = "SessionID="+this.SESSION_ID+" Message order exception is occured. Message sequence is reset 0.";
 									mmsLog.addBriefLogForStatus(log);
 									mmsLogForDebug.addLog(this.SESSION_ID, log);
 								}
-								itemList.get(0).getWaitingDiscardingSessionThr().interrupt();
 								itemList.remove(0);
+								break;
 							}
-							break;
+							
 						}
 					}
 				}
@@ -518,10 +517,16 @@ public class MessageRelayingHandler  {
 						message = status.getBytes(Charset.forName("UTF-8"));
 					} 
 					catch (UnknownHostException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+		    			}
 					} 
 					catch (IOException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+		    			}
 					}
 	    		}
 	    		else {
@@ -531,10 +536,16 @@ public class MessageRelayingHandler  {
 						message = status.getBytes(Charset.forName("UTF-8"));
 					} 
 					catch (UnknownHostException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+		    			}
 					} 
 					catch (IOException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+		    			}
 					}
 	    		}
 			}
@@ -617,10 +628,16 @@ public class MessageRelayingHandler  {
 						message = "OK".getBytes(Charset.forName("UTF-8"));
 					} 
 		    		catch (UnknownHostException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
+		    			}
 					} 
 		    		catch (IOException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
+		    			}
 					} 
 	    		}
 	    		else {
@@ -639,9 +656,15 @@ public class MessageRelayingHandler  {
 					}
 					catch (UnknownHostException e) {
 						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
+		    			}
 					} 
 		    		catch (IOException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
+		    			}
 					} 
 				}
 				else {
@@ -700,9 +723,20 @@ public class MessageRelayingHandler  {
 				message = "No Device having that MRN.".getBytes();
 			} 
 			
-		} catch (Exception e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]);
-		} finally {
+		} 
+		catch (MessageOrderException e) {
+			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
+		}
+		catch (NullPointerException e) {
+			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
+		} 
+		finally {
 			if (type != MessageTypeDecider.msgType.POLLING) {
 				if (message == null) {
 					message = "INVALID MESSAGE.".getBytes();
@@ -720,11 +754,14 @@ public class MessageRelayingHandler  {
 
 	private void printSessionsInSessionMng (String srcDstPair) {
 		List<SessionIdAndThr> itemList = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
-		
-		for (int i = 0 ; i < itemList.size() ; i++) {
-			SessionIdAndThr item = itemList.get(i);
-			System.out.println("index="+i+", SessionID="+item.getSessionId()+", seqNum"+item.getSeqNum()+", waitingCount="+item.getWaitingCount()+", isExceptionOccured="+item.isExceptionOccured());
+		if (itemList.size() > 0) {
+			SessionIdAndThr item = itemList.get(0);
+			System.out.println("index="+0+", SessionID="+item.getSessionId()+", seqNum="+item.getSeqNum()+", waitingCount="+item.getWaitingCount()+", isExceptionOccured="+item.isExceptionOccured());
 		}
+		/*for (int i = 0 ; i < itemList.size() ; i++) {
+			SessionIdAndThr item = itemList.get(i);
+			System.out.println("index="+i+", SessionID="+item.getSessionId()+", seqNum="+item.getSeqNum()+", waitingCount="+item.getWaitingCount()+", isExceptionOccured="+item.isExceptionOccured());
+		}*/
 	}
 /*
 //This method will be
@@ -787,10 +824,16 @@ public class MessageRelayingHandler  {
 
 
 	  } catch (UnknownHostException e) {
-		  logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		  logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		  
 	  } catch (IOException e) {
-		  logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		  logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		  
 	  } finally {
 		  if (pw != null) {
@@ -800,21 +843,30 @@ public class MessageRelayingHandler  {
 			  try {
 				  isr.close();
 			  } catch (IOException e) {
-				  logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+				  logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+	    			}
 			  }
 		  }
 		  if (br != null) {
 			  try {
 				  br.close();
 			  } catch (IOException e) {
-				  logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+				  logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+	    			}
 			  }
 		  }
 		  if (MNSSocket != null) {
 			  try {
 				  MNSSocket.close();
 			  } catch (IOException e) {
-				  logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+				  logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+	    			}
 			  }
 		  }
 	  }
@@ -861,10 +913,16 @@ public class MessageRelayingHandler  {
 		  logger.trace("SessionID="+this.SESSION_ID+" From server=" + queryReply+".");
 
 	  } catch (UnknownHostException e) {
-		  logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		  logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		 
 	  } catch (IOException e) {
-		  logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		  logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		  
 	  } finally {
 		  if (pw != null) {
@@ -874,21 +932,30 @@ public class MessageRelayingHandler  {
 			  try {
 				  isr.close();
 			  } catch (IOException e) {
-				  logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+				  logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+	    			}
 			  }
 		  }
 		  if (br != null) {
 			  try {
 				  br.close();
 			  } catch (IOException e) {
-				  logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+				  logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+	    			}
 			  }
 		  }
 		  if (MNSSocket != null) {
 			  try {
 				  MNSSocket.close();
 			  } catch (IOException e) {
-				  logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+				  logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+	    			}
 			  }
 		  }
 	  }

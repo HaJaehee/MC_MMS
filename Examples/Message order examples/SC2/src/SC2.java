@@ -66,26 +66,69 @@ public class SC2 {
 		}
 		
 		//Shuffle message sequence.
-		thrList.get(0).start();
-		Thread.sleep(100);
-		thrList.get(2).start();
-		Thread.sleep(100);
-		thrList.get(1).start();
-		/*Thread.sleep(100);
-		thrList.get(3).start();
-		Thread.sleep(100);
-		thrList.get(5).start();
-		Thread.sleep(100);
-		thrList.get(4).start();
-		Thread.sleep(100);
-		thrList.get(8).start();
-		Thread.sleep(100);
-		thrList.get(6).start();
-		Thread.sleep(100);
-		thrList.get(7).start();
-		Thread.sleep(100);
-		thrList.get(9).start();
-		Thread.sleep(100);
-		thrList.get(10).start();*/
+		int testNum = 2;
+		if (testNum == 0) {
+			thrList.get(0).start();
+			Thread.sleep(4000);
+			thrList.get(2).start();
+			Thread.sleep(4000);
+			thrList.get(1).start();
+			Thread.sleep(4000);
+			thrList.get(3).start();
+			Thread.sleep(4000);
+			thrList.get(5).start();
+			Thread.sleep(4000);
+			thrList.get(4).start();
+			Thread.sleep(1000);
+			thrList.get(8).start();
+			Thread.sleep(1000);
+			thrList.get(6).start();
+			Thread.sleep(1000);
+			thrList.get(7).start();
+			Thread.sleep(1000);
+			thrList.get(9).start();
+		}
+		else if (testNum == 1) { 
+			thrList.get(0).start();
+			Thread.sleep(1000);
+			thrList.get(2).start();
+			Thread.sleep(1000);
+			thrList.get(1).start();
+			Thread.sleep(1000);
+			thrList.get(3).start();
+			Thread.sleep(1000);
+			thrList.get(5).start();
+			Thread.sleep(1000);
+			thrList.get(4).start();
+			Thread.sleep(1000);
+			thrList.get(8).start();
+			Thread.sleep(1000);
+			thrList.get(6).start();
+			Thread.sleep(1000);
+			thrList.get(7).start();
+			Thread.sleep(1000);
+			thrList.get(9).start();
+		}
+		else if (testNum == 2) {
+			thrList.get(0).start();
+			Thread.sleep(100);
+			thrList.get(2).start();
+			Thread.sleep(100);
+			thrList.get(1).start();
+			Thread.sleep(100);
+			thrList.get(3).start();
+			Thread.sleep(100);
+			thrList.get(5).start();
+			Thread.sleep(100);
+			thrList.get(4).start();
+			Thread.sleep(100);
+			thrList.get(8).start();
+			Thread.sleep(100);
+			thrList.get(6).start();
+			Thread.sleep(100);
+			thrList.get(7).start();
+			Thread.sleep(100);
+			thrList.get(9).start();
+		}
 	}
 }

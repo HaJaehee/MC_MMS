@@ -31,7 +31,7 @@ public class MsgSenderThread extends Thread{
 			//Service Consumer which can only send message
 			MMSClientHandler sender = new MMSClientHandler(myMRN);
 			sender.setMsgHeader(headerfield); 
-			
+			System.out.println(this.message);
 			// Sender example.
 			sender.setSender(new MMSClientHandler.ResponseCallback (){
 				// callbackMethod is called when the response message arrives which is related to request message.
@@ -41,7 +41,7 @@ public class MsgSenderThread extends Thread{
 					Iterator<String> iter = headerField.keySet().iterator();
 					while (iter.hasNext()){
 						String key = iter.next();
-						System.out.println(key+":"+headerField.get(key).toString());// Print the matched header field and the header contents.
+						//System.out.println(key+":"+headerField.get(key).toString());// Print the matched header field and the header contents.
 					}
 					System.out.println(message);
 				}

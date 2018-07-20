@@ -251,6 +251,9 @@ class MessageQueueDequeuer extends Thread{
 						    	}
 							} catch (TimeoutException e) {
 								logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+				    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+				    			}
 							}
 
 						  }
@@ -350,19 +353,34 @@ class MessageQueueDequeuer extends Thread{
 			
 		} 
 	    catch (IOException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+	    	logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		} 
 	    catch (TimeoutException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+	    	logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		} 
 //	    catch (ShutdownSignalException e) {
-//			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+//			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+//		for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+//			logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+//		}
 //		} 
 	    catch (ConsumerCancelledException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+	    	logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		} 
 //	    catch (InterruptedException e) {
-//			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+//			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+//		for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+//			logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+//		}
 //		} 
 	    finally {
 	    	if ((PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null) || (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) != null && PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING)) { // Default polling method: normal polling
@@ -370,14 +388,20 @@ class MessageQueueDequeuer extends Thread{
 		    		try {
 						channel.close();
 					} catch (IOException | TimeoutException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+		    			}
 					}
 		    	}
 				if (connection != null) {
 					try {
 						connection.close();
 					} catch (IOException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+		    			}
 					}
 				}
 	    	}

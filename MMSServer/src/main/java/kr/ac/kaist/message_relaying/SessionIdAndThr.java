@@ -18,7 +18,6 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 public class SessionIdAndThr {
 	private String sessionId = "";
 	private Thread sessionBlocker = null;
-	private Thread waitingDiscardingSessionThr = null;
 	private boolean isWaitingRes = false;
 	private double seqNum = -1;
 	private double preSeqNum = -1;
@@ -35,7 +34,6 @@ public class SessionIdAndThr {
 		waitingCount = 0;
 		isWaitingRes = false;
 		exceptionFlag = false;
-		waitingDiscardingSessionThr = null;
 	}
 
 	public String getSessionId() {
@@ -86,14 +84,5 @@ public class SessionIdAndThr {
 	public void setExceptionFlag(boolean exceptionFlag) {
 		this.exceptionFlag = exceptionFlag;
 	}
-
-	public Thread getWaitingDiscardingSessionThr() {
-		return waitingDiscardingSessionThr;
-	}
-
-	public void setWaitingDiscardingSessionThr(Thread waitingDiscardingSessionThr) {
-		this.waitingDiscardingSessionThr = waitingDiscardingSessionThr;
-	}
-	
 	
 }

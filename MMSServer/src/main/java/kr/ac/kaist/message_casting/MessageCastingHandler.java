@@ -149,7 +149,10 @@ public class MessageCastingHandler {
     		}
 		} 
     	catch (IOException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+    		logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		}
 		
 		return message;
@@ -190,7 +193,10 @@ public class MessageCastingHandler {
 		        		}
 					} 
 		        	catch (IOException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		        		logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
+		    			}
 					}
 				}
 			}

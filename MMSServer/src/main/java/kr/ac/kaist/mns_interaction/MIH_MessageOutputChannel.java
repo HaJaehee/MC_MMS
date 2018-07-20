@@ -93,9 +93,15 @@ class MIH_MessageOutputChannel {
 	    	logger.trace("SessionID="+this.SESSION_ID+" From MNS server=" + queryReply+".");
 
     	} catch (UnknownHostException e) {
-    		logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+    		logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.error("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		} catch (IOException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.error("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		} finally {
     		if (pw != null) {
     			pw.close();
@@ -104,21 +110,30 @@ class MIH_MessageOutputChannel {
 				try {
 					isr.close();
 				} catch (IOException e) {
-					logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+					logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+	    			}
 				}
 			}
 			if (br != null) {
 				try {
 					br.close();
 				} catch (IOException e) {
-					logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+					logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+	    			}
 				}
 			}
     		if (MNSSocket != null) {
     			try {
 					MNSSocket.close();
 				} catch (IOException e) {
-					logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+					logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+	    			}
 				}
     		}
 		}

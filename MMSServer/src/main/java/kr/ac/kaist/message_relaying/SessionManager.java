@@ -33,7 +33,7 @@ public class SessionManager {
 	
 
 	public static HashMap<String, String> sessionInfo = new HashMap<>(); //If client is a polling client, value is "p" otherwise ""
-	public static HashMap<String, List<SessionIdAndThr>> mapSrcDstPairAndSessionInfo = new HashMap<>(); //This is used for handling input messages by reordering policy.
+	public static HashMap<String, SessionList<SessionIdAndThr>> mapSrcDstPairAndSessionInfo = new HashMap<>(); //This is used for handling input messages by reordering policy.
 	public static HashMap<String, Double> mapSrcDstPairAndLastSeqNum = new HashMap<>(); //This is used for handling last sequence numbers of sessions.
 	
 	
