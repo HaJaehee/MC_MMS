@@ -127,7 +127,12 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-07-18
 Version : 0.7.2
-	Added handling input messages by reordering policy.
+	Added handling input messages by reordering policy for relaying to server scenario.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-23
+Version : 0.7.2
+	Added handling input messages by reordering policy for enqueueing to message queue scenario.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -406,11 +411,6 @@ public class MessageRelayingHandler  {
 				
 				return;
 			} 
-			//TODO MUST be implemented.
-			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
-				srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
-	    		message = "OK".getBytes(Charset.forName("UTF-8"));
-			} 
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC) {
 				srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
 	    		message = "OK".getBytes(Charset.forName("UTF-8"));
@@ -421,7 +421,7 @@ public class MessageRelayingHandler  {
 				message = mch.castMsgsToMultipleCS(srcMRN, dstMRNs, req.content().toString(Charset.forName("UTF-8")).trim());
 			} 
 			
-			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
+			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 				List<SessionIdAndThr> itemList = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
 
 				while (true) { 
@@ -457,7 +457,15 @@ public class MessageRelayingHandler  {
 						if (itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
 							if ((itemList.get(0).getPreSeqNum() == SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) && 
 									!itemList.get(0).isExceptionOccured()) || itemList.get(0).getWaitingCount() > 0){
-								message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN, true); //Execute this relaying process
+								setThisSessionWaitingRes(srcDstPair);
+								if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
+									message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); //Execute this relaying process
+								}
+								else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
+									srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
+						    		message = "OK".getBytes(Charset.forName("UTF-8"));
+								}
+								rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcDstPair);
 								break;
 							}
 							else if (itemList.get(0).isExceptionOccured()) {
@@ -724,18 +732,12 @@ public class MessageRelayingHandler  {
 			} 
 			
 		} 
-		catch (MessageOrderException e) {
+		catch (NullPointerException | IOException e) {
 			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".");
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
 			}
 		}
-		catch (NullPointerException e) {
-			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
-		} 
 		finally {
 			if (type != MessageTypeDecider.msgType.POLLING) {
 				if (message == null) {
@@ -745,7 +747,27 @@ public class MessageRelayingHandler  {
 				}
 				else {
 					outputChannel.replyToSender(ctx, message, isRealtimeLog);
+				}
+			}
 			
+			if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
+				String srcMRN = parser.getSrcMRN();
+				String dstMRN = parser.getDstMRN();
+				String srcDstPair = srcMRN+"::"+dstMRN;
+				List<SessionIdAndThr> itemList = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
+
+				if (itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
+					if ((itemList.get(0).getPreSeqNum() == SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) && 
+							!itemList.get(0).isExceptionOccured()) || itemList.get(0).getWaitingCount() > 0){
+						try {
+							rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcDstPair);
+						} catch (NullPointerException | IOException e) {
+							logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".");
+							for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+								logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+							}
+						}
+					}
 				}
 			}
 		}
@@ -762,6 +784,66 @@ public class MessageRelayingHandler  {
 			SessionIdAndThr item = itemList.get(i);
 			System.out.println("index="+i+", SessionID="+item.getSessionId()+", seqNum="+item.getSeqNum()+", waitingCount="+item.getWaitingCount()+", isExceptionOccured="+item.isExceptionOccured());
 		}*/
+	}
+	
+	private void rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked (String srcDstPair) throws IOException, NullPointerException{
+		
+		List <SessionIdAndThr> listItem = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
+		if (listItem == null || 
+				listItem.size() == 0 ||
+				listItem.get(0) == null ||
+				listItem.get(0).getSessionBlocker() == null ||
+				SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == null) { //Check null pointer exception.
+			throw new NullPointerException();
+		}
+		System.out.println("Seq number="+listItem.get(0).getSeqNum());
+		System.out.println("Last seq number="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
+		//TODO MUST be implemented. MUST awake waitingDiscardingSessionThr if it is not null.
+		if (listItem.get(0).getSessionId().equals(this.SESSION_ID)) { 
+			//TODO Next message having successive seqNum will be relayed.
+			boolean checkNextSeq = false; 
+			if (listItem != null && 
+					listItem.size() > 1 && 
+					listItem.get(1) != null && 
+					listItem.get(1).getSessionBlocker() != null &&
+					listItem.get(1).getPreSeqNum() == listItem.get(0).getSeqNum() &&
+					!listItem.get(1).isWaitingRes()) { // Check next sequence of message.
+				checkNextSeq = true;
+				System.out.println("index="+1+", SessionID="+listItem.get(1).getSessionId()+", seqNum="+listItem.get(1).getSeqNum()+", waitingCount="+listItem.get(1).getWaitingCount()+", isExceptionOccured="+listItem.get(1).isExceptionOccured());
+
+			}
+			SessionManager.mapSrcDstPairAndLastSeqNum.put(srcDstPair, (double) listItem.get(0).getSeqNum());
+			System.out.println("Updated last seq number="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
+			listItem.remove(0); //Remove current relaying process from the schedule. 
+			if (checkNextSeq) { //Wake up next relaying process blocked if exist.
+				System.out.println("index="+0+", SessionID="+listItem.get(0).getSessionId()+", seqNum="+listItem.get(0).getSeqNum()+", waitingCount="+listItem.get(0).getWaitingCount()+", isExceptionOccured="+listItem.get(0).isExceptionOccured());
+				listItem.get(0).getSessionBlocker().interrupt();
+			}
+		}
+		else {
+			throw new IOException();
+		}
+		return;
+	}
+	
+	private void setThisSessionWaitingRes (String srcDstPair) throws IOException, NullPointerException{
+		
+		List <SessionIdAndThr> listItem = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
+		if (listItem == null || 
+				listItem.size() == 0 ||
+				listItem.get(0) == null ||
+				listItem.get(0).getSessionBlocker() == null ||
+				SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == null) { //Check null pointer exception.
+			throw new NullPointerException();
+		}
+		
+		if (listItem.get(0).getSessionId().equals(this.SESSION_ID)) { //This session is waiting a respond.
+			listItem.get(0).setWaitingRes(true);
+		}
+		else {
+			throw new IOException();
+		}
+		return;
 	}
 /*
 //This method will be

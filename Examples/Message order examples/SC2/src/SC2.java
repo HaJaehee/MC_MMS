@@ -57,7 +57,8 @@ public class SC2 {
 		headerfield.put("AccessToken",valueList);
 		// Header field example ends.
 
-		String dstMRN = "urn:mrn:smart-navi:service:message-sequence-sensitive-server";
+		//String dstMRN = "urn:mrn:smart-navi:service:message-sequence-sensitive-server";
+		String dstMRN = "urn:mrn:imo:imo-no:1000001";
 		String message = "안녕 hi \"hello\" ";
 		
 		List<MsgSenderThread> thrList = new ArrayList<MsgSenderThread>();

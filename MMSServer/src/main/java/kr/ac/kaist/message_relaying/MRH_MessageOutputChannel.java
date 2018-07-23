@@ -207,10 +207,7 @@ public class MRH_MessageOutputChannel{
     }
 	
 //  to do relaying
-	public byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN, boolean isRelayingSequentially) throws IOException {  
-		if (isRelayingSequentially) {
-			setThisSessionWaitingRes (srcMRN, dstMRN);
-		}
+	public byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
 		
 		String url = "http://" + IPAddress + ":" + port + req.uri();
 		URL obj = new URL(url);
@@ -283,9 +280,6 @@ public class MRH_MessageOutputChannel{
 			mmsLogForDebug.addLog(this.SESSION_ID, log);
 		}
 		
-		if (isRelayingSequentially) {
-			rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcMRN, dstMRN);
-		}
 		
 		return retBuffer;
 	}
@@ -295,12 +289,8 @@ public class MRH_MessageOutputChannel{
 	
 	
 //  to do secure relaying
-	public byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN, boolean isRelayingSequentially) throws NullPointerException, IOException { // 
+	public byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws NullPointerException, IOException { // 
 
-		if (isRelayingSequentially) {
-			setThisSessionWaitingRes (srcMRN, dstMRN);
-		}
-		
 	  	hv = getHV();
 	  	
 		String url = "https://" + IPAddress + ":" + port + req.uri();
@@ -378,10 +368,6 @@ public class MRH_MessageOutputChannel{
 			mmsLogForDebug.addLog(this.SESSION_ID, log);
 		}
 		
-		if (isRelayingSequentially) {
-			rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcMRN, dstMRN);
-		}
-		
 		return retBuffer;
 	
 	}
@@ -430,65 +416,7 @@ public class MRH_MessageOutputChannel{
         return hv;
 	}
 	
-	private void rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked (String srcMRN, String dstMRN) throws IOException, NullPointerException{
-		String srcDstPair = srcMRN+"::"+dstMRN;
-		List <SessionIdAndThr> listItem = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
-		if (listItem == null || 
-				listItem.size() == 0 ||
-				listItem.get(0) == null ||
-				listItem.get(0).getSessionBlocker() == null ||
-				SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == null) { //Check null pointer exception.
-			throw new NullPointerException();
-		}
-		System.out.println("Seq number="+listItem.get(0).getSeqNum());
-		System.out.println("Last seq number="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
-		//TODO MUST be implemented. MUST awake waitingDiscardingSessionThr if it is not null.
-		if (listItem.get(0).getSessionId().equals(this.SESSION_ID)) { 
-			//TODO Next message having successive seqNum will be relayed.
-			boolean checkNextSeq = false; 
-			if (listItem != null && 
-					listItem.size() > 1 && 
-					listItem.get(1) != null && 
-					listItem.get(1).getSessionBlocker() != null &&
-					listItem.get(1).getPreSeqNum() == listItem.get(0).getSeqNum() &&
-					!listItem.get(1).isWaitingRes()) { // Check next sequence of message.
-				checkNextSeq = true;
-				System.out.println("index="+1+", SessionID="+listItem.get(1).getSessionId()+", seqNum="+listItem.get(1).getSeqNum()+", waitingCount="+listItem.get(1).getWaitingCount()+", isExceptionOccured="+listItem.get(1).isExceptionOccured());
 
-			}
-			SessionManager.mapSrcDstPairAndLastSeqNum.put(srcDstPair, (double) listItem.get(0).getSeqNum());
-			System.out.println("Updated last seq number="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
-			listItem.remove(0); //Remove current relaying process from the schedule. 
-			if (checkNextSeq) { //Wake up next relaying process blocked if exist.
-				System.out.println("index="+0+", SessionID="+listItem.get(0).getSessionId()+", seqNum="+listItem.get(0).getSeqNum()+", waitingCount="+listItem.get(0).getWaitingCount()+", isExceptionOccured="+listItem.get(0).isExceptionOccured());
-				listItem.get(0).getSessionBlocker().interrupt();
-			}
-		}
-		else {
-			throw new IOException();
-		}
-		return;
-	}
-	
-	private void setThisSessionWaitingRes (String srcMRN, String dstMRN) throws IOException, NullPointerException{
-		String srcDstPair = srcMRN+"::"+dstMRN;
-		List <SessionIdAndThr> listItem = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
-		if (listItem == null || 
-				listItem.size() == 0 ||
-				listItem.get(0) == null ||
-				listItem.get(0).getSessionBlocker() == null ||
-				SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == null) { //Check null pointer exception.
-			throw new NullPointerException();
-		}
-		
-		if (listItem.get(0).getSessionId().equals(this.SESSION_ID)) { //This session is waiting a respond.
-			listItem.get(0).setWaitingRes(true);
-		}
-		else {
-			throw new IOException();
-		}
-		return;
-	}
 	
 	private HttpResponseStatus getHttpResponseStatus(int responseCode) {
 		switch (responseCode) {

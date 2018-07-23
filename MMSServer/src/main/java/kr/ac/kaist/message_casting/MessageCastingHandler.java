@@ -129,19 +129,17 @@ public class MessageCastingHandler {
 		}
 		return "OK".getBytes(Charset.forName("UTF-8"));
 	}
+
 	public byte[] unicast (MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String dstIP, int dstPort, String protocol, HttpMethod httpMethod, String srcMRN, String dstMRN) {
-		return unicast (outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN, false);
-	}
-	public byte[] unicast (MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String dstIP, int dstPort, String protocol, HttpMethod httpMethod, String srcMRN, String dstMRN, boolean isRelayingSequentially) {
 		
 		byte[] message = null;
 		try {
     		if (protocol.equals("http")) {
-    			message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN, isRelayingSequentially);
+    			message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
 			    logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTP.");
     		} 
     		else if (protocol.equals("https")) { 
-    			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN, isRelayingSequentially);
+    			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
     			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTPS.");
     		} 
     		else {
@@ -180,11 +178,11 @@ public class MessageCastingHandler {
 		        		int dstPortInGeoDstInfo = Integer.parseInt((String) obj.get("portNum"));
 		        		
 		        		if (protocol.equals("http")) {
-						    outputChannel.sendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo, false);
+						    outputChannel.sendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
 						    logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTP.");
 		        		} 
 		        		else if (protocol.equals("https")) { 
-		        			outputChannel.secureSendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo, false);
+		        			outputChannel.secureSendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
 		        			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTPS.");
 		        		} 
 		        		else {
