@@ -66,11 +66,14 @@ public class SC1 {
 				for (String s : messages) {
 					System.out.print(s);
 				}
+				
+				// Stopping polling example.
+				polling.stopPolling(); // stop polling.
 			}
 		});
 		
-		// Stopping polling example.
-		Thread.sleep(10000); // After 10 seconds,
-		polling.stopPolling(); // stop polling.
+	
+		//Thread.sleep(10000); // After 10 seconds,
+
 	}
 }

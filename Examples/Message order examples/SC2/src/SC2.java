@@ -57,8 +57,8 @@ public class SC2 {
 		headerfield.put("AccessToken",valueList);
 		// Header field example ends.
 
-		//String dstMRN = "urn:mrn:smart-navi:service:message-sequence-sensitive-server";
-		String dstMRN = "urn:mrn:imo:imo-no:1000001";
+		String dstMRN = "urn:mrn:smart-navi:service:message-sequence-sensitive-server";
+		//String dstMRN = "urn:mrn:imo:imo-no:1000001";
 		String message = "안녕 hi \"hello\" ";
 		
 		List<MsgSenderThread> thrList = new ArrayList<MsgSenderThread>();
@@ -68,7 +68,7 @@ public class SC2 {
 		
 		//Shuffle message sequence.
 		int testNum = 2;
-		if (testNum == 0) {
+		if (testNum == 0) { //Long delay
 			thrList.get(0).start();
 			Thread.sleep(4000);
 			thrList.get(2).start();
@@ -89,7 +89,7 @@ public class SC2 {
 			Thread.sleep(1000);
 			thrList.get(9).start();
 		}
-		else if (testNum == 1) { 
+		else if (testNum == 1) { //Medium delay
 			thrList.get(0).start();
 			Thread.sleep(1000);
 			thrList.get(2).start();
@@ -110,7 +110,7 @@ public class SC2 {
 			Thread.sleep(1000);
 			thrList.get(9).start();
 		}
-		else if (testNum == 2) {
+		else if (testNum == 2) { //Short delay
 			thrList.get(0).start();
 			Thread.sleep(100);
 			thrList.get(2).start();
