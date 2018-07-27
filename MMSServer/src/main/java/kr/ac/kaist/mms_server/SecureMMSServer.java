@@ -1,28 +1,4 @@
 package kr.ac.kaist.mms_server;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.Security;
-import java.security.UnrecoverableKeyException;
-
-/* -------------------------------------------------------- */
-/** 
-File name : SecureMMSServer.java
-	It is executable class of MMS Secure Server.
-Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2017-03-20
-Version : 0.4.0
-
-Rev. history : 2017-06-19
-Version : 0.5.7
-	Applied LogBack framework in order to log events
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-*/
-/* -------------------------------------------------------- */
-
 /*
  * Copyright 2012 The Netty Project
  *
@@ -38,6 +14,31 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+/* -------------------------------------------------------- */
+/** 
+File name : SecureMMSServer.java
+	It is executable class of MMS Secure Server.
+Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2017-03-20
+Version : 0.4.0
+
+Rev. history : 2017-06-19
+Version : 0.5.7
+	Applied LogBack framework in order to log events
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+*/
+/* -------------------------------------------------------- */
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Security;
+import java.security.UnrecoverableKeyException;
+
+
+
+
 
 import java.security.cert.CertificateException;
 

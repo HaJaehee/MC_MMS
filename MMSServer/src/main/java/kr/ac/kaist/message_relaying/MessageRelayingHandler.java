@@ -499,19 +499,13 @@ public class MessageRelayingHandler  {
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
 				message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); //Execute this relaying process
 			}
-			else if (type == MessageTypeDecider.msgType.GEOCASTING_CIRCLE) {
+			else if (type == MessageTypeDecider.msgType.GEOCASTING_CIRCLE || type == MessageTypeDecider.msgType.GEOCASTING_POLYGON) {
 				
 				JSONArray geoDstInfo = parser.getGeoDstInfo();
 				message = mch.geocast(outputChannel, req, srcMRN, geoDstInfo, protocol, httpMethod);
 				
 			}
-			//TODO
-			else if (type == MessageTypeDecider.msgType.GEOCASTING_POLYGON) {
-				
-				JSONArray geoDstInfo = parser.getGeoDstInfo();
-				message = mch.geocast(outputChannel, req, srcMRN, geoDstInfo, protocol, httpMethod);
-				
-			}
+			
 			// TODO this condition has to be deprecated.
 			else if (type == MessageTypeDecider.msgType.REGISTER_CLIENT) {
 				parser.parseLocInfo(req);

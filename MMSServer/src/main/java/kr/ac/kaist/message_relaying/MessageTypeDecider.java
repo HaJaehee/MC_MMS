@@ -204,7 +204,28 @@ class MessageTypeDecider {
 	    		return msgType.DST_MRN_IS_THIS_MMS_MRN;
 	    	}
 		}
-	
+		
+		// When geocasting
+		else if (parser.isGeocastingMsg()) {
+			if (parser.getGeoCircleInfo() != null) {
+				GeolocationCircleInfo geo = parser.getGeoCircleInfo();
+				String geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geo.getGeoLat(), geo.getGeoLong(), geo.getGeoRadius());
+				parser.parseGeocastInfo(geocastInfo);
+				
+				return msgType.GEOCASTING_CIRCLE;
+			}
+			
+			//TODO
+			else if (parser.getGeoPolygonInfo() != null) {
+				GeolocationPolygonInfo geo = parser.getGeoPolygonInfo();
+				String geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geo.getGeoLatList(), geo.getGeoLongList());
+				parser.parseGeocastInfo(geocastInfo);
+				
+				return msgType.GEOCASTING_POLYGON;
+			}
+			
+		 	return msgType.UNKNOWN_MRN;
+		}
     	
 //    	When relaying
     	else {
@@ -212,29 +233,7 @@ class MessageTypeDecider {
     		
     		
     		if (dstInfo != null) {
-    			
-    			// When geocasting
-				if (parser.isGeocastingMsg()) {
-					if (parser.getGeoCircleInfo() != null) {
-						GeolocationCircleInfo geo = parser.getGeoCircleInfo();
-						String geocastInfo = mch.queryMNSForDstInfo(srcMRN, geo.getGeoLat(), geo.getGeoLong(), geo.getGeoRadius());
-						parser.parseGeocastInfo(geocastInfo);
-						
-						return msgType.GEOCASTING_CIRCLE;
-					}
-					
-					//TODO
-					else if (parser.getGeoPolygonInfo() != null) {
-						GeolocationPolygonInfo geo = parser.getGeoPolygonInfo();
-						String geocastInfo = mch.queryMNSForDstInfo(srcMRN, geo.getGeoLatList(), geo.getGeoLongList());
-						parser.parseGeocastInfo(geocastInfo);
-						
-						return msgType.GEOCASTING_POLYGON;
-					}
-				
-				}
 
-    			
     			//TODO: Exceptions from MNS must be handled.
 	        	if (dstInfo.equals("No")) {
 	        		return msgType.UNKNOWN_MRN;
@@ -274,6 +273,7 @@ class MessageTypeDecider {
 		/*else {
     		return UNKNOWN_HTTP_TYPE;
     	}*/
+	  
 	}
 	
 

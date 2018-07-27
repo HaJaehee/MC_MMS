@@ -11,16 +11,20 @@ import kr.ac.kaist.mms_client.*;
 
 /* -------------------------------------------------------- */
 /** 
-File name : ServiceProvider_GEO.java
-	Service Provider sends messages with geocasting MRN.
+File name : ServiceProvider_GEO_Circle.java
+	Service Provider sends messages through geocasting.
 Author : Jaehyun Park (jae519@kaist.ac.kr)
-	
+Version : 0.5.5
 Creation Date : 2016-06-27
 
+Rev. history : 2018-07-27
+Version : 0.7.2
+	Changed geocasting header fields. 
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
-public class ServiceProvider_GEO {
+public class ServiceProvider_GEO_Circle {
 	public static void main(String args[]) throws Exception{
 		String myMRN = "urn:mrn:smart-navi:device:geo-server";
 		int port = 8912;
@@ -41,9 +45,9 @@ public class ServiceProvider_GEO {
 		
 		// It is able to set its HTTP header field
 		Map<String, List<String>> headerfield = new HashMap<String, List<String>>(); // Header field example. You are able to remove this code.
-		List<String> geoTrue = new ArrayList<String>(); 
-		geoTrue.add("true");
-		headerfield.put("geocasting",geoTrue);
+		List<String> geoType = new ArrayList<String>(); 
+		geoType.add("circle");
+		headerfield.put("geocasting",geoType);
 		List<String> latValue = new ArrayList<String>();
 		latValue.add("1");
 		headerfield.put("lat", latValue);
@@ -56,7 +60,8 @@ public class ServiceProvider_GEO {
 		sender.setMsgHeader(headerfield);
 		// Header field example ends.
 		
-		sender.sendPostMsg(null, "Hello Geocast");
+		String dstMRN = "*";
+		sender.sendPostMsg(dstMRN, "Hello Geocast");
 		server.setServerPort(port, "/forwarding", new MMSClientHandler.RequestCallback() {
 			//Request Callback from the request message
 			//it is called when client receives a message

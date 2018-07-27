@@ -10,27 +10,21 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION, EXPOSURE_OF_SYSTEM_DATA hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-27
+Version : 0.7.2
+	Revised for more stable socket communication with MNS.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 **/
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.ServerSocket;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import kr.ac.kaist.mms_client.MMSPollHandler.PollHandler;
-
 
 /**
  * It is an object that processes geo-information and registers it to MMS.
@@ -42,7 +36,6 @@ import kr.ac.kaist.mms_client.MMSPollHandler.PollHandler;
 public class MMSGeoInfoReporter {
 	GeoInfoReporter gr = null;
 	//HJH
-	private static final String USER_AGENT = MMSConfiguration.USER_AGENT;
 	private String TAG = "[MMSGeoInfoReporter] ";
 	private String clientMRN = null;
 	
@@ -51,7 +44,7 @@ public class MMSGeoInfoReporter {
 		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Geocasting Information Reporter is created");}
 	}
 	
-	//PJH
+	//HJH
     class GeoInfoReporter extends Thread{
 		private int interval = 0;
 		private String clientMRN = null;
@@ -76,10 +69,10 @@ public class MMSGeoInfoReporter {
 	    			Thread.sleep(interval);
 	    			Report();
     			} catch (InterruptedException e){
-    				System.out.print(TAG+" Exception: "+ e.getLocalizedMessage());
+    				System.out.println(TAG+" Exception: "+ e.getLocalizedMessage());
 					if(MMSConfiguration.DEBUG){e.printStackTrace();}
     			} catch (Exception e){
-    				System.out.print(TAG+" Exception: "+ e.getLocalizedMessage());
+    				System.out.println(TAG+" Exception: "+ e.getLocalizedMessage());
 					if(MMSConfiguration.DEBUG){e.printStackTrace();}
     			}
     		}
@@ -91,29 +84,75 @@ public class MMSGeoInfoReporter {
     		return "lat-" + MMSConfiguration.lat + "-long-" + MMSConfiguration.lon;
     	}
 		void Report() throws Exception {
-			try{
-		    	Socket MNSSocket = new Socket(MMSConfiguration.MNS_HOST, MMSConfiguration.MNS_PORT);
-		    	OutputStreamWriter osw = new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8"));
-		    	BufferedWriter outToMNS = new BufferedWriter(osw);
-		    	
-		    	outToMNS.write("Geo-location-Update:"+MNSSocket.getLocalSocketAddress()+","+ clientMRN +","+clientPort+",1,"+geoLocationBuilder());
-		    	outToMNS.flush();
-		    	if (osw != null) {
-		    		osw.close();
+			
+			Socket MNSSocket = null;
+			PrintWriter pw = null;	
+			InputStreamReader isr = null;
+			BufferedReader br = null;
+			String queryReply = null;
+	    	try{
+		    	//String modifiedSentence;
+
+		    	MNSSocket = new Socket(MMSConfiguration.MNS_HOST, MMSConfiguration.MNS_PORT);
+		    	MNSSocket.setSoTimeout(5000);
+		    	pw = new PrintWriter(MNSSocket.getOutputStream());
+		    	isr = new InputStreamReader(MNSSocket.getInputStream());
+		    	br = new BufferedReader(isr);
+		    	String inputLine = null;
+				StringBuffer response = new StringBuffer();
+				
+			    pw.println("Geo-location-Update:"+MNSSocket.getLocalSocketAddress()+","+ clientMRN +","+clientPort+",1,"+geoLocationBuilder());
+			    pw.flush();
+			    if (!MNSSocket.isOutputShutdown()) {
+			    	MNSSocket.shutdownOutput();
+			    }
+			   
+			    
+		    	while ((inputLine = br.readLine()) != null) {
+		    		response.append(inputLine);
 		    	}
-		    	outToMNS.close();
-		    	MNSSocket.close();
+			    
 		    	
-	    	} catch (IOException e) {
-	    		System.out.println("Error during geo-location update");
-				return;
-			} catch (Exception e) {
-	    		System.out.println("Error during geo-location update");
-				return;
+		    	queryReply = response.toString();
+		    	
+
+	    	} catch (UnknownHostException e) {
+	    		System.out.println(TAG+" Exception: "+ e.getLocalizedMessage());
+				if(MMSConfiguration.DEBUG){e.printStackTrace();}
+			} catch (IOException e) {
+				System.out.println(TAG+" Exception: "+ e.getLocalizedMessage());
+				if(MMSConfiguration.DEBUG){e.printStackTrace();}
+			} finally {
+	    		if (pw != null) {
+	    			pw.close();
+	    		}
+				if (isr != null) {
+					try {
+						isr.close();
+					} catch (IOException e) {
+						System.out.println(TAG+" Exception: "+ e.getLocalizedMessage());
+						if(MMSConfiguration.DEBUG){e.printStackTrace();}
+					}
+				}
+				if (br != null) {
+					try {
+						br.close();
+					} catch (IOException e) {
+						System.out.println(TAG+" Exception: "+ e.getLocalizedMessage());
+						if(MMSConfiguration.DEBUG){e.printStackTrace();}
+					}
+				}
+	    		if (MNSSocket != null) {
+	    			try {
+						MNSSocket.close();
+					} catch (IOException e) {
+						System.out.println(TAG+" Exception: "+ e.getLocalizedMessage());
+						if(MMSConfiguration.DEBUG){e.printStackTrace();}
+					}
+	    		}
 			}
 		}
-	
 		
 	}
-    //PJH end	
+    //HJH end	
 }

@@ -63,13 +63,13 @@ public class MNSInteractionHandler {
 	}
 	
 
-	public String requestDstInfo(String srcMRN, float geoLat, float geoLong, float geoRadius) {
-		String msg = MRNInfoQuerier.buildQuery("geocasting_circle", srcMRN, geoLat, geoLong, geoRadius);
+	public String requestDstInfo(String srcMRN, String dstMRN, float geoLat, float geoLong, float geoRadius) {
+		String msg = MRNInfoQuerier.buildQuery("geocasting_circle", srcMRN, dstMRN, geoLat, geoLong, geoRadius);
 		return messageOutput.sendToMNS(msg);
 	}
 	
-	public String requestDstInfo(String srcMRN, float[] geoLat, float[] geoLong) {
-		String msg = MRNInfoQuerier.buildQuery("geocasting_polygon", srcMRN, geoLat, geoLong);
+	public String requestDstInfo(String srcMRN, String dstMRN, float[] geoLat, float[] geoLong) {
+		String msg = MRNInfoQuerier.buildQuery("geocasting_polygon", srcMRN, dstMRN, geoLat, geoLong);
 		return messageOutput.sendToMNS(msg);
 	}
 	

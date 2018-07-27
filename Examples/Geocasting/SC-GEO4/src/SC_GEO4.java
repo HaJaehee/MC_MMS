@@ -21,7 +21,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 public class SC_GEO4 {
 	public static void main(String args[]) throws Exception{
-		String myMRN = "urn:mrn:imo:imo-no:1000113";
+		String myMRN = "urn:mrn:imo:imo-no:1000114";
 		//myMRN = args[0];
 		
 

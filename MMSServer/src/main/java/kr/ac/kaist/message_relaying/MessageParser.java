@@ -314,7 +314,6 @@ public class MessageParser {
 	private float[] parseToFloatList (String input) throws Exception {
 		float[] ret = null;
 		String[] splitted = null;
-		
 		if (input != null) {
 			try {
 				input = input.trim();

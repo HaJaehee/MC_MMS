@@ -103,12 +103,12 @@ public class MessageCastingHandler {
 		return processDstInfo (mih.requestDstInfo (srcMRN, dstMRN, srcIP));
 	}
 	
-	public String queryMNSForDstInfo (String srcMRN, float geoLat, float geoLong, float geoRadius) throws ParseException{
-		return processDstInfo (mih.requestDstInfo (srcMRN, geoLat, geoLong, geoRadius));
+	public String queryMNSForDstInfo (String srcMRN, String dstMRN, float geoLat, float geoLong, float geoRadius) throws ParseException{
+		return processDstInfo (mih.requestDstInfo (srcMRN, dstMRN, geoLat, geoLong, geoRadius));
 	}
 	
-	public String queryMNSForDstInfo (String srcMRN, float[] geoLat, float[] geoLong) throws ParseException{
-		return processDstInfo (mih.requestDstInfo (srcMRN, geoLat, geoLong));
+	public String queryMNSForDstInfo (String srcMRN, String dstMRN, float[] geoLat, float[] geoLong) throws ParseException{
+		return processDstInfo (mih.requestDstInfo (srcMRN, dstMRN, geoLat, geoLong));
 	}
 	
 	public String processDstInfo (String dstInfo) throws ParseException{
@@ -172,7 +172,16 @@ public class MessageCastingHandler {
 			while (iter.hasNext()) {
 				JSONObject obj = (JSONObject) iter.next(); 
 				String connType = (String) obj.get("connType");
-				if (connType.equals("polling")) {
+				//TODO: MUST implement exception handling. 
+				if (connType == null) {
+					String exc = (String) obj.get("exception");
+					if (exc != null) {
+						logger.warn("SessionID="+this.SESSION_ID+" "+"MNS query exception occured=\""+exc+"\".");
+						return null;
+					}
+				}
+				
+				else if (connType.equals("polling")) {
 					//TODO: implement here
 					String dstMRNInGeoDstInfo = (String) obj.get("dstMRN");
 					String netTypeInGeoDstInfo = (String) obj.get("netType");
@@ -207,13 +216,7 @@ public class MessageCastingHandler {
 					}
 				}
 				
-				//TODO: MUST implement exception handling. 
-				else if (connType == null) {
-					String exc = (String) obj.get("exception");
-					if (exc != null) {
-						return null;
-					}
-				}
+				
 			}
 			return "OK".getBytes(Charset.forName("UTF-8"));
 		}
