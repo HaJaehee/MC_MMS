@@ -190,7 +190,14 @@ public class MessageRelayingHandler  {
 		
 		initializeModule();
 		initializeSubModule();
-		parser.parseMessage(ctx, req);
+		try {
+			parser.parseMessage(ctx, req);
+		} catch (Exception e) {
+			logger.warn("SessionID="+SESSION_ID+" "+"Exception occured while parsing the message. "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
+		}
 		
 		MessageTypeDecider.msgType type = null;
 		try {
@@ -487,7 +494,14 @@ public class MessageRelayingHandler  {
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
 				message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); //Execute this relaying process
 			}
-			else if (type == MessageTypeDecider.msgType.GEOCASTING) {
+			else if (type == MessageTypeDecider.msgType.GEOCASTING_CIRCLE) {
+				
+				JSONArray geoDstInfo = parser.getGeoDstInfo();
+				message = mch.geocast(outputChannel, req, srcMRN, geoDstInfo, protocol, httpMethod);
+				
+			}
+			//TODO
+			else if (type == MessageTypeDecider.msgType.GEOCASTING_POLYGON) {
 				
 				JSONArray geoDstInfo = parser.getGeoDstInfo();
 				message = mch.geocast(outputChannel, req, srcMRN, geoDstInfo, protocol, httpMethod);

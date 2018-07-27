@@ -59,9 +59,15 @@ public class MNSInteractionHandler {
 	
 
 	public String requestDstInfo(String srcMRN, float geoLat, float geoLong, float geoRadius) {
-		String msg = MRNInfoQuerier.buildQuery("geocasting", srcMRN, geoLat, geoLong, geoRadius);
+		String msg = MRNInfoQuerier.buildQuery("geocasting_circle", srcMRN, geoLat, geoLong, geoRadius);
 		return messageOutput.sendToMNS(msg);
 	}
+	
+	public String requestDstInfo(String srcMRN, float[] geoLat, float[] geoLong) {
+		String msg = MRNInfoQuerier.buildQuery("geocasting_polygon", srcMRN, geoLat, geoLong);
+		return messageOutput.sendToMNS(msg);
+	}
+	
 	public String requestDstInfo(String srcMRN, String dstMRN, String srcIP){
 		String msg = MRNInfoQuerier.buildQuery("unicasting", srcMRN, dstMRN, srcIP);
 		return messageOutput.sendToMNS(msg);

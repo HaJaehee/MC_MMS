@@ -81,7 +81,8 @@ public class MessageParser {
 	private String svcMRN = null;
 	private String netType = null;
 	private boolean isGeocasting = false;
-	private geolocationInformation geoInfo = null;
+	private GeolocationCircleInfo geoCircleInfo = null;
+	private GeolocationPolygonInfo geoPolygonInfo = null;
 	private JSONArray geoDstInfo = null;
 	private double seqNum = -1;
 
@@ -106,14 +107,15 @@ public class MessageParser {
 		svcMRN = null;
 		netType = null;
 		isGeocasting = false;
-		geoInfo = new geolocationInformation();
+		geoCircleInfo = null;
+		geoPolygonInfo = null;
 		geoDstInfo = null;
 		seqNum = -1;
 	}
 	
 
 
-	void parseMessage(ChannelHandlerContext ctx, FullHttpRequest req) throws NullPointerException{
+	void parseMessage(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception{
 		InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 	    InetAddress inetaddress = socketAddress.getAddress();
 
@@ -144,11 +146,22 @@ public class MessageParser {
 		
 		
 		if (req.headers().get("geocasting") != null) {
-			if (req.headers().get("geocasting").equals("true")) {
+			if (req.headers().get("geocasting").equals("circle")) {
 				isGeocasting = true;
 				try {
-					setGeoInfo(req);
-					logger.debug("SessionID="+this.SESSION_ID+" Geocasting request. Lat="+geoInfo.getGeoLat()+", Long="+geoInfo.getGeoLong()+", Radius="+geoInfo.getGeoRadius()+".");
+					setGeoCircleInfo(req);
+					logger.debug("SessionID="+this.SESSION_ID+" Geocasting request. Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".");
+				} 
+				catch (ParseException e) {
+					logger.warn("SessionID="+this.SESSION_ID+" Failed to parse geolocation info.");
+				}
+			} 
+			else if (req.headers().get("geocasting").equals("polygon")) {
+				isGeocasting = true;
+				try {
+					setGeoPolygonInfo(req);
+					//TODO
+					logger.debug("SessionID="+this.SESSION_ID+" Geocasting request. Lat="+geoPolygonInfo.getGeoLatList()+", Long="+geoPolygonInfo.getGeoLongList()+".");
 				} 
 				catch (ParseException e) {
 					logger.warn("SessionID="+this.SESSION_ID+" Failed to parse geolocation info.");
@@ -261,19 +274,68 @@ public class MessageParser {
 		return isGeocasting;
 	}
 	
-	public void setGeoInfo (FullHttpRequest req) throws ParseException {
+	public void setGeoCircleInfo (FullHttpRequest req) throws Exception {
 		try {
-			geoInfo.setGeoLat(Float.parseFloat(req.headers().get("lat")));
-			geoInfo.setGeoLong(Float.parseFloat(req.headers().get("long")));
-			geoInfo.setGeoRadius(Float.parseFloat(req.headers().get("radius")));
+			geoCircleInfo = new GeolocationCircleInfo();
+			geoCircleInfo.setGeoLat(Float.parseFloat(req.headers().get("lat")));
+			geoCircleInfo.setGeoLong(Float.parseFloat(req.headers().get("long")));
+			geoCircleInfo.setGeoRadius(Float.parseFloat(req.headers().get("radius")));
 		} 
 		catch (Exception e) {
 			throw e;
 		}
 	}
 	
-	public geolocationInformation getGeoInfo() {
-		return geoInfo;
+	public GeolocationCircleInfo getGeoCircleInfo() {
+		return geoCircleInfo;
+	}
+	
+	public void setGeoPolygonInfo (FullHttpRequest req) throws Exception {
+		try {
+			geoPolygonInfo = new GeolocationPolygonInfo();
+			float[] geoLatList = parseToFloatList(req.headers().get("lat"));
+			float[] geoLongList = parseToFloatList(req.headers().get("long"));
+			if (geoLatList.length < 3 || geoLongList.length < 3 || geoLatList.length != geoLongList.length) {
+				throw new Exception();
+			}
+			geoPolygonInfo.setGeoLatList(geoLatList);
+			geoPolygonInfo.setGeoLongList(geoLongList);
+		} 
+		catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	private float[] parseToFloatList (String input) throws Exception {
+		float[] ret = null;
+		String[] splitted = null;
+		
+		if (input != null) {
+			try {
+				input = input.trim();
+				if (input.startsWith("[") && input.endsWith("]")) {
+					input = input.replaceAll("[\\[\"\\]]", "");
+					splitted = input.split(",");
+					ret = new float[splitted.length];
+					for (int i = 0 ; i < ret.length ; i++) {
+						ret[i] = Float.parseFloat(splitted[i]);
+					}
+				}
+			}
+			catch (Exception e) {
+				throw e;
+			}
+			
+			return ret;
+		}
+		else {
+			throw new NullPointerException();
+		}
+	}
+	
+	//TODO
+	public GeolocationPolygonInfo getGeoPolygonInfo() {
+		return geoPolygonInfo;
 	}
 	
 	public JSONArray getGeoDstInfo () {

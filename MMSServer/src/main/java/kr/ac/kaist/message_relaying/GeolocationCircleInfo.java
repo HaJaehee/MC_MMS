@@ -1,20 +1,20 @@
 package kr.ac.kaist.message_relaying;
 /* -------------------------------------------------------- */
 /** 
-File name : geolocationInformation.java
-	It contains geolocation information.
+File name : GeolocationCircleInfo.java
+	It contains geolocation information for circle area.
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2018-06-06
+Creation Date : 2018-07-27
 Version : 0.7.1
 **/
 /* -------------------------------------------------------- */
 
-public class geolocationInformation {
+public class GeolocationCircleInfo {
 	private float geoLat = 0;
 	private float geoLong = 0;
 	private float geoRadius = 0;
 	
-	public geolocationInformation() {
+	public GeolocationCircleInfo() {
 		
 		geoLat = 0;
 		geoLong = 0;

@@ -102,6 +102,10 @@ public class MessageCastingHandler {
 		return processDstInfo (mih.requestDstInfo (srcMRN, geoLat, geoLong, geoRadius));
 	}
 	
+	public String queryMNSForDstInfo (String srcMRN, float[] geoLat, float[] geoLong) throws ParseException{
+		return processDstInfo (mih.requestDstInfo (srcMRN, geoLat, geoLong));
+	}
+	
 	public String processDstInfo (String dstInfo) throws ParseException{
 					
 	
@@ -195,6 +199,14 @@ public class MessageCastingHandler {
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
 		    			}
+					}
+				}
+				
+				//TODO: MUST implement exception handling. 
+				else if (connType == null) {
+					String exc = (String) obj.get("exception");
+					if (exc != null) {
+						return null;
 					}
 				}
 			}

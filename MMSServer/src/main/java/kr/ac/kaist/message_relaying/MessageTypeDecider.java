@@ -78,6 +78,11 @@ Rev. history : 2018-07-18
 Version : 0.7.2
 	Added handling input messages by reordering policy.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-27
+Version : 0.7.2
+	Added geocating features which cast message to circle or polygon area.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -120,7 +125,8 @@ class MessageTypeDecider {
 			REALTIME_LOG,
 			ADD_ID_IN_REALTIME_LOG_IDS,
 			REMOVE_ID_IN_REALTIME_LOG_IDS,
-			GEOCASTING
+			GEOCASTING_CIRCLE,
+			GEOCASTING_POLYGON
 	}
 
 	
@@ -176,15 +182,6 @@ class MessageTypeDecider {
 		}
 		else if (dstMRN == null) {
 			
-			// When geocasting
-			if (parser.isGeocastingMsg()) {
-				geolocationInformation geo = parser.getGeoInfo();
-				String geocastInfo = mch.queryMNSForDstInfo(srcMRN, geo.getGeoLat(), geo.getGeoLong(), geo.getGeoRadius());
-				parser.parseGeocastInfo(geocastInfo);
-
-				return msgType.GEOCASTING;
-			}
-			
 			return msgType.NULL_DST_MRN;
 		}
 	   	
@@ -215,6 +212,29 @@ class MessageTypeDecider {
     		
     		
     		if (dstInfo != null) {
+    			
+    			// When geocasting
+				if (parser.isGeocastingMsg()) {
+					if (parser.getGeoCircleInfo() != null) {
+						GeolocationCircleInfo geo = parser.getGeoCircleInfo();
+						String geocastInfo = mch.queryMNSForDstInfo(srcMRN, geo.getGeoLat(), geo.getGeoLong(), geo.getGeoRadius());
+						parser.parseGeocastInfo(geocastInfo);
+						
+						return msgType.GEOCASTING_CIRCLE;
+					}
+					
+					//TODO
+					else if (parser.getGeoPolygonInfo() != null) {
+						GeolocationPolygonInfo geo = parser.getGeoPolygonInfo();
+						String geocastInfo = mch.queryMNSForDstInfo(srcMRN, geo.getGeoLatList(), geo.getGeoLongList());
+						parser.parseGeocastInfo(geocastInfo);
+						
+						return msgType.GEOCASTING_POLYGON;
+					}
+				
+				}
+
+    			
     			//TODO: Exceptions from MNS must be handled.
 	        	if (dstInfo.equals("No")) {
 	        		return msgType.UNKNOWN_MRN;
@@ -228,6 +248,8 @@ class MessageTypeDecider {
 	        	parser.parseDstInfo(dstInfo);
 	        	String model = parser.getDstModel();
 	        	
+				
+				
 	        	if (model.equals("push")) {//model B (destination MSR, MIR, or MSP as servers)
 	        		if (seqNum == -1) {
 	        			return msgType.RELAYING_TO_SERVER;
