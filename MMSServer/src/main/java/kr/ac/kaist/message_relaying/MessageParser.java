@@ -54,12 +54,12 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
-import java.text.ParseException;
 import java.util.Arrays;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -311,22 +311,19 @@ public class MessageParser {
 		}
 	}
 	
-	private float[] parseToFloatList (String input) throws Exception {
+	private float[] parseToFloatList (String input) throws ParseException, NullPointerException {
 		float[] ret = null;
-		String[] splitted = null;
 		if (input != null) {
 			try {
 				input = input.trim();
-				if (input.startsWith("[") && input.endsWith("]")) {
-					input = input.replaceAll("[\\[\"\\]]", "");
-					splitted = input.split(",");
-					ret = new float[splitted.length];
-					for (int i = 0 ; i < ret.length ; i++) {
-						ret[i] = Float.parseFloat(splitted[i]);
-					}
+				JSONParser parser = new JSONParser();
+				JSONArray arr = (JSONArray) parser.parse(input);
+				ret = new float[arr.size()];
+				for (int i = 0 ; i < arr.size() ; i++) {
+					ret[i] = Float.parseFloat(arr.get(i).toString());
 				}
 			}
-			catch (Exception e) {
+			catch (ParseException e) {
 				throw e;
 			}
 			

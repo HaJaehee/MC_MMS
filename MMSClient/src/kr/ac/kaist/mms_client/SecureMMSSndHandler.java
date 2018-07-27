@@ -27,6 +27,11 @@ Rev. history : 2018-07-19
 Version : 0.7.2
 	Added API; message sender guarantees message sequence .
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-27
+Version : 0.7.2
+	Revised setting header field function.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -362,12 +367,38 @@ class SecureMMSSndHandler {
 	private HttpsURLConnection addCustomHeaderField (HttpsURLConnection con, Map<String,List<String>> headerField) {
 		HttpsURLConnection retCon = con;
 		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"set headerfield[");}
-		for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
+		for (Iterator<String> keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 			String key = (String) keys.next();
 			List<String> valueList = (List<String>) headerField.get(key);
-			for (String value : valueList) {
-				if(MMSConfiguration.DEBUG) {System.out.println(key+":"+value);}
-				retCon.addRequestProperty(key, value);
+			if (valueList != null) {
+				if (valueList.size() == 1) {
+					if(MMSConfiguration.DEBUG) {System.out.println(key+":["+valueList.get(0)+"]");}
+					retCon.addRequestProperty(key, valueList.get(0));
+				}
+				else if (valueList.size() > 1) { 
+					
+					StringBuilder valueBuf = new StringBuilder();
+					if(MMSConfiguration.DEBUG) {System.out.print(key+":[");}
+					valueBuf.append("[");
+					int i = 0;
+					for (i = 0 ; i < valueList.size() ; i++) {
+						String value = valueList.get(i);
+						if(MMSConfiguration.DEBUG) {System.out.print(value);}
+						//valueBuf.append("\""+value+"\"");
+						valueBuf.append(value);
+						if (i != valueList.size()-1) {
+							if(MMSConfiguration.DEBUG) {System.out.print(",");}
+							valueBuf.append(",");
+						}
+					}
+					if(MMSConfiguration.DEBUG) {System.out.println("]");}
+					valueBuf.append("]");
+					retCon.addRequestProperty(key, valueBuf.toString());
+				}
+				else {
+					if(MMSConfiguration.DEBUG) {System.out.println(key+":[null]");}
+					retCon.addRequestProperty(key, null);
+				}
 			}
 		}
 		if(MMSConfiguration.DEBUG) {System.out.println("]");}

@@ -37,10 +37,14 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed RESOURCE_LEAK hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
+
+Rev. history : 2018-07-27
+Version : 0.7.2
+	Revised setting header field function.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
-import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -191,9 +195,11 @@ class MMSRcvHandler {
     			if(MMSConfiguration.DEBUG) {System.out.println(TAG+"set headerfield[");}
     			for (Iterator keys = myHdr.keySet().iterator() ; keys.hasNext() ;) {
     				String key = (String) keys.next();
-    				ArrayList<String> value = (ArrayList<String>) myHdr.get(key);
-    				if(MMSConfiguration.DEBUG) {System.out.println(key+":"+value);}
-    				resHdr.put(key, value);
+    				List<String> valueList = (List<String>) myHdr.get(key);
+    				for (String value : valueList) {
+    					if(MMSConfiguration.DEBUG) {System.out.println(key+":"+value);}
+    				}
+    				resHdr.put(key, valueList);
     			}
     			if(MMSConfiguration.DEBUG) {System.out.println("]");}
     			

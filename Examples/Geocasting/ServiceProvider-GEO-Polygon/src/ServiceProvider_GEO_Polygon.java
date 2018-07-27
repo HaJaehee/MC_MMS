@@ -45,10 +45,18 @@ public class ServiceProvider_GEO_Polygon {
 		geoType.add("polygon");
 		headerfield.put("geocasting",geoType);
 		List<String> latValue = new ArrayList<String>();
-		latValue.add("[1,2,3,4,1]");
+		latValue.add("1");
+		latValue.add("2");
+		latValue.add("3");
+		latValue.add("4");
+		latValue.add("1");
 		headerfield.put("lat", latValue);
 		List<String> longValue = new ArrayList<String>();
-		longValue.add("[1,2,3,4,5]");
+		longValue.add("9");
+		longValue.add("7");
+		longValue.add("5");
+		longValue.add("3");
+		longValue.add("1");
 		headerfield.put("long", longValue);
 		sender.setMsgHeader(headerfield);
 		// Header field example ends.
