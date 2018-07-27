@@ -5,7 +5,7 @@ File name : GeolocationCircleInfo.java
 	It contains geolocation information for circle area.
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2018-07-27
-Version : 0.7.1
+Version : 0.7.2
 **/
 /* -------------------------------------------------------- */
 
