@@ -134,6 +134,11 @@ Rev. history : 2018-07-23
 Version : 0.7.2
 	Added handling input messages by reordering policy for enqueueing to message queue scenario.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-27
+Version : 0.7.2
+	Added geocasting features which cast message to circle or polygon area.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 

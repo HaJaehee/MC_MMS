@@ -1,5 +1,4 @@
 package kr.ac.kaist.mns_interaction;
-
 /* -------------------------------------------------------- */
 /** 
 File name : MIH_MessageOutputChannel.java
@@ -30,6 +29,11 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2018-06-06
 Version : 0.7.1
 	Removed reply socket features.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-27
+Version : 0.7.2
+	Added geocasting features which cast message to circle or polygon area.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
