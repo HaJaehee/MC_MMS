@@ -172,11 +172,9 @@ public class MMSClientHandler {
 	}
 	
 	/**
-	 * This method is that client requests polling. If setting this method, send polling request
-	 * per interval. In the MMS that received the polling request, if there is a message toward the client, 
-	 * the message is send to the MMS client, which requests polling, and in the MMS client,
-	 * the callbackMethod is executed. Depending on whether it is the way of normal polling or long polling,
-	 * the way of response is different.
+	 * This method helps client to request polling. If setting this method, send polling request
+	 * per interval. If MMS receives a Polling Request message and send a message to the client,
+ 	 * that message can be handled in the Callback Method.
 	 * @param	dstMRN			the MRN of MMS to request polling
 	 * @param	svcMRN			the MRN of service, which may send to client
 	 * @param	interval		the frequency of polling (unit of time: ms)
@@ -202,7 +200,7 @@ public class MMSClientHandler {
 		}
 	}
 	/**
-	 * This method is that stop polling requests using interrupt signal. 
+	 * This method helps client to stop polling requests using interrupt signal. 
 	 */
 	public void stopPolling (){
 		this.pollHandler.ph.markInterrupted();
@@ -241,8 +239,8 @@ public class MMSClientHandler {
 	}
 	
 	/**
-	 * This method configures client's port to act as a HTTP server and create a rcvHandler object.
-	 * It is used in a network that supports push method. It receives all messages toward itself.
+	 * This method configures client's port to act as a HTTP server and to create the rcvHandler object.
+	 * It is used in a situation where the network supports push method. It receives all messages toward itself.
 	 * When a message is received via the callback method, it is possible to handle the response to be sent.
 	 * @param	port			port number
 	 * @param	callback		callback interface of {@link RequestCallback}
@@ -258,8 +256,8 @@ public class MMSClientHandler {
 	}
 	
 	/**
-	 * This method configures client's port to act as a HTTP server and create a rcvHandler object.
-	 * It is used in a network that supports push method. This method configures default context and 
+	 * This method configures client's port to act as a HTTP server and to create the rcvHandler object.
+	 * It is used in a situation where the network supports push method. This method configures default context and 
 	 * it receives messages that url matches the default context. When a message is received via the 
 	 * callback method, it is possible to handle the response to be sent.
 	 * @param	port			port number
@@ -277,8 +275,8 @@ public class MMSClientHandler {
 	}
 	
 	/**
-	 * This method configures client's port to act as a HTTP file server and create a rcvHandler object.
-	 * It is used in a network that supports push method. This method configures default context and 
+	 * This method configures client's port to act as a HTTP file server and to create the rcvHandler object.
+	 * It is used in a situation where the network supports push method. This method configures default context and 
 	 * it receives messages that url matches the default context. When a message is received via the 
 	 * callback method, it is possible to handle the response to be sent.
 	 * @param	port			the port number
@@ -379,7 +377,7 @@ public class MMSClientHandler {
 	}
 	
 	/**
-	 * Send a POST message to the destination MRN that url matches the location via MMS
+	 * Send a POST message via MMS to the destination MRN corresponding to the location URL
 	 * @param 	dstMRN			the destination MRN to send data
 	 * @param 	loc				url location
 	 * @param 	data			the data to send
@@ -429,7 +427,7 @@ public class MMSClientHandler {
 	
 	//HJH
 	/**
-	 * Send a GET message which the destination MRN is that url matches the location via MMS and setting
+	 * Send a GET message via MMS to the destination MRN corresponding to the location URL
 	 * parameter
 	 * @param 	dstMRN			the destination MRN
 	 * @param	loc				url location
