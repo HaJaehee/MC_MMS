@@ -71,6 +71,11 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION, EXPOSURE_OF_SYSTEM_DATA hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-27
+Version : 0.7.1
+	Modified an awkward sentences.
+Modifier : Kyoungjun Park (kyoungjun@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -81,7 +86,7 @@ import java.util.Map;
 
 
 /**
- * It is an object that can communicate to MMS through HTTPS and send or receive messages of other objects.
+ * This handler helps client communicate with MMS over HTTPS. Client can use it to send or receive messages to other objects.
  * @version 0.7.0
  * @see MMSClientHandler
  */
@@ -158,9 +163,9 @@ public class SecureMMSClientHandler {
 	}
 
 	/**
-	 * This method is that client requests polling. If setting this method, send polling request
+	 * This method helps client to request polling. If setting this method, send polling request
 	 * per interval. In the MMS that received the polling request, if there is a message toward the client, 
-	 * the message is send to the MMS client, which requests polling, and in the MMS client,
+	 * the message is sent to the MMS client, which requests polling, and in the MMS client,
 	 * the callbackMethod is executed. Depending on whether it is the way of normal polling or long polling,
 	 * the way of response is different.
 	 * @param	dstMRN			the MRN of MMS to request polling
@@ -188,7 +193,7 @@ public class SecureMMSClientHandler {
 		}
 	}
 	/**
-	 * This method is that stop polling requests using interrupt signal. 
+	 * This method stops polling requests using interrupt signal. 
 	 */
 	public void stopPolling (){
 		this.pollHandler.ph.markInterrupted();
@@ -228,7 +233,7 @@ public class SecureMMSClientHandler {
 
 	/**
 	 * This method configures client's port to act as a HTTPS server and create a rcvHandler object.
-	 * HTTPS server is configured via jksDirectory and jksPassword which matches that.
+	 * HTTPS server is configured via jksDirectory and jksPassword.
 	 * It is used in a network that supports push method. It receives all messages toward itself.
 	 * When a message is received via the callback method, it is possible to handle the response to be sent.
 	 * @param 	port			port number
@@ -247,7 +252,7 @@ public class SecureMMSClientHandler {
 	}
 	
 	/**
-	 * This method configures client's port to act as a HTTPS server and create a rcvHandler object.
+	 * This method configures client's port to act as a HTTPS server and creates the rcvHandler object.
 	 * HTTPS server is configured via jksDirectory and jksPassword which matches that.
 	 * It is used in a network that supports push method. This method configures default context and 
 	 * it receives messages that url matches the default context. When a message is received via the 
@@ -368,7 +373,7 @@ public class SecureMMSClientHandler {
 	}
 	
 	/**
-	 * Send a POST message to the destination MRN that url matches the location via MMS
+	 * Send a POST message via MMS to the destination MRN corresponding to URL location
 	 * @param 	dstMRN			the destination MRN to send data
 	 * @param 	loc				url location
 	 * @param 	data			the data to send
@@ -418,10 +423,10 @@ public class SecureMMSClientHandler {
 	
 	//HJH
 	/**
-	 * Send a GET message which the destination MRN is that url matches the location via MMS and setting
+	 * Send a GET message via MMS to the destination MRN corresponding to URL location
 	 * parameter
 	 * @param 	dstMRN			the destination MRN
-	 * @param	loc				url location
+	 * @param	loc				URL location
 	 * @param	params			parameter
 	 * @throws 	Exception		if exception occurs
 	 * @see		#sendGetMsg(String)
@@ -437,7 +442,7 @@ public class SecureMMSClientHandler {
 	
 	//OONI
 	/**
-	 * Use when requesting a file from the destination. Send a GET message to a file server mapping to destination MRN
+	 * Use when requesting a file from the destination MRN. Send a GET message to a file server mapping to destination MRN
 	 * to request a file that matches the parameterized filename.
 	 * @param 	dstMRN			the destination MRN to send a message
 	 * @param 	fileName		file path and name (e.g. "/get/test.xml")
