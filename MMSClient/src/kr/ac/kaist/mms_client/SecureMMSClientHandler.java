@@ -252,7 +252,7 @@ public class SecureMMSClientHandler {
 	
 	/**
 	 * This method configures client's port to act as a HTTPS server and to create the rcvHandler object.
-	 * HTTPS server is configured via jksDirectory and jksPassword which matches that.
+	 * HTTPS server is configured via jksDirectory and jksPassword.
 	 * It is used in a network that supports push method. This method configures default context and 
 	 * it receives messages that url matches the default context. When a message is received via the 
 	 * callback method, it is possible to handle the response to be sent.
@@ -274,7 +274,7 @@ public class SecureMMSClientHandler {
 	
 	/**
 	 * This method configures client's port to act as a HTTPS file server and to create the rcvHandler object.
-	 * HTTPS server is configured via jksDirectory and jksPassword which matches that.
+	 * HTTPS server is configured via jksDirectory and jksPassword.
 	 * It is used in a network that supports push method. This method configures default context and 
 	 * it receives messages that url matches the default context. When a message is received via the 
 	 * callback method, it is possible to handle the response to be sent.
