@@ -27,7 +27,7 @@ public class ServiceProvider_GEO_Polygon {
 		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		MMSConfiguration.DEBUG=true;
 		
-		MMSClientHandler server = new MMSClientHandler(myMRN);
+		//MMSClientHandler server = new MMSClientHandler(myMRN);
 		MMSClientHandler sender = new MMSClientHandler(myMRN);
 		sender.setSender(new MMSClientHandler.ResponseCallback() {
 			//Response Callback from the request message
@@ -63,7 +63,7 @@ public class ServiceProvider_GEO_Polygon {
 		
 		String dstMRN = "*";
 		sender.sendPostMsg(dstMRN, "Hello Geocast");
-		server.setServerPort(port, "/forwarding", new MMSClientHandler.RequestCallback() {
+		/*server.setServerPort(port, "/forwarding", new MMSClientHandler.RequestCallback() {
 			//Request Callback from the request message
 			//it is called when client receives a message
 			
@@ -97,7 +97,7 @@ public class ServiceProvider_GEO_Polygon {
 				return null;
 			}
 			
-		}); //server has a context '/forwarding'
+		});*/ //server has a context '/forwarding'
 		/* It is not same with:
 		 * server.setPort(port); //It sets default context as '/'
 		 * server.addContext("/forwarding"); //Finally server has two context '/' and '/forwarding'

@@ -77,7 +77,7 @@ public class SecureServiceProvider {
 					Iterator<String> iter = headerField.keySet().iterator();
 					while (iter.hasNext()){
 						String key = iter.next();
-						System.out.println(key+":"+headerField.get(key).toString());
+						System.out.println(key+":"+headerField.get(key).get(0));
 					}
 					System.out.println(message);
 

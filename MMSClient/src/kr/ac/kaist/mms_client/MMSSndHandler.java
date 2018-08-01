@@ -39,6 +39,11 @@ Rev. history : 2018-07-27
 Version : 0.7.2
 	Revised setting header field function.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-08-01
+Version : 0.7.2
+	Updated header field setter function.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -329,7 +334,7 @@ class MMSSndHandler {
 			List<String> valueList = (List<String>) headerField.get(key);
 			if (valueList != null) {
 				if (valueList.size() == 1) {
-					if(MMSConfiguration.DEBUG) {System.out.println(key+":["+valueList.get(0)+"]");}
+					if(MMSConfiguration.DEBUG) {System.out.println(key+":"+valueList.get(0));}
 					retCon.addRequestProperty(key, valueList.get(0));
 				}
 				else if (valueList.size() > 1) { 
@@ -353,9 +358,13 @@ class MMSSndHandler {
 					retCon.addRequestProperty(key, valueBuf.toString());
 				}
 				else {
-					if(MMSConfiguration.DEBUG) {System.out.println(key+":[null]");}
-					retCon.addRequestProperty(key, null);
+					if(MMSConfiguration.DEBUG) {System.out.println(key+":");}
+					retCon.addRequestProperty(key, "");
 				}
+			}
+			else if (valueList == null) {
+				if(MMSConfiguration.DEBUG) {System.out.println(key+":null");}
+				retCon.addRequestProperty(key, null);
 			}
 		}
 		if(MMSConfiguration.DEBUG) {System.out.println("]");}
