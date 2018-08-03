@@ -61,75 +61,80 @@ public class SC2 {
 		//String dstMRN = "urn:mrn:imo:imo-no:1000001";
 		String message = "안녕 hi \"hello\" ";
 		
-		List<MsgSenderThread> thrList = new ArrayList<MsgSenderThread>();
-		for (int i = 0; i < 10; i++) {
-			thrList.add(new MsgSenderThread(myMRN, headerfield, dstMRN, message+i, i));
-		}
+
 		
-		//Shuffle message sequence.
-		int testNum = 2;
-		if (testNum == 0) { //Long delay
-			thrList.get(0).start();
-			Thread.sleep(4000);
-			thrList.get(2).start();
-			Thread.sleep(4000);
-			thrList.get(1).start();
-			Thread.sleep(4000);
-			thrList.get(3).start();
-			Thread.sleep(4000);
-			thrList.get(5).start();
-			Thread.sleep(4000);
-			thrList.get(4).start();
-			Thread.sleep(1000);
-			thrList.get(8).start();
-			Thread.sleep(1000);
-			thrList.get(6).start();
-			Thread.sleep(1000);
-			thrList.get(7).start();
-			Thread.sleep(1000);
-			thrList.get(9).start();
-		}
-		else if (testNum == 1) { //Medium delay
-			thrList.get(0).start();
-			Thread.sleep(1000);
-			thrList.get(2).start();
-			Thread.sleep(1000);
-			thrList.get(1).start();
-			Thread.sleep(1000);
-			thrList.get(3).start();
-			Thread.sleep(1000);
-			thrList.get(5).start();
-			Thread.sleep(1000);
-			thrList.get(4).start();
-			Thread.sleep(1000);
-			thrList.get(8).start();
-			Thread.sleep(1000);
-			thrList.get(6).start();
-			Thread.sleep(1000);
-			thrList.get(7).start();
-			Thread.sleep(1000);
-			thrList.get(9).start();
-		}
-		else if (testNum == 2) { //Short delay
-			thrList.get(0).start();
-			Thread.sleep(100);
-			thrList.get(2).start();
-			Thread.sleep(100);
-			thrList.get(1).start();
-			Thread.sleep(100);
-			thrList.get(3).start();
-			Thread.sleep(100);
-			thrList.get(5).start();
-			Thread.sleep(100);
-			thrList.get(4).start();
-			Thread.sleep(100);
-			thrList.get(8).start();
-			Thread.sleep(100);
-			thrList.get(6).start();
-			Thread.sleep(100);
-			thrList.get(7).start();
-			Thread.sleep(100);
-			thrList.get(9).start();
+		while (true) {
+			List<MsgSenderThread> thrList = new ArrayList<MsgSenderThread>();
+			for (int i = 0; i < 10; i++) {
+				thrList.add(new MsgSenderThread(myMRN, headerfield, dstMRN, message+i, i));
+			}
+			
+			//Shuffle message sequence.
+			int testNum = 2;
+			if (testNum == 0) { //Long delay
+				thrList.get(0).start();
+				Thread.sleep(4000);
+				thrList.get(2).start();
+				Thread.sleep(4000);
+				thrList.get(1).start();
+				Thread.sleep(4000);
+				thrList.get(3).start();
+				Thread.sleep(4000);
+				thrList.get(5).start();
+				Thread.sleep(4000);
+				thrList.get(4).start();
+				Thread.sleep(1000);
+				thrList.get(8).start();
+				Thread.sleep(1000);
+				thrList.get(6).start();
+				Thread.sleep(1000);
+				thrList.get(7).start();
+				Thread.sleep(1000);
+				thrList.get(9).start();
+			}
+			else if (testNum == 1) { //Medium delay
+				thrList.get(0).start();
+				Thread.sleep(1000);
+				thrList.get(2).start();
+				Thread.sleep(1000);
+				thrList.get(1).start();
+				Thread.sleep(1000);
+				thrList.get(3).start();
+				Thread.sleep(1000);
+				thrList.get(5).start();
+				Thread.sleep(1000);
+				thrList.get(4).start();
+				Thread.sleep(1000);
+				thrList.get(8).start();
+				Thread.sleep(1000);
+				thrList.get(6).start();
+				Thread.sleep(1000);
+				thrList.get(7).start();
+				Thread.sleep(1000);
+				thrList.get(9).start();
+			}
+			else if (testNum == 2) { //Short delay
+				thrList.get(0).start();
+				Thread.sleep(100);
+				thrList.get(2).start();
+				Thread.sleep(100);
+				thrList.get(1).start();
+				Thread.sleep(100);
+				thrList.get(3).start();
+				Thread.sleep(100);
+				thrList.get(5).start();
+				Thread.sleep(100);
+				thrList.get(4).start();
+				Thread.sleep(100);
+				thrList.get(8).start();
+				Thread.sleep(100);
+				thrList.get(6).start();
+				Thread.sleep(100);
+				thrList.get(7).start();
+				Thread.sleep(100);
+				thrList.get(9).start();
+			}
+			thrList.get(9).join();
 		}
 	}
 }
