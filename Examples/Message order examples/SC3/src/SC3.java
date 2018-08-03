@@ -8,7 +8,7 @@ import kr.ac.kaist.mms_client.MMSConfiguration;
 
 /* -------------------------------------------------------- */
 /** 
-File name : SC2.java
+File name : SC3.java
 	Service Consumer which can only send messages
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
@@ -42,9 +42,9 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
-public class SC2 {
+public class SC3 {
 	public static void main(String args[]) throws Exception{
-		String myMRN = "urn:mrn:imo:imo-no:1000002";
+		String myMRN = "urn:mrn:imo:imo-no:1000003";
 		//myMRN = args[0];
 
 		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
@@ -59,14 +59,14 @@ public class SC2 {
 
 		String dstMRN = "urn:mrn:smart-navi:service:message-sequence-sensitive-server";
 		//String dstMRN = "urn:mrn:imo:imo-no:1000001";
-		String message = " SC2 안녕 hi \"hello\"";
+		String message = "SC3 안녕 hi \"hello\" ";
 		
 
 		
 		while (true) {
 			List<MsgSenderThread> thrList = new ArrayList<MsgSenderThread>();
 			for (int i = 0; i < 10; i++) {
-				thrList.add(new MsgSenderThread(myMRN, headerfield, dstMRN, i+message, i));
+				thrList.add(new MsgSenderThread(myMRN, headerfield, dstMRN, message+i, i));
 			}
 			
 			//Shuffle message sequence.
