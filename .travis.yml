@@ -18,8 +18,8 @@ before_script:
 
 script:
     - docker build --no-cache -t kaistmms/mmsserver docker/MMSServer
-    - docker push kaist/mmsserver 
+    - docker push kaistmms/mmsserver 
     - docker build --no-cache -t kaistmms/mnsdummy docker/MNSDummy
-    - docker push kaist/mnsdummy
+    - docker push kaistmms/mnsdummy
     
     
