@@ -1,7 +1,7 @@
 FROM openjdk:8-jdk-alpine
 
 COPY MMSServer.jar /app/mms/MMSServer.jar
-COPY MMSServer/target/lib/ /app/mms/lib/
+COPY lib/ /app/mms/lib/
 
 COPY start_mms.sh /app/mms/start_mms.sh
 
