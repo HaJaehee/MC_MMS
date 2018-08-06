@@ -31,6 +31,13 @@ Rev. history : 2018-06-06
 Version : 0.7.1
 	Removed reply socket features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-06-06
+Version : 0.8.0
+	Set the IP address of MNS_Dummy from "127.0.0.1" to "mns_dummy"
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+*
+
 */
 /* -------------------------------------------------------- */
 
@@ -64,7 +71,7 @@ class MIH_MessageOutputChannel {
     	try{
 	    	//String modifiedSentence;
 
-	    	MNSSocket = new Socket("127.0.0.1", 1004);
+	    	MNSSocket = new Socket("mns_dummy", 1004);
 	    	MNSSocket.setSoTimeout(5000);
 	    	pw = new PrintWriter(MNSSocket.getOutputStream());
 	    	isr = new InputStreamReader(MNSSocket.getInputStream());

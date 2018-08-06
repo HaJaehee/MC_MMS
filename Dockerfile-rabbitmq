@@ -1,0 +1,15 @@
+FROM rabbitmq:3-management
+
+ENV RABBITMQ_DEFAULT_USER=test
+ENV RABBITMQ_DEFAULT_PASS=test
+
+
+COPY start_rabbitmq.sh /app/rabbitmq/start_rabbitmq.sh
+
+WORKDIR /app/rabbitmq
+
+RUN echo "[{rabbit, [{loopback_users, []}]}]." > /etc/rabbitmq/rabbitmq.config
+
+CMD ["/sbin/iptables", "-A", "INPUT", "-p", "tcp", "-s", "!", "mms_server", "--dport", "5672", "-j", "DROP"]
+
+CMD ["/app/rabbitmq/start_rabbitmq.sh"]

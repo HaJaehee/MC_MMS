@@ -58,7 +58,16 @@ Rev. history : 2017-10-25
 Version : 0.6.0
 	Added MMSLogForDebug features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-08-05
+Version : 0.8.0
+	Change ip address of rabbitmq from "localhost" to "rabbitmq-db".
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
+
+
 */
+
 /* -------------------------------------------------------- */
 
 class MessageQueueEnqueuer {
@@ -95,7 +104,7 @@ class MessageQueueEnqueuer {
 		
 		try {
 			ConnectionFactory factory = new ConnectionFactory();
-			factory.setHost("localhost");
+			factory.setHost("rabbitmq-db");
 			Connection connection = factory.newConnection();
 			Channel channel;
 			

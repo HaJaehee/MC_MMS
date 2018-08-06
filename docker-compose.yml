@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  mms_server:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-mms 
+    ports:
+      - "8088:8088"
+    stdin_open: true
+    tty: true
+    links:
+      - rabbitmq-db
+      - mns_dummy
+
+  mns_dummy:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-mns_dummy
+    ports:
+      - "1004:1004"
+    stdin_open: true
+    tty: true
+
+  rabbitmq-db:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    stdin_open: true
+    tty: true
+
