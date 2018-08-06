@@ -17,9 +17,9 @@ before_script:
     - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 
 script:
-    - docker build --no-cache -t kaist/mmsserver docker/MMSServer
+    - docker build --no-cache -t kaistmms/mmsserver docker/MMSServer
     - docker push kaist/mmsserver 
-    - docker build --no-cache -t kaist/mnsdummy docker/MNSDummy
+    - docker build --no-cache -t kaistmms/mnsdummy docker/MNSDummy
     - docker push kaist/mnsdummy
     
     
