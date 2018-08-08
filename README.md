@@ -1,10 +1,6 @@
-# Alert! 
-This branch is being implemented! 
-Source codes in this branch would be modified without any notification.
-
 # MC_MMS
-Beta Version 0.7.2 <br/>
-2018.6.28<br/>
+Beta Version 0.8.0 <br/>
+2018.8.08<br/>
 
 # Web Site
 www.mms-kaist.com
@@ -27,10 +23,12 @@ Service Provider Examples<br/>
 
 
 ## Usage
+QUICK DEPLOY: run script at scripts/deploy-mms.sh at the directory. It will automatically run MMS Server and related services.
 First of all, configure build path to .jar files in ./External_jars.<br/>
 Install [rabbitmq](https://www.rabbitmq.com/#getstarted) https://www.rabbitmq.com/#getstarted <br/>
 Install [erlang otp](https://www.erlang.org/downloads) https://www.erlang.org/downloads <br/>
 See also [MC_Chat_Service_Example](https://github.com/HaJaehee/MC_Chat_Service_Example) https://github.com/HaJaehee/MC_Chat_Service_Example <br/>
+
 
 ## Developing
 Jaehyun Park<br/>
