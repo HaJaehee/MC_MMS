@@ -7,6 +7,6 @@ COPY start_mms.sh /app/mms/start_mms.sh
 
 WORKDIR /app/mms
 
-RUN [¡°chmod¡±, ¡°+x¡±, "/app/mms/start_mms.sh¡±]
+RUN ["chmod", "+x", "/app/mms/start_mms.sh"]
 CMD ["/app/mms/start_mms.sh"]
 
