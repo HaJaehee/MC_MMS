@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS.svg?branch=master)](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS)
+
 # MC_MMS
 Beta Version 0.8.0 <br/>
 2018.8.08<br/>
