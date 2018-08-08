@@ -1,0 +1,28 @@
+version: '2'
+
+services:
+  mms_server:
+    image: kaistmms/mmsserver
+    ports:
+      - "8088:8088"
+    stdin_open: true
+    tty: true
+    links:
+      - rabbitmq-db
+      - mns_dummy
+
+  mns_dummy:
+    image: kaistmms/mnsdummy
+    ports:
+      - "1004:1004"
+    stdin_open: true
+    tty: true
+
+  rabbitmq-db:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+

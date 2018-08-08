@@ -44,7 +44,7 @@ public class SC1 {
 		
 
 		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
-		MMSConfiguration.LOGGING = false; // If you are debugging client, set this variable true.
+		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 		
 		//Service Consumer cannot be HTTP server and should poll from MMS. 
 		MMSClientHandler polling = new MMSClientHandler(myMRN);

@@ -54,6 +54,24 @@ Rev. history : 2017-10-25
 Version : 0.6.0
 	Added MMSLogForDebug features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-06-25
+Version : 0.7.1
+	Updated AMQP client to version 5.3.0.
+	Revised long polling mechanism.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-06-25
+Version : 0.7.2
+	Fixed closing channel connection problem.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-08-05
+Version : 0.8.0
+	Change ip address of rabbitmq from "localhost" to "rabbitmq-db.
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
+
 */
 /* -------------------------------------------------------- */
 
@@ -74,9 +92,6 @@ import com.rabbitmq.client.ConsumerCancelledException;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.GetResponse;
-import com.rabbitmq.client.QueueingConsumer;
-import com.rabbitmq.client.ShutdownSignalException;
-
 import io.netty.channel.ChannelHandlerContext;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.SessionManager;
@@ -118,7 +133,6 @@ class MessageQueueDequeuer extends Thread{
 		this.outputChannel = outputChannel;
 		this.ctx = ctx;
 		
-		
 		this.start();
 
 	
@@ -129,12 +143,12 @@ class MessageQueueDequeuer extends Thread{
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+		
 		super.run();
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 	    try {
 			ConnectionFactory factory = new ConnectionFactory();
-			factory.setHost("localhost");
+			factory.setHost("rabbitmq-db");
 			connection = factory.newConnection();
 			channel = connection.createChannel();
 			channel.queueDeclare(queueName, true, false, false, null);
@@ -197,6 +211,76 @@ class MessageQueueDequeuer extends Thread{
 						mmsLogForDebug.addLog(this.SESSION_ID, log);
 					}
 					logger.debug("SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".");
+					
+					
+					Consumer consumer = new DefaultConsumer(channel) {
+						 @Override
+						  public void handleDelivery(String consumerTag, Envelope envelope,
+						                             AMQP.BasicProperties properties, byte[] body)
+						      throws IOException {
+						    String dqMessage = new String(body, "UTF-8");
+						    if(!ctx.isRemoved()){
+								message.append("[\""+URLEncoder.encode(dqMessage,"UTF-8")+"\"]");
+								
+								if(MMSConfiguration.WEB_LOG_PROVIDING) {
+									String log = "SessionID="+SESSION_ID+" Dequeue="+queueName+".";
+									mmsLog.addBriefLogForStatus(log);
+									mmsLogForDebug.addLog(SESSION_ID, log);
+								}
+								logger.debug("SessionID="+SESSION_ID+" Dequeue="+queueName+".");
+						    	
+						    	if (SessionManager.sessionInfo.get(SESSION_ID) != null) {
+						    		SessionManager.sessionInfo.remove(SESSION_ID);
+						    	}
+							    outputChannel.replyToSender(ctx, message.toString().getBytes());
+								channel.basicAck(envelope.getDeliveryTag(), false);
+							} else {
+								if(MMSConfiguration.WEB_LOG_PROVIDING) {
+									String log = "SessionID="+SESSION_ID+" Dequeue="+queueName+".";
+									mmsLog.addBriefLogForStatus(log);
+									mmsLogForDebug.addLog(SESSION_ID, log);
+									log = "SessionID="+SESSION_ID+" "+srcMRN+" is disconnected. Requeue.";
+									mmsLog.addBriefLogForStatus(log);
+									mmsLogForDebug.addLog(SESSION_ID, log);
+								}
+								logger.debug("SessionID="+SESSION_ID+" Dequeue="+queueName+".");
+								logger.warn("SessionID="+SESSION_ID+" "+srcMRN+" is disconnected. Requeue.");
+								channel.basicNack(envelope.getDeliveryTag(), false, true);
+							}
+						    
+						    this.getChannel().basicCancel(this.getConsumerTag());
+						    try {
+						    	if (this.getChannel() != null) {
+						    		this.getChannel().close();
+						    	}
+						    	if (connection != null) {
+						    		connection.close();
+						    	}
+							} catch (TimeoutException e) {
+								logger.warn("SessionID="+SESSION_ID+" "+e.getMessage()+".");
+							}
+
+						  }
+					};
+					channel.basicConsume(queueName, false, consumer);
+	
+					
+					//Enroll a  to the queue channel in order to get a message from the queue.
+					//However, it does not block exactly this thread.
+				}
+				
+				
+				//QueueingConsumer is deprecated from amqp-client-5.3.0.jar.
+				/*
+				 else { //If polling method of service having svcMRN is long polling
+				 
+					//Enroll a delivery listener to the queue channel in order to get a message from the queue.
+					if(MMSConfiguration.WEB_LOG_PROVIDING) {
+						String log = "SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".";
+						mmsLog.addBriefLogForStatus(log);
+						mmsLogForDebug.addLog(this.SESSION_ID, log);
+					}
+					logger.debug("SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".");
 					QueueingConsumer consumer = new QueueingConsumer(channel);
 					channel.basicConsume(queueName, false, consumer);
 					QueueingConsumer.Delivery delivery = consumer.nextDelivery();
@@ -234,7 +318,7 @@ class MessageQueueDequeuer extends Thread{
 					
 					//Enroll a delivery listener to the queue channel in order to get a message from the queue.
 					//However, it blocks exactly this thread.
-				}
+				}*/
 			}
 
 				
@@ -278,30 +362,32 @@ class MessageQueueDequeuer extends Thread{
 	    catch (TimeoutException e) {
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 		} 
-	    catch (ShutdownSignalException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-		} 
+//	    catch (ShutdownSignalException e) {
+//			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+//		} 
 	    catch (ConsumerCancelledException e) {
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 		} 
-	    catch (InterruptedException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-		} 
+//	    catch (InterruptedException e) {
+//			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+//		} 
 	    finally {
-	    	if (channel != null) {
-	    		try {
-					channel.close();
-				} catch (IOException | TimeoutException e) {
-					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+	    	if ((PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null) || (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) != null && PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING)) { // Default polling method: normal polling
+	    		if (channel != null) {
+		    		try {
+						channel.close();
+					} catch (IOException | TimeoutException e) {
+						logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+					}
+		    	}
+				if (connection != null) {
+					try {
+						connection.close();
+					} catch (IOException e) {
+						logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+					}
 				}
 	    	}
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (IOException e) {
-					logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-				}
-			}
 		}
 		
 		

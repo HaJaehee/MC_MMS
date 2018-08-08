@@ -82,7 +82,7 @@ import java.util.Map;
 
 /**
  * It is an object that can communicate to MMS through HTTPS and send or receive messages of other objects.
- * @version 0.7.0
+ * @version 0.7.1
  * @see MMSClientHandler
  */
 public class SecureMMSClientHandler {
@@ -102,7 +102,11 @@ public class SecureMMSClientHandler {
 	 * @param	clientMRN		the MRN of client
 	 * @throws	IOException 	if exception occurs
 	 */	
-	public SecureMMSClientHandler(String clientMRN) throws IOException{
+	public SecureMMSClientHandler(String clientMRN) throws IOException, NullPointerException{
+		if (clientMRN == null) {
+			System.out.println(TAG+"Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		this.clientMRN = clientMRN;
 		rcvHandler = null;
 		pollHandler = null;

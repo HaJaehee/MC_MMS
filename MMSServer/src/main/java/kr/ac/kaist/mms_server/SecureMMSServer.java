@@ -63,7 +63,6 @@ public final class SecureMMSServer extends Thread {
 
 	
 	public void runServer() {
-		// TODO Auto-generated method stub
 		this.start();
 	}
 	

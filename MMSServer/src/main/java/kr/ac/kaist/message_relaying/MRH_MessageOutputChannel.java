@@ -52,7 +52,20 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed RESOURCE_LEAK, IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION hazard.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-06-27
+Version : 0.7.1
+	Fixed large response issues.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
+	Jaehyun Park (jae519@kaist.ac.kr)
+	KyungJun Park (kjpark525@kaist.ac.kr)
+	
+Rev. history : 2018-06-28
+Version : 0.7.1
+	Fixed large response issues.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
+	Jaehyun Park (jae519@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -75,7 +88,6 @@ import java.util.Set;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLProtocolException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -83,24 +95,19 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelOutboundHandler;
-import io.netty.channel.ChannelOutboundHandlerAdapter;
-import io.netty.channel.ChannelPromise;
-import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
-import io.netty.handler.codec.http.LastHttpContent;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -120,7 +127,6 @@ public class MRH_MessageOutputChannel{
 	private MMSLog mmsLog = null;
 	
 	MRH_MessageOutputChannel(String sessionId) {
-		// TODO Auto-generated constructor stub
 		this.SESSION_ID = sessionId;
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 		mmsLog = MMSLog.getInstance();
@@ -143,9 +149,7 @@ public class MRH_MessageOutputChannel{
 	}
 	
 	public void replyToSender(ChannelHandlerContext ctx, byte[] data) {
-    	ByteBuf textb = Unpooled.copiedBuffer(data);
-
-		if (!realtimeLog) {
+    	if (!realtimeLog) {
 	    	logger.info("SessionID="+this.SESSION_ID+" Reply to sender.");
 	    	if(MMSConfiguration.WEB_LOG_PROVIDING) {
 	    		String log = "SessionID="+this.SESSION_ID+" Reply to sender.";
@@ -155,7 +159,7 @@ public class MRH_MessageOutputChannel{
 		}
     	
     	long responseLen = data.length;
-    	HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, getHttpResponseStatus(responseCode));
+    	FullHttpResponse res = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, getHttpResponseStatus(responseCode), Unpooled.copiedBuffer(data));
     	if (isStoredHeader){
 			Set<String> resHeaderKeyset = storedHeader.keySet(); 
 			for (Iterator<String> resHeaderIterator = resHeaderKeyset.iterator();resHeaderIterator.hasNext();) {
@@ -177,20 +181,23 @@ public class MRH_MessageOutputChannel{
     	}
     	
     	HttpUtil.setContentLength(res, responseLen);
-    	//System.out.println("Ready to send message in MRH_output");
-    	ctx.write(res);
-    	ctx.write(textb);
-        ChannelFuture future = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
-        future.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
-        future.addListener(ChannelFutureListener.CLOSE);
-        ctx.close();
+    	final ChannelFuture f = ctx.writeAndFlush(res);
+    	f.addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) {
+                assert f == future;
+                
+                ctx.close();
+            }
+        });
+    	
         SessionManager.sessionInfo.remove(SESSION_ID);
         
         logger.trace("SessionID=" + this.SESSION_ID + " Message is sent completely.");
     }
 	
 //  to do relaying
-	byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws IOException { // 
+	public byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws IOException { // 
 
 		String url = "http://" + IPAddress + ":" + port + req.uri();
 		URL obj = new URL(url);
@@ -238,7 +245,7 @@ public class MRH_MessageOutputChannel{
 		Map<String,List<String>> resHeaders = con.getHeaderFields();
 		setResponseHeader(resHeaders);
 		
-		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+"' request to URL : " + url + "\n"
+		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL : " + url + "\n"
 				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters+"\n"
 				+ "Response Code : " + responseCode);
 
@@ -270,7 +277,7 @@ public class MRH_MessageOutputChannel{
 	
 	
 //  to do secure relaying
-	byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws IOException { // 
+	public byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws IOException { // 
 
 	  	hv = getHV();
 	  	
@@ -375,10 +382,8 @@ public class MRH_MessageOutputChannel{
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
         	logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 		} catch (KeyManagementException e) {
-			// TODO Auto-generated catch block
 			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
 		}
         

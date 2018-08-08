@@ -58,7 +58,7 @@ import javax.net.ssl.*;
 
 class SecureMMSSndHandler {
 	private String TAG = "[SecureMMSSndHandler] ";
-	private final String USER_AGENT = "MMSClient/0.7.0";
+	private final String USER_AGENT = "MMSClient/0.7.1";
 	private String clientMRN = null;
 	private boolean isRgstLoc = false;
 	private SecureMMSClientHandler.ResponseCallback myCallback;
@@ -97,7 +97,9 @@ class SecureMMSSndHandler {
 		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 		con.setRequestProperty("srcMRN", clientMRN);
-		con.setRequestProperty("dstMRN", dstMRN);
+		if (dstMRN != null) {
+			con.setRequestProperty("dstMRN", dstMRN);
+		}
 		//con.addRequestProperty("Connection","keep-alive");
 		
 		if (headerField != null) {
@@ -108,7 +110,7 @@ class SecureMMSSndHandler {
 		String urlParameters = data;
 		
 
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"urlParameters: "+urlParameters);
+		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"urlParameters: "+urlParameters);}
 		
 		// Send post request
 		con.setDoOutput(true);
@@ -133,7 +135,7 @@ class SecureMMSSndHandler {
 		List<String> responseCodes = new ArrayList<String>();
 		responseCodes.add(responseCode+"");
 		inH.put("Response-code", responseCodes);
-		if(MMSConfiguration.LOGGING){
+		if(MMSConfiguration.DEBUG){
 			System.out.println("\n"+TAG+"Sending 'POST' request to URL : " + url);
 			System.out.println(TAG+"Post parameters : " + urlParameters);
 			System.out.println(TAG+"Response Code : " + responseCode);
@@ -148,7 +150,7 @@ class SecureMMSSndHandler {
 		}
 		
 		in.close();
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response: " + response.toString() + "\n");
+		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Response: " + response.toString() + "\n");}
 		
 		
 		
@@ -176,15 +178,19 @@ class SecureMMSSndHandler {
 		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 		con.setRequestProperty("srcMRN", clientMRN);
-		con.setRequestProperty("dstMRN", dstMRN);
+		if (dstMRN != null) {
+			con.setRequestProperty("dstMRN", dstMRN);
+		}
 		if (headerField != null) {
 			con = addCustomHeaderField(con, headerField);
 		}
 		//con.addRequestProperty("Connection","keep-alive");
 
 		int responseCode = con.getResponseCode();
-		if(MMSConfiguration.LOGGING)System.out.println("\n"+TAG+"Sending 'GET' request to URL : " + url);
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response Code : " + responseCode + "\n");
+		if(MMSConfiguration.DEBUG) {
+			System.out.println("\n"+TAG+"Sending 'GET' request to URL : " + url);
+			System.out.println(TAG+"Response Code : " + responseCode + "\n");
+		}
 		
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream()));
@@ -237,7 +243,9 @@ class SecureMMSSndHandler {
 		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 		con.setRequestProperty("srcMRN", clientMRN);
-		con.setRequestProperty("dstMRN", dstMRN);
+		if (dstMRN != null) {
+			con.setRequestProperty("dstMRN", dstMRN);
+		}
 		if (headerField != null) {
 			con = addCustomHeaderField(con, headerField);
 		}
@@ -249,8 +257,11 @@ class SecureMMSSndHandler {
 		List<String> responseCodes = new ArrayList<String>();
 		responseCodes.add(responseCode+"");
 		inH.put("Response-code", responseCodes);
-		if(MMSConfiguration.LOGGING)System.out.println("\n"+TAG+"Sending 'GET' request to URL : " + url);
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response Code : " + responseCode);
+		if(MMSConfiguration.DEBUG) {
+			System.out.println("\n"+TAG+"Sending 'GET' request to URL : " + url);
+			System.out.println(TAG+"Response Code : " + responseCode);
+		}
+		
 		
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream(),Charset.forName("UTF-8")));
@@ -262,7 +273,7 @@ class SecureMMSSndHandler {
 		}
 		
 		in.close();
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"Response: " + response.toString() + "\n");
+		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Response: " + response.toString() + "\n");}
 		receiveResponse(inH, response.toString());
 		return;
 	}
@@ -290,17 +301,19 @@ class SecureMMSSndHandler {
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (NoSuchAlgorithmException e) {
-        	System.out.println(TAG);
-        	//e.printStackTrace();
+        	System.out.print(TAG+" Exception: "+ e.getLocalizedMessage());
+        	if(MMSConfiguration.DEBUG){e.printStackTrace();}
         } catch (KeyManagementException e) {
-        	System.out.println(TAG);
-        	//e.printStackTrace();
+        	System.out.print(TAG+" Exception: "+ e.getLocalizedMessage());
+        	if(MMSConfiguration.DEBUG){e.printStackTrace();}
         }
         
         HostnameVerifier hv = new HostnameVerifier() {
             public boolean verify(String urlHostName, SSLSession session) {
-            	if(MMSConfiguration.LOGGING)System.out.println(TAG+"Warning: URL Host: " + urlHostName + " vs. "
+            	if(MMSConfiguration.DEBUG) {
+            		System.out.println(TAG+"Warning: URL Host: " + urlHostName + " vs. "
                         + session.getPeerHost());
+            	}
                 return true;
             }
         };
@@ -335,16 +348,16 @@ class SecureMMSSndHandler {
 	
 	private HttpsURLConnection addCustomHeaderField (HttpsURLConnection con, Map<String,List<String>> headerField) {
 		HttpsURLConnection retCon = con;
-		if(MMSConfiguration.LOGGING)System.out.println(TAG+"set headerfield[");
+		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"set headerfield[");}
 		for (Iterator keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 			String key = (String) keys.next();
 			List<String> valueList = (List<String>) headerField.get(key);
 			for (String value : valueList) {
-				if(MMSConfiguration.LOGGING)System.out.println(key+":"+value);
+				if(MMSConfiguration.DEBUG) {System.out.println(key+":"+value);}
 				retCon.addRequestProperty(key, value);
 			}
 		}
-		if(MMSConfiguration.LOGGING)System.out.println("]");
+		if(MMSConfiguration.DEBUG) {System.out.println("]");}
 		return retCon;
 	}
 	
