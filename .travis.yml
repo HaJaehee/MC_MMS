@@ -1,0 +1,38 @@
+anguage: java
+
+jdk:
+  - openjdk8
+
+branches:  
+
+services:  
+    # Enable docker service inside travis
+    - docker
+
+install:
+    # Build the spring boot app and copy the result to the docker folder
+    - mvn clean install && cp MMSServer/target/MC_MMS-0.7.2-SNAPSHOT.jar docker/MMSServer/MMSServer.jar && cp MMSServer/target/MC_MMS-0.7.2-SNAPSHOT.jar docker/MNSDummy/MMSServer.jar
+    - cp -r MMSServer/target/lib docker/MMSServer/ && cp -r MMSServer/target/lib docker/MNSDummy/
+
+before_script:  
+    - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+
+script:
+    - docker build --no-cache -t kaistmms/mmsserver docker/MMSServer
+    - docker push kaistmms/mmsserver 
+    - docker build --no-cache -t kaistmms/mnsdummy docker/MNSDummy
+    - docker push kaistmms/mnsdummy
+#--------------------------------------------
+#Autho deployment script is now in development stage.
+#deploy:
+#  # deploy develop to the staging environment
+#  - provider: script
+#    script: bash scripts/deploy.sh staging
+#    on:
+#      branch: develop
+#  # deploy master to production
+#  - provider: script
+#    script: bash scripts/deploy.sh production
+#    on:
+#      branch: master
+#--------------------------------------------

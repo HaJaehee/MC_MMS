@@ -65,6 +65,13 @@ Rev. history : 2018-06-25
 Version : 0.7.2
 	Fixed closing channel connection problem.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-08-05
+Version : 0.8.0
+	Change ip address of rabbitmq from "localhost" to "rabbitmq-db.
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
+
 */
 /* -------------------------------------------------------- */
 
@@ -141,7 +148,7 @@ class MessageQueueDequeuer extends Thread{
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 	    try {
 			ConnectionFactory factory = new ConnectionFactory();
-			factory.setHost("localhost");
+			factory.setHost("rabbitmq-db");
 			connection = factory.newConnection();
 			channel = connection.createChannel();
 			channel.queueDeclare(queueName, true, false, false, null);

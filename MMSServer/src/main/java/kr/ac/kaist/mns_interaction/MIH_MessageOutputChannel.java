@@ -31,10 +31,19 @@ Version : 0.7.1
 	Removed reply socket features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+<<<<<<< HEAD
 Rev. history : 2018-07-27
 Version : 0.7.2
 	Added geocasting features which cast message to circle or polygon area.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+=======
+Rev. history : 2018-06-06
+Version : 0.8.0
+	Set the IP address of MNS_Dummy from "127.0.0.1" to "mns_dummy"
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+*
+
+>>>>>>> origin/beta-0.8.0
 */
 /* -------------------------------------------------------- */
 

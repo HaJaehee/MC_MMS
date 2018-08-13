@@ -1,10 +1,7 @@
-# Alert! 
-This branch is being implemented! 
-Source codes in this branch would be modified without any notification.
-
 # MC_MMS
-Beta Version 0.7.2 <br/>
-2018.8.3<br/>
+Beta Version 0.7.3 <br/>
+2018.8.13<br/>
+
 
 # Web Site
 www.mms-kaist.com
@@ -12,6 +9,7 @@ www.mms-kaist.com
 
 ## Features
 MMS Beta Version<br/>
+Supports Docker's setup environment<br/>
 Supports javadoc API documents<br/>
 Supports fully relaying HTTP(S) messages based on ID<br/>
 Supports fully HTTPS communication<br/>
@@ -27,10 +25,12 @@ Service Provider Examples<br/>
 
 
 ## Usage
+QUICK DEPLOY: run script at scripts/deploy-mms.sh at the directory. It will automatically run MMS Server and related services.
 First of all, configure build path to .jar files in ./External_jars.<br/>
 Install [rabbitmq](https://www.rabbitmq.com/#getstarted) https://www.rabbitmq.com/#getstarted <br/>
 Install [erlang otp](https://www.erlang.org/downloads) https://www.erlang.org/downloads <br/>
 See also [MC_Chat_Service_Example](https://github.com/HaJaehee/MC_Chat_Service_Example) https://github.com/HaJaehee/MC_Chat_Service_Example <br/>
+
 
 ## Developing
 Jaehyun Park<br/>
