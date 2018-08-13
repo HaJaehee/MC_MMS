@@ -1,7 +1,7 @@
 Patch Notes
 ***********
 08-August 2018
-MC_MMS 0.8.0 new features/enhancemants & bug-fixes:
+MC_MMS 0.7.3 new features/enhancemants & bug-fixes:
 1. Updated interfaces between MMS and MNS.
 2. Added pom.xml for Maven compile.
 3. Added .travis.yml for docker compile.
