@@ -50,6 +50,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Scanner;
 
 import org.apache.commons.cli.*;
 
@@ -150,7 +151,7 @@ public class MMSConfiguration {
 		try {
 			cmd = clParser.parse(options, args);
 			
-			String usage = "java -jar ST20_MMSServer.jar "
+			String usage = "java -cp MC_MMS.jar kr.ac.kaist.mms_server.MMSServer "
 					+ "[-c max_content_size] "
 					+ "[-h] "
 					+ "[-mls max_brief_log_list_size] "
@@ -166,6 +167,8 @@ public class MMSConfiguration {
 			
 			if (cmd.hasOption("help")) {
 				formatter.printHelp(usage, options);
+				Scanner sc = new Scanner(System.in);
+				sc.nextLine();
 				System.exit(0);
 			}
 			
