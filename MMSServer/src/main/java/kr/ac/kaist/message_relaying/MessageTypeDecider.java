@@ -71,7 +71,17 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 	
 Rev. history : 2018-07-10
 Version : 0.7.2
-	Fixed unsecure codes.
+	Fixed insecure codes.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-18
+Version : 0.7.2
+	Added handling input messages by reordering policy.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-27
+Version : 0.7.2
+	Added geocasting features which cast message to circle or polygon area.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -93,7 +103,9 @@ class MessageTypeDecider {
 	public static enum msgType {
 			POLLING,
 			RELAYING_TO_SC,
+			RELAYING_TO_SC_SEQUENTIALLY,
 			RELAYING_TO_SERVER,
+			RELAYING_TO_SERVER_SEQUENTIALLY,
 			REGISTER_CLIENT,
 			UNKNOWN_MRN,
 			STATUS,EMPTY_MNSDummy,
@@ -113,7 +125,8 @@ class MessageTypeDecider {
 			REALTIME_LOG,
 			ADD_ID_IN_REALTIME_LOG_IDS,
 			REMOVE_ID_IN_REALTIME_LOG_IDS,
-			GEOCASTING
+			GEOCASTING_CIRCLE,
+			GEOCASTING_POLYGON
 	}
 
 	
@@ -126,6 +139,7 @@ class MessageTypeDecider {
 		String dstMRN = parser.getDstMRN();
 		HttpMethod httpMethod = parser.getHttpMethod();
 		String uri = parser.getUri();
+		double seqNum = parser.getSeqNum();
 		
 //		When MRN(s) is(are) null
 	   	if (srcMRN == null && dstMRN == null) {
@@ -168,15 +182,6 @@ class MessageTypeDecider {
 		}
 		else if (dstMRN == null) {
 			
-			// When geocasting
-			if (parser.isGeocastingMsg()) {
-				geolocationInformation geo = parser.getGeoInfo();
-				String geocastInfo = mch.queryMNSForDstInfo(srcMRN, geo.getGeoLat(), geo.getGeoLong(), geo.getGeoRadius());
-				parser.parseGeocastInfo(geocastInfo);
-
-				return msgType.GEOCASTING;
-			}
-			
 			return msgType.NULL_DST_MRN;
 		}
 	   	
@@ -199,16 +204,41 @@ class MessageTypeDecider {
 	    		return msgType.DST_MRN_IS_THIS_MMS_MRN;
 	    	}
 		}
-	
+		
+		// When geocasting
+		else if (parser.isGeocastingMsg()) {
+			if (parser.getGeoCircleInfo() != null) {
+				GeolocationCircleInfo geo = parser.getGeoCircleInfo();
+				String geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geo.getGeoLat(), geo.getGeoLong(), geo.getGeoRadius());
+				parser.parseGeocastInfo(geocastInfo);
+				
+				return msgType.GEOCASTING_CIRCLE;
+			}
+			
+			//TODO
+			else if (parser.getGeoPolygonInfo() != null) {
+				GeolocationPolygonInfo geo = parser.getGeoPolygonInfo();
+				String geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geo.getGeoLatList(), geo.getGeoLongList());
+				parser.parseGeocastInfo(geocastInfo);
+				
+				return msgType.GEOCASTING_POLYGON;
+			}
+			
+		 	return msgType.UNKNOWN_MRN;
+		}
     	
 //    	When relaying
     	else {
     		String dstInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, parser.getSrcIP());
     		
+    		
     		if (dstInfo != null) {
+
+    			//TODO: Exceptions from MNS must be handled.
 	        	if (dstInfo.equals("No")) {
 	        		return msgType.UNKNOWN_MRN;
 	        	}  
+	        	//TODO: This function must be defined.
 	        	else if (dstInfo.regionMatches(0, "MULTIPLE_MRN,", 0, 9)){
 	        		parser.parseMultiDstInfo(dstInfo);
 	        		return msgType.RELAYING_TO_MULTIPLE_SC;
@@ -217,11 +247,23 @@ class MessageTypeDecider {
 	        	parser.parseDstInfo(dstInfo);
 	        	String model = parser.getDstModel();
 	        	
+				
+				
 	        	if (model.equals("push")) {//model B (destination MSR, MIR, or MSP as servers)
-	        		return msgType.RELAYING_TO_SERVER;
+	        		if (seqNum == -1) {
+	        			return msgType.RELAYING_TO_SERVER;
+	        		}
+	        		else {
+	        			return msgType.RELAYING_TO_SERVER_SEQUENTIALLY;
+	        		}
 	        	} 
 	        	else if (model.equals("polling")){//when model A, it puts the message into the queue
-	        		return msgType.RELAYING_TO_SC;
+	        		if (seqNum == -1) {
+	        			return msgType.RELAYING_TO_SC;
+	        		}
+	        		else {
+	        			return msgType.RELAYING_TO_SC_SEQUENTIALLY;
+	        		}
 	        	}
     		}
         	
@@ -231,6 +273,7 @@ class MessageTypeDecider {
 		/*else {
     		return UNKNOWN_HTTP_TYPE;
     	}*/
+	  
 	}
 	
 

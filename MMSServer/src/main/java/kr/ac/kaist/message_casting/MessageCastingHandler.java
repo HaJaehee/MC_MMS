@@ -48,6 +48,16 @@ Rev. history : 2018-06-26
 Version : 0.7.1
 	Moved jobs, related to the casting feature, from MessageRelayingHandler to MessageCastingHandler.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-03
+Version : 0.7.2
+	Added handling input messages by FIFO scheduling.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-27
+Version : 0.7.2
+	Added geocasting features which cast message to circle or polygon area.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -93,8 +103,12 @@ public class MessageCastingHandler {
 		return processDstInfo (mih.requestDstInfo (srcMRN, dstMRN, srcIP));
 	}
 	
-	public String queryMNSForDstInfo (String srcMRN, float geoLat, float geoLong, float geoRadius) throws ParseException{
-		return processDstInfo (mih.requestDstInfo (srcMRN, geoLat, geoLong, geoRadius));
+	public String queryMNSForDstInfo (String srcMRN, String dstMRN, float geoLat, float geoLong, float geoRadius) throws ParseException{
+		return processDstInfo (mih.requestDstInfo (srcMRN, dstMRN, geoLat, geoLong, geoRadius));
+	}
+	
+	public String queryMNSForDstInfo (String srcMRN, String dstMRN, float[] geoLat, float[] geoLong) throws ParseException{
+		return processDstInfo (mih.requestDstInfo (srcMRN, dstMRN, geoLat, geoLong));
 	}
 	
 	public String processDstInfo (String dstInfo) throws ParseException{
@@ -124,25 +138,28 @@ public class MessageCastingHandler {
 		}
 		return "OK".getBytes(Charset.forName("UTF-8"));
 	}
-	
-	public byte[] unicast (MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String dstIP, int dstPort, String protocol, HttpMethod httpMethod) {
+
+	public byte[] unicast (MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String dstIP, int dstPort, String protocol, HttpMethod httpMethod, String srcMRN, String dstMRN) {
 		
 		byte[] message = null;
 		try {
     		if (protocol.equals("http")) {
-			    message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod);
-			    logger.info("SessionID="+this.SESSION_ID+" HTTP.");
+    			message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+			    logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTP.");
     		} 
     		else if (protocol.equals("https")) { 
-    			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod);
-    			logger.info("SessionID="+this.SESSION_ID+" HTTPS.");
+    			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTPS.");
     		} 
     		else {
     			logger.info("SessionID="+this.SESSION_ID+" No protocol.");
     		}
 		} 
     	catch (IOException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+    		logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		}
 		
 		return message;
@@ -155,7 +172,16 @@ public class MessageCastingHandler {
 			while (iter.hasNext()) {
 				JSONObject obj = (JSONObject) iter.next(); 
 				String connType = (String) obj.get("connType");
-				if (connType.equals("polling")) {
+				//TODO: MUST implement exception handling. 
+				if (connType == null) {
+					String exc = (String) obj.get("exception");
+					if (exc != null) {
+						logger.warn("SessionID="+this.SESSION_ID+" "+"MNS query exception occured=\""+exc+"\".");
+						return null;
+					}
+				}
+				
+				else if (connType.equals("polling")) {
 					//TODO: implement here
 					String dstMRNInGeoDstInfo = (String) obj.get("dstMRN");
 					String netTypeInGeoDstInfo = (String) obj.get("netType");
@@ -170,12 +196,12 @@ public class MessageCastingHandler {
 		        		int dstPortInGeoDstInfo = Integer.parseInt((String) obj.get("portNum"));
 		        		
 		        		if (protocol.equals("http")) {
-						    outputChannel.sendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod);
-						    logger.info("SessionID="+this.SESSION_ID+" HTTP.");
+						    outputChannel.sendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
+						    logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTP.");
 		        		} 
 		        		else if (protocol.equals("https")) { 
-		        			outputChannel.secureSendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod);
-		        			logger.info("SessionID="+this.SESSION_ID+" HTTPS.");
+		        			outputChannel.secureSendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
+		        			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTPS.");
 		        		} 
 		        		else {
 		        			
@@ -183,9 +209,14 @@ public class MessageCastingHandler {
 		        		}
 					} 
 		        	catch (IOException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+		        		logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
+		    			}
 					}
 				}
+				
+				
 			}
 			return "OK".getBytes(Charset.forName("UTF-8"));
 		}

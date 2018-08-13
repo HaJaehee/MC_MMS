@@ -71,6 +71,16 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION, EXPOSURE_OF_SYSTEM_DATA hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-19
+Version : 0.7.2
+	Added API; message sender guarantees message sequence.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-27
+Version : 0.7.2
+	Modified the awkward meaning of sentence
+Modifier : Kyungjun Park (kjpark525@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -81,8 +91,8 @@ import java.util.Map;
 
 
 /**
- * It is an object that can communicate to MMS through HTTPS and send or receive messages of other objects.
- * @version 0.7.1
+ * This handler helps client communicate to MMS over HTTPS. Client uses it to send or receive messages.
+ * @version 0.7.2
  * @see MMSClientHandler
  */
 public class SecureMMSClientHandler {
@@ -114,7 +124,7 @@ public class SecureMMSClientHandler {
 	}
 	
 	/**
-	 * This interface is used to handle the response to polling request.
+	 * This interface handles the response to polling request.
 	 * @see		SecureMMSClientHandler#startPolling(String, String, int, PollingResponseCallback)
 	 */
 	public interface PollingResponseCallback{
@@ -128,7 +138,7 @@ public class SecureMMSClientHandler {
 	}
 	
 	/**
-	 * This interface is used to handle the response to be sent when a message is received.
+	 * This interface handles the response to be sent when a message is received.
 	 * @see		SecureMMSClientHandler#setServerPort(int, String, String, RequestCallback)
 	 * @see		SecureMMSClientHandler#setServerPort(int, String, String, String, RequestCallback)
 	 */
@@ -147,7 +157,7 @@ public class SecureMMSClientHandler {
 	}
 	
 	/**
-	 * This interface is used to handle the response to be received when a message is sent.
+	 * This interface handles the response to be received when a message is sent.
 	 * @see		SecureMMSClientHandler#setSender(ResponseCallback)
 	 */
 	public interface ResponseCallback{
@@ -162,9 +172,9 @@ public class SecureMMSClientHandler {
 	}
 
 	/**
-	 * This method is that client requests polling. If setting this method, send polling request
-	 * per interval. In the MMS that received the polling request, if there is a message toward the client, 
-	 * the message is send to the MMS client, which requests polling, and in the MMS client,
+	 * This method helps client to request polling. If setting this method, send polling request
+	 * per interval (ms). In the MMS that received the polling request, if there is a message toward the client, 
+	 * the message is sent to the MMS client, which requests polling, and in the MMS client,
 	 * the callbackMethod is executed. Depending on whether it is the way of normal polling or long polling,
 	 * the way of response is different.
 	 * @param	dstMRN			the MRN of MMS to request polling
@@ -192,7 +202,7 @@ public class SecureMMSClientHandler {
 		}
 	}
 	/**
-	 * This method is that stop polling requests using interrupt signal. 
+	 * This method helps client to stop polling requests using interrupt signal. 
 	 */
 	public void stopPolling (){
 		this.pollHandler.ph.markInterrupted();
@@ -231,8 +241,8 @@ public class SecureMMSClientHandler {
 	}
 
 	/**
-	 * This method configures client's port to act as a HTTPS server and create a rcvHandler object.
-	 * HTTPS server is configured via jksDirectory and jksPassword which matches that.
+	 * This method configures client's port to act as a HTTPS server and to create the rcvHandler object.
+	 * HTTPS server is configured via jksDirectory and jksPassword.
 	 * It is used in a network that supports push method. It receives all messages toward itself.
 	 * When a message is received via the callback method, it is possible to handle the response to be sent.
 	 * @param 	port			port number
@@ -251,8 +261,8 @@ public class SecureMMSClientHandler {
 	}
 	
 	/**
-	 * This method configures client's port to act as a HTTPS server and create a rcvHandler object.
-	 * HTTPS server is configured via jksDirectory and jksPassword which matches that.
+	 * This method configures client's port to act as a HTTPS server and to create the rcvHandler object.
+	 * HTTPS server is configured via jksDirectory and jksPassword.
 	 * It is used in a network that supports push method. This method configures default context and 
 	 * it receives messages that url matches the default context. When a message is received via the 
 	 * callback method, it is possible to handle the response to be sent.
@@ -273,8 +283,8 @@ public class SecureMMSClientHandler {
 	}
 	
 	/**
-	 * This method configures client's port to act as a HTTPS file server and create a rcvHandler object.
-	 * HTTPS server is configured via jksDirectory and jksPassword which matches that.
+	 * This method configures client's port to act as a HTTPS file server and to create the rcvHandler object.
+	 * HTTPS server is configured via jksDirectory and jksPassword.
 	 * It is used in a network that supports push method. This method configures default context and 
 	 * it receives messages that url matches the default context. When a message is received via the 
 	 * callback method, it is possible to handle the response to be sent.
@@ -372,9 +382,9 @@ public class SecureMMSClientHandler {
 	}
 	
 	/**
-	 * Send a POST message to the destination MRN that url matches the location via MMS
+	 * Send a POST message via MMS to the destination MRN corresponding to the location URL
 	 * @param 	dstMRN			the destination MRN to send data
-	 * @param 	loc				url location
+	 * @param 	loc				URL location
 	 * @param 	data			the data to send
 	 * @throws 	Exception		if exception occurs
 	 * @see		#sendPostMsg(String, String)
@@ -422,10 +432,10 @@ public class SecureMMSClientHandler {
 	
 	//HJH
 	/**
-	 * Send a GET message which the destination MRN is that url matches the location via MMS and setting
+	 * Send a GET message via MMS to the destination MRN corresponding to the location URL
 	 * parameter
 	 * @param 	dstMRN			the destination MRN
-	 * @param	loc				url location
+	 * @param	loc				URL location
 	 * @param	params			parameter
 	 * @throws 	Exception		if exception occurs
 	 * @see		#sendGetMsg(String)
@@ -438,10 +448,110 @@ public class SecureMMSClientHandler {
 			this.sendHandler.sendHttpsGet(dstMRN, loc, params, headerField);
 		}
 	}
+	/*-----------------------------------------------------------------------------------
+	 * Message sender supporting message sequence.
+	 -----------------------------------------------------------------------------------*/
+	
+	/**
+	 * Send a POST message to the destination MRN that url matches the location via MMS.
+	 * Message sender guarantees message sequence.
+	 * @param 	dstMRN			the destination MRN to send data
+	 * @param 	loc				url location
+	 * @param 	data			the data to send
+	 * @param 	seqNum			sequence number of message
+	 * @throws 	Exception		if exception occurs
+	 * @see		#sendPostMsg(String, String)
+	 * @see		#setSender(ResponseCallback)
+	 */
+	public void sendPostMsg(String dstMRN, String loc, String data, int seqNum) throws Exception{
+		if (this.sendHandler == null) {
+			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
+		} 
+		else if (seqNum < 0) {
+			System.out.println(TAG+"Failed! seqNum must be equal to or greater than zero.");
+		}
+		else {
+			this.sendHandler.sendHttpsPost(dstMRN, loc, data, headerField, seqNum);
+		}
+	}
+	
+	/**
+	 * Send a POST message to the destination MRN via MMS.
+	 * Message sender guarantees message sequence.
+	 * @param 	dstMRN			the destination MRN to send data
+	 * @param 	data			the data to send
+	 * @param 	seqNum			sequence number of message
+	 * @throws 	Exception		if exception occurs
+	 * @see		#sendPostMsg(String, String, String)
+	 * @see		#setSender(ResponseCallback)
+	 */
+	public void sendPostMsg(String dstMRN, String data, int seqNum) throws Exception{
+		if (this.sendHandler == null) {
+			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
+		} 
+		else if (seqNum < 0) {
+			System.out.println(TAG+"Failed! seqNum must be equal to or greater than zero.");
+		}
+		else {
+			this.sendHandler.sendHttpsPost(dstMRN, "", data, headerField, seqNum);
+		}
+	}
+	
+	//HJH
+	/**
+	 * Send a GET message to the destination MRN via MMS.
+	 * Message sender guarantees message sequence.
+	 * @param 	dstMRN			the destination MRN
+	 * @param 	seqNum			sequence number of message
+	 * @throws 	Exception		if exception occurs
+	 * @see		#sendGetMsg(String, String, String)
+	 * @see		#setSender(ResponseCallback)
+	 */
+	public void sendGetMsg(String dstMRN, int seqNum) throws Exception{
+		if (this.sendHandler == null) {
+			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
+		} 
+		else if (seqNum < 0) {
+			System.out.println(TAG+"Failed! seqNum must be equal to or greater than zero.");
+		}
+		else {
+			this.sendHandler.sendHttpsGet(dstMRN, "", "", headerField, seqNum);
+		}
+	}
+	
+	//HJH
+	/**
+	 * Send a GET message which the destination MRN is that url matches the location via MMS and setting
+	 * parameter.
+	 * Message sender guarantees message sequence.
+	 * @param 	dstMRN			the destination MRN
+	 * @param	loc				url location
+	 * @param	params			parameter
+	 * @param 	seqNum			sequence number of message
+	 * @throws 	Exception		if exception occurs
+	 * @see		#sendGetMsg(String)
+	 * @see		#setSender(ResponseCallback)
+	 */
+	public void sendGetMsg(String dstMRN, String loc, String params, int seqNum) throws Exception{
+		if (this.sendHandler == null) {
+			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
+		} 
+		else if (seqNum < 0) {
+			System.out.println(TAG+"Failed! seqNum must be equal to or greater than zero.");
+		}
+		else {
+			this.sendHandler.sendHttpsGet(dstMRN, loc, params, headerField, seqNum);
+		}
+	}
+	
+	/*-----------------------------------------------------------------------------------
+	 * END. Message sender supporting message sequence. 
+	 -----------------------------------------------------------------------------------*/
+	
 	
 	//OONI
 	/**
-	 * Use when requesting a file from the destination. Send a GET message to a file server mapping to destination MRN
+	 * Use when requesting a file from the destination MRN. Send a GET message to a file server mapping to destination MRN
 	 * to request a file that matches the parameterized filename.
 	 * @param 	dstMRN			the destination MRN to send a message
 	 * @param 	fileName		file path and name (e.g. "/get/test.xml")

@@ -46,11 +46,21 @@ Version : 0.7.1
 	Revised interfaces.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history : 2018-07-03
+Version : 0.7.2
+	Removed console prints.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 Rev. history : 2018-07-10
 Version : 0.7.2
-	Fixed unsecure codes.
+	Fixed insecure codes.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
- */
+
+Rev. history : 2018-07-27
+Version : 0.7.2
+	Added geocasting features which cast message to circle or polygon area.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+**/
 /* -------------------------------------------------------- */
 
 import java.io.*;
@@ -84,7 +94,8 @@ public class MNSDummy {
 
 	public static void main(String argv[]) throws Exception
 	{
-		ServerSocket Sock = new ServerSocket(1004);
+		ServerSocket Sock = new ServerSocket(MMSConfiguration.MNS_PORT);
+		System.out.println("Listen:"+MMSConfiguration.MNS_PORT);
 
 		//logger.error("MNSDummy started.");
 		//       -------------Put MRN --> IP Information -------------
@@ -193,9 +204,10 @@ public class MNSDummy {
 
 
 					} 
-					else if (query.get("geocasting") != null) {
-						JSONObject geocastingQuery = (JSONObject) query.get("geocasting");
+					else if (query.get("geocasting_circle") != null) {
+						JSONObject geocastingQuery = (JSONObject) query.get("geocasting_circle");
 						String srcMRN = geocastingQuery.get("srcMRN").toString();
+						String dstMRN = geocastingQuery.get("dstMRN").toString();
 						String geoLat = geocastingQuery.get("lat").toString();
 						String geoLong = geocastingQuery.get("long").toString();
 						String geoRadius = geocastingQuery.get("radius").toString();
@@ -209,7 +221,6 @@ public class MNSDummy {
 
 							Iterator<String> keysIter = keys.iterator();
 							// MRN lists are returned by json format.
-							// {"poll":[{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},{"mrn":"urn:mrn:-"},....]}
 							JSONArray objList = new JSONArray();
 
 
@@ -243,6 +254,16 @@ public class MNSDummy {
 							}
 							dataToReply = objList.toJSONString();
 						}
+					}
+					else if (query.get("geocasting_polygon") != null) {
+						JSONObject geocastingQuery = (JSONObject) query.get("geocasting_polygon");
+						String srcMRN = geocastingQuery.get("srcMRN").toString();
+						String dstMRN = geocastingQuery.get("dstMRN").toString();
+						String geoLat = geocastingQuery.get("lat").toString();
+						String geoLong = geocastingQuery.get("long").toString();
+						
+						System.out.println("Geocating polygon, srcMRN="+srcMRN+", dstMRN="+dstMRN+", geoLat="+geoLat+", geoLong="+geoLong);
+						dataToReply = "[{\"exception\":\"absent MRN\"}]";
 					}
 					pw.println(dataToReply);
 					pw.flush();
@@ -408,8 +429,11 @@ public class MNSDummy {
 
 					//loggerinfo("MNSDummy:data=" + data);
 					String[] data_sub = data.split(",");
-					// data_sub = IP_address, MRN, Port
-					MRNtoIP.put(data_sub[1], data_sub[0] + ":" + data_sub[2] + ":" + data_sub[3]);
+					
+					if (MRNtoIP.get(data_sub[1]) == null || MRNtoIP.get(data_sub[1]).split(":").length == 3 ) {
+						// data_sub = IP_address, MRN, Port
+						MRNtoIP.put(data_sub[1], data_sub[0] + ":" + data_sub[2] + ":" + data_sub[3]);
+					}
 
 					pw.println("OK");
 					pw.flush();

@@ -66,6 +66,16 @@ Version : 0.7.1
 	Fixed large response issues.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 	Jaehyun Park (jae519@kaist.ac.kr)
+	
+Rev. history : 2018-07-03
+Version : 0.7.2
+	Added handling input messages by FIFO scheduling.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-19
+Version : 0.7.2
+	Added handling input messages by reordering policy.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -185,7 +195,7 @@ public class MRH_MessageOutputChannel{
     	f.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) {
-                assert f == future;
+                assert f == future; //TODO Requeueing function MUST be implemented.  
                 
                 ctx.close();
             }
@@ -197,8 +207,8 @@ public class MRH_MessageOutputChannel{
     }
 	
 //  to do relaying
-	public byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws IOException { // 
-
+	public byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
+		
 		String url = "http://" + IPAddress + ":" + port + req.uri();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -245,9 +255,9 @@ public class MRH_MessageOutputChannel{
 		Map<String,List<String>> resHeaders = con.getHeaderFields();
 		setResponseHeader(resHeaders);
 		
-		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL : " + url + "\n"
-				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters : " + urlParameters+"\n"
-				+ "Response Code : " + responseCode);
+		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters=" + urlParameters+"\n"
+				+ "Response Code=" + responseCode);
 
 		
 		
@@ -263,11 +273,13 @@ public class MRH_MessageOutputChannel{
 
 		is.close();
 		logger.info("SessionID="+this.SESSION_ID+" Received a response.");
+		logger.trace("SessionID="+this.SESSION_ID+" Response="+new String(retBuffer));
 		if(MMSConfiguration.WEB_LOG_PROVIDING) {
 			String log = "SessionID="+this.SESSION_ID+" Received a response.";
 			mmsLog.addBriefLogForStatus(log);
 			mmsLogForDebug.addLog(this.SESSION_ID, log);
 		}
+		
 		
 		return retBuffer;
 	}
@@ -277,7 +289,7 @@ public class MRH_MessageOutputChannel{
 	
 	
 //  to do secure relaying
-	public byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod) throws IOException { // 
+	public byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws NullPointerException, IOException { // 
 
 	  	hv = getHV();
 	  	
@@ -355,6 +367,7 @@ public class MRH_MessageOutputChannel{
 			mmsLog.addBriefLogForStatus(log);
 			mmsLogForDebug.addLog(this.SESSION_ID, log);
 		}
+		
 		return retBuffer;
 	
 	}
@@ -382,9 +395,15 @@ public class MRH_MessageOutputChannel{
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (NoSuchAlgorithmException e) {
-        	logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+        	logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		} catch (KeyManagementException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		}
         
         HostnameVerifier hv = new HostnameVerifier() {
@@ -396,6 +415,8 @@ public class MRH_MessageOutputChannel{
         
         return hv;
 	}
+	
+
 	
 	private HttpResponseStatus getHttpResponseStatus(int responseCode) {
 		switch (responseCode) {

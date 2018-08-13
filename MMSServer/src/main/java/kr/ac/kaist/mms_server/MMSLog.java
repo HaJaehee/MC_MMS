@@ -92,7 +92,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-07-10
 Version : 0.7.2
-	Fixed unsecure codes.
+	Fixed insecure codes.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -262,7 +262,10 @@ public class MMSLog {
 				try {
 					realtimeLog.append("\""+URLEncoder.encode(logs.get(0),"UTF-8")+"\",");
 				} catch (UnsupportedEncodingException e) {
-					logger.info(e.getMessage());
+					logger.info(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+	    				logger.info(e.getStackTrace()[i]+".");
+	    			}
 				}
 				logs.remove(0);
 			}
@@ -282,7 +285,7 @@ public class MMSLog {
 	  	//String modifiedSentence;
 	  	String dumpedMNS = "";
 	  	
-	  	Socket MNSSocket = new Socket("localhost", 1004);
+	  	Socket MNSSocket = new Socket(MMSConfiguration.MNS_HOST, MMSConfiguration.MNS_PORT);
 	  	PrintWriter pw = new PrintWriter(MNSSocket.getOutputStream());
 	  	InputStreamReader isr = new InputStreamReader(MNSSocket.getInputStream());
 	  	BufferedReader br = new BufferedReader(isr);

@@ -50,6 +50,7 @@ public class MMSServer {
 			Thread.sleep(2000);
 			
 			logger.error("Now starting MMS HTTP server.");
+			logger.error("MUST check that MNS server is online="+MMSConfiguration.MNS_HOST+":"+MMSConfiguration.MNS_PORT+".");
 			NettyStartupUtil.runServer(MMSConfiguration.HTTP_PORT, pipeline -> {   //runServer(int port, Consumer<ChannelPipeline> initializer)
 				pipeline.addLast(new HttpServerCodec());
 				pipeline.addLast(new HttpObjectAggregator(MMSConfiguration.MAX_CONTENT_SIZE));
@@ -57,10 +58,16 @@ public class MMSServer {
 	        });
 		}
 		catch (InterruptedException e) {
-			logger.warn(e.getMessage());
+			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.error(e.getStackTrace()[i]+".");
+			}
 		}
 		catch (Exception e) {
-			logger.warn(e.getMessage());
+			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.error(e.getStackTrace()[i]+".");
+			}
 		}
 	}
 }

@@ -115,9 +115,15 @@ class MessageQueueEnqueuer {
 			channel.close();
 			connection.close();
 		} catch (IOException e) {
-			logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.error("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		} catch (TimeoutException e) {
-			logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+			logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.error("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		}
 	}
 }

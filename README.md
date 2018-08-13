@@ -1,8 +1,9 @@
 [![Build Status](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS.svg?branch=master)](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS)
 
 # MC_MMS
-Beta Version 0.8.0 <br/>
-2018.8.08<br/>
+Beta Version 0.7.3 <br/>
+2018.8.13<br/>
+
 
 # Web Site
 www.mms-kaist.com
@@ -10,6 +11,7 @@ www.mms-kaist.com
 
 ## Features
 MMS Beta Version<br/>
+Supports Docker's setup environment<br/>
 Supports javadoc API documents<br/>
 Supports fully relaying HTTP(S) messages based on ID<br/>
 Supports fully HTTPS communication<br/>

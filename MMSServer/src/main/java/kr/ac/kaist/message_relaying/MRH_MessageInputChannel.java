@@ -43,6 +43,11 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed NULL_RETURN_STD hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-03
+Version : 0.7.2
+	Added handling input messages by FIFO scheduling.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -105,6 +110,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			SESSION_ID = ctx.channel().id().asShortText();
 
 			SessionManager.sessionInfo.put(SESSION_ID, "");
+			
 
 			new MessageRelayingHandler(ctx, req, protocol, SESSION_ID);
 		} finally {

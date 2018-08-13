@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds">
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/mms-server.log</file>
+        <file>../logs/mms-server.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- rollover daily -->
             <fileNamePattern>logs/mms-server.log.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
