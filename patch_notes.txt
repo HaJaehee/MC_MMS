@@ -6,6 +6,7 @@ MC_MMS 0.7.3 new features/enhancemants & bug-fixes:
 2. Added pom.xml for Maven compile.
 3. Added .travis.yml for docker compile.
 4. Added scrips/deploy-mms.sh for auto deployment.
+5. Added MMS configuration functions for CLI arguments and arguments from MMS.conf file.
 
 28-June 2018
 MC_MMS 0.7.1 new features/enhancemants & bug-fixes:
