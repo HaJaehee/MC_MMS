@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS.svg?branch=master)](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS)
+## Alert! This branch is actively being implemented!<br/>The source codes can be modified without any notices.
 
 # MC_MMS
 Beta Version 0.7.3 <br/>
@@ -40,9 +40,7 @@ email: jae519@kaist.ac.kr<br/>
 Jaehee Ha<br/>
 email: jaehee.ha@kaist.ac.kr<br/>
 Jin Jeong<br/>
-email: jungst0001@kaist.ac.kr<br/>
-Kyungjun Park<br/>
-email: kjpark525@kaist.ac.rk<br/>
+email: jungst0001@kaist.ac.kr <br/>
 
 ### Tools
 Created with [Eclipse](https://www.eclipse.org) https://www.eclipse.org<br/>
