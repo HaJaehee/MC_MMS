@@ -58,6 +58,8 @@ import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.classic.Level;
+
 
 
 public class MMSConfiguration {
@@ -69,17 +71,18 @@ public class MMSConfiguration {
 	private static boolean[] WEB_LOG_PROVIDING = {false, false}; //{isSet, value}
 	private static boolean[] WEB_MANAGING = {false, false}; //{isSet, value}
 	
-	private static int HTTP_PORT;
-	private static int HTTPS_PORT;
-	private static String MNS_HOST;
+	private static int HTTP_PORT = 0;
+	private static int HTTPS_PORT = 0;
+	private static String MNS_HOST = null;
 	private static int MNS_PORT = 8588;
 	
-	private static String MMS_MRN;
+	private static String MMS_MRN = null;
 	
-	private static int MAX_CONTENT_SIZE;
-	private static int WAITING_MESSAGE_TIMEOUT;
+	private static int MAX_CONTENT_SIZE = 0;
+	private static int WAITING_MESSAGE_TIMEOUT = 0;
 	
-	private static int MAX_BRIEF_LOG_LIST_SIZE;
+	private static int MAX_BRIEF_LOG_LIST_SIZE = 0;
+	private static String LOG_LEVEL = null;
 	
 	public MMSConfiguration (String[] args) {
 		if (!IS_MMS_CONF_SET) {
@@ -136,6 +139,10 @@ public class MMSConfiguration {
 		max_brief_log_list_size.setRequired(false);
 		options.addOption(max_brief_log_list_size);
 		
+		Option log_level = new Option ("ll", "log_level", true, "Set the log level of the MMS, i.e., ALL, TRACE, DEBUG, INFO, WARN, ERROR, OFF.");
+		log_level.setRequired(false);
+		options.addOption(log_level);
+		
 		CommandLineParser clParser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd;
@@ -154,7 +161,8 @@ public class MMSConfiguration {
 					+ "[-sp https_port] "
 					+ "[-t waiting_message_timeout] "
 					+ "[-wl web_log_providing] "
-					+ "[-wm web_managing] ";
+					+ "[-wm web_managing] "
+					+ "[-ll log_level] ";
 			
 			if (cmd.hasOption("help")) {
 				formatter.printHelp(usage, options);
@@ -180,6 +188,8 @@ public class MMSConfiguration {
 			MAX_CONTENT_SIZE = getOptionValueInteger(cmd, "max_content_size");
 			WAITING_MESSAGE_TIMEOUT = getOptionValueInteger(cmd, "waiting_message_timeout");
 			MAX_BRIEF_LOG_LIST_SIZE = getOptionValueInteger(cmd, "max_brief_log_list_size");
+			LOG_LEVEL = cmd.getOptionValue("log_level");
+			
 		}
 		catch (org.apache.commons.cli.ParseException e){
 			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
@@ -246,6 +256,12 @@ public class MMSConfiguration {
 			if (MAX_BRIEF_LOG_LIST_SIZE == 0) {
 				MAX_BRIEF_LOG_LIST_SIZE = getConfValueInteger(jobj, "MAX_BRIEF_LOG_LIST_SIZE");
 			}		
+			
+			if (LOG_LEVEL == null) {
+				if (jobj.get("LOG_LEVEL") != null){
+					LOG_LEVEL = (String) jobj.get("LOG_LEVEL");
+				}
+			}
 		}
 		catch (FileNotFoundException e) {
 			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
@@ -307,6 +323,32 @@ public class MMSConfiguration {
 				MAX_BRIEF_LOG_LIST_SIZE = 200; //Default is integer 200.
 			}
 			
+			if (LOG_LEVEL != null) {
+				ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+			    LOG_LEVEL = LOG_LEVEL.toUpperCase();
+				if (LOG_LEVEL.equals("DEBUG")) {
+			    	root.setLevel(Level.DEBUG);
+			    }
+			    else if (LOG_LEVEL.equals("INFO")) {
+			    	root.setLevel(Level.INFO);
+			    }
+			    else if (LOG_LEVEL.equals("WARN")) {
+			    	root.setLevel(Level.WARN);
+			    }
+			    else if (LOG_LEVEL.equals("TRACE")) {
+			    	root.setLevel(Level.TRACE);
+			    }
+			    else if (LOG_LEVEL.equals("ERROR")) {
+			    	root.setLevel(Level.ERROR);
+			    }
+			    else if (LOG_LEVEL.equals("ALL")) {
+			    	root.setLevel(Level.ALL);
+			    }
+			    else if (LOG_LEVEL.equals("OFF")) {
+			    	root.setLevel(Level.OFF);
+			    }
+			}
+			
 			logger.warn(TAG+"WEB_LOG_PROVIDING="+WEB_LOG_PROVIDING[1]);
 			logger.warn(TAG+"WEB_MANAGING="+WEB_MANAGING[1]);
 			logger.warn(TAG+"MMS_MRN="+MMS_MRN);
@@ -317,6 +359,7 @@ public class MMSConfiguration {
 			logger.warn(TAG+"MAX_CONTENT_SIZE="+MAX_CONTENT_SIZE+"bytes");
 			logger.warn(TAG+"WAITING_MESSAGE_TIMEOUT="+WAITING_MESSAGE_TIMEOUT+"ms");
 			logger.warn(TAG+"MAX_BRIEF_LOG_LIST_SIZE="+MAX_BRIEF_LOG_LIST_SIZE);
+			logger.warn(TAG+"LOG_LEVEL="+LOG_LEVEL);
 		}
 	}
 
