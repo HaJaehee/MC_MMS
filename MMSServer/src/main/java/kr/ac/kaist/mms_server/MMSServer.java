@@ -43,6 +43,7 @@ import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +79,8 @@ public class MMSServer {
 				for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 					logger.error(e.getStackTrace()[i]+".");
 				}
+				Scanner sc = new Scanner(System.in);
+				sc.nextLine();
 				System.exit(5);
 			}
 			catch (SecurityException e) {
@@ -85,6 +88,8 @@ public class MMSServer {
 				for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 					logger.error(e.getStackTrace()[i]+".");
 				}
+				Scanner sc = new Scanner(System.in);
+				sc.nextLine();
 				System.exit(6);
 			}
 			
@@ -107,6 +112,8 @@ public class MMSServer {
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
 			System.exit(7);
 		}
 		catch (Exception e) {
@@ -114,6 +121,8 @@ public class MMSServer {
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
 			System.exit(8);
 		}
 	}

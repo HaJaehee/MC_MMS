@@ -50,6 +50,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 import org.apache.commons.cli.*;
@@ -60,6 +61,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
+import ch.qos.logback.core.Context;
+import ch.qos.logback.core.LogbackException;
+import ch.qos.logback.core.filter.Filter;
+import ch.qos.logback.core.joran.spi.JoranException;
+import ch.qos.logback.core.sift.AppenderFactory;
+import ch.qos.logback.core.spi.FilterReply;
+import ch.qos.logback.core.status.Status;
 
 
 
@@ -84,6 +94,8 @@ public class MMSConfiguration {
 	
 	private static int MAX_BRIEF_LOG_LIST_SIZE = 0;
 	private static String LOG_LEVEL = null;
+	private static boolean[] LOG_FILE_OUT = {false, false};
+	private static boolean[] LOG_CONSOLE_OUT = {false, false};
 	
 	public MMSConfiguration (String[] args) {
 		if (!IS_MMS_CONF_SET) {
@@ -128,7 +140,7 @@ public class MMSConfiguration {
 		mms_mrn.setRequired(false);
 		options.addOption(mms_mrn);
 		
-		Option max_content_size = new Option ("c", "max_content_size", true, "Set the maximum content size of this MMS. The unit of size is Kilo Bytes.");
+		Option max_content_size = new Option ("mc", "max_content_size", true, "Set the maximum content size of this MMS. The unit of size is Kilo Bytes.");
 		max_content_size.setRequired(false);
 		options.addOption(max_content_size);
 		
@@ -144,6 +156,14 @@ public class MMSConfiguration {
 		log_level.setRequired(false);
 		options.addOption(log_level);
 		
+		Option log_file_out = new Option ("fo", "log_file_out", true, "Print the logs of the MMS into the log files if the argument is [true], otherwise disable if [false]. Default is [true].");
+		log_file_out.setRequired(false);
+		options.addOption(log_file_out);
+		
+		Option log_console_out = new Option ("co", "log_console_out", true, "Print the logs of the MMS to the console if the argument is [true], otherwise disable if [false]. Default is [true].");
+		log_console_out.setRequired(false);
+		options.addOption(log_console_out);
+		
 		CommandLineParser clParser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd;
@@ -151,19 +171,23 @@ public class MMSConfiguration {
 		try {
 			cmd = clParser.parse(options, args);
 			
-			String usage = "java -cp MC_MMS.jar kr.ac.kaist.mms_server.MMSServer "
-					+ "[-c max_content_size] "
-					+ "[-h] "
-					+ "[-mls max_brief_log_list_size] "
-					+ "[-mns mns_host] "
-					+ "[-mnsp mns_port] "
-					+ "[-mrn mms_mrn] "
-					+ "[-p http_port] "
-					+ "[-sp https_port] "
-					+ "[-t waiting_message_timeout] "
-					+ "[-wl web_log_providing] "
-					+ "[-wm web_managing] "
-					+ "[-ll log_level] ";
+			String usage = "java -cp MC_MMS.jar kr.ac.kaist.mms_server.MMSServer"
+					+ " [-co log_console_out] "
+					+ " [-fo log_file_out]"
+					+ " [-h]"
+					+ " [-ll log_level]"
+					+ " [-mc max_content_size]"
+					+ " [-mls max_brief_log_list_size]"
+					+ " [-mns mns_host]"
+					+ " [-mnsp mns_port]"
+					+ " [-mrn mms_mrn]"
+					+ " [-p http_port]"
+					+ " [-sp https_port]"
+					+ " [-t waiting_message_timeout]"
+					+ " [-wl web_log_providing]"
+					+ " [-wm web_managing]";
+					
+					
 			
 			if (cmd.hasOption("help")) {
 				formatter.printHelp(usage, options);
@@ -192,17 +216,21 @@ public class MMSConfiguration {
 			WAITING_MESSAGE_TIMEOUT = getOptionValueInteger(cmd, "waiting_message_timeout");
 			MAX_BRIEF_LOG_LIST_SIZE = getOptionValueInteger(cmd, "max_brief_log_list_size");
 			LOG_LEVEL = cmd.getOptionValue("log_level");
+			LOG_FILE_OUT = getOptionValueBoolean(cmd, "log_file_out");
+			LOG_CONSOLE_OUT = getOptionValueBoolean(cmd, "log_console_out");
 			
 		}
 		catch (org.apache.commons.cli.ParseException e){
 			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
 			formatter.printHelp("MMS options", options);
-			
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
 			System.exit(1);
 		}
 		catch (IOException e) {
 			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
-			
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
 			System.exit(1);
 		}
 		
@@ -214,11 +242,11 @@ public class MMSConfiguration {
 			JSONObject jobj = new JSONObject();
 			jobj = (JSONObject) parser.parse(fr);
 			
-			if (Arrays.equals(WEB_LOG_PROVIDING, new boolean[] {false, false})) {
+			if (!WEB_LOG_PROVIDING[0]) {
 				WEB_LOG_PROVIDING = getConfValueBoolean(jobj, "WEB_LOG_RROVIDING");
 			}
 			
-			if (Arrays.equals(WEB_MANAGING, new boolean[] {false, false})) {
+			if (!WEB_MANAGING[0]) {
 				WEB_MANAGING = getConfValueBoolean(jobj, "WEB_MANAGING");
 			}
 
@@ -263,7 +291,16 @@ public class MMSConfiguration {
 			if (LOG_LEVEL == null) {
 				if (jobj.get("LOG_LEVEL") != null){
 					LOG_LEVEL = (String) jobj.get("LOG_LEVEL");
+					
 				}
+			}
+			
+			if (!LOG_FILE_OUT[0]) {
+				LOG_FILE_OUT = getConfValueBoolean(jobj, "LOG_FILE_OUT");
+			}
+			
+			if (!LOG_CONSOLE_OUT[0]) {
+				LOG_CONSOLE_OUT = getConfValueBoolean(jobj, "LOG_CONSOLE_OUT");
 			}
 		}
 		catch (FileNotFoundException e) {
@@ -272,10 +309,14 @@ public class MMSConfiguration {
 		}
 		catch (IOException e) {
 			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
 			System.exit(3);
 		}
 		catch (org.json.simple.parser.ParseException e) {
 			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
 			System.exit(4);
 		}
 		finally {
@@ -350,19 +391,72 @@ public class MMSConfiguration {
 			    else if (LOG_LEVEL.equals("OFF")) {
 			    	root.setLevel(Level.OFF);
 			    }
+			    else {
+			    	try {
+						throw new IOException();
+					} catch (IOException e) {
+						logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
+						Scanner sc = new Scanner(System.in);
+						sc.nextLine();
+						System.exit(3);
+					}
+			    }
+			}
+			else {
+				ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+				LOG_LEVEL = root.getLevel().levelStr.toUpperCase();
 			}
 			
-			logger.warn(TAG+"WEB_LOG_PROVIDING="+WEB_LOG_PROVIDING[1]);
-			logger.warn(TAG+"WEB_MANAGING="+WEB_MANAGING[1]);
+			if (Arrays.equals(LOG_FILE_OUT, new boolean[] {true, false})) {
+				ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+				if (root.getAppender("FILE")!=null) {
+					root.detachAppender("FILE");
+				}
+				LOG_FILE_OUT[1] = false;
+			}
+			else if (!LOG_FILE_OUT[0] || Arrays.equals(LOG_FILE_OUT, new boolean[] {true, true})) {
+				ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+				if (root.getAppender("FILE")!=null) {
+					LOG_FILE_OUT[1] = true;
+				}
+				else if (root.getAppender("FILE")==null) {
+					logger.warn(TAG+"Logback cannot get appander \"FILE\"");
+					LOG_FILE_OUT[1] = false;
+				}
+			}
+			
+			if (Arrays.equals(LOG_CONSOLE_OUT, new boolean[] {true, false})) {
+				ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+				if (root.getAppender("STDOUT")!=null) {
+					root.detachAppender("STDOUT");
+				}
+				LOG_CONSOLE_OUT[1] = false;
+			}
+			else if (!LOG_CONSOLE_OUT[0] || Arrays.equals(LOG_CONSOLE_OUT, new boolean[] {true, true}) ) {
+				ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+				if (root.getAppender("STDOUT")!=null) {
+					LOG_CONSOLE_OUT[1] = true;
+				}
+				else if (root.getAppender("STDOUT")==null) {
+					logger.warn(TAG+"Logback cannot get appander \"STDOUT\"");
+					LOG_CONSOLE_OUT[1] = false;
+				}
+			}
+			
 			logger.warn(TAG+"MMS_MRN="+MMS_MRN);
 			logger.warn(TAG+"HTTP_PORT="+HTTP_PORT);
 			logger.warn(TAG+"HTTPS_PORT="+HTTPS_PORT);
 			logger.warn(TAG+"MNS_HOST="+MNS_HOST);
 			logger.warn(TAG+"MNS_PORT="+MNS_PORT);
+			logger.warn(TAG+"LOG_LEVEL="+LOG_LEVEL);
+			logger.warn(TAG+"LOG_CONSOLE_OUT="+LOG_CONSOLE_OUT[1]);
+			logger.warn(TAG+"LOG_FILE_OUT="+LOG_FILE_OUT[1]);
+			logger.warn(TAG+"WEB_LOG_PROVIDING="+WEB_LOG_PROVIDING[1]);
+			logger.warn(TAG+"WEB_MANAGING="+WEB_MANAGING[1]);
+			logger.warn(TAG+"MAX_BRIEF_LOG_LIST_SIZE="+MAX_BRIEF_LOG_LIST_SIZE);
 			logger.warn(TAG+"MAX_CONTENT_SIZE="+MAX_CONTENT_SIZE+"bytes");
 			logger.warn(TAG+"WAITING_MESSAGE_TIMEOUT="+WAITING_MESSAGE_TIMEOUT+"ms");
-			logger.warn(TAG+"MAX_BRIEF_LOG_LIST_SIZE="+MAX_BRIEF_LOG_LIST_SIZE);
-			logger.warn(TAG+"LOG_LEVEL="+LOG_LEVEL);
+			
 		}
 	}
 

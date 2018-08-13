@@ -41,6 +41,7 @@ import java.security.UnrecoverableKeyException;
 
 
 import java.security.cert.CertificateException;
+import java.util.Scanner;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -146,6 +147,8 @@ public final class SecureMMSServer extends Thread {
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
 			System.exit(10);
 		} 
         catch (SSLException e) {
@@ -153,6 +156,8 @@ public final class SecureMMSServer extends Thread {
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
 			System.exit(11);
 		} 
         catch (UnrecoverableKeyException e) {
@@ -160,6 +165,8 @@ public final class SecureMMSServer extends Thread {
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
 			System.exit(12);
 		} 
         catch (KeyStoreException e) {
@@ -167,6 +174,8 @@ public final class SecureMMSServer extends Thread {
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
 			System.exit(13);
 		} 
         catch (NoSuchAlgorithmException e) {
@@ -174,6 +183,8 @@ public final class SecureMMSServer extends Thread {
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
 			System.exit(14);
 		} 
         catch (IOException e) {
@@ -181,6 +192,8 @@ public final class SecureMMSServer extends Thread {
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
 			System.exit(15);
 		}
         
