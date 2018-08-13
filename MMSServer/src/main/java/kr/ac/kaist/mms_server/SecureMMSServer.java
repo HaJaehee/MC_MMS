@@ -128,8 +128,8 @@ public final class SecureMMSServer extends Thread {
 	             .channel(NioServerSocketChannel.class)
 	             .handler(new LoggingHandler(LogLevel.INFO))
 	             .childHandler(new SecureMMSServerInitializer(sslCtx));
-	            logger.error("Ready for 0.0.0.0:" + MMSConfiguration.HTTPS_PORT);
-	            b.bind(MMSConfiguration.HTTPS_PORT).sync().channel().closeFuture().sync();
+	            logger.error("Ready for 0.0.0.0:" + MMSConfiguration.HTTPS_PORT());
+	            b.bind(MMSConfiguration.HTTPS_PORT()).sync().channel().closeFuture().sync();
 	        } catch (InterruptedException e) {
 	        	logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
     			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
@@ -140,36 +140,49 @@ public final class SecureMMSServer extends Thread {
 	            workerGroup.shutdownGracefully();
 	        }
 			
-		} catch (CertificateException e) {
+		} 
+        catch (CertificateException e) {
 			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
-		} catch (SSLException e) {
+			System.exit(10);
+		} 
+        catch (SSLException e) {
 			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
-		} catch (UnrecoverableKeyException e) {
+			System.exit(11);
+		} 
+        catch (UnrecoverableKeyException e) {
 			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
-		} catch (KeyStoreException e) {
+			System.exit(12);
+		} 
+        catch (KeyStoreException e) {
 			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
-		} catch (NoSuchAlgorithmException e) {
+			System.exit(13);
+		} 
+        catch (NoSuchAlgorithmException e) {
 			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
-		} catch (IOException e) {
+			System.exit(14);
+		} 
+        catch (IOException e) {
 			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
+			System.exit(15);
 		}
+        
     }
 }

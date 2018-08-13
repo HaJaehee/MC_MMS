@@ -28,12 +28,22 @@ Rev. history : 2017-11-21
 Version : 0.7.0
 	MMSServer will start after waiting initialization of SecureMMSServer.  
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-08-13
+Version : 0.7.3
+	From this version, MMS reads system arguments and configurations from "MMS configuration/MMS.conf" file.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
+
+import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,16 +54,51 @@ public class MMSServer {
 	public static void main(String[] args){
 		
 		try {
+			File f = new File("./logs");
+			f.mkdirs();
+			f = new File("./MMS configuration");
+			f.mkdirs();
+			Thread.sleep(2000);
+			
+			logger.error("Now setting MMS configuration.");
+			new MMSConfiguration(args);
+			
+			
+			
+			logger.error("MUST check that MNS server is online="+MMSConfiguration.MNS_HOST()+":"+MMSConfiguration.MNS_PORT()+".");
+			
+			try {
+				InetAddress ip = InetAddress.getByName(MMSConfiguration.MNS_HOST());
+				if (ip == null) {
+					throw new UnknownHostException();
+				}
+			}
+			catch (UnknownHostException e) {
+				logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+				for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+					logger.error(e.getStackTrace()[i]+".");
+				}
+				System.exit(5);
+			}
+			catch (SecurityException e) {
+				logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+				for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+					logger.error(e.getStackTrace()[i]+".");
+				}
+				System.exit(6);
+			}
+			
 			new SecureMMSServer().runServer(); // Thread
 			MMSLogForDebug.getInstance(); //initialize MMSLogsForDebug
 			
 			Thread.sleep(2000);
 			
+			
+			
 			logger.error("Now starting MMS HTTP server.");
-			logger.error("MUST check that MNS server is online="+MMSConfiguration.MNS_HOST+":"+MMSConfiguration.MNS_PORT+".");
-			NettyStartupUtil.runServer(MMSConfiguration.HTTP_PORT, pipeline -> {   //runServer(int port, Consumer<ChannelPipeline> initializer)
+			NettyStartupUtil.runServer(MMSConfiguration.HTTP_PORT(), pipeline -> {   //runServer(int port, Consumer<ChannelPipeline> initializer)
 				pipeline.addLast(new HttpServerCodec());
-				pipeline.addLast(new HttpObjectAggregator(MMSConfiguration.MAX_CONTENT_SIZE));
+				pipeline.addLast(new HttpObjectAggregator(MMSConfiguration.MAX_CONTENT_SIZE()));
 	            pipeline.addLast(new MRH_MessageInputChannel("http"));
 	        });
 		}
@@ -62,12 +107,14 @@ public class MMSServer {
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
+			System.exit(7);
 		}
 		catch (Exception e) {
 			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.error(e.getStackTrace()[i]+".");
 			}
+			System.exit(8);
 		}
 	}
 }

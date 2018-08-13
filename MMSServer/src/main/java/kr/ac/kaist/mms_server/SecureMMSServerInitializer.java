@@ -49,7 +49,7 @@ public class SecureMMSServerInitializer extends ChannelInitializer<SocketChannel
 
         // On top of the SSL handler, add the text line codec.
 		pipeline.addLast(new HttpServerCodec());
-        pipeline.addLast(new HttpObjectAggregator(MMSConfiguration.MAX_CONTENT_SIZE));
+        pipeline.addLast(new HttpObjectAggregator(MMSConfiguration.MAX_CONTENT_SIZE()));
 
         // and then business logic.
         pipeline.addLast(new MRH_MessageInputChannel("https"));

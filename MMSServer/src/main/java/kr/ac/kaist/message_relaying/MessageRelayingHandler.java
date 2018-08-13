@@ -275,7 +275,7 @@ public class MessageRelayingHandler  {
 			if (type != MessageTypeDecider.msgType.REALTIME_LOG) {
 				if (seqNum != -1) {
 					logger.info("SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+", seqNum="+seqNum+".");
-					if(MMSConfiguration.WEB_LOG_PROVIDING) {
+					if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 						String log = "SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+", seqNum="+seqNum+".";
 						mmsLog.addBriefLogForStatus(log);
 						mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -283,7 +283,7 @@ public class MessageRelayingHandler  {
 				}
 				else {
 					logger.info("SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
-					if(MMSConfiguration.WEB_LOG_PROVIDING) {
+					if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 						String log = "SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".";
 						mmsLog.addBriefLogForStatus(log);
 						mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -292,7 +292,7 @@ public class MessageRelayingHandler  {
 				
 			
 				logger.trace("SessionID="+this.SESSION_ID+" Payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));	
-				if(MMSConfiguration.WEB_LOG_PROVIDING&&logger.isTraceEnabled()) {
+				if(MMSConfiguration.WEB_LOG_PROVIDING()&&logger.isTraceEnabled()) {
 					String log = "SessionID="+this.SESSION_ID+" Payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim());
 					mmsLog.addBriefLogForStatus(log);
 					mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -410,7 +410,7 @@ public class MessageRelayingHandler  {
 					mmsLogForDebug.addSessionId(svcMRN, this.SESSION_ID);
 				}
 				
-				if(MMSConfiguration.WEB_LOG_PROVIDING) {
+				if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 					if(mmsLogForDebug.isItsLogListEmtpy(this.SESSION_ID)) {
 						mmsLogForDebug.addLog(this.SESSION_ID, "SessionID="+this.SESSION_ID+" In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
 						if(logger.isTraceEnabled()) {
@@ -455,13 +455,13 @@ public class MessageRelayingHandler  {
 								//System.out.println("Block (by sleep) this relaying process if it's not this session's turn with seq num.");
 								printSessionsInSessionMng(srcDstPair);
 								//System.out.println("last seq number="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
-								sessionBlocker.sleep(MMSConfiguration.WAITING_MESSAGE_TIMEOUT); //Block (by sleep) this relaying process if it's not this session's turn with sequence number.
+								sessionBlocker.sleep(MMSConfiguration.WAITING_MESSAGE_TIMEOUT()); //Block (by sleep) this relaying process if it's not this session's turn with sequence number.
 								itemList.get(0).incWaitingCount();
 							}
 						}
 						else {
 							//System.out.println("Block (by sleep) this relaying process if it's not this session's turn.");
-							sessionBlocker.sleep(MMSConfiguration.WAITING_MESSAGE_TIMEOUT); //Block (by sleep) this relaying process if it's not this session's turn.
+							sessionBlocker.sleep(MMSConfiguration.WAITING_MESSAGE_TIMEOUT()); //Block (by sleep) this relaying process if it's not this session's turn.
 						}
 					} 
 					catch (InterruptedException e) {
@@ -483,7 +483,7 @@ public class MessageRelayingHandler  {
 							else if (itemList.get(0).isExceptionOccured()) {
 								printSessionsInSessionMng(srcDstPair);
 								logger.warn("SessionID="+this.SESSION_ID+" Message order exception is occured. Message sequence is reset 0.");
-								if(MMSConfiguration.WEB_LOG_PROVIDING) {
+								if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 									String log = "SessionID="+this.SESSION_ID+" Message order exception is occured. Message sequence is reset 0.";
 									mmsLog.addBriefLogForStatus(log);
 									mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -527,7 +527,7 @@ public class MessageRelayingHandler  {
 	    		String status;
 	    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 	    		Map<String,List<String>> params = qsd.parameters();
-				if(MMSConfiguration.WEB_LOG_PROVIDING) {
+				if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 					String log = "SessionID="+this.SESSION_ID+" Get MMS status and logs.";
 					logger.info(log);
 					mmsLog.addBriefLogForStatus(log);
@@ -643,7 +643,7 @@ public class MessageRelayingHandler  {
 	    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 	    		Map<String,List<String>> params = qsd.parameters();
 	    		logger.warn("SessionID="+this.SESSION_ID+" Remove MRN=" + params.get("mrn").get(0)+".");
-	    		if (params.get("mrn")!=null && !params.get("mrn").get(0).equals(MMSConfiguration.MMS_MRN)) {
+	    		if (params.get("mrn")!=null && !params.get("mrn").get(0).equals(MMSConfiguration.MMS_MRN())) {
 	    			try {
 						removeEntryMNS(params.get("mrn").get(0));
 						message = "OK".getBytes(Charset.forName("UTF-8"));
@@ -670,7 +670,7 @@ public class MessageRelayingHandler  {
 				QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 				Map<String,List<String>> params = qsd.parameters();
 				logger.warn("SessionID="+this.SESSION_ID+" Add MRN=" + params.get("mrn").get(0) + " IP=" + params.get("ip").get(0) + " Port=" + params.get("port").get(0) + " Model=" + params.get("model").get(0)+".");
-				if (params.get("mrn")!=null && !params.get("mrn").get(0).equals(MMSConfiguration.MMS_MRN)) {
+				if (params.get("mrn")!=null && !params.get("mrn").get(0).equals(MMSConfiguration.MMS_MRN())) {
 					try {
 						addEntryMNS(params.get("mrn").get(0), params.get("ip").get(0), params.get("port").get(0), params.get("model").get(0));
 						message = "OK".getBytes(Charset.forName("UTF-8"));
@@ -701,7 +701,7 @@ public class MessageRelayingHandler  {
 	    		else {
 		    		String method = params.get("method").get(0);
 		    		String svcMRN = params.get("svcMRN").get(0);
-		    		if (method != null && svcMRN != null && !svcMRN.equals(MMSConfiguration.MMS_MRN)) {
+		    		if (method != null && svcMRN != null && !svcMRN.equals(MMSConfiguration.MMS_MRN())) {
 		    			if (method.equals("normal")) {
 		
 		    				PollingMethodRegDummy.pollingMethodReg.put(svcMRN, PollingMethodRegDummy.NORMAL_POLLING);
@@ -891,7 +891,7 @@ public class MessageRelayingHandler  {
 	  try{
 		  //String modifiedSentence;
 
-		  MNSSocket = new Socket(MMSConfiguration.MNS_HOST, MMSConfiguration.MNS_PORT);
+		  MNSSocket = new Socket(MMSConfiguration.MNS_HOST(), MMSConfiguration.MNS_PORT());
 		  MNSSocket.setSoTimeout(5000);
 		  pw = new PrintWriter(MNSSocket.getOutputStream());
 		  isr = new InputStreamReader(MNSSocket.getInputStream());
@@ -981,7 +981,7 @@ public class MessageRelayingHandler  {
 	  try{
 		  //String modifiedSentence;
 
-		  MNSSocket = new Socket(MMSConfiguration.MNS_HOST, MMSConfiguration.MNS_PORT);
+		  MNSSocket = new Socket(MMSConfiguration.MNS_HOST(), MMSConfiguration.MNS_PORT());
 		  MNSSocket.setSoTimeout(5000);
 		  pw = new PrintWriter(MNSSocket.getOutputStream());
 		  isr = new InputStreamReader(MNSSocket.getInputStream());

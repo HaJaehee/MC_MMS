@@ -161,7 +161,7 @@ public class MRH_MessageOutputChannel{
 	public void replyToSender(ChannelHandlerContext ctx, byte[] data) {
     	if (!realtimeLog) {
 	    	logger.info("SessionID="+this.SESSION_ID+" Reply to sender.");
-	    	if(MMSConfiguration.WEB_LOG_PROVIDING) {
+	    	if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 	    		String log = "SessionID="+this.SESSION_ID+" Reply to sender.";
 	    		mmsLog.addBriefLogForStatus(log);
 	    		mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -213,7 +213,7 @@ public class MRH_MessageOutputChannel{
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		logger.info("SessionID="+this.SESSION_ID+" Try connecting to url="+url);
-		if(MMSConfiguration.WEB_LOG_PROVIDING) {
+		if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 			String log = "SessionID="+this.SESSION_ID+" Try connecting to url="+url;
 			mmsLog.addBriefLogForStatus(log);
 			mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -274,7 +274,7 @@ public class MRH_MessageOutputChannel{
 		is.close();
 		logger.info("SessionID="+this.SESSION_ID+" Received a response.");
 		logger.trace("SessionID="+this.SESSION_ID+" Response="+new String(retBuffer));
-		if(MMSConfiguration.WEB_LOG_PROVIDING) {
+		if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 			String log = "SessionID="+this.SESSION_ID+" Received a response.";
 			mmsLog.addBriefLogForStatus(log);
 			mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -298,7 +298,7 @@ public class MRH_MessageOutputChannel{
 		URL obj = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 		logger.info("SessionID="+this.SESSION_ID+" Try connecting to url="+url);
-		if(MMSConfiguration.WEB_LOG_PROVIDING) {
+		if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 			String log = "SessionID="+this.SESSION_ID+" Try connecting to url="+url;
 			mmsLog.addBriefLogForStatus(log);
 			mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -362,7 +362,7 @@ public class MRH_MessageOutputChannel{
 
 		is.close();
 		logger.info("SessionID="+this.SESSION_ID+" Received a response.");
-		if(MMSConfiguration.WEB_LOG_PROVIDING) {
+		if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 			String log = "SessionID="+this.SESSION_ID+" Received a response.";
 			mmsLog.addBriefLogForStatus(log);
 			mmsLogForDebug.addLog(this.SESSION_ID, log);

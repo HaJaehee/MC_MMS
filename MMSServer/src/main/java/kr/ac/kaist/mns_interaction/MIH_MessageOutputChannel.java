@@ -79,7 +79,7 @@ class MIH_MessageOutputChannel {
     	try{
 	    	//String modifiedSentence;
 
-	    	MNSSocket = new Socket(MMSConfiguration.MNS_HOST, MMSConfiguration.MNS_PORT);
+	    	MNSSocket = new Socket(MMSConfiguration.MNS_HOST(), MMSConfiguration.MNS_PORT());
 	    	MNSSocket.setSoTimeout(5000);
 	    	pw = new PrintWriter(MNSSocket.getOutputStream());
 	    	isr = new InputStreamReader(MNSSocket.getInputStream());
