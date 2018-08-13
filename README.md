@@ -1,5 +1,5 @@
-## Alert! This branch is actively being implemented!
-## The source codes can be modified without any notices.
+## Alert! This branch is actively being implemented!<br/>
+The source codes can be modified without any notices.
 
 # MC_MMS
 Beta Version 0.7.3 <br/>
