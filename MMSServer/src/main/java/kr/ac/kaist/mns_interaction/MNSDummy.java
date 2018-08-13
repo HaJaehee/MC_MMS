@@ -94,8 +94,8 @@ public class MNSDummy {
 
 	public static void main(String argv[]) throws Exception
 	{
-		ServerSocket Sock = new ServerSocket(MMSConfiguration.MNS_PORT);
-		System.out.println("Listen:"+MMSConfiguration.MNS_PORT);
+		ServerSocket Sock = new ServerSocket(MMSConfiguration.MNS_PORT());
+		System.out.println("Listen:"+MMSConfiguration.MNS_PORT());
 
 		//logger.error("MNSDummy started.");
 		//       -------------Put MRN --> IP Information -------------
@@ -513,7 +513,7 @@ public class MNSDummy {
 				}
 
 			}
-			else if (data.equals("Empty-MNS:") && MMSConfiguration.WEB_MANAGING){
+			else if (MMSConfiguration.WEB_MANAGING() && data.equals("Empty-MNS:")){
 				try {
 					MRNtoIP.clear();
 					//loggerwarn("MNSDummy:EMPTY.");
@@ -559,7 +559,7 @@ public class MNSDummy {
 				}
 
 			}
-			else if (data.regionMatches(0, "Remove-Entry:", 0, 13) && MMSConfiguration.WEB_MANAGING){
+			else if (MMSConfiguration.WEB_MANAGING() && data.regionMatches(0, "Remove-Entry:", 0, 13)){
 				try {
 					String mrn = data.substring(13);
 					MRNtoIP.remove(mrn);
@@ -605,7 +605,7 @@ public class MNSDummy {
 					}
 				}
 			}
-			else if (data.regionMatches(0, "Add-Entry:", 0, 10) && MMSConfiguration.WEB_MANAGING){
+			else if (MMSConfiguration.WEB_MANAGING() && data.regionMatches(0, "Add-Entry:", 0, 10)){
 				try {
 					String[] params = data.substring(10).split(",");
 					String mrn = params[0];

@@ -256,7 +256,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		
       errorlog = "SessionID="+this.SESSION_ID+" The client is disconnected, " + errorlog + ".";
 		  logger.warn(errorlog);
-		  if(MMSConfiguration.WEB_LOG_PROVIDING) {
+		  if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 				mmsLog.addBriefLogForStatus(errorlog);
 				mmsLogForDebug.addLog(this.SESSION_ID, errorlog);
 		}

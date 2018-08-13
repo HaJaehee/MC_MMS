@@ -233,7 +233,7 @@ public class MMSLog {
 			status.append("</div>");
 			status.append("<br/>");
 			
-			status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE+"):</strong><br/>");
+			status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE()+"):</strong><br/>");
 			for (String log : briefLogForStatus) {
 				status.append(log+"<br/>");
 			}
@@ -285,7 +285,7 @@ public class MMSLog {
 	  	//String modifiedSentence;
 	  	String dumpedMNS = "";
 	  	
-	  	Socket MNSSocket = new Socket(MMSConfiguration.MNS_HOST, MMSConfiguration.MNS_PORT);
+	  	Socket MNSSocket = new Socket(MMSConfiguration.MNS_HOST(), MMSConfiguration.MNS_PORT());
 	  	PrintWriter pw = new PrintWriter(MNSSocket.getOutputStream());
 	  	InputStreamReader isr = new InputStreamReader(MNSSocket.getInputStream());
 	  	BufferedReader br = new BufferedReader(isr);
@@ -337,7 +337,7 @@ public class MMSLog {
 		SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
 		arg = sdf.format(new Date()) + " " + arg;
 
-		if (briefLogForStatus.size() > MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE) {
+		if (briefLogForStatus.size() > MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE()) {
 			briefLogForStatus.remove(0);
 		}
 		briefLogForStatus.add(arg);
@@ -345,7 +345,7 @@ public class MMSLog {
 		if (!briefRealtimeLogEachIDs.isEmpty()) {
 			Set<String> keys = briefRealtimeLogEachIDs.keySet();
 			for (String key : keys) {
-				if (briefRealtimeLogEachIDs.get(key).size() > MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE) {
+				if (briefRealtimeLogEachIDs.get(key).size() > MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE()) {
 					briefRealtimeLogEachIDs.get(key).remove(0);
 				}
 				briefRealtimeLogEachIDs.get(key).add(arg);

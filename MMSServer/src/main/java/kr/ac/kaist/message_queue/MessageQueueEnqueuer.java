@@ -90,7 +90,7 @@ class MessageQueueEnqueuer {
 		String queueName = dstMRN+"::"+srcMRN;
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 		 
-		 if(MMSConfiguration.WEB_LOG_PROVIDING) {
+		 if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 			 String log = "SessionID="+SESSION_ID+" Enqueue="+queueName+".";
 			 mmsLog.addBriefLogForStatus(log);
 			 mmsLogForDebug.addLog(this.SESSION_ID, log);

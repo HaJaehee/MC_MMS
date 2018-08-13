@@ -145,33 +145,33 @@ class MessageTypeDecider {
 	   	if (srcMRN == null && dstMRN == null) {
 	   		
 //			when WEB_LOG_PROVIDING
-			if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/status", 0, 7)){
+			if (MMSConfiguration.WEB_LOG_PROVIDING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/status", 0, 7)){
 				return msgType.STATUS;
 			}
-			else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/realtime-log?id", 0, 16)){
+			else if (MMSConfiguration.WEB_LOG_PROVIDING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/realtime-log?id", 0, 16)){
 				return msgType.REALTIME_LOG;
 			}
 			
 //			when WEB_MANAGING
-		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/add-mns-entry?mrn", 0, 18)){ 
+		   	else if (MMSConfiguration.WEB_MANAGING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/add-mns-entry?mrn", 0, 18)){ 
 		   		return msgType.ADD_MNS_ENTRY;
 		   	} 
-		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/remove-mns-entry?mrn", 0, 21)){ 
+		   	else if (MMSConfiguration.WEB_MANAGING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/remove-mns-entry?mrn", 0, 21)){ 
 		   		return msgType.REMOVE_MNS_ENTRY;
 		   	} 
-		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/polling?method", 0, 15)){
+		   	else if (MMSConfiguration.WEB_MANAGING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/polling?method", 0, 15)){
 		   		return msgType.POLLING_METHOD;
 		   	} 	
-		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/add-mrn-being-debugged?mrn", 0, 21)) {
+		   	else if (MMSConfiguration.WEB_MANAGING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/add-mrn-being-debugged?mrn", 0, 21)) {
 		   		return msgType.ADD_MRN_BEING_DEBUGGED;
 		   	}
-		   	else if (MMSConfiguration.WEB_MANAGING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/remove-mrn-being-debugged?mrn", 0, 24)) {
+		   	else if (MMSConfiguration.WEB_MANAGING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/remove-mrn-being-debugged?mrn", 0, 24)) {
 		   		return msgType.REMOVE_MRN_BEING_DEBUGGED;
 		   	}
-		   	else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/add-id-realtime-log-ids?id", 0, 27)){
+		   	else if (MMSConfiguration.WEB_LOG_PROVIDING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/add-id-realtime-log-ids?id", 0, 27)){
 				return msgType.ADD_ID_IN_REALTIME_LOG_IDS;
 			}
-		   	else if (MMSConfiguration.WEB_LOG_PROVIDING && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/remove-id-realtime-log-ids?id", 0, 30)){
+		   	else if (MMSConfiguration.WEB_LOG_PROVIDING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/remove-id-realtime-log-ids?id", 0, 30)){
 				return msgType.REMOVE_ID_IN_REALTIME_LOG_IDS;
 			}
 			
@@ -185,11 +185,11 @@ class MessageTypeDecider {
 			return msgType.NULL_DST_MRN;
 		}
 	   	
-		else if (srcMRN.equals(MMSConfiguration.MMS_MRN)) {
+		else if (srcMRN.equals(MMSConfiguration.MMS_MRN())) {
 			return msgType.SRC_MRN_IS_THIS_MMS_MRN;
 		}
 		
-		else if (dstMRN.equals(MMSConfiguration.MMS_MRN)) {
+		else if (dstMRN.equals(MMSConfiguration.MMS_MRN())) {
 			//    	When polling
 			if (httpMethod == HttpMethod.POST && uri.equals("/polling")) {
 	    		return msgType.POLLING; 

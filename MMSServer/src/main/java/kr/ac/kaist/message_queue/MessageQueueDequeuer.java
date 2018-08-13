@@ -174,7 +174,7 @@ class MessageQueueDequeuer extends Thread{
 			if (msgCount > 0) { //If the queue has a message
 				message.append("]");
 				
-				if(MMSConfiguration.WEB_LOG_PROVIDING) {
+				if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 					String log = "SessionID="+this.SESSION_ID+" Dequeue="+queueName+".";
 					mmsLog.addBriefLogForStatus(log);
 					mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -189,9 +189,9 @@ class MessageQueueDequeuer extends Thread{
 			} 
 			else { //If the queue does not have any message, message count == 0
 				message.setLength(0);
-				if (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null
+				if (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null //If default polling method is normal polling
 						 || PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING) {
-					if(MMSConfiguration.WEB_LOG_PROVIDING) {
+					if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 						String log = "SessionID="+this.SESSION_ID+" Empty queue="+queueName+".";
 						mmsLog.addBriefLogForStatus(log);
 						mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -205,7 +205,7 @@ class MessageQueueDequeuer extends Thread{
 				}
 				else { //If polling method of service having svcMRN is long polling
 					//Enroll a delivery listener to the queue channel in order to get a message from the queue.
-					if(MMSConfiguration.WEB_LOG_PROVIDING) {
+					if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 						String log = "SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".";
 						mmsLog.addBriefLogForStatus(log);
 						mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -222,7 +222,7 @@ class MessageQueueDequeuer extends Thread{
 						    if(!ctx.isRemoved()){
 								message.append("[\""+URLEncoder.encode(dqMessage,"UTF-8")+"\"]");
 								
-								if(MMSConfiguration.WEB_LOG_PROVIDING) {
+								if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 									String log = "SessionID="+SESSION_ID+" Dequeue="+queueName+".";
 									mmsLog.addBriefLogForStatus(log);
 									mmsLogForDebug.addLog(SESSION_ID, log);
@@ -235,7 +235,7 @@ class MessageQueueDequeuer extends Thread{
 							    outputChannel.replyToSender(ctx, message.toString().getBytes());
 								channel.basicAck(envelope.getDeliveryTag(), false);
 							} else {
-								if(MMSConfiguration.WEB_LOG_PROVIDING) {
+								if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 									String log = "SessionID="+SESSION_ID+" Dequeue="+queueName+".";
 									mmsLog.addBriefLogForStatus(log);
 									mmsLogForDebug.addLog(SESSION_ID, log);
