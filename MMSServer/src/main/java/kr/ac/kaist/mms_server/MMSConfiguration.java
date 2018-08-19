@@ -42,6 +42,13 @@ Rev. history : 2018-08-13
 Version : 0.7.3
 	From this version, this class reads system arguments and configurations from "MMS configuration/MMS.conf" file.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-08-20
+Version : 0.7.3
+	From this version, this class reads environment argument.
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
+
 */
 /* -------------------------------------------------------- */
 import java.io.File;
@@ -200,7 +207,7 @@ public class MMSConfiguration {
 			WEB_MANAGING = getOptionValueBoolean(cmd, "web_managing");
 			HTTP_PORT = getOptionValueInteger(cmd, "http_port");
 			HTTPS_PORT = getOptionValueInteger(cmd, "https_port");
-			MNS_HOST = cmd.getOptionValue("mns_nost");
+			MNS_HOST = cmd.getOptionValue("mns_host");
 			MNS_PORT = getOptionValueInteger(cmd, "mns_port");
 
 			String val = cmd.getOptionValue("mms_mrn");
@@ -233,6 +240,91 @@ public class MMSConfiguration {
 			sc.nextLine();
 			System.exit(1);
 		}
+		
+		//Read system environment
+		//if (!WEB_LOG_PROVIDING[0]) {
+		//	WEB_LOG_PROVIDING = getConfValueBoolean(jobj, "WEB_LOG_RROVIDING");
+		//}
+		
+		//if (!WEB_MANAGING[0]) {
+		//	WEB_MANAGING = getConfValueBoolean(jobj, "WEB_MANAGING");
+		//}
+
+		if (HTTP_PORT == 0) {
+			String s = System.getenv("ENV_HTTP_PORT");
+			if (s != null)
+				HTTP_PORT = Integer.parseInt(s);
+		}
+		
+		if (HTTPS_PORT == 0) {
+			String s = System.getenv("ENV_HTTPS_PORT");
+			if (s != null)
+				HTTPS_PORT = Integer.parseInt(s);
+		}
+		
+		if (MNS_HOST == null) {
+			String s = System.getenv("ENV_MNS_HOST");
+			if (s != null)
+				MNS_HOST = s;
+		}
+		
+		if (MNS_PORT == 0) {
+			String s = System.getenv("ENV_MNS_PORT");
+			if (s != null)
+				MNS_PORT = Integer.parseInt(s);
+		}
+			
+		if (MMS_MRN == null) {
+			String s = System.getenv("ENV_MMS_MRN");
+			if (s != null) {
+				MMS_MRN = s;
+				if (!MMS_MRN.startsWith("urn:mrn:")) {
+					logger.error(TAG+"Invalid MRN for MMS.");
+					try {
+						throw new IOException();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		
+		if (MAX_CONTENT_SIZE == 0) {
+			String s = System.getenv("ENV_MAX_CONTENT_SIZE");
+			if (s != null)
+				MAX_CONTENT_SIZE = 1024*Integer.parseInt(s);
+		}
+
+		if (WAITING_MESSAGE_TIMEOUT == 0) {
+			String s = System.getenv("ENV_WAITING_MESSAGE_TIMEOUT");
+			if (s != null)
+				WAITING_MESSAGE_TIMEOUT = Integer.parseInt(s);
+		}
+		
+		if (MAX_BRIEF_LOG_LIST_SIZE == 0) {
+			String s = System.getenv("ENV_MAX_BRIEF_LOG_LIST_SIZE");
+			if (s != null)
+				MAX_BRIEF_LOG_LIST_SIZE = Integer.parseInt(s);
+		}		
+		
+		if (LOG_LEVEL == null) {
+			String s = System.getenv("ENV_LOG_LEVEL");
+			if (s != null)
+				LOG_LEVEL = s;
+		}
+		
+		//if (!LOG_FILE_OUT[0]) {
+		//	LOG_FILE_OUT = getConfValueBoolean(jobj, "LOG_FILE_OUT");
+		//}
+		
+		//if (!LOG_CONSOLE_OUT[0]) {
+		//	LOG_CONSOLE_OUT = getConfValueBoolean(jobj, "LOG_CONSOLE_OUT");
+		//}
+		
+		
+		
+		
 		
 		JSONParser parser = new JSONParser();
 		FileReader fr = null;
