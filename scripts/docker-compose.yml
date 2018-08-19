@@ -3,10 +3,15 @@ version: '2'
 services:
   mms_server:
     image: kaistmms/mmsserver
+    environment:
+      - ENV_MNS_HOST=mns_dummy
+      - ENV_MNS_PORT=8588
     ports:
       - "8088:8088"
     stdin_open: true
     tty: true
+    volumes:
+      - /var/mms/logs/:/app/mms/logs/
     links:
       - rabbitmq-db
       - mns_dummy
@@ -14,7 +19,7 @@ services:
   mns_dummy:
     image: kaistmms/mnsdummy
     ports:
-      - "1004:1004"
+      - "8588:8588"
     stdin_open: true
     tty: true
 
