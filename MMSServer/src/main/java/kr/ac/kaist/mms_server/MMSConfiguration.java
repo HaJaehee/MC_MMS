@@ -48,6 +48,10 @@ Version : 0.7.3
 	From this version, this class reads environment argument.
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 
+Rev. history : 2018-08-21
+Version : 0.7.3
+	Updated vague.
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 
 */
 /* -------------------------------------------------------- */
@@ -55,9 +59,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 import org.apache.commons.cli.*;
@@ -68,15 +70,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.Appender;
-import ch.qos.logback.core.Context;
-import ch.qos.logback.core.LogbackException;
-import ch.qos.logback.core.filter.Filter;
-import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.sift.AppenderFactory;
-import ch.qos.logback.core.spi.FilterReply;
-import ch.qos.logback.core.status.Status;
 
 
 
@@ -92,7 +85,7 @@ public class MMSConfiguration {
 	private static int HTTP_PORT = 0;
 	private static int HTTPS_PORT = 0;
 	private static String MNS_HOST = null;
-	private static int MNS_PORT = 8588;
+	private static int MNS_PORT = 0;
 	
 	private static String MMS_MRN = null;
 	
@@ -101,8 +94,8 @@ public class MMSConfiguration {
 	
 	private static int MAX_BRIEF_LOG_LIST_SIZE = 0;
 	private static String LOG_LEVEL = null;
-	private static boolean[] LOG_FILE_OUT = {false, false};
-	private static boolean[] LOG_CONSOLE_OUT = {false, false};
+	private static boolean[] LOG_FILE_OUT = {false, false}; //{isSet, value}
+	private static boolean[] LOG_CONSOLE_OUT = {false, false}; //{isSet, value}
 	
 	public MMSConfiguration (String[] args) {
 		if (!IS_MMS_CONF_SET) {
@@ -219,7 +212,7 @@ public class MMSConfiguration {
 				}
 			}
 			
-			MAX_CONTENT_SIZE = getOptionValueInteger(cmd, "max_content_size");
+			MAX_CONTENT_SIZE = 1024*getOptionValueInteger(cmd, "max_content_size");
 			WAITING_MESSAGE_TIMEOUT = getOptionValueInteger(cmd, "waiting_message_timeout");
 			MAX_BRIEF_LOG_LIST_SIZE = getOptionValueInteger(cmd, "max_brief_log_list_size");
 			LOG_LEVEL = cmd.getOptionValue("log_level");
