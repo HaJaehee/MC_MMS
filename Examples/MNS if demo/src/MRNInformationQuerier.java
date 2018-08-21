@@ -31,7 +31,7 @@ public class MRNInformationQuerier {
 	String buildQuery(String castType, String srcMRN, String dstMRN, float geoLat, float geoLong, float geoRadius) {
 		return "{\""+castType+"\":"+
 				"{\"srcMRN\":\""+srcMRN+"\","+
-				//"\"dstMRN\":\""+dstMRN+"\","+
+				"\"dstMRN\":\""+dstMRN+"\","+
 				"\"lat\":\""+geoLat+"\","+
 				"\"long\":\""+geoLong+"\","+
 				"\"radius\":\""+geoRadius+"\"}}";
