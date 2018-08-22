@@ -85,7 +85,7 @@ public class MMSConfiguration {
 	private static int HTTP_PORT = 0;
 	private static int HTTPS_PORT = 0;
 	private static String MNS_HOST = null;
-	private static int MNS_PORT = 0;
+	private static int MNS_PORT = 8588;
 	
 	private static String MMS_MRN = null;
 	
