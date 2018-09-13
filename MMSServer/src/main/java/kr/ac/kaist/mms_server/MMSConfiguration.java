@@ -190,7 +190,7 @@ public class MMSConfiguration {
 					
 			
 			if (cmd.hasOption("help")) {
-				formatter.printHelp(usage, options);
+				formatter.printHelp(160, usage, "", options, "");
 				Scanner sc = new Scanner(System.in);
 				sc.nextLine();
 				System.exit(0);
