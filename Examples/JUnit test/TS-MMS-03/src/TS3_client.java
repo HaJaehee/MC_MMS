@@ -25,7 +25,8 @@ public class TS3_client {
 	private static int length = -1;
 	
 	public TS3_client(){
-		MMSConfiguration.MMS_URL="143.248.55.83:8088";
+		MMSConfiguration.MMS_URL="143.248.57.144:8088";
+//		MMSConfiguration.MMS_URL="143.248.55.83:8088";
 //		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		MMSConfiguration.DEBUG = false;
 		
@@ -35,12 +36,21 @@ public class TS3_client {
 				
 				@Override
 				public void callbackMethod(Map<String, List<String>> headerField, List<String> messages) {
-					// TODO Auto-generated method stub
+					// TODO Auto-generated method stub					
+					
 					List<String> list = headerField.get("content-length");
+					System.out.println("list" +list.get(0));		
+															
+				
 					if(list != null){
+						//System.out.println("list" +list.get(0));
+						
+						//System.out.println("message : "+messages.get(0));
+						
 						content_length = Integer.parseInt(list.get(0));
+						
 						length = content_length;
-					}
+						}
 				}
 			};
 		} catch (IOException e) {
@@ -52,26 +62,31 @@ public class TS3_client {
 	}
 	
 	public int pollingReqeust(){
-		int retLength = -1;
+		int retLength = -1; 
 		try {
-			myHandler.startPolling(dstMRN, svcMRN, 1, callback);
+			myHandler.startPolling(dstMRN, svcMRN, 1000, callback);
 
-			while(length==-1){ //busy waiting the content length
-				Thread.sleep(1);
-				if(length != -1){
+			while(length==-1){ //busy waiting the content length		
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(length != -1){					
 					retLength = length;
+					System.out.println("retLength : "+ retLength);
 					length = -1;
 					break;
 				}
+				
+				
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
-		} catch (InterruptedException e){
-			
-		}
-		
+		} 
+		myHandler.stopPolling();
 		return retLength;
 	}
-
 }
