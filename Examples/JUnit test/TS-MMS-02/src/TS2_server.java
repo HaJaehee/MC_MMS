@@ -1,3 +1,10 @@
+/** 
+File name : TS2_server.java
+	Relaying message function for the purpose of testing MMS
+Author : YoungJin Kim (jcdad3000@kaist.ac.kr)
+Creation Date : 2018-09-13
+*/
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,12 +14,7 @@ import java.util.Map;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
 import kr.ac.kaist.mms_client.MMSConfiguration;
-/** 
-File name : TS2_server.java
-	Relaying message function for the purpose of testing MMS
-Author : YoungJin Kim (jcdad3000@kaist.ac.kr)
-Creation Date : 2018-09-13
-*/
+
 public class TS2_server {
 	private int response = 0;
 	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-02-server";

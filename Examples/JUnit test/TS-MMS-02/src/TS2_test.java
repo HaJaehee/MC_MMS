@@ -1,3 +1,10 @@
+/** 
+File name : TS2_server.java
+	Relaying message function for the purpose of testing MMS
+Author : YoungJin Kim (jcdad3000@kaist.ac.kr)
+Creation Date : 2018-09-13
+*/
+
 import static org.junit.Assert.*;
 
 import java.awt.List;

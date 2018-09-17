@@ -1,3 +1,10 @@
+/** 
+File name : TS2_client.java
+	Relaying message function for the purpose of testing MMS.
+Author : YoungJin Kim (jcdad3000@kaist.ac.kr)
+Creation Date : 2018-09-13
+*/
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;

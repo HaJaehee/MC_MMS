@@ -43,7 +43,7 @@ public class SC1 {
 		//myMRN = args[0];
 		
 
-		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
+		MMSConfiguration.MMS_URL = "143.248.57.144:8088";
 		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 		
 		//Service Consumer cannot be HTTP server and should poll from MMS. 
@@ -65,7 +65,7 @@ public class SC1 {
 		});
 		
 		// Stopping polling example.
-		Thread.sleep(10000); // After 10 seconds,
-		polling.stopPolling(); // stop polling.
+		//Thread.sleep(10000); // After 10 seconds,
+		//polling.stopPolling(); // stop polling.
 	}
 }
