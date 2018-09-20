@@ -1,5 +1,3 @@
-## Alert! This branch is actively being implemented!<br/>The source codes can be modified without any notices.
-
 # MC_MMS
 Beta Version 0.8.0 <br/>
 2018.9.20<br/>
