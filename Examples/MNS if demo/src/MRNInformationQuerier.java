@@ -1,4 +1,3 @@
-package kr.ac.kaist.mns_interaction;
 /* -------------------------------------------------------- */
 /** 
 File name : MRNInformationQuerior.java
@@ -25,13 +24,9 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
 public class MRNInformationQuerier {
 
-	private static final Logger logger = LoggerFactory.getLogger(MRNInformationQuerier.class);
+//	private static final Logger logger = LoggerFactory.getLogger(MRNInformationQuerier.class);
 	
 	String buildQuery(String castType, String srcMRN, String dstMRN, float geoLat, float geoLong, float geoRadius) {
 		return "{\""+castType+"\":"+

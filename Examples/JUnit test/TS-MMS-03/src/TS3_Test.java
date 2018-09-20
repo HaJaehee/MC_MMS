@@ -13,7 +13,7 @@ public class TS3_Test {
 	static int offset;
 	
 	@BeforeClass 
-	public static void setupForClass() {
+	public static void setupForClass() throws Exception {
 		client = new TS3_client();
 		server = new TS3_server();
 		offset = 4;
@@ -24,17 +24,17 @@ public class TS3_Test {
 		int expected = 0;
 		int actual = 0;
 		
+		//System.out.println("send data start");
 		server.sendContent(actual);
+		//System.out.println("send data finish");
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
-		expected = client.pollingReqeust();
-		
-		assertTrue(server.getResponse() == 200);
+		}		
+		expected = client.pollingReqeust();		
+		assertTrue(server.getResponse() == 200);		
 		assertTrue(expected==(actual)+offset);
 	}
 	
@@ -45,13 +45,12 @@ public class TS3_Test {
 		
 		server.sendContent(actual);
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		expected = client.pollingReqeust();
-		
 		assertTrue(server.getResponse() == 200);
 		assertTrue(expected==(actual + offset));
 	}
@@ -63,13 +62,12 @@ public class TS3_Test {
 		
 		server.sendContent(actual);
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		expected = client.pollingReqeust();
-		
 		assertTrue(server.getResponse() == 200);
 		assertTrue(expected==(actual + offset));
 	}
@@ -81,13 +79,13 @@ public class TS3_Test {
 		
 		server.sendContent(actual);
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		expected = client.pollingReqeust();
-		
+	
 		assertTrue(server.getResponse() == 200);
 		assertTrue(expected==(actual + offset));
 	}
@@ -99,7 +97,7 @@ public class TS3_Test {
 		
 		server.sendContent(actual);
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -117,7 +115,7 @@ public class TS3_Test {
 		
 		server.sendContent(actual);
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -135,7 +133,7 @@ public class TS3_Test {
 		
 		server.sendContent(actual);
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -153,7 +151,7 @@ public class TS3_Test {
 		
 		server.sendContent(actual);
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(2000);	
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -171,7 +169,7 @@ public class TS3_Test {
 		
 		server.sendContent(actual);
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -189,7 +187,7 @@ public class TS3_Test {
 		
 		server.sendContent(actual);
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -207,7 +205,7 @@ public class TS3_Test {
 		
 		server.sendContent(actual);
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -225,7 +223,7 @@ public class TS3_Test {
 		
 		server.sendContent(actual);
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -236,5 +234,6 @@ public class TS3_Test {
 //		assertTrue(expected==(actual + offset));
 		
 	}
+	
 
 }

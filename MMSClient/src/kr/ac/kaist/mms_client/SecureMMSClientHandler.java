@@ -92,7 +92,7 @@ import java.util.Map;
 
 /**
  * This handler helps client communicate to MMS over HTTPS. Client uses it to send or receive messages.
- * @version 0.7.2
+ * @version 0.7.3
  * @see MMSClientHandler
  */
 public class SecureMMSClientHandler {

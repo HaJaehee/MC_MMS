@@ -164,6 +164,8 @@ public class MNSDummy {
 				connectionSocket.shutdownInput();
 			}
 			String data = buf.toString();
+			
+			
 			// newly designed interfaces
 			if (data.startsWith("{")) {
 				try {
@@ -285,6 +287,7 @@ public class MNSDummy {
 						connectionSocket.close();
 					}
 				}
+				continue;
 			}
 			//logger.debug(data);
 
@@ -513,7 +516,7 @@ public class MNSDummy {
 				}
 
 			}
-			else if (MMSConfiguration.WEB_MANAGING() && data.equals("Empty-MNS:")){
+			else if (data.equals("Empty-MNS:")){
 				try {
 					MRNtoIP.clear();
 					//loggerwarn("MNSDummy:EMPTY.");
@@ -559,7 +562,7 @@ public class MNSDummy {
 				}
 
 			}
-			else if (MMSConfiguration.WEB_MANAGING() && data.regionMatches(0, "Remove-Entry:", 0, 13)){
+			else if (data.regionMatches(0, "Remove-Entry:", 0, 13)){
 				try {
 					String mrn = data.substring(13);
 					MRNtoIP.remove(mrn);
@@ -605,11 +608,12 @@ public class MNSDummy {
 					}
 				}
 			}
-			else if (MMSConfiguration.WEB_MANAGING() && data.regionMatches(0, "Add-Entry:", 0, 10)){
+			else if (data.regionMatches(0, "Add-Entry:", 0, 10)){
 				try {
 					String[] params = data.substring(10).split(",");
 					String mrn = params[0];
 					String locator = params[1] +":"+ params[2] +":"+ params[3];
+					System.out.println(mrn+locator);
 					MRNtoIP.put(mrn, locator);
 					//loggerwarn("MNSDummy:ADD="+mrn+".");
 

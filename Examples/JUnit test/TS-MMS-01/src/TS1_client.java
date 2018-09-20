@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -13,22 +14,32 @@ Creation Date : 2017-07-23
 */
 
 public class TS1_client {
-	public static void main(String[] args) throws Exception{
-		String myMRN = "urn:mrn:imo:imo-no:ts-mms-01-client";
+	//public static void main(String[] args) throws Exception{
+	private int response = 0;
+	private int content_length = 0;
+	private static int length = -1;
+	private String dstMRN = "urn:mrn:smart-navi:device:mms1";
+	private String svcMRN = "urn:mrn:imo:imo-no:ts-mms-01-server";
+	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-01-client";
+	private MMSClientHandler sender = new MMSClientHandler(myMRN);
+	
+	public TS1_client() throws Exception {		
 
-		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.MMS_URL="143.248.57.144:8088";			
 		
-		String dstMRN = "urn:mrn:smart-navi:device:mms1";
-		String svcMRN = "urn:mrn:imo:imo-no:ts-mms-01-server";
-		
-		MMSClientHandler sender = new MMSClientHandler(myMRN);
 		sender.setSender(new MMSClientHandler.ResponseCallback() {
 			
 			@Override
 			public void callbackMethod(Map<String, List<String>> headerField, String message) {
 				// TODO Auto-generated method stub
+				
+				if(headerField.get("Response-code")!=null){
+					int code = Integer.parseInt(headerField.get("Response-code").get(0));
+					response = code;				
+				}
+				
 //				System.out.println("Client Side");
-				Iterator<String> iter = headerField.keySet().iterator();
+				/*Iterator<String> iter = headerField.keySet().iterator();
 				while (iter.hasNext()){
 					String key = iter.next();
 					List<String> contents = headerField.get(key);
@@ -41,43 +52,19 @@ public class TS1_client {
 					}
 					System.out.println();
 				}
-				System.out.println();
+				System.out.println();*/
 			}
 		});
-		
-		String data = null;
-//		
-//		data = createDataSize(0);
-//		sender.sendPostMsg(svcMRN, data);
-//		
-//		data = createDataSize(170);
-//		sender.sendPostMsg(svcMRN, data);
-//
-		data = createDataSize(40 * 1024 * 1024);
-//		sender.sendPostMsg(svcMRN, data);
-//		
-//		data = createDataSize(500 * 1024);
-		sender.sendPostMsg(svcMRN, data);
-//		
-//		data = testData.createDataSize(2 * 1024 * 1024);
-//		sender.sendPostMsg(svcMRN, data);
-//		
-//		data = testData.createDataSize(7 * 1024 * 1024);
-//		sender.sendPostMsg(svcMRN, data);
-//		
-//		data = testData.createDataSize(10 * 1024 * 1024);
-//		sender.sendPostMsg(svcMRN, data);
-//		
-//		data = testData.createDataSize(20 * 1024 * 1024);
-//		sender.sendPostMsg(svcMRN, data);
-//		
-//		data = testData.createDataSize(30 * 1024 * 1024);
-//		sender.sendPostMsg(svcMRN, data);
-//		
-//		data = testData.createDataSize(40 * 1024 * 1024);
-//		sender.sendPostMsg(svcMRN, data);
 	}
-	
+	public void sendContentLength(int actual) {
+		String data =createDataSize(actual);
+		try {
+			sender.sendPostMsg(svcMRN, data);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public static String createDataSize(int size){
 		StringBuilder data = new StringBuilder(size);
 		
@@ -86,5 +73,8 @@ public class TS1_client {
 		}
 		
 		return data.toString();
+	}
+	public int getResponse() {
+		return response;
 	}
 }
