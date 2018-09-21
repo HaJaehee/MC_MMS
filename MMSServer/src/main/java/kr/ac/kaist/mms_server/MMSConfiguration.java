@@ -53,6 +53,10 @@ Version : 0.7.3
 	Updated vague.
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 
+Rev. history : 2018-09-21
+Version : 0.8.0
+	Updated Checking initialized variables in MMSConfiguration.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 import java.io.File;
@@ -196,29 +200,54 @@ public class MMSConfiguration {
 				System.exit(0);
 			}
 			
-			WEB_LOG_PROVIDING = getOptionValueBoolean(cmd, "web_log_providing");
-			WEB_MANAGING = getOptionValueBoolean(cmd, "web_managing");
-			HTTP_PORT = getOptionValueInteger(cmd, "http_port");
-			HTTPS_PORT = getOptionValueInteger(cmd, "https_port");
-			MNS_HOST = cmd.getOptionValue("mns_host");
-			MNS_PORT = getOptionValueInteger(cmd, "mns_port");
+			if (WEB_LOG_PROVIDING[0] == false) {
+				WEB_LOG_PROVIDING = getOptionValueBoolean(cmd, "web_log_providing");
+			}
+			if (WEB_MANAGING[0] == false) {
+				WEB_MANAGING = getOptionValueBoolean(cmd, "web_managing");
+			}
+			if (HTTP_PORT == 0) {
+				HTTP_PORT = getOptionValueInteger(cmd, "http_port");
+			}
+			if (HTTPS_PORT == 0) {
+				HTTPS_PORT = getOptionValueInteger(cmd, "https_port");
+			}
+			if (MNS_HOST == null) {
+				MNS_HOST = cmd.getOptionValue("mns_host");
+			}
+			if (MNS_PORT == 0) {
+				MNS_PORT = getOptionValueInteger(cmd, "mns_port");
+			}
 
-			String val = cmd.getOptionValue("mms_mrn");
-			if (val != null) {
-				MMS_MRN = val;
-				if (!MMS_MRN.startsWith("urn:mrn:")) {
-					logger.error(TAG+"Invalid MRN for MMS.");
-					throw new IOException();
+			if (MMS_MRN == null) {
+				String val = cmd.getOptionValue("mms_mrn");
+				if (val != null) {
+					MMS_MRN = val;
+					if (!MMS_MRN.startsWith("urn:mrn:")) {
+						logger.error(TAG+"Invalid MRN for MMS.");
+						throw new IOException();
+					}
 				}
 			}
 			
-			MAX_CONTENT_SIZE = 1024*getOptionValueInteger(cmd, "max_content_size");
-			WAITING_MESSAGE_TIMEOUT = getOptionValueInteger(cmd, "waiting_message_timeout");
-			MAX_BRIEF_LOG_LIST_SIZE = getOptionValueInteger(cmd, "max_brief_log_list_size");
-			LOG_LEVEL = cmd.getOptionValue("log_level");
-			LOG_FILE_OUT = getOptionValueBoolean(cmd, "log_file_out");
-			LOG_CONSOLE_OUT = getOptionValueBoolean(cmd, "log_console_out");
-			
+			if (MAX_CONTENT_SIZE == 0) {
+				MAX_CONTENT_SIZE = 1024*getOptionValueInteger(cmd, "max_content_size");
+			}
+			if (WAITING_MESSAGE_TIMEOUT == 0) {
+				WAITING_MESSAGE_TIMEOUT = getOptionValueInteger(cmd, "waiting_message_timeout");
+			}
+			if (MAX_BRIEF_LOG_LIST_SIZE == 0) {
+				MAX_BRIEF_LOG_LIST_SIZE = getOptionValueInteger(cmd, "max_brief_log_list_size");
+			}
+			if (LOG_LEVEL == null) {
+				LOG_LEVEL = cmd.getOptionValue("log_level");
+			}
+			if (LOG_FILE_OUT[0] == false) {
+				LOG_FILE_OUT = getOptionValueBoolean(cmd, "log_file_out");
+			}
+			if (LOG_CONSOLE_OUT[0] == false) {
+				LOG_CONSOLE_OUT = getOptionValueBoolean(cmd, "log_console_out");
+			}
 		}
 		catch (org.apache.commons.cli.ParseException e){
 			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
