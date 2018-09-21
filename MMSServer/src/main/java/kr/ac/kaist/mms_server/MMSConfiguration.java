@@ -53,6 +53,10 @@ Version : 0.7.3
 	Updated vague.
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 
+Rev. history : 2018-09-21
+Version : 0.8.0
+	Updated Checking initialized variables in MMSConfiguration.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 import java.io.File;
