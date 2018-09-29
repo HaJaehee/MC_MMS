@@ -1,0 +1,64 @@
+# Translation of One Edge in Korean
+# This file is distributed under the same license as the One Edge package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2016-08-24 21:57:47+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/2.1.0-alpha\n"
+"Project-Id-Version: One Edge\n"
+
+#. Theme Name of the plugin/theme
+msgid "One Edge"
+msgstr "One Edge"
+
+#. Description of the plugin/theme
+msgid "One Edge is a friendly, elegant and professional WordPress theme, perfect for small businesses, startups, or corporate websites. It comes with a colorful interface that fits happy and innovative people. One Edge has an one-page layout and parallax effect. The theme has a responsive design, a blog section, WooCommerce integration, SEO optimization, and is translation ready. One Edge is highly customizable, so you can easily change anything you want related to its appearance and functionality."
+msgstr "One Edge는 친근하고 우아하며 전문적인 워드프레스 테마입니다. 소규모 비지니스, 스타트업 또는 기업 웹사이트에 완벽합니다. 행복하고 혁신적인 사람들에 적합한 화려한 인터페이스로 이뤄져 있습니다. One Edge는 원페이지 레이아웃이고 패럴랙스 효과가 있습니다. 이 테마는 반응형 디자인이고 블로그 영역이 있으며 우커머스 호환, 검색엔진 최적화, 번역 등이 가능합니다. One Edge는 사용자 정의하기가 쉽습니다. 따라서 모양이나 기능과 관련해 모든 것을 쉽게 변경할 수 있습니다."
+
+#: content-search.php:58
+msgid "Posted in "
+msgstr "카테고리"
+
+#. translators: used between list items, there is a space after the comma
+#: content-search.php:61 content.php:57
+msgid ", "
+msgstr ", "
+
+#: content-search.php:71 content.php:67
+msgid "No comments"
+msgstr "댓글 없음"
+
+#: content-search.php:71 content.php:67
+msgid "One comment"
+msgstr "하나의 댓글"
+
+#: content-search.php:71 content.php:67
+msgid "% comments"
+msgstr "% 댓글"
+
+#: content-search.php:85 content.php:81
+msgid "Read more %s ..."
+msgstr "더보기 %s ..."
+
+#: content-search.php:85 content.php:81
+msgid "about "
+msgstr "소개"
+
+#: content-search.php:92 content.php:88
+msgid "Pages:"
+msgstr "페이지:"
+
+#: content.php:7
+msgid "Blog post: %s"
+msgstr "블로그 글: %s"
+
+#. Author of the plugin/theme
+msgid "ThemeIsle"
+msgstr "ThemeIsle"
+
+#. Author URI of the plugin/theme
+msgid "http://themeisle.com/"
+msgstr "http://themeisle.com/"

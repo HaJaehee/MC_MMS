@@ -1,5 +1,10 @@
 Patch Notes
 ***********
+29-Sep 2018
+MC_MMS 0.8.0 new features/enhancements & bug-fixes:
+1. Dockerize MMS Monitoring Module for the first time.
+2. FOr #1, MMSMonitor Module is uploaded at the "MMSMonitor" folder, and various improvement of scripts.
+
 18-Sep 2018
 MC_MMS 0.8.0 new features/enhancements & bug-fixes:
 1. Updated Junit tests.

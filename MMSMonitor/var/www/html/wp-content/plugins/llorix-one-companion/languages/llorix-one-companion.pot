@@ -1,0 +1,212 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Llorix One Companion\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-03-09 16:20+0200\n"
+"PO-Revision-Date: 2016-03-09 16:20+0200\n"
+"Last-Translator: \n"
+"Language-Team: themeisle <friends@themeisle.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;esc_html__;esc_html_e\n"
+"X-Poedit-Basepath: ../\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: sections\n"
+"X-Poedit-SearchPath-2: inc\n"
+
+#: llorix-one-companion.php:69
+msgid "You need to have <a href=\"https://wordpress.org/themes/llorix-one-lite/\" target=\"_blank\">Llorix One Lite</a> theme in order to use Llorix One Companion plugin."
+msgstr ""
+
+#: llorix-one-companion.php:89
+msgid "<i>Llorix One Companion</i> has been deactivated."
+msgstr ""
+
+#: inc/settings.php:11
+msgid "Services section"
+msgstr ""
+
+#: inc/settings.php:23
+msgid "Disable the Services section?"
+msgstr ""
+
+#: inc/settings.php:30
+#: sections/llorix_one_lite_our_services_section.php:9
+msgid "Our Services"
+msgstr ""
+
+#: inc/settings.php:35
+#: inc/settings.php:107
+#: inc/settings.php:188
+msgid "Main title"
+msgstr ""
+
+#: inc/settings.php:43
+#: inc/settings.php:115
+#: sections/llorix_one_lite_our_services_section.php:10
+#: sections/llorix_one_lite_our_team_section.php:11
+msgid "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+msgstr ""
+
+#: inc/settings.php:48
+#: inc/settings.php:120
+#: inc/settings.php:201
+msgid "Subtitle"
+msgstr ""
+
+#: inc/settings.php:60
+#: inc/settings.php:61
+#: inc/settings.php:62
+#: sections/llorix_one_lite_our_services_section.php:14
+#: sections/llorix_one_lite_our_services_section.php:15
+#: sections/llorix_one_lite_our_services_section.php:16
+msgid "Lorem Ipsum"
+msgstr ""
+
+#: inc/settings.php:60
+#: inc/settings.php:61
+#: inc/settings.php:62
+#: sections/llorix_one_lite_our_services_section.php:14
+#: sections/llorix_one_lite_our_services_section.php:15
+#: sections/llorix_one_lite_our_services_section.php:16
+msgid "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec purus feugiat, molestie ipsum et, consequat nibh. Etiam non elit dui. Nullam vel eros sit amet arcu vestibulum accumsan in in leo."
+msgstr ""
+
+#: inc/settings.php:67
+msgid "Add new service box"
+msgstr ""
+
+#: inc/settings.php:83
+msgid "Team section"
+msgstr ""
+
+#: inc/settings.php:95
+msgid "Disable the Team section?"
+msgstr ""
+
+#: inc/settings.php:102
+#: sections/llorix_one_lite_our_team_section.php:9
+msgid "Our Team"
+msgstr ""
+
+#: inc/settings.php:132
+msgid "Team Background"
+msgstr ""
+
+#: inc/settings.php:143
+#: sections/llorix_one_lite_our_team_section.php:15
+msgid "Albert Jacobs"
+msgstr ""
+
+#: inc/settings.php:143
+#: sections/llorix_one_lite_our_team_section.php:15
+msgid "Founder & CEO"
+msgstr ""
+
+#: inc/settings.php:144
+#: sections/llorix_one_lite_our_team_section.php:16
+msgid "Tonya Garcia"
+msgstr ""
+
+#: inc/settings.php:144
+#: sections/llorix_one_lite_our_team_section.php:16
+msgid "Account Manager"
+msgstr ""
+
+#: inc/settings.php:145
+#: sections/llorix_one_lite_our_team_section.php:17
+msgid "Linda Guthrie"
+msgstr ""
+
+#: inc/settings.php:145
+#: sections/llorix_one_lite_our_team_section.php:17
+msgid "Business Development"
+msgstr ""
+
+#: inc/settings.php:150
+msgid "Add new team member"
+msgstr ""
+
+#: inc/settings.php:164
+msgid "Testimonials section"
+msgstr ""
+
+#: inc/settings.php:176
+msgid "Disable the Testimonials section?"
+msgstr ""
+
+#: inc/settings.php:183
+#: sections/llorix_one_lite_happy_customers_section.php:9
+msgid "Happy Customers"
+msgstr ""
+
+#: inc/settings.php:196
+#: sections/llorix_one_lite_happy_customers_section.php:10
+msgid "Cloud computing subscription model out of the box proactive solution."
+msgstr ""
+
+#: inc/settings.php:213
+#: inc/settings.php:214
+#: inc/settings.php:215
+#: sections/llorix_one_lite_happy_customers_section.php:14
+#: sections/llorix_one_lite_happy_customers_section.php:15
+#: sections/llorix_one_lite_happy_customers_section.php:16
+msgid "Happy Customer"
+msgstr ""
+
+#: inc/settings.php:213
+#: inc/settings.php:214
+#: inc/settings.php:215
+#: sections/llorix_one_lite_happy_customers_section.php:14
+#: sections/llorix_one_lite_happy_customers_section.php:15
+#: sections/llorix_one_lite_happy_customers_section.php:16
+msgid "Lorem ipsum"
+msgstr ""
+
+#: inc/settings.php:213
+#: inc/settings.php:214
+#: inc/settings.php:215
+#: sections/llorix_one_lite_happy_customers_section.php:14
+#: sections/llorix_one_lite_happy_customers_section.php:15
+#: sections/llorix_one_lite_happy_customers_section.php:16
+msgid "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec purus feugiat, molestie ipsum et, consequat nibh. Etiam non elit dui. Nullam vel eros sit amet arcu vestibulum accumsan in in leo. Fusce malesuada vulputate faucibus. Integer in hendrerit nisi. Praesent a hendrerit urna. In non imperdiet elit, sed molestie odio. Fusce ac metus non purus sollicitudin laoreet."
+msgstr ""
+
+#: inc/settings.php:220
+msgid "Add new testimonial"
+msgstr ""
+
+#: sections/llorix_one_lite_happy_customers_section.php:26
+#: sections/llorix_one_lite_happy_customers_section.php:146
+msgid "Testimonials"
+msgstr ""
+
+#: sections/llorix_one_lite_our_services_section.php:26
+#: sections/llorix_one_lite_our_services_section.php:156
+msgid "Services"
+msgstr ""
+
+#: sections/llorix_one_lite_our_services_section.php:98
+#: sections/llorix_one_lite_our_services_section.php:102
+#: sections/llorix_one_lite_our_services_section.php:110
+#: sections/llorix_one_lite_our_services_section.php:228
+#: sections/llorix_one_lite_our_services_section.php:232
+#: sections/llorix_one_lite_our_services_section.php:240
+msgid "Featured Image"
+msgstr ""
+
+#: sections/llorix_one_lite_our_team_section.php:28
+#: sections/llorix_one_lite_our_team_section.php:31
+#: sections/llorix_one_lite_our_team_section.php:130
+#: sections/llorix_one_lite_our_team_section.php:133
+msgid "Team"
+msgstr ""
+
+#: sections/llorix_one_lite_our_team_section.php:75
+#: sections/llorix_one_lite_our_team_section.php:79
+#: sections/llorix_one_lite_our_team_section.php:177
+#: sections/llorix_one_lite_our_team_section.php:181
+msgid "Avatar"
+msgstr ""
+

@@ -1,0 +1,52 @@
+@charset "utf-8";
+/**
+ * @author http://www.cosmosfarm.com/
+ */
+
+.kboard-header-logo  { float: left; margin: 7px 8px 0 0; width: 36px; height: 34px; background: url(../images/icon-big.png) left top no-repeat; }
+.kboard-hide { display: none; }
+
+.kboard-content-list .column-title { width: 40%; }
+.kboard-comments-list .column-board_name { width: 150px; }
+.kboard-comments-list .column-user_display { width: 100px; }
+.kboard-comments-list .column-content { width: 40%; }
+.kboard-comments-list .kboard-comments-open { margin-top: 20px; }
+
+.kbstore-thumbnail { width: 100px; }
+.kbstore-title { width: 250px; }
+.kbstore-category { width: 150px; }
+.kbstore-version { width: 150px; }
+
+#kbstore-products-list td { border: 0; border-bottom: 1px solid #e1e1e1; }
+#kbstore-products-list tr:last-child td { border: 0; }
+#kbstore-products-list img { max-width: 100%; }
+#kbstore-products-list .kbstore-product-title { font-size: 16px; }
+#kbstore-products-list .action-links { margin-top: 20px; }
+#kbstore-products-list .kbstore-thumbnail-img { width: 100px; height: 100px; }
+#kbstore-products-list .kbstore-description-wrap { margin-top: -40px; padding-top: 40px; height: auto; overflow: hidden; transition-duration: .3s; }
+#kbstore-products-list .show-little .kbstore-description-wrap { height: 50px; }
+
+.nav-tab-wrapper { border-bottom: 1px solid #ccc; }
+#kboard-dashboard-options { margin: 23px 0 0 0; padding: 0; overflow: hidden; }
+#kboard-dashboard-options li { margin: 0 0 20px 0; padding: 10px; background-color: #fafafa; border: 1px solid #e5e5e5; }
+#kboard-dashboard-options li:hover { border: 1px solid #00aeef; }
+#kboard-dashboard-options li h4 { font-weight: bold; }
+#kboard-dashboard-options li textarea { width: 100%; }
+
+.tab-kboard-setting { display: none; }
+.tab-kboard-setting-active { display: block; }
+
+.kboard-admin-pagination li { float: left; padding-left: 3px; }
+.kboard-admin-pagination li a { display: block; padding: 0 10px 3px; background: #eee; background: rgba(0,0,0,.05); text-decoration: none; }
+.kboard-admin-pagination li.active a { font-weight: bold; }
+
+.link-control-area { float: left; width: 100%; }
+.link-control-area p { margin: 0; text-align: center; }
+.link-control-area select { width: 200px; }
+.link-control-area .link-control-area-left { float: left; }
+.link-control-area .link-control-area-center { float: left; padding: 45px 5px 0 5px; }
+.link-control-area .link-control-area-right { float: left; }
+.latestview-preview { width: 300px; border: 1px solid gray; }
+
+.wp-list-table.kboard select { width: 100%; }
+.wp-list-table.kboard h4 { margin: 0; }

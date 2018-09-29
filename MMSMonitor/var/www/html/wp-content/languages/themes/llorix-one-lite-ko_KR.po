@@ -1,0 +1,1375 @@
+# Translation of Themes - Llorix One Lite in Korean
+# This file is distributed under the same license as the Themes - Llorix One Lite package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2016-04-14 09:39:50+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/2.3.0-alpha\n"
+"Language: ko_KR\n"
+"Project-Id-Version: Themes - Llorix One Lite\n"
+
+#. Description of the plugin/theme
+msgid "Llorix One Lite is a free and beautiful one page business WordPress theme, with a flat and clean bootstrap based design and an elegant parallax effect. It provides a simple,minimal and modern look that can be used for any kind of personal businesses or startup mobile app. The landing page has a fullscreen hero image and blue & orange appearance with buttons and icons promoting simplicity and elegance at their best. The theme provides a responsive blog section, is eCommerce ready (WooCommerce store compatible), WPML, bbPress, Photo Gallery Grid,Contact Form 7,Meta Slider,SiteOrigin Page Builder, JetPack compatible  and SEO friendly. You can use it for your business / startup shop, agency, corporate website, or photography portfolio."
+msgstr "Llorix One Lite는 아름다운 원 페이지 기업용 워드프레스 무료 테마입니다. 플랫형 깨끗한 부트스트랩 기반 디자인으로 우아한 패럴랙스 효과가 있습니다. 심플하고 군더더기 없는 현대적인 감각의 디자인으로 개인 기업용이나 모바일 스타트업 앱에 사용될 수 있습니다. 랜딩 페이지는 전체 화면 히어로 이미지가 있고 블루 & 오랜지 색상의 버튼과 아이콘은 단순함과 우아함을 추구하고 있습니다. 테마는 반응형 블로그 영역을 제공하고 이커머스(우커머스 상점 호환)가 가능합니다. 또한 WPML, 비비프레스, 포토 갤러리 그리드, 컨택트 폼 7, 메타 슬라이더, 사이트 오리진 페이지 빌더, 젯팩 등과 호환되며 SEO에도 적합합니다. 기업 / 스타트업 상점, 등의 웹사이트나 사진 포트폴리오 사이트에도 사용할 수 있습니다."
+
+#. #-#-#-#-#  llorix-one-lite.pot (Llorix One Lite 0.2.5)  #-#-#-#-#
+#. Theme Name of the plugin/theme
+#: inc/customize-pro/class-customizer-theme-info-root.php:92
+msgid "Llorix One Lite"
+msgstr "Llorix One Lite"
+
+#: inc/customizer.php:838 inc/customizer.php:855
+msgid "Check out the <a href=\"http://themeisle.com/plugins/llorix-one-plus/\">PRO version</a> for full control over the NEW PORTFOLIO SECTION!"
+msgstr "새 포트폴리오 영역의 전체 제어에 대해서는 <a href=\"http://themeisle.com/plugins/llorix-one-plus/\">프로 버전</a>을 알아보세요!"
+
+#. Template Name of the plugin/theme
+msgid "Eventbrite Events"
+msgstr "Eventbrite Events"
+
+#: inc/customizer.php:298 inc/customizer.php:428
+msgid "Overlay color and transparency"
+msgstr "오버레이 색상 및 투명도"
+
+#: inc/customizer.php:209
+msgid "Text before the phone number"
+msgstr "전화번호 앞의 텍스트"
+
+#: inc/customizer.php:86
+msgid "Change the template to Full width for all the pages?"
+msgstr "모든 페이지의 템플릿을 전체 폭으로 변경?"
+
+#: header.php:96 inc/customizer.php:205
+msgid "Call us: "
+msgstr "연락 주세요:"
+
+#: inc/customizer.php:437
+msgid "Logos Bar section"
+msgstr "로고바 영역"
+
+#: inc/customizer.php:382
+msgid "Big title section background"
+msgstr "큰 제목 영역 배경"
+
+#: inc/customizer.php:314
+msgid "Big title section"
+msgstr "큰 제목 영역"
+
+#: inc/customizer.php:307
+msgid "Frontpage sections"
+msgstr "전면 페이지 영역"
+
+#: inc/customizer.php:179
+msgid "Header"
+msgstr "헤더"
+
+#: inc/customizer.php:139
+msgid "Llorix One Lite theme general appearance options"
+msgstr "Llorix One Lite 테마 일반 외모 옵션"
+
+#: inc/customize-pro/class-customizer-theme-info-root.php:83
+msgid "doc"
+msgstr "도움말 문서"
+
+#: inc/customize-pro/class-customizer-theme-info-root.php:83
+msgid "Need further informations? Check this"
+msgstr "추가 정보를 원하시나요? 다음을 알아보세요"
+
+#: inc/customize-pro/class-customizer-theme-info-root.php:83
+msgid "To customize the Frontpage sections please create a page and select the template \"Frontpage\" for that page. After that, go to Appearance -> Customize -> Static Front Page and under \"Static Front Page\" select \"A static page\". Finally, for \"Front page\" choose the page you previously created."
+msgstr "전면 페이지 영역을 사용자 정의하려면 페이지를 만들고 템플릿으로 \"전면 페이지\"를 선택하세요. 그런 다음 외모 -> 사용자 정의하기 -> 정적인 전면 페이지로 가서 \"정적인 전면 페이지\"에서 \"정적인 페이지\"를 선택하세요. 마지막으로 \"전면 페이지\"에 대해서 이전에 만든 페이지를 선택하세요."
+
+#: inc/admin/welcome-screen/sections/github.php:32
+msgid "Get involved at WordPress.org."
+msgstr "WordPress.org에서 참여하세요."
+
+#: inc/admin/welcome-screen/sections/github.php:30
+msgid "Are you a polyglot? Want to translate Llorix One Lite into your own language?"
+msgstr "번역가이신가요? Llorix One Lite를 자신의 언어로 번역하길 원하시나요?"
+
+#: inc/admin/welcome-screen/sections/github.php:17
+msgid "Found a bug? Want to contribute with a fix or create a new feature?"
+msgstr "버그를 발견하셨나요? 수정이나 새 기능 요청으로 기여하길 원하시나요?"
+
+#: inc/admin/welcome-screen/sections/github.php:11
+msgid "How can I contribute?"
+msgstr "기여하는 방법?"
+
+#: inc/customizer.php:734
+msgid " but you can use any plugin you like."
+msgstr " 하지만 원하시는 것을 사용할 수도 있습니다."
+
+#: inc/customizer.php:734
+msgid "Create a form, copy the shortcode generated and paste it here. We recommend "
+msgstr "폼을 만들고 생성된 단축코드를 복사해 여기에 붙여넣으세요. 추천합니다 "
+
+#: inc/customizer.php:715 inc/customizer.php:746
+msgid " plugin then use it to create a map and paste here the shortcode generated"
+msgstr " 그런 다음 맵을 만들고 생성된 단축코드를 여기에 붙여넣으세요"
+
+#: inc/customizer.php:715 inc/customizer.php:746
+msgid "Intergeo Maps"
+msgstr "Intergeo Maps"
+
+#: inc/customizer.php:715 inc/customizer.php:746
+msgid "To use this section please install "
+msgstr "이 영역을 사용하려면 다음 플러그인을 설치하세요 "
+
+#: inc/admin/welcome-screen/welcome-screen.php:175 inc/customizer.php:821
+msgid "Support"
+msgstr "지원"
+
+#: inc/admin/welcome-screen/sections/support.php:22
+msgid "Support forum"
+msgstr "지원 포럼"
+
+#: inc/admin/welcome-screen/sections/support.php:19
+msgid "Or would you like to contact us? Write on our support forum."
+msgstr "또는 저희에게 연락주세요. 저희의 포럼에 글을 작성하세요."
+
+#: inc/admin/welcome-screen/sections/support.php:16
+msgid "Llorix One Lite documentation"
+msgstr "Llorix One Lite 도움말 문서"
+
+#: inc/admin/welcome-screen/sections/support.php:13
+msgid "Please check our full documentation for detailed information on how to use Llorix One."
+msgstr "Llorix One의 사용법에 대한 상세한 정보에 대해서는 전체 도움말 문서를 알아보세요."
+
+#: inc/admin/welcome-screen/sections/support.php:11
+msgid "Need more details?"
+msgstr "더 많은 상세를 원하시나요?"
+
+#: inc/admin/welcome-screen/sections/github.php:42
+msgid "Are you enjoying Llorix One Lite?"
+msgstr "Llorix One Lite를 좋아하시나요?"
+
+#: inc/admin/welcome-screen/sections/github.php:35
+msgid "Translate Llorix One Lite"
+msgstr "Llorix One Lite 번역하기"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:177
+msgid "Install Page Builder by SiteOrigin"
+msgstr "Page Builder by SiteOrigin 설치하기"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:168
+msgid "Build responsive page layouts using the widgets you know and love using this simple drag and drop page builder."
+msgstr "이미 알고있거나 좋아하는 위젯을 이용해 간단한 드래그 앤 드롭 페이지 빌더로 반응형 페이지 레이아웃을 만드세요."
+
+#: inc/admin/welcome-screen/sections/getting-started.php:167
+msgid "Page Builder by SiteOrigin"
+msgstr "Page Builder by SiteOrigin"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:149
+msgid "Download Easy Content Types"
+msgstr "Easy Content Types 내려받기"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:140
+msgid "Custom Post Types, Taxonomies and Metaboxes in Minutes"
+msgstr "사용자 정의 글 타입, 택소노미, 메타박스를 몇 분 만에 만드세요"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:139
+msgid "Easy Content Types"
+msgstr "Easy Content Types"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:56
+msgid "Build a landing page with a drag-and-drop content builder"
+msgstr "드래그 앤 드롭 콘텐츠 빌더로 랜딩 페이지 만들기"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:57
+msgid "In the below documentation you will find an easy way to build a great looking landing page using a drag-and-drop content builder plugin."
+msgstr "아래의 문서에서 드래그 앤 드롭 콘텐츠 페이지 빌더 플러그인을 이용해 훌륭한 랜딩 페이지 만드는 방법을 찾을 수 있습니다."
+
+#: inc/customizer.php:683
+msgid "Disable the Contact info section?"
+msgstr "컨택트 정보 영역 비활성화?"
+
+#: inc/customizer.php:669
+msgid "Contact info section"
+msgstr "컨택트 정보 영역"
+
+#: inc/customizer.php:627
+msgid "Disable the Latest news section?"
+msgstr "최근 뉴스 영역 비활성화?"
+
+#: inc/customizer.php:557
+msgid "Disable the Ribbon section?"
+msgstr "리본 영역 비활성화?"
+
+#: inc/customizer.php:497
+msgid "Disable the About section?"
+msgstr "소개 영역 비활성화?"
+
+#: inc/customizer.php:198
+msgid "Disable the Very top header?"
+msgstr "최상단 헤더 비활성화?"
+
+#: inc/customizer.php:451
+msgid "Disable the Logos bar sections?"
+msgstr "로고바 영역 비활성화?"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:113
+msgid "Install Llorix One Companion"
+msgstr "Llorix One Companion 설치하기"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:104
+msgid "The Llorix One Companion plugin is a simple, easy and in the same time quite powerful plugins that adds options for Our Services, Our Team and Testimonials sections on frontpage."
+msgstr "Llorix One Companion은 간단하고 쉬우며 아주 강력한 플러그인으로 전면 페이지에서 회사의 서비스, 팀, 추천사 영역에 대한 옵션을 추가할 수 있습니다."
+
+#: inc/admin/welcome-screen/sections/getting-started.php:103
+msgid "Llorix One Companion"
+msgstr "Llorix One Companion"
+
+#. Template Name of the plugin/theme
+msgid "Full Width"
+msgstr "전체 폭"
+
+#. Template Name of the plugin/theme
+msgid "Contact"
+msgstr "컨택트"
+
+#: sidebar.php:13
+msgid "Main sidebar"
+msgstr "메인 사이드바"
+
+#: sections/llorix_one_lite_ribbon_section.php:51
+#: sections/llorix_one_lite_ribbon_section.php:53
+#: sections/llorix_one_lite_ribbon_section.php:98
+#: sections/llorix_one_lite_ribbon_section.php:100
+msgid "Ribbon button label:"
+msgstr "리본 버튼 레이블:"
+
+#: sections/llorix_one_lite_ribbon_section.php:27
+#: sections/llorix_one_lite_ribbon_section.php:29
+#: sections/llorix_one_lite_ribbon_section.php:73
+#: sections/llorix_one_lite_ribbon_section.php:75
+msgid "Ribbon"
+msgstr "리본"
+
+#: sections/llorix_one_lite_our_story_section.php:21
+#: sections/llorix_one_lite_our_story_section.php:25
+msgid "About"
+msgstr "소개"
+
+#: sections/llorix_one_lite_logos_section.php:47
+#: sections/llorix_one_lite_logos_section.php:59
+msgid "Affiliates Logos"
+msgstr "제휴 로고"
+
+#: sections/llorix_one_lite_latest_news_section.php:108
+#: sections/llorix_one_lite_latest_news_section.php:221
+msgid "Read more %s"
+msgstr "더 보기 %s"
+
+#: sections/llorix_one_lite_latest_news_section.php:98
+#: sections/llorix_one_lite_latest_news_section.php:211
+msgid "by"
+msgstr "글쓴이"
+
+#: sections/llorix_one_lite_latest_news_section.php:70
+#: sections/llorix_one_lite_latest_news_section.php:183
+msgid "Latest News: %s"
+msgstr "최근 뉴스: %s"
+
+#: sections/llorix_one_lite_latest_news_section.php:47
+#: sections/llorix_one_lite_latest_news_section.php:160
+msgid "Post slider navigation: Up"
+msgstr "글 슬라이더 내비게이션: 위로"
+
+#: sections/llorix_one_lite_latest_news_section.php:46
+#: sections/llorix_one_lite_latest_news_section.php:159
+msgid "Post slider navigation: Down"
+msgstr "글 슬라이더 내비게이션: 아래로"
+
+#: sections/llorix_one_lite_latest_news_section.php:28
+#: sections/llorix_one_lite_latest_news_section.php:143
+msgid "Latest blog posts"
+msgstr "최근 블로그 글"
+
+#: sections/llorix_one_lite_header_section.php:94
+#: sections/llorix_one_lite_header_section.php:97
+#: sections/llorix_one_lite_header_section.php:99
+msgid "Header button label:"
+msgstr "헤더 버튼 레이블:"
+
+#: sections/llorix_one_lite_contact_info_section.php:41
+#: sections/llorix_one_lite_contact_info_section.php:50
+msgid "Contact Info"
+msgstr "연락 정보"
+
+#: search.php:25
+msgid "Search Results for: %s"
+msgstr "결색 결과: %s"
+
+#: inc/template-tags.php:94
+msgid "% Comments"
+msgstr "% 댓글"
+
+#: inc/template-tags.php:94
+msgid "1 Comment"
+msgstr "1 댓글"
+
+#: inc/template-tags.php:94
+msgid "Leave a comment"
+msgstr "댓글 남기기"
+
+#: inc/template-tags.php:88
+msgid "Tagged %1$s"
+msgstr "태그 %1$s"
+
+#: inc/template-tags.php:82
+msgid "Posted in %1$s"
+msgstr "카테고리 %1$s"
+
+#: inc/template-tags.php:63
+msgctxt "post author"
+msgid "by %s"
+msgstr "글쓴이 %s"
+
+#: inc/template-tags.php:58
+msgctxt "post date"
+msgid "Posted on %s"
+msgstr "작성일자 %s"
+
+#: inc/template-tags.php:30
+msgid "Newer posts"
+msgstr "새 글"
+
+#: inc/template-tags.php:26
+msgid "Older posts"
+msgstr "이전 글"
+
+#: inc/extras.php:52
+msgid "Page %s"
+msgstr "페이지 %s"
+
+#: inc/customizer.php:75
+msgid "If this box is checked, the preloader will be disabled from homepage."
+msgstr "이 박스에 체크하면 프리로더는 홈페이지에서 비활성화 됩니다."
+
+#: inc/customizer.php:74
+msgid "Disable preloader?"
+msgstr "프리로더 비활성화?"
+
+#: inc/customizer.php:28
+msgid "Llorix One Lite theme general options"
+msgstr "Llorix One Lite 테마 일반 옵션"
+
+#: inc/customizer.php:26
+msgid "Advanced options"
+msgstr "고급 옵션"
+
+#: inc/customizer.php:772
+msgid "Copyright"
+msgstr "저작권"
+
+#: inc/customizer.php:756
+msgid "The main content of this section is customizable in: Customize -> Widgets -> Footer area. "
+msgstr "이 영역의 메인 콘텐츠는 다음에서 사용자 정의할 수 있습니다: 사용자 정의하기 -> 위젯 -> 푸터 영역. "
+
+#: inc/customizer.php:754
+msgid "Footer options"
+msgstr "푸터 옵션"
+
+#: inc/customizer.php:733
+msgid "Contact form shortcode"
+msgstr "컨택트 폼 단축코드"
+
+#: inc/customizer.php:723
+msgid "Contact page"
+msgstr "컨택트 페이지"
+
+#: inc/customizer.php:714 inc/customizer.php:745
+msgid "Map shortcode"
+msgstr "지도 단축코드"
+
+#: inc/customizer.php:700
+msgid "Add new contact field"
+msgstr "새 컨택트 필드 추가"
+
+#: inc/customizer.php:634 sections/llorix_one_lite_latest_news_section.php:25
+#: sections/llorix_one_lite_latest_news_section.php:140
+msgid "Latest news"
+msgstr "최근 뉴스"
+
+#: inc/customizer.php:613
+msgid "Latest news section"
+msgstr "최근 뉴스 영역"
+
+#: inc/customizer.php:569
+msgid "Ribbon Background"
+msgstr "리본 배경"
+
+#: inc/customizer.php:543
+msgid "Ribbon section"
+msgstr "리본 영역"
+
+#: inc/customizer.php:516 sections/llorix_one_lite_our_story_section.php:16
+msgid "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+msgstr "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+
+#: inc/customizer.php:504 sections/llorix_one_lite_our_story_section.php:15
+msgid "Our Story"
+msgstr "우리의 이야기"
+
+#: inc/customizer.php:483
+msgid "About section"
+msgstr "소개 영역"
+
+#: inc/customizer.php:251
+msgid "Blog header"
+msgstr "블로그 헤더"
+
+#: inc/customizer.php:221
+msgid "Phone number"
+msgstr "전화번호"
+
+#: header.php:95 inc/customizer.php:216
+msgid "(+9) 0999.500.400"
+msgstr "(+9) 0999.500.400"
+
+#: inc/customizer.php:184
+msgid "Very top header"
+msgstr "최상단 헤더"
+
+#: inc/customizer.php:417
+msgid "Second layer"
+msgstr "두 번째 레이어"
+
+#: inc/customizer.php:405
+msgid "First layer"
+msgstr "첫 번째 레이어"
+
+#: inc/customizer.php:393
+msgid "If this box is checked, the parallax effect is enabled."
+msgstr "이 박스에 체크하면 패럴랙스 효과가 활성화 됩니다."
+
+#: inc/customizer.php:392
+msgid "Parallax effect"
+msgstr "패럴랙스 효과"
+
+#: inc/customizer.php:239 inc/customizer.php:471 inc/customizer.php:790
+msgid "Add new social icon"
+msgstr "새 소셜 아이콘 추가"
+
+#: inc/customizer.php:374 inc/customizer.php:605
+msgid "Button link"
+msgstr "버튼 링크"
+
+#: inc/customizer.php:369 inc/customizer.php:600
+msgid "#"
+msgstr "#"
+
+#: inc/customizer.php:363 inc/customizer.php:593
+msgid "Button label"
+msgstr "버튼 레이블"
+
+#: inc/customizer.php:358 inc/customizer.php:588
+#: sections/llorix_one_lite_header_section.php:17
+#: sections/llorix_one_lite_ribbon_section.php:16
+msgid "GET STARTED"
+msgstr "시작하기"
+
+#: inc/customizer.php:346 inc/customizer.php:576
+#: sections/llorix_one_lite_header_section.php:16
+#: sections/llorix_one_lite_ribbon_section.php:15
+msgid "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+msgstr "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+
+#: inc/customizer.php:339 inc/customizer.php:509 inc/customizer.php:581
+#: inc/customizer.php:639
+msgid "Main title"
+msgstr "메인 타이틀"
+
+#: inc/customizer.php:334 sections/llorix_one_lite_header_section.php:15
+msgid "Simple, Reliable and Awesome."
+msgstr "간단하고 믿음직하며 굉장합니다."
+
+#: inc/customizer.php:327
+msgid "Header Logo"
+msgstr "헤더 로고"
+
+#: inc/customizer.php:523
+msgid "Content"
+msgstr "콘텐츠"
+
+#: inc/customizer.php:162
+msgid "If this box is checked, the header will toggle on frontpage."
+msgstr "이 박스에 체크하면 전면 페이지에서 헤더를 토글할 수 있습니다."
+
+#: inc/customizer.php:161
+msgid "Header visibility"
+msgstr "헤더 가시성"
+
+#: inc/customizer.php:149 inc/extras.php:242 inc/extras.php:246
+msgid "Logo"
+msgstr "로고"
+
+#: inc/customizer.php:137
+msgid "General options"
+msgstr "일반 옵션"
+
+#: inc/customizer.php:128
+msgid "Title color"
+msgstr "타이틀 색상"
+
+#: inc/customizer.php:111
+msgid "Text color"
+msgstr "텍스트 색상"
+
+#: inc/customizer.php:97
+msgid "Appearance"
+msgstr "외모"
+
+#: inc/customizer.php:725
+msgid "To customize the Contact Page you need to first select the template \"Contact page\" for the page you want to use for this purpose. Then open that page in the browser and press \"Customize\" in the top bar."
+msgstr "컨택트 페이지를 사용자 정의하려면 우선 원하는 페이지에 대해서 \"컨택트 페이지\" 템플릿을 선택합니다. 그런 다음 이 페이지를 브라우저에 열고 탑바에서 \"사용자 정의하기\"를 클릭하세요."
+
+#: inc/class/llorix-one-lite-general-control.php:157
+msgid "Add new field"
+msgstr "새 필드 추가"
+
+#: inc/class/llorix-one-lite-general-control.php:340
+#: inc/class/llorix-one-lite-general-control.php:403
+msgid "Delete field"
+msgstr "필드 삭제"
+
+#: inc/class/llorix-one-lite-general-control.php:335
+#: inc/class/llorix-one-lite-general-control.php:396
+msgid "Shortcode"
+msgstr "단축 코드"
+
+#: inc/class/llorix-one-lite-general-control.php:327
+#: inc/class/llorix-one-lite-general-control.php:389
+msgid "Link"
+msgstr "링크"
+
+#: inc/class/llorix-one-lite-general-control.php:319
+#: inc/class/llorix-one-lite-general-control.php:381
+msgid "Text"
+msgstr "텍스트"
+
+#: inc/class/llorix-one-lite-general-control.php:312
+#: inc/class/llorix-one-lite-general-control.php:374 inc/customizer.php:274
+#: inc/customizer.php:351
+msgid "Subtitle"
+msgstr "서브타이틀"
+
+#: inc/class/llorix-one-lite-general-control.php:305
+#: inc/class/llorix-one-lite-general-control.php:367 inc/customizer.php:263
+msgid "Title"
+msgstr "타이틀"
+
+#: inc/class/llorix-one-lite-general-control.php:206
+msgid "Upload Image"
+msgstr "이미지 업로드"
+
+#: inc/class/llorix-one-lite-general-control.php:224
+msgid "None"
+msgstr "없음"
+
+#: inc/class/llorix-one-lite-general-control.php:203
+#: inc/class/llorix-one-lite-general-control.php:223 inc/customizer.php:287
+#: inc/customizer.php:535
+msgid "Image"
+msgstr "이미지"
+
+#: inc/class/llorix-one-lite-general-control.php:183
+#: inc/class/llorix-one-lite-general-control.php:222
+msgid "Icon"
+msgstr "아이콘"
+
+#: inc/class/llorix-one-lite-general-control.php:219
+msgid "Image type"
+msgstr "이미지 타입"
+
+#: inc/class/llorix-one-lite-general-control.php:259
+#: inc/class/llorix-one-lite-general-control.php:350
+msgid "Llorix One"
+msgstr "Llorix One"
+
+#: inc/admin/welcome-screen/welcome-screen.php:176
+msgid "Change log"
+msgstr "변경 로그"
+
+#: inc/admin/welcome-screen/welcome-screen.php:174
+msgid "Contribute"
+msgstr "기여하기"
+
+#: inc/admin/welcome-screen/welcome-screen.php:172
+msgid "Actions recommended"
+msgstr "권장하는 작업"
+
+#: inc/admin/welcome-screen/welcome-screen.php:94
+msgid "Hooray! There are no required actions for you right now."
+msgstr "현재는 필요한 작업은 없습니다."
+
+#: inc/admin/welcome-screen/welcome-screen.php:61
+msgid "Get started with Llorix One Lite"
+msgstr "Llorix One Lite로 시작하기"
+
+#: inc/admin/welcome-screen/sections/github.php:22
+msgid "Llorix One Lite on GitHub"
+msgstr "깃허브의 Llorix One Lite"
+
+#: inc/admin/welcome-screen/sections/github.php:19
+msgid "GitHub is the place to go!"
+msgstr "깃허브는 방문할 곳!"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:131
+msgid "Install Pirate Forms"
+msgstr "Pirate Forms 설치"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:122
+msgid "Makes your contact page more engaging by creating a good-looking contact form on your website. The interaction with your visitors was never easier."
+msgstr "웹사이트에서 모양 좋은 컨택트 폼을 만들면 컨택트 페이지에 더 참여할 수 있게 할 수 있습니다. 방문자와의 상호작용은 더이상 쉬울 수 없습니다."
+
+#: inc/admin/welcome-screen/sections/getting-started.php:121
+#: inc/customizer.php:734
+msgid "Pirate Forms"
+msgstr "Pirate Forms"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:195
+msgid "Install Intergeo Maps"
+msgstr "Intergeo Maps 설치"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:108
+#: inc/admin/welcome-screen/sections/getting-started.php:126
+#: inc/admin/welcome-screen/sections/getting-started.php:144
+#: inc/admin/welcome-screen/sections/getting-started.php:172
+#: inc/admin/welcome-screen/sections/getting-started.php:190
+#: inc/admin/welcome-screen/sections/getting-started.php:208
+#: inc/admin/welcome-screen/sections/getting-started.php:226
+msgid "Already activated"
+msgstr "이미 활성화 됨"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:186
+msgid "The Intergeo Google Maps plugin is a simple, easy and in the same time quite powerful tool for handling Google Maps in your website. The plugin allows users to create new maps by using powerful UI builder."
+msgstr "Intergeo Google Maps 플러그인은 웹사이트에서 구글 지도를 다루는데 간단하고 쉬우며 동시에 아주 강력합니다. 플러그인은 강력한 UI 빌더를 이용해 새 지도를 만들 수 있습니다."
+
+#: inc/admin/welcome-screen/sections/getting-started.php:185
+msgid "Intergeo Maps - Google Maps Plugin"
+msgstr "Intergeo Maps - Google Maps Plugin"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:97
+msgid "Recommended plugins"
+msgstr "권장 플러그인"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:90
+msgid "Read full documentation"
+msgstr "전체 문서 보기"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:89
+msgid "Need more details? Please check our full documentation for detailed information on how to use Llorix One."
+msgstr "상세 정보가 필요하신가요? Llorix One 사용법에 대한 상세한 정보가 있는 전체 문서를 알아보세요."
+
+#: inc/admin/welcome-screen/sections/getting-started.php:88
+msgid "View full documentation"
+msgstr "전체 문서 보기"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:77
+msgid "To better suit your site's needs, you can change each section's anchor to what you want. The entire process is described below."
+msgstr "사이트의 요구에 대응하려면 각 영역의 링크를 원하는 것으로 변경할 수 있습니다. 전체 과정은 아래에서 설명됩니다."
+
+#: inc/admin/welcome-screen/sections/getting-started.php:76
+msgid "Change anchors"
+msgstr "링크 변경하기"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:71
+msgid "Linking the frontpage sections with the top menu is very simple, all you need to do is assign section anchors to the menu. In the below documentation you will find a nice tutorial about this."
+msgstr "전면 페이지 영역을 탑메뉴로 연결하는 것은 간단합니다. 메뉴에 영역을 배정하기만 하면 됩니다. 아래의 문서에서 좋은 강좌를 찾을 수 있습니다."
+
+#: inc/admin/welcome-screen/sections/getting-started.php:70
+msgid "Link Menu to sections"
+msgstr "영역에 메뉴로 연결하기"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:65
+msgid "If you find yourself in the situation where everything on your site is running very slow, you might consider having a look at the below documentation where you will find the most common issues causing this and possible solutions for each of the issues."
+msgstr "사이트가 아주 느려지는 상태에 이르면 아래의 문서를 참고해야 할지도 모릅니다. 이곳에서 이런 현상을 일으키는 가장 공통적인 문제를 찾을 수 있으며 각 문제에 대해 가능한 해결책도 찾을 수 있습니다."
+
+#: inc/admin/welcome-screen/sections/getting-started.php:64
+msgid "Speed up your site"
+msgstr "사이트 속도 높이기"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:51
+msgid "Although English is the most used language on the internet, you should consider all your web users as well. Find out what it takes to make your website ready for foreign markets from this document."
+msgstr "인터넷에서 영어는 가장 유용한 언어이지만 동시에 모든 웹 사용자를 고려해야 합니다. 이 문서를 통해 해외 시장을 위한 웹사이트를 만드는데 무엇이 필요한지 알아보세요."
+
+#: inc/admin/welcome-screen/sections/getting-started.php:50
+msgid "How to Internationalize Your Website"
+msgstr "자신의 웹사이트를 국제화 하는 방법"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:46
+#: inc/admin/welcome-screen/sections/getting-started.php:52
+#: inc/admin/welcome-screen/sections/getting-started.php:58
+#: inc/admin/welcome-screen/sections/getting-started.php:66
+#: inc/admin/welcome-screen/sections/getting-started.php:72
+#: inc/admin/welcome-screen/sections/getting-started.php:78
+msgid "View how to do this"
+msgstr "하는 방법 보기"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:45
+msgid "If you want to make changes to the theme's files, those changes are likely to be overwritten when you next update the theme. In order to prevent that from happening, you need to create a child theme. For this, please follow the documentation below."
+msgstr "테마의 파일을 변경하려면 테마의 다음 업데이트 시 덮어쓰기가 될 수 있습니다. 이것을 방지하려면 자식 테마를 만들어야 합니다. 아래의 문서를 따라서 해주세요."
+
+#: inc/admin/welcome-screen/sections/getting-started.php:44
+msgid "Create a child theme"
+msgstr "자식 테마 만들기"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:38
+msgid "FAQ"
+msgstr "자주 묻는 질문"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:30
+msgid "Go to Customizer"
+msgstr "사용자 정의로 가기"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:29
+msgid "Using the WordPress Customizer you can easily customize every aspect of the theme."
+msgstr "워드프레스 사용자 정의하기를 이용해 테마의 모양을 모두 쉽게 사용자 정의할 수 있습니다."
+
+#: inc/admin/welcome-screen/sections/getting-started.php:28
+msgid "Customize everything in a single place."
+msgstr "한곳에서 모든 것을 사용자 정의하기"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:26
+#: inc/admin/welcome-screen/welcome-screen.php:171
+msgid "Getting started"
+msgstr "시작하기"
+
+#: inc/admin/welcome-screen/sections/getting-started.php:18
+msgid "We want to make sure you have the best experience using Llorix One Lite and that is why we gathered here all the necessary informations for you. We hope you will enjoy using Llorix One Lite, as much as we enjoy creating great products."
+msgstr "Llorix One Lite를 사용해 최선의 경험을 할 수 있기를 바라며 이것은 필요한 모든 정보를 이곳에 모아놓은 이유입니다. 훌륭한 상품을 만들 때의 기쁨만큼 Llorix One Lite를 즐겁게 사용하기를 기원합니다. "
+
+#: inc/admin/welcome-screen/sections/getting-started.php:17
+msgid "Our most elegant and professional one-page theme, which turns your scrolling into a smooth and pleasant experience."
+msgstr "가장 우아하고 전문적인 원 페이지 테마는 스크롤을 부드럽고 즐거운 경험을 하게 해줄 것입니다."
+
+#: inc/admin/welcome-screen/sections/getting-started.php:15
+msgid "Welcome to Llorix One Lite!"
+msgstr "Llorix One Lite에 오신 것을 환영합니다!"
+
+#: inc/admin/welcome-screen/sections/actions-required.php:62
+msgid "Hooray! There are no recommended actions for you right now."
+msgstr "현재는 권장하는 작업이 없습니다."
+
+#: inc/admin/welcome-screen/sections/actions-required.php:11
+msgid "Keep up with Llorix One Lite's recommended actions"
+msgstr "Llorix One Lite의 권장하는 작업 따라하기"
+
+#: header.php:201
+msgid "Toggle navigation"
+msgstr "토글 내비게이션"
+
+#: header.php:200
+msgid "Toggle Menu"
+msgstr "토글 메뉴"
+
+#: header.php:147 header.php:151
+msgid "Call us:"
+msgstr "전화주세요:"
+
+#: header.php:20
+msgid "Skip to content"
+msgstr "콘텐츠로 바로가기"
+
+#: functions.php:604
+msgid "Read more about "
+msgstr "더 보기"
+
+#: functions.php:527
+msgid "%1$s at %2$s"
+msgstr "%1$s %2$s"
+
+#: functions.php:526
+msgctxt "comment time format"
+msgid "l, F j, Y, g:i a"
+msgstr "Y F j l, g:i a"
+
+#: functions.php:521
+msgid "Your comment is awaiting moderation."
+msgstr "입력한 댓글이 검토를 기다리고 있습니다."
+
+#: functions.php:518
+msgid "<span itemprop=\"name\">%s </span><span class=\"says\">says:</span>"
+msgstr "<span itemprop=\"name\">%s </span><span class=\"says\">:</span>"
+
+#: functions.php:508 functions.php:530
+msgid "(Edit)"
+msgstr "(편집)"
+
+#: functions.php:508
+msgid "Pingback:"
+msgstr "핑백:"
+
+#: functions.php:388
+msgid "All plugins installed and activated successfully. %s"
+msgstr "모든 플러그인이 성공적으로 설치되고 활성화 됐습니다. %s"
+
+#: functions.php:383
+msgid "Sorry, but you do not have the correct permissions to update the %s plugin. Contact the administrator of this site for help on getting the plugin updated."
+msgid_plural "Sorry, but you do not have the correct permissions to update the %s plugins. Contact the administrator of this site for help on getting the plugins updated."
+msgstr[0] "죄송합니다. %s 플러그인을 업데이트 할 권한이 없습니다. 플러그인 업데이트에 도움이 필요하면 이 사이트의 관리자에 연락하세요."
+
+#: functions.php:381
+msgid "Sorry, but you do not have the correct permissions to activate the %s plugin. Contact the administrator of this site for help on getting the plugin activated."
+msgid_plural "Sorry, but you do not have the correct permissions to activate the %s plugins. Contact the administrator of this site for help on getting the plugins activated."
+msgstr[0] "죄송합니다. %s 플러그인을 활성화 할 권한이 없습니다. 플러그인 활성화에 도움이 필요하면 이 사이트의 관리자에 연락하세요."
+
+#: functions.php:378
+msgid "Sorry, but you do not have the correct permissions to install the %s plugin. Contact the administrator of this site for help on getting the plugin installed."
+msgid_plural "Sorry, but you do not have the correct permissions to install the %s plugins. Contact the administrator of this site for help on getting the plugins installed."
+msgstr[0] "죄송합니다. %s 플러그인을 설치할 권한이 없습니다. 플러그인 설치에 도움이 필요하면 이 사이트의 관리자에 연락하세요."
+
+#: functions.php:248
+msgid "collapse child menu"
+msgstr "하위 메뉴 축소"
+
+#: functions.php:247
+msgid "expand child menu"
+msgstr "하위 메뉴 확장"
+
+#: functions.php:203
+msgid "Footer area %d"
+msgstr "푸터 영역 %d"
+
+#: functions.php:191
+msgid "Sidebar"
+msgstr "사이드바"
+
+#: functions.php:145
+msgid "In order to use map section, you need to install Intergeo Maps plugin then use it to create a map and paste the generated shortcode in Customize -> Contact section -> Map shortcode"
+msgstr "지도 영역을 사용하려면 Intergeo Maps 플러그인을 설치해야 합니다. 그런 다음 지도를 만들고 생성된 단축코드를 사용자 정의하기 -> 컨택트 영역 -> 지도 단축코드에 붙여넣으세요"
+
+#: functions.php:144
+msgid "Install Intergeo Maps - Google Maps Plugin"
+msgstr "Intergeo Maps 설치하기 - Google Maps Plugin"
+
+#: functions.php:139
+msgid "In order to have the one page look for your website, please go to Customize -> Static Front Page and switch \"Front page displays\" to \"A static page\". Then select the template \"Frontpage\" for that selected page."
+msgstr "원 페이지를 전면 페이지로 만들려면 사용자 정의하기 -> 정적인 전면 페이지로 가서 \"전면 페이지 표시\"를 \"정적인 페이지\"로 전환하세요. 그런 다음 \"전면 페이지\"에서 만든 페이지를 선택하세요."
+
+#: functions.php:138
+msgid "Switch \"Front page displays\" to \"A static page\" "
+msgstr "\"전면 페이지 표시\"를 \"정적인 페이지\"로 전환하기"
+
+#: functions.php:47
+msgid "Footer Menu"
+msgstr "푸터 메뉴"
+
+#: functions.php:46 header.php:255
+msgid "Primary Menu"
+msgstr "주 메뉴"
+
+#: footer.php:109
+msgid "WordPress"
+msgstr "워드프레스"
+
+#: footer.php:109
+msgid "powered by"
+msgstr "powered by"
+
+#: footer.php:73 footer.php:74
+msgid "Secondary Menu"
+msgstr "부 메뉴"
+
+#: footer.php:47
+msgid "Widgets Area 4"
+msgstr "위젯 영역 4"
+
+#: footer.php:38
+msgid "Widgets Area 3"
+msgstr "위젯 영역 3"
+
+#: footer.php:29
+msgid "Widgets Area 2"
+msgstr "위젯 영역 2"
+
+#: footer.php:19
+msgid "Widgets Area 1"
+msgstr "위젯 영역 1"
+
+#: content.php:52
+msgid "Posted in"
+msgstr "카테고리"
+
+#: sections/llorix_one_lite_latest_news_section.php:71
+#: sections/llorix_one_lite_latest_news_section.php:95
+#: sections/llorix_one_lite_latest_news_section.php:184
+#: sections/llorix_one_lite_latest_news_section.php:208
+msgctxt "post time format"
+msgid "l, F j, Y, g:i a"
+msgstr "Y F j l, g:i a"
+
+#: content.php:9
+msgid "Blog post: %s"
+msgstr "블로그 글: %s"
+
+#: content-search.php:84 content.php:79
+msgid "about "
+msgstr "소개 "
+
+#: content-search.php:84 content.php:79
+msgid "Read more %s ..."
+msgstr "더 보기 %s ..."
+
+#: content-search.php:72 content-single.php:30 content.php:67
+msgid "% comments"
+msgstr "댓글 %개"
+
+#: content-search.php:72 content-single.php:30 content.php:67
+msgid "One comment"
+msgstr "댓글 하나"
+
+#: content-search.php:72 content-single.php:30 content.php:67
+msgid "No comments"
+msgstr "댓글 없음"
+
+#: content-search.php:58
+msgid "Posted in "
+msgstr "카테고리: "
+
+#. translators: used between list items, there is a space after the comma
+#: content-search.php:52 content.php:55 inc/template-tags.php:80
+#: inc/template-tags.php:86
+msgid ", "
+msgstr ", "
+
+#: content-page.php:25 content-search.php:89 content-single-download.php:29
+#: content-single.php:39 content.php:84
+msgid "Pages:"
+msgstr "페이지:"
+
+#: content-none.php:28
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "찾고 있는 것을 찾을 수 없는 것 같습니다. 검색이 도움이 될 수도 있습니다."
+
+#: content-none.php:23
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "죄송하지만 검색어와 일치하는 것이 없습니다. 다른 검색어로 다시 해주세요."
+
+#: content-none.php:19
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "첫 번째 글을 발행할 준비가 됐나요? <a href=\"%1$s\">여기서 시작하세요</a>."
+
+#: content-none.php:13
+msgid "Nothing Found"
+msgstr "찾을 수 없습니다"
+
+#: content-contact.php:36 content-page.php:32
+#: eventbrite/eventbrite-index.php:56 eventbrite/eventbrite-single.php:46
+#: inc/template-tags.php:98
+msgid "Edit"
+msgstr "편집"
+
+#: comments.php:76
+msgid "Comments are closed."
+msgstr "댓글이 닫혀있습니다."
+
+#: comments.php:41 comments.php:64
+msgid "Newer Comments"
+msgstr "다음 댓글"
+
+#: comments.php:40 comments.php:63
+msgid "Older Comments"
+msgstr "이전 댓글"
+
+#: comments.php:37 comments.php:60
+msgid "Comment navigation"
+msgstr "댓글 내비게이션"
+
+#: class-tgm-plugin-activation.php:3378
+msgid "Installing Plugin %1$s (%2$d/%3$d)"
+msgstr "플러그인 %1$s 설치하기 (%2$d/%3$d)"
+
+#: class-tgm-plugin-activation.php:3377
+msgid "All installations have been completed."
+msgstr "설치가 모두 완료되었습니다."
+
+#: class-tgm-plugin-activation.php:3376
+msgid "%1$s installed successfully."
+msgstr "$1$s 설치 성공."
+
+#: class-tgm-plugin-activation.php:3375
+msgid "The installation process is starting. This process may take a while on some hosts, so please be patient."
+msgstr "설치 과정이 시작됐습니다. 이 과정은 호스팅 환경에 따라 시간이 걸릴 수 있으니 잠시만 기다려 주세요."
+
+#: class-tgm-plugin-activation.php:3372
+msgid "Installing and Activating Plugin %1$s (%2$d/%3$d)"
+msgstr "플러그인 %1$s 설치 및 활성화 중 (%2$d/%3$d)"
+
+#: class-tgm-plugin-activation.php:3371
+msgid "All installations and activations have been completed."
+msgstr "설치와 활성화가 모두 완료되었습니다."
+
+#: class-tgm-plugin-activation.php:3370 class-tgm-plugin-activation.php:3376
+msgid "Hide Details"
+msgstr "세부사항 숨기기"
+
+#: class-tgm-plugin-activation.php:3370 class-tgm-plugin-activation.php:3376
+msgid "Show Details"
+msgstr "세부사항 보기"
+
+#: class-tgm-plugin-activation.php:3370
+msgid "%1$s installed and activated successfully."
+msgstr "%1$s 설치 및 활성화에 성공했습니다."
+
+#: class-tgm-plugin-activation.php:3369
+msgid "The installation and activation process is starting. This process may take a while on some hosts, so please be patient."
+msgstr "설치 및 활성화 과정이 시작됐습니다. 이 과정은 호스팅 환경에 따라 시간이 좀 소요될 수 있으니 잠시 기다려 주세요."
+
+#: class-tgm-plugin-activation.php:3365
+msgid "The installation of %1$s failed."
+msgstr "%1$s 설치 실패."
+
+#: class-tgm-plugin-activation.php:3364
+msgid "An error occurred while installing %1$s: <strong>%2$s</strong>."
+msgstr "%1$s 설치 중에 오류가 발생했습니다: <strong>%2$s</strong>"
+
+#: class-tgm-plugin-activation.php:3362
+msgid "Updating Plugin %1$s (%2$d/%3$d)"
+msgstr "플러그인 %1$s 업데이트중 (%2$d/%3$d)"
+
+#: class-tgm-plugin-activation.php:3028
+msgid "Plugin activation failed."
+msgstr "플러그인 활성화에 실패했습니다."
+
+#: class-tgm-plugin-activation.php:2814
+msgid "No plugins are available to be activated at this time."
+msgstr "현재는 활성화 가능한 플러그인이 없습니다."
+
+#: class-tgm-plugin-activation.php:2788
+msgid "No plugins were selected to be activated. No action taken."
+msgstr "활성화에 선택된 플러그인이 없습니다. 실행할 작업은 없습니다."
+
+#: class-tgm-plugin-activation.php:2683
+msgid "No plugins are available to be updated at this time."
+msgstr "현재는 업데이트 가능한 플러그인이 없습니다."
+
+#: class-tgm-plugin-activation.php:2681
+msgid "No plugins are available to be installed at this time."
+msgstr "현재는 설치 가능한 플러그인이 없습니다."
+
+#: class-tgm-plugin-activation.php:2645
+msgid "No plugins were selected to be updated. No action taken."
+msgstr "업데이트에 선택된 플러그인이 없습니다. 실행할 작업은 없습니다."
+
+#: class-tgm-plugin-activation.php:2643
+msgid "No plugins were selected to be installed. No action taken."
+msgstr "설치에 선택된 플러그인이 없습니다. 실행할 작업은 없습니다."
+
+#: class-tgm-plugin-activation.php:2612
+msgid "Activate"
+msgstr "활성화"
+
+#: class-tgm-plugin-activation.php:2609
+msgid "Update"
+msgstr "업데이트"
+
+#: class-tgm-plugin-activation.php:2603
+#: inc/admin/welcome-screen/sections/getting-started.php:213
+#: inc/admin/welcome-screen/sections/getting-started.php:231
+msgid "Install"
+msgstr "설치"
+
+#: class-tgm-plugin-activation.php:2570
+msgid "Upgrade message from the plugin author:"
+msgstr "플러그인 제작자의 업그레이드 메시지:"
+
+#: class-tgm-plugin-activation.php:2500
+msgctxt "%2$s = plugin name in screen reader markup"
+msgid "Activate %2$s"
+msgstr "%2$s 활성화"
+
+#: class-tgm-plugin-activation.php:2495
+msgctxt "%2$s = plugin name in screen reader markup"
+msgid "Update %2$s"
+msgstr "%2$s 업데이트"
+
+#: class-tgm-plugin-activation.php:2491
+msgctxt "%2$s = plugin name in screen reader markup"
+msgid "Install %2$s"
+msgstr "%2$s 설치"
+
+#: class-tgm-plugin-activation.php:2443
+msgid "Status"
+msgstr "상태"
+
+#: class-tgm-plugin-activation.php:2442
+msgid "Version"
+msgstr "버전"
+
+#: class-tgm-plugin-activation.php:2438
+msgid "Type"
+msgstr "타입"
+
+#: class-tgm-plugin-activation.php:2437
+msgid "Source"
+msgstr "출처"
+
+#: class-tgm-plugin-activation.php:2436
+msgid "Plugin"
+msgstr "플러그인"
+
+#: class-tgm-plugin-activation.php:2422
+msgid "No plugins to install, update or activate. <a href=\"%1$s\">Return to the Dashboard</a>"
+msgstr "설치, 업데이트, 활성화 할 플러그인이 없습니다. <a href=\"%1$s\">알림판으로 돌아가기</a>"
+
+#: class-tgm-plugin-activation.php:2399
+msgid "Available version:"
+msgstr "가능한 버전:"
+
+#: class-tgm-plugin-activation.php:2387
+msgid "Minimum required version:"
+msgstr "최소한의 필수 버전:"
+
+#: class-tgm-plugin-activation.php:2379
+msgid "Installed version:"
+msgstr "설치된 버전:"
+
+#: class-tgm-plugin-activation.php:2371
+msgctxt "as in: \"version nr unknown\""
+msgid "unknown"
+msgstr "알 수 없음"
+
+#: class-tgm-plugin-activation.php:2289
+msgid "To Activate <span class=\"count\">(%s)</span>"
+msgid_plural "To Activate <span class=\"count\">(%s)</span>"
+msgstr[0] "활성화 <span class=\"count\">(%s)</span>"
+
+#: class-tgm-plugin-activation.php:2286
+msgid "Update Available <span class=\"count\">(%s)</span>"
+msgid_plural "Update Available <span class=\"count\">(%s)</span>"
+msgstr[0] "업데이트 가능 <span class=\"count\">(%s)</span>"
+
+#: class-tgm-plugin-activation.php:2283
+msgid "To Install <span class=\"count\">(%s)</span>"
+msgid_plural "To Install <span class=\"count\">(%s)</span>"
+msgstr[0] "설치 <span class=\"count\">(%s)</span>"
+
+#: class-tgm-plugin-activation.php:2280
+msgctxt "plugins"
+msgid "All <span class=\"count\">(%s)</span>"
+msgid_plural "All <span class=\"count\">(%s)</span>"
+msgstr[0] "모두 <span class=\"count\">(%s)</span>"
+
+#: class-tgm-plugin-activation.php:2235
+msgctxt "%1$s = install status, %2$s = update status"
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
+
+#: class-tgm-plugin-activation.php:2227
+msgid "Update recommended"
+msgstr "업데이트가 권장됩니다"
+
+#: class-tgm-plugin-activation.php:2224
+msgid "Requires Update"
+msgstr "업데이트가 필요합니다"
+
+#: class-tgm-plugin-activation.php:2221
+msgid "Required Update not Available"
+msgstr "필요한 업데이트가 없습니다"
+
+#: class-tgm-plugin-activation.php:2215
+msgid "Active"
+msgstr "활성"
+
+#: class-tgm-plugin-activation.php:2213
+msgid "Installed But Not Activated"
+msgstr "설치는 되었으나 비활성화"
+
+#: class-tgm-plugin-activation.php:2209
+msgid "Not Installed"
+msgstr "미설치"
+
+#: class-tgm-plugin-activation.php:2192
+msgid "Pre-Packaged"
+msgstr "미리 패키지됨"
+
+#: class-tgm-plugin-activation.php:2189
+msgid "External Source"
+msgstr "외부 출처"
+
+#: class-tgm-plugin-activation.php:2186
+msgid "WordPress Repository"
+msgstr "워드프레스 저장소"
+
+#: class-tgm-plugin-activation.php:2170
+msgid "Recommended"
+msgstr "권장됨"
+
+#: class-tgm-plugin-activation.php:2167
+msgid "Required"
+msgstr "필수"
+
+#: class-tgm-plugin-activation.php:1881
+msgctxt "%s = version number"
+msgid "TGMPA v%s"
+msgstr "TGMPA v%s"
+
+#: class-tgm-plugin-activation.php:1116 class-tgm-plugin-activation.php:2828
+msgctxt "plugin A *and* plugin B"
+msgid "and"
+msgstr "및"
+
+#: class-tgm-plugin-activation.php:938
+msgid "The remote plugin package consists of more than one file, but the files are not packaged in a folder."
+msgstr "원격 플러그인 패키지는 하나 이상의 파일로 구성돼있스며 파일이 하나의 폴더에 패키지 되지 않았습니다."
+
+#: class-tgm-plugin-activation.php:935 class-tgm-plugin-activation.php:938
+msgid "Please contact the plugin provider and ask them to package their plugin according to the WordPress guidelines."
+msgstr "플러그인 제공자에게 연락해서 워드프레스 가이드라인에 따른 플러그인을 패키지 해줄 것을 요청하세요."
+
+#: class-tgm-plugin-activation.php:935
+msgid "The remote plugin package does not contain a folder with the desired slug and renaming did not work."
+msgstr "원격 플러그인 패키지가 요구되는 슬러그가 있는 폴더를 포함하고 있지 않으며 이름 변경은 작동되지 않습니다."
+
+#: class-tgm-plugin-activation.php:828 class-tgm-plugin-activation.php:3438
+msgid "Return to the Dashboard"
+msgstr "알림판으로 돌아가기"
+
+#: class-tgm-plugin-activation.php:635
+msgid "Set the parent_slug config variable instead."
+msgstr "대신 parent_slug 환경설정 변수를 설정하세요."
+
+#: class-tgm-plugin-activation.php:521
+msgid "Update Required"
+msgstr "업데이트 필요"
+
+#: class-tgm-plugin-activation.php:520
+msgid "This plugin needs to be updated to be compatible with your theme."
+msgstr "이 플러그인은 테마와 호환되려면 업데이트가 필요합니다."
+
+#: class-tgm-plugin-activation.php:405
+msgid "Please contact the administrator of this site for help."
+msgstr "도움이 필요하면 이 사이트의 관리자에게 연락하세요."
+
+#: class-tgm-plugin-activation.php:404
+msgid "Dismiss this notice"
+msgstr "이 알림 무시"
+
+#: class-tgm-plugin-activation.php:403
+msgid "All plugins installed and activated successfully. %1$s"
+msgstr "모든 플러그인이 성공적으로 설치되고 활성화되었습니다. %1$s"
+
+#: class-tgm-plugin-activation.php:402
+msgid "Plugin not activated. A higher version of %s is needed for this theme. Please update the plugin."
+msgstr "플러그인이 활성화되지 않음. %s의 높은 버전이 이 테마에 필요합니다. 플러그인을 업데이트 하세요."
+
+#: class-tgm-plugin-activation.php:401
+msgid "No action taken. Plugin %1$s was already active."
+msgstr "실행할 작업이 없습니다. %1$s 플러그인이 이미 활성 상태입니다."
+
+#: class-tgm-plugin-activation.php:400 class-tgm-plugin-activation.php:2832
+msgid "The following plugin was activated successfully:"
+msgstr "다음 플러그인이 성공적으로 활성화 됐습니다:"
+
+#: class-tgm-plugin-activation.php:399 class-tgm-plugin-activation.php:3029
+#: functions.php:387
+msgid "Plugin activated successfully."
+msgstr "플러그인이 성공적으로 활성화되었습니다."
+
+#: class-tgm-plugin-activation.php:398
+msgid "Return to the dashboard"
+msgstr "알림판으로 돌아가기"
+
+#: class-tgm-plugin-activation.php:397 functions.php:386
+msgid "Return to Required Plugins Installer"
+msgstr "필수 플러그인 설치로 돌아가기"
+
+#: class-tgm-plugin-activation.php:392 functions.php:385
+msgid "Begin activating plugin"
+msgid_plural "Begin activating plugins"
+msgstr[0] "플러그인 활성화 시작하기"
+
+#: class-tgm-plugin-activation.php:387
+msgid "Begin updating plugin"
+msgid_plural "Begin updating plugins"
+msgstr[0] "플러그인 업데이트 시작하기"
+
+#: class-tgm-plugin-activation.php:382 functions.php:384
+msgid "Begin installing plugin"
+msgid_plural "Begin installing plugins"
+msgstr[0] "플러그인 설치 시작하기"
+
+#: class-tgm-plugin-activation.php:377
+msgid "Sorry, but you do not have the correct permissions to activate the %1$s plugin."
+msgid_plural "Sorry, but you do not have the correct permissions to activate the %1$s plugins."
+msgstr[0] "죄송합니다. %1$s 플러그인을 활성화 할 권한이 없습니다."
+
+#: class-tgm-plugin-activation.php:372 functions.php:380
+msgid "The following recommended plugin is currently inactive: %1$s."
+msgid_plural "The following recommended plugins are currently inactive: %1$s."
+msgstr[0] "다음 권장 플러그인이 현재 비활성 상태입니다: %1$s"
+
+#: class-tgm-plugin-activation.php:367 functions.php:379
+msgid "The following required plugin is currently inactive: %1$s."
+msgid_plural "The following required plugins are currently inactive: %1$s."
+msgstr[0] "다음 필수 플러그인이 현재 비활성 상태입니다: %1$s"
+
+#: class-tgm-plugin-activation.php:362
+msgid "Sorry, but you do not have the correct permissions to update the %1$s plugin."
+msgid_plural "Sorry, but you do not have the correct permissions to update the %1$s plugins."
+msgstr[0] "죄송합니다. %1$s 플러그인을 업데이트 할 권한이 없습니다."
+
+#: class-tgm-plugin-activation.php:357
+msgid "There is an update available for: %1$s."
+msgid_plural "There are updates available for the following plugins: %1$s."
+msgstr[0] "다음 플러그인의 가능한 업데이트가 있습니다: %1$s."
+
+#: class-tgm-plugin-activation.php:352 functions.php:382
+msgid "The following plugin needs to be updated to its latest version to ensure maximum compatibility with this theme: %1$s."
+msgid_plural "The following plugins need to be updated to their latest version to ensure maximum compatibility with this theme: %1$s."
+msgstr[0] "다음 플러그인이 이 테마와 최적의 호환성을 보장하려면 최신 버전으오 업데이트 해야 합니다: %1$s."
+
+#: class-tgm-plugin-activation.php:347
+msgid "Sorry, but you do not have the correct permissions to install the %1$s plugin."
+msgid_plural "Sorry, but you do not have the correct permissions to install the %1$s plugins."
+msgstr[0] "죄송합니다. %1$s 플러그인을 설치할 권한이 없습니다."
+
+#: class-tgm-plugin-activation.php:342 functions.php:377
+msgid "This theme recommends the following plugin: %1$s."
+msgid_plural "This theme recommends the following plugins: %1$s."
+msgstr[0] "이 테마는 다음 플러그인을 권장 합니다: %1$s"
+
+#: class-tgm-plugin-activation.php:337 functions.php:376
+msgid "This theme requires the following plugin: %1$s."
+msgid_plural "This theme requires the following plugins: %1$s."
+msgstr[0] "이 테마는 다음 플러그인을 필요로 합니다: %1$s"
+
+#: class-tgm-plugin-activation.php:336 functions.php:375
+msgid "Something went wrong with the plugin API."
+msgstr "플러그인 API에 에러가 있습니다."
+
+#: class-tgm-plugin-activation.php:335 functions.php:374
+msgid "Installing Plugin: %s"
+msgstr "플러그인 설치중: %s"
+
+#: class-tgm-plugin-activation.php:334 functions.php:373
+msgid "Install Plugins"
+msgstr "플러그인 설치"
+
+#: class-tgm-plugin-activation.php:333 functions.php:372
+msgid "Install Required Plugins"
+msgstr "필수 플러그인 설치하기"
+
+#: 404.php:29
+msgid "It looks like nothing was found at this location. Maybe try one of the links below or a search?"
+msgstr "이 위치에서 아무 것도 찾을 수 없을 것 같습니다. 아래의 링크 또는 검색 중 하나를 하세요."
+
+#: 404.php:25
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "이런! 해당 페이지를 찾을 수 없습니다."
+
+#. Author URI of the plugin/theme
+msgid "http://themeisle.com/"
+msgstr "http://themeisle.com/"
+
+#. Author of the plugin/theme
+msgid "ThemeIsle"
+msgstr "ThemeIsle"
+
+#. Theme URI of the plugin/theme
+msgid "http://themeisle.com/themes/llorix-one/"
+msgstr "http://themeisle.com/themes/llorix-one/"

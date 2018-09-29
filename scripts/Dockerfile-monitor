@@ -1,0 +1,21 @@
+FROM wordpress:4.9.3-php7.1-apache
+
+ARG MY_WEB
+ENV MY_WEB=$MY_WEB 
+COPY var/www/html /var/www/html/
+COPY ssl /etc/ssl/
+COPY apache2 /etc/apache2/
+COPY wp-cli.phar /etc/wp-cli/wp-cli.phar
+
+RUN a2enmod ssl
+RUN service apache2 restart
+
+#WORKDIR /etc/wp-cli/
+
+#CMD ["php", "wp-cli.phar", "search-replace", "'http://143.248.57.144'", "'http://$MY_WEB'", "--skip-columns=guid", "--allow-root", "--path=/var/www/html/"]
+#CMD ["php", "wp-cli.phar", "search-replace", "'https://143.248.57.144'", "'https://$MY_WEB'", "--skip-columns=guid", "--allow-root", "--path=/var/www/html/"]
+#CMD ["php", "wp-cli.phar", "search-replace", "'http://localhost'", "'http://$MY_WEB'", "--skip-columns=guid", "--allow-root", "--path=/var/www/html/"]
+#CMD ["php", "wp-cli.phar", "search-replace", "'https://localhost'", "'https://$MY_WEB'", "--skip-columns=guid", "--allow-root", "--path=/var/www/html/"]
+#CMD ["php", "wp-cli.phar", "search-replace", "'http://mywebsite'", "'http://$MY_WEB'", "--skip-columns=guid", "--allow-root", "--path=/var/www/html/"]
+#CMD ["php", "wp-cli.phar", "search-replace", "'https://mywebsite'", "'https://$MY_WEB'", "--skip-columns=guid", "--allow-root", "--path=/var/www/html/"]
+
