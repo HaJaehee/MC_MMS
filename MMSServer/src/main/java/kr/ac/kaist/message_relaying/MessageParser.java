@@ -47,6 +47,11 @@ Rev. history : 2018-07-27
 Version : 0.7.2
 	Added geocasting features which cast message to circle or polygon area.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-05
+Version : 0.8.0
+	Added polling client verification optionally.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -66,6 +71,8 @@ import org.slf4j.LoggerFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
+import kr.ac.kaist.message_casting.GeolocationCircleInfo;
+import kr.ac.kaist.message_casting.GeolocationPolygonInfo;
 
 public class MessageParser {
 	
@@ -90,6 +97,7 @@ public class MessageParser {
 	private GeolocationPolygonInfo geoPolygonInfo = null;
 	private JSONArray geoDstInfo = null;
 	private double seqNum = -1;
+	private String hexSignedData = null;
 
 
 	MessageParser(){
@@ -115,6 +123,7 @@ public class MessageParser {
 		geoCircleInfo = null;
 		geoPolygonInfo = null;
 		geoDstInfo = null;
+		hexSignedData = null;
 		seqNum = -1;
 	}
 	
@@ -179,6 +188,9 @@ public class MessageParser {
 		else {
 			isGeocasting = false;
 		}
+		
+		hexSignedData = req.headers().get("HexSignedData");
+		
 		
 		uri = req.uri();
 		httpMethod = req.method();
@@ -341,5 +353,9 @@ public class MessageParser {
 	
 	public JSONArray getGeoDstInfo () {
 		return geoDstInfo;
+	}
+	
+	public String getHexSignedData () {
+		return hexSignedData;
 	}
 }

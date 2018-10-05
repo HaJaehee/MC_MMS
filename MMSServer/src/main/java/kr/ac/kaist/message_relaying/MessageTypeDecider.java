@@ -91,6 +91,8 @@ import java.text.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.netty.handler.codec.http.HttpMethod;
+import kr.ac.kaist.message_casting.GeolocationCircleInfo;
+import kr.ac.kaist.message_casting.GeolocationPolygonInfo;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 

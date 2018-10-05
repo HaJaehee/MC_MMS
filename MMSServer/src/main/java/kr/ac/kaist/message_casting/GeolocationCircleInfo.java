@@ -1,4 +1,4 @@
-package kr.ac.kaist.message_relaying;
+package kr.ac.kaist.message_casting;
 /* -------------------------------------------------------- */
 /** 
 File name : GeolocationCircleInfo.java

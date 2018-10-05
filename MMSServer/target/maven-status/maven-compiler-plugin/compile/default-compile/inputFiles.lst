@@ -3,6 +3,7 @@ C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\ka
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\mms_server\MMSLog.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\mms_server\MMSConfiguration.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\seamless_roaming\SCMessageHandler.java
+C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\message_casting\GeolocationCircleInfo.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\seamless_roaming\PollingMethodRegDummy.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\mms_server\MMSLogForDebug.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\mns_interaction\LocatorUpdater.java
@@ -12,6 +13,7 @@ C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\ka
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\seamless_roaming\SeamlessRoamingHandler.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\mns_interaction\MNSDummy.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\message_relaying\SessionManager.java
+C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\message_relaying\ClientVerifier.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\mms_server\MMSServer.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\seamless_roaming\PollingMessageHandler.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\message_casting\MessageCastingHandler.java
@@ -23,10 +25,9 @@ C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\ka
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\mms_server\NettyStartupUtil.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\mms_server\Base64Coder.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\message_relaying\SessionIdAndThr.java
+C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\message_casting\GeolocationPolygonInfo.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\message_relaying\MessageOrderException.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\mms_server\SecureMMSServer.java
-C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\message_relaying\GeolocationPolygonInfo.java
-C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\message_relaying\GeolocationCircleInfo.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\message_relaying\MessageParser.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\message_relaying\MRH_MessageOutputChannel.java
 C:\Users\loves\eclipse-workspace\MCP_MMS\MC_MMS\MMSServer\src\main\java\kr\ac\kaist\mns_interaction\MRNInformationQuerier.java

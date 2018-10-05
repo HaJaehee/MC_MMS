@@ -71,7 +71,10 @@ Version : 0.8.0
 	Change ip address of rabbitmq from "localhost" to "rabbitmq-db.
 Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 
-
+Rev. history : 2018-10-05
+Version : 0.8.0
+	Change the host of rabbit mq from "rabbitmq-db" to "MMSConfiguration.RABBIT_MQ_HOST()".
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -148,7 +151,7 @@ class MessageQueueDequeuer extends Thread{
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 	    try {
 			ConnectionFactory factory = new ConnectionFactory();
-			factory.setHost("rabbitmq-db");
+			factory.setHost(MMSConfiguration.RABBIT_MQ_HOST());
 			connection = factory.newConnection();
 			channel = connection.createChannel();
 			channel.queueDeclare(queueName, true, false, false, null);

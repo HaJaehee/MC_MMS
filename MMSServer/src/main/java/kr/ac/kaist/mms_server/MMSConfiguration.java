@@ -57,6 +57,11 @@ Rev. history : 2018-09-21
 Version : 0.8.0
 	Updated Checking initialized variables in MMSConfiguration.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-09-21
+Version : 0.8.0
+	Updated RABBIT_MQ_HOST variable in MMSConfiguration.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 import java.io.File;
@@ -101,6 +106,10 @@ public class MMSConfiguration {
 	private static boolean[] LOG_FILE_OUT = {false, false}; //{isSet, value}
 	private static boolean[] LOG_CONSOLE_OUT = {false, false}; //{isSet, value}
 	
+	private static String RABBIT_MQ_HOST = null; //"localhost";
+	
+
+
 	public MMSConfiguration (String[] args) {
 		if (!IS_MMS_CONF_SET) {
 			ConfigureMMSSettings (args);
@@ -168,6 +177,10 @@ public class MMSConfiguration {
 		log_console_out.setRequired(false);
 		options.addOption(log_console_out);
 		
+		Option rabbit_mq_host = new Option ("mq", "rabbit_mq_host", true, "Set the host of the Rabbit MQ server.");
+		log_console_out.setRequired(false);
+		options.addOption(log_console_out);
+		
 		CommandLineParser clParser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd;
@@ -185,6 +198,7 @@ public class MMSConfiguration {
 					+ " [-mns mns_host]"
 					+ " [-mnsp mns_port]"
 					+ " [-mrn mms_mrn]"
+					+ " [-mq rabbit_mq_host]"
 					+ " [-p http_port]"
 					+ " [-sp https_port]"
 					+ " [-t waiting_message_timeout]"
@@ -218,7 +232,11 @@ public class MMSConfiguration {
 			if (MNS_PORT == 0) {
 				MNS_PORT = getOptionValueInteger(cmd, "mns_port");
 			}
-
+			
+			if (RABBIT_MQ_HOST == null) {
+				RABBIT_MQ_HOST = cmd.getOptionValue("rabbit_mq_host");
+			}
+			
 			if (MMS_MRN == null) {
 				String val = cmd.getOptionValue("mms_mrn");
 				if (val != null) {
@@ -248,6 +266,7 @@ public class MMSConfiguration {
 			if (LOG_CONSOLE_OUT[0] == false) {
 				LOG_CONSOLE_OUT = getOptionValueBoolean(cmd, "log_console_out");
 			}
+
 		}
 		catch (org.apache.commons.cli.ParseException e){
 			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
@@ -294,6 +313,12 @@ public class MMSConfiguration {
 			String s = System.getenv("ENV_MNS_PORT");
 			if (s != null)
 				MNS_PORT = Integer.parseInt(s);
+		}
+		
+		if (RABBIT_MQ_HOST == null) {
+			String s = System.getenv("ENV_RABBIT_MQ_HOST");
+			if (s != null)
+				RABBIT_MQ_HOST = s;
 		}
 			
 		if (MMS_MRN == null) {
@@ -375,6 +400,12 @@ public class MMSConfiguration {
 			if (MNS_HOST == null) {
 				if (jobj.get("MNS_HOST") != null){
 					MNS_HOST = (String) jobj.get("MNS_HOST");
+				}
+			}
+			
+			if (RABBIT_MQ_HOST == null) {
+				if (jobj.get("RABBIT_MQ_HOST") != null){
+					RABBIT_MQ_HOST = (String) jobj.get("RABBIT_MQ_HOST");
 				}
 			}
 			
@@ -463,6 +494,10 @@ public class MMSConfiguration {
 			
 			if (MNS_HOST == null) {
 				MNS_HOST = "127.0.0.1"; //Default is String "127.0.0.1".
+			}
+			
+			if (RABBIT_MQ_HOST == null) {
+				RABBIT_MQ_HOST = "rabbitmq-db";
 			}
 			
 			if (MMS_MRN == null) {
@@ -562,6 +597,7 @@ public class MMSConfiguration {
 			logger.warn(TAG+"HTTPS_PORT="+HTTPS_PORT);
 			logger.warn(TAG+"MNS_HOST="+MNS_HOST);
 			logger.warn(TAG+"MNS_PORT="+MNS_PORT);
+			logger.warn(TAG+"RABBIT_MQ_HOST="+RABBIT_MQ_HOST);
 			logger.warn(TAG+"LOG_LEVEL="+LOG_LEVEL);
 			logger.warn(TAG+"LOG_CONSOLE_OUT="+LOG_CONSOLE_OUT[1]);
 			logger.warn(TAG+"LOG_FILE_OUT="+LOG_FILE_OUT[1]);
@@ -612,6 +648,10 @@ public class MMSConfiguration {
 
 	public static int MAX_BRIEF_LOG_LIST_SIZE() {
 		return MAX_BRIEF_LOG_LIST_SIZE;
+	}
+	
+	public static String RABBIT_MQ_HOST() {
+		return RABBIT_MQ_HOST;
 	}
 	
 	private int getOptionValueInteger (CommandLine cmd, String opt) throws IOException {
