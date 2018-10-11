@@ -52,9 +52,15 @@ Rev. history : 2018-10-05
 Version : 0.8.0
 	Added polling client verification optionally.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-11
+Version : 0.8.0
+	Modified polling client verification.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -189,23 +195,40 @@ public class MessageParser {
 			isGeocasting = false;
 		}
 		
-		hexSignedData = req.headers().get("HexSignedData");
+		
 		
 		
 		uri = req.uri();
 		httpMethod = req.method();
 	}
 	
-	void parseLocInfo(FullHttpRequest req){
-		String locInfo = req.content().toString(Charset.forName("UTF-8")).trim();
-		
-		String[] locInforms = locInfo.split(":");
-		srcPort = Integer.parseInt(locInforms[0]);
-		srcModel = locInforms[1];
-		if (locInforms.length > 2) {
-			svcMRN = locInforms[2];
-			for ( int i = 3; i<locInforms.length; i++){
-				svcMRN += ":"+locInforms[i];
+	void parseSvcMRNAndHexSign(FullHttpRequest req) throws IOException{
+		String content = req.content().toString(Charset.forName("UTF-8")).trim();
+
+		if (content.length() == 0) {
+			throw new IOException ("Invalid content.");
+		}
+		String[] sepContent = content.split("\n");
+		if (sepContent.length > 0) {
+			if (sepContent[0].startsWith("0")) {
+				String[] svcMRNInfo = sepContent[0].split(":");
+				srcPort = Integer.parseInt(svcMRNInfo[0]);
+				srcModel = svcMRNInfo[1];
+				if (svcMRNInfo.length > 2) {
+					svcMRN = svcMRNInfo[2];
+					for ( int i = 3; i<svcMRNInfo.length; i++){
+						svcMRN += ":"+svcMRNInfo[i];
+					}
+				}
+			}
+			else {
+				srcPort = 0;
+				srcModel = "1";
+				svcMRN = sepContent[0];
+			}
+			
+			if (sepContent.length > 1 && sepContent[1].length()>0) {
+				hexSignedData = sepContent[1];
 			}
 		}
 

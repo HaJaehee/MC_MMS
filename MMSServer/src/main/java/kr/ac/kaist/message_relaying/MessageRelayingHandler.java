@@ -144,6 +144,11 @@ Rev. history : 2018-10-05
 Version : 0.8.0
 	Added polling client verification optionally.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-11
+Version : 0.8.0
+	Modified polling client verification.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -408,7 +413,7 @@ public class MessageRelayingHandler  {
 				message = "Error: Null destination MRN.".getBytes(Charset.forName("UTF-8"));
 			}
 			else if (type == MessageTypeDecider.msgType.POLLING) {
-				
+				parser.parseSvcMRNAndHexSign(req);
 				//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
 				if (parser.getHexSignedData() != null) { //In this version 0.8.0, polling client verification is optional. 
 					logger.info("SessionID="+this.SESSION_ID+" Client verification using MRN="+srcMRN+" and signed data.");
@@ -426,7 +431,7 @@ public class MessageRelayingHandler  {
 					}
 				}
 				
-				parser.parseLocInfo(req);
+				
 				
 				int srcPort = parser.getSrcPort();
 				String srcModel = parser.getSrcModel();
@@ -540,7 +545,7 @@ public class MessageRelayingHandler  {
 			
 			// TODO this condition has to be deprecated.
 			else if (type == MessageTypeDecider.msgType.REGISTER_CLIENT) {
-				parser.parseLocInfo(req);
+				parser.parseSvcMRNAndHexSign(req);
 				
 				
 				int srcPort = parser.getSrcPort();

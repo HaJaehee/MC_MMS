@@ -81,6 +81,12 @@ Rev. history : 2018-07-27
 Version : 0.7.2
 	Modified the awkward meaning of sentence
 Modifier : Kyungjun Park (kjpark525@kaist.ac.kr)
+
+
+Rev. history : 2018-10-11
+Version : 0.8.0
+	Modified polling client verification.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -197,6 +203,38 @@ public class SecureMMSClientHandler {
 				return;
 			}
 			this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
+			this.pollHandler.ph.setPollingResponseCallback(callback);
+			this.pollHandler.ph.start();
+		}
+	}
+	
+	/**
+	 * This method helps client to request polling. If setting this method, send polling request
+	 * per interval (ms). In the MMS that received the polling request, if there is a message toward the client, 
+	 * the message is sent to the MMS client, which requests polling, and in the MMS client,
+	 * the callbackMethod is executed. Depending on whether it is the way of normal polling or long polling,
+	 * the way of response is different.
+	 * @param	dstMRN			the MRN of MMS to request polling
+	 * @param	svcMRN			the MRN of service, which may send to client
+	 * @param	signedHexData	the hex signed data for client verification
+	 * @param	interval		the frequency of polling (unit of time: ms)
+	 * @param	callback		the callback interface of {@link PollingResponseCallback}
+	 * @throws	IOException 	if exception occurs
+	 * @see 	PollingResponseCallback
+	 */	
+	public void startPolling (String dstMRN, String svcMRN, String hexSignedData, int interval, PollingResponseCallback callback) throws IOException{
+		if (this.sendHandler != null) {
+			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
+		} else if (this.rcvHandler != null) {
+			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
+		} else {
+			if (interval == 0) {
+				System.out.println(TAG+"Long-polling mode"); //TODO: Long-polling could have trouble when session disconnect.
+			} else if (interval < 0){
+				System.out.println(TAG+"Failed! Polling interval must be 0 or positive integer");
+				return;
+			}
+			this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, hexSignedData, interval, headerField);
 			this.pollHandler.ph.setPollingResponseCallback(callback);
 			this.pollHandler.ph.start();
 		}
@@ -592,6 +630,9 @@ public class SecureMMSClientHandler {
 		
 		PollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, Map<String, List<String>> headerField) throws IOException {
 			super(clientMRN, dstMRN, svcMRN, interval, clientPort, 1, headerField);
+		}
+		PollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, Map<String, List<String>> headerField) throws IOException {
+			super(clientMRN, dstMRN, svcMRN, hexSignedData, interval, clientPort, 1, headerField);
 		}
 	}
 	

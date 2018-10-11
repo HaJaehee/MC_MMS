@@ -5,6 +5,11 @@ File name : SC1.java
 	Service Consumer has a certificate.
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2018-10-05
+
+Rev. history : 2018-10-11
+Version : 0.8.0
+	Modified polling client verification.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -54,17 +59,9 @@ public class SC1 {
 		
 		byte[] signedData_revoked = clientPKILib.generateSignedData(content, privateKeyPath_revoked, certPath_revoked);
 		String hexSignedData_revoked = byteConverter.byteArrToHexString(signedData_revoked);
+
 		
-		//Service Consumer is able to set he's HTTP header field : default(active)
-		Map<String, List<String>> headerfield = new HashMap<String, List<String>>();
-		
-		List<String> valueList1 = new ArrayList<String>();
-		valueList1.add(hexSignedData_active); //===========
-		headerfield.put("HexSignedData",valueList1);
-		
-		polling.setMsgHeader(headerfield);
-		
-		polling.startPolling(dstMRN, svcMRN, pollInterval, new MMSClientHandler.PollingResponseCallback() {
+		polling.startPolling(dstMRN, svcMRN, hexSignedData_active, pollInterval, new MMSClientHandler.PollingResponseCallback() {
 			//Response Callback from the polling message
 			//it is called when client receives a message
 			@Override

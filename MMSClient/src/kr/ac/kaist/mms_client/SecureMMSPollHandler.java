@@ -32,6 +32,11 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION, EXPOSURE_OF_SYSTEM_DATA hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-11
+Version : 0.8.0
+	Modified polling client verification.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -63,6 +68,8 @@ import javax.net.ssl.X509TrustManager;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
+import kr.ac.kaist.mms_client.MMSPollHandler.PollHandler;
+
 
 class SecureMMSPollHandler {
 
@@ -76,13 +83,17 @@ class SecureMMSPollHandler {
 		ph = new SecurePollingHandler(clientMRN, dstMRN, svcMRN, interval, clientPort, msgType, headerField);
 		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Polling handler is created");}
 	}
-	
+	SecureMMSPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, int clientPort, int msgType, Map<String,List<String>> headerField) throws IOException{
+		String svcMRNWithHexSign = svcMRN+"\n"+hexSignedData;
+		ph = new SecurePollingHandler(clientMRN, dstMRN, svcMRNWithHexSign, interval, clientPort, msgType, headerField);
+		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Polling handler is created");}
+	}
     //HJH
     class SecurePollingHandler extends Thread{
 		private int interval = 0;
 		private String clientMRN = null;
 		private String dstMRN = null;
-		private String svcMRN = null;
+		private String svcMRNWithHexSign = null;
 		private int clientPort = 0;
 		private int clientModel = 0;
 		private Map<String,List<String>> headerField = null;
@@ -90,11 +101,11 @@ class SecureMMSPollHandler {
 		private HostnameVerifier hv = null;
 		private boolean interrupted=false;
 		
-    	SecurePollingHandler (String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int clientModel, Map<String,List<String>> headerField){
+    	SecurePollingHandler (String clientMRN, String dstMRN, String svcMRNWithHexSign, int interval, int clientPort, int clientModel, Map<String,List<String>> headerField){
     		this.interval = interval;
     		this.clientMRN = clientMRN;
     		this.dstMRN = dstMRN;
-    		this.svcMRN = svcMRN;
+    		this.svcMRNWithHexSign = svcMRNWithHexSign;
     		this.clientPort = clientPort;
     		this.clientModel = clientModel;
     		this.headerField = headerField;
@@ -129,9 +140,9 @@ class SecureMMSPollHandler {
 			String url = "https://"+MMSConfiguration.MMS_URL+"/polling"; // MMS Server
 			URL obj = new URL(url);
 			String data;
-			if (svcMRN != null){
-				data = (clientPort + ":" + clientModel + ":" + svcMRN); //To do: add geographical info, channel info, etc. 
-			} else {
+			if (svcMRNWithHexSign != null){
+				data = svcMRNWithHexSign; //To do: add geographical info, channel info, etc. 
+			} else { // TODO: will be deprecated;
 				data = (clientPort + ":" + clientModel + ":");
 			}
 			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
