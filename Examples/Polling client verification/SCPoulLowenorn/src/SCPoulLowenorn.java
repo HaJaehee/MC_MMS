@@ -37,7 +37,7 @@ public class SCPoulLowenorn {
 		
 		int pollInterval = 1000; // The unit is millisecond. 
 		String dstMRN = "urn:mrn:smart-navi:device:mms1";
-		String svcMRN = "urn:mrn:smart-navi:device:tm-server";
+		String svcMRN = "urn:mrn:smart-navi:device:service-provider";
 		
 		
 		ClientPKILibrary clientPKILib = ClientPKILibrary.getInstance();
@@ -54,14 +54,15 @@ public class SCPoulLowenorn {
 		String hexSignedData_active = byteConverter.byteArrToHexString(signedData_active);
 		
 		//===== revoked certificate =====
-		String privateKeyPath_revoked = "PrivateKey_POUL_LOWENORN_revoked.pem";
-		String certPath_revoked = "Certificate_POUL_LOWENORN_revoked.pem";
+		//String privateKeyPath_revoked = "PrivateKey_POUL_LOWENORN_revoked.pem";
+		//String certPath_revoked = "Certificate_POUL_LOWENORN_revoked.pem";
 		
-		byte[] signedData_revoked = clientPKILib.generateSignedData(content, privateKeyPath_revoked, certPath_revoked);
-		String hexSignedData_revoked = byteConverter.byteArrToHexString(signedData_revoked);
+		//byte[] signedData_revoked = clientPKILib.generateSignedData(content, privateKeyPath_revoked, certPath_revoked);
+		//String hexSignedData_revoked = byteConverter.byteArrToHexString(signedData_revoked);
 
 
-		polling.startPolling(dstMRN, svcMRN, hexSignedData_active, pollInterval, new MMSClientHandler.PollingResponseCallback() {
+		polling.startPolling(dstMRN, svcMRN, hexSignedData_active, pollInterval, 
+				new MMSClientHandler.PollingResponseCallback() {
 			//Response Callback from the polling message
 			//it is called when client receives a message
 			@Override
