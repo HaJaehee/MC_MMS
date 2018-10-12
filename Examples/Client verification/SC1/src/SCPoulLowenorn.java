@@ -1,6 +1,6 @@
 /* -------------------------------------------------------- */
 /** 
-File name : SC1.java
+File name : SCPoulLowenorn.java
 	Service Consumer cannot be HTTP server and should poll from MMS. 
 	Service Consumer has a certificate.
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
@@ -24,12 +24,11 @@ import kr.ac.kaist.mms_client.MMSConfiguration;
 import net.etri.pkilib.client.ClientPKILibrary;
 import net.etri.pkilib.tool.ByteConverter;
 
-public class SC1 {
+public class SCPoulLowenorn {
 	public static void main(String args[]) throws Exception{
 		String myMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 		//myMRN = args[0];
 		
-
 		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
 		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 		
@@ -44,6 +43,7 @@ public class SC1 {
 		ClientPKILibrary clientPKILib = ClientPKILibrary.getInstance();
 		ByteConverter byteConverter = ByteConverter.getInstance();
 		
+		//===== dummy content =====
 		byte[] content = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
 		
 		//===== active certificate =====
@@ -60,7 +60,7 @@ public class SC1 {
 		byte[] signedData_revoked = clientPKILib.generateSignedData(content, privateKeyPath_revoked, certPath_revoked);
 		String hexSignedData_revoked = byteConverter.byteArrToHexString(signedData_revoked);
 
-		
+
 		polling.startPolling(dstMRN, svcMRN, hexSignedData_active, pollInterval, new MMSClientHandler.PollingResponseCallback() {
 			//Response Callback from the polling message
 			//it is called when client receives a message
