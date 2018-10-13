@@ -12,6 +12,11 @@ File name : TS3_client.java
 	Polling request message function for the purpose of testing MMS
 Author : Jin Jeong (jungst0001@kaist.ac.kr)
 Creation Date : 2017-11-06
+
+Rev.history :2018-10-13
+Version : 0.8.0
+Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
+
 */
 
 public class TS3_client {
@@ -25,10 +30,10 @@ public class TS3_client {
 	private static int length = -1;
 	
 	public TS3_client(){
-		MMSConfiguration.MMS_URL="143.248.57.144:8088";
-//		MMSConfiguration.MMS_URL="143.248.55.83:8088";
+//		MMSConfiguration.MMS_URL="143.248.57.144:8088";
+		MMSConfiguration.MMS_URL="143.248.55.83:8088";
 //		MMSConfiguration.MMS_URL="127.0.0.1:8088";
-		MMSConfiguration.DEBUG = false;
+		MMSConfiguration.DEBUG = true;
 		
 		try {
 			myHandler = new MMSClientHandler(myMRN);
@@ -39,14 +44,10 @@ public class TS3_client {
 					// TODO Auto-generated method stub					
 					
 					List<String> list = headerField.get("content-length");
-					System.out.println("list" +list.get(0));		
+					//System.out.println("list" +list.get(0));		
 															
 				
-					if(list != null){
-						//System.out.println("list" +list.get(0));
-						
-						//System.out.println("message : "+messages.get(0));
-						
+					if(list != null){						
 						content_length = Integer.parseInt(list.get(0));
 						
 						length = content_length;

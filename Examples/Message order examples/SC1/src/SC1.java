@@ -8,37 +8,10 @@ import kr.ac.kaist.mms_client.MMSConfiguration;
 /** 
 File name : SC1.java
 	Service Consumer cannot be HTTP server and should poll from MMS. 
-Author : Jaehyun Park (jae519@kaist.ac.kr)
-	Haeun Kim (hukim@kaist.ac.kr)
-	Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2016-12-03
+	Added API; message sender guarantees message sequence.
+Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2018-07-23
 
-Rev. history : 2017-02-01
-Version : 0.3.01
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-04-20 
-Version : 0.5.0
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-04-25
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-07-28
-Version : 0.5.9
-	Changed from PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, message) 
-	     to PollingResponseCallback.callbackMethod(Map<String,List<String>> headerField, List<String> messages) 
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-11-21
-Version : 0.7.0
-	Compatible with MMS Client beta-0.7.0.
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
-
-Rev. history : 2018-07-23
-Version : 0.7.2
-	Added API; message sender guarantees message sequence .
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 

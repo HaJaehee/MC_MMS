@@ -210,7 +210,7 @@ public class MessageParser {
 		}
 		String[] sepContent = content.split("\n");
 		if (sepContent.length > 0) {
-			if (sepContent[0].startsWith("0")) { //TODO: will be deprecated
+			if (!sepContent[0].startsWith("urn")) { //TODO: will be deprecated
 				String[] svcMRNInfo = sepContent[0].split(":");
 				srcPort = Integer.parseInt(svcMRNInfo[0]);
 				srcModel = svcMRNInfo[1];
