@@ -106,7 +106,7 @@ public class MMSConfiguration {
 	private static boolean[] LOG_FILE_OUT = {false, false}; //{isSet, value}
 	private static boolean[] LOG_CONSOLE_OUT = {false, false}; //{isSet, value}
 	
-	private static String RABBIT_MQ_HOST = "localhost";
+	private static String RABBIT_MQ_HOST = null;//"localhost";
 	
 
 
