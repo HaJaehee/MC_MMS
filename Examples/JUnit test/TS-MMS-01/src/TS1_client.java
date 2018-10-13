@@ -63,7 +63,10 @@ public class TS1_client {
 		BufferedReader bufReader = new BufferedReader(fileReader);
 		
 		String data =""; //createDataSize(actual);
-		data=bufReader.readLine();				
+		data=bufReader.readLine();		
+		if (data == null) {
+			data = "";
+		}
 		try {
 			sender.sendPostMsg(svcMRN, data);
 		} catch (Exception e) {

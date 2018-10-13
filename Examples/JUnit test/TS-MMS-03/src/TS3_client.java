@@ -30,10 +30,10 @@ public class TS3_client {
 	private static int length = -1;
 	
 	public TS3_client(){
-//		MMSConfiguration.MMS_URL="143.248.57.144:8088";
-		MMSConfiguration.MMS_URL="143.248.55.83:8088";
+		MMSConfiguration.MMS_URL="143.248.57.144:8088";
+//		MMSConfiguration.MMS_URL="143.248.55.83:8088";
 //		MMSConfiguration.MMS_URL="127.0.0.1:8088";
-		MMSConfiguration.DEBUG = true;
+		MMSConfiguration.DEBUG = false;
 		
 		try {
 			myHandler = new MMSClientHandler(myMRN);
@@ -42,7 +42,6 @@ public class TS3_client {
 				@Override
 				public void callbackMethod(Map<String, List<String>> headerField, List<String> messages) {
 					// TODO Auto-generated method stub					
-					
 					List<String> list = headerField.get("content-length");
 					//System.out.println("list" +list.get(0));		
 															
