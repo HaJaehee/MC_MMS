@@ -178,8 +178,8 @@ public class MMSConfiguration {
 		options.addOption(log_console_out);
 		
 		Option rabbit_mq_host = new Option ("mq", "rabbit_mq_host", true, "Set the host of the Rabbit MQ server.");
-		log_console_out.setRequired(false);
-		options.addOption(log_console_out);
+		rabbit_mq_host.setRequired(false);
+		options.addOption(rabbit_mq_host);
 		
 		CommandLineParser clParser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -208,7 +208,7 @@ public class MMSConfiguration {
 					
 			
 			if (cmd.hasOption("help")) {
-				formatter.printHelp(160, usage, "", options, "");
+				formatter.printHelp(120, usage, "", options, "");
 				Scanner sc = new Scanner(System.in);
 				sc.nextLine();
 				System.exit(0);
