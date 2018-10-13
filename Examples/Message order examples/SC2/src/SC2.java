@@ -115,23 +115,23 @@ public class SC2 {
 			}
 			else if (testNum == 2) { //Short delay
 				thrList.get(0).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(2).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(1).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(3).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(5).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(4).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(8).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(6).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(7).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(9).start();
 			}
 			thrList.get(9).join();
