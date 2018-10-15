@@ -5,6 +5,10 @@ import java.text.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.MMSLog;
+import kr.ac.kaist.mms_server.MMSLogForDebug;
+
 /* -------------------------------------------------------- */
 /** 
 File name : MNSInteractionHandler.java
@@ -32,6 +36,11 @@ Rev. history : 2018-07-27
 Version : 0.7.2
 	Added geocasting features which cast message to circle or polygon area.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-15
+Version : 0.8.0
+	Resolved MAVEN dependency problems with library "net.etri.pkilib".
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -42,6 +51,8 @@ public class MNSInteractionHandler {
 	private LocatorUpdater locatorUpdater = null;
 	private MRNInformationQuerier MRNInfoQuerier = null;
 	private MIH_MessageOutputChannel messageOutput = null;
+	private MMSLog mmsLog = null;
+	private MMSLogForDebug mmsLogForDebug = null;
 	
 	public MNSInteractionHandler(String sessionId) {
 		this.SESSION_ID = sessionId;
@@ -53,6 +64,8 @@ public class MNSInteractionHandler {
 		MRNInfoQuerier = new MRNInformationQuerier();
 		locatorUpdater = new LocatorUpdater(this.SESSION_ID);
 		messageOutput = new MIH_MessageOutputChannel(this.SESSION_ID);
+		mmsLog = MMSLog.getInstance();
+		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 	
 	public String requestIPtoMRN(String ipAddress){
@@ -81,6 +94,12 @@ public class MNSInteractionHandler {
 	@Deprecated
 	public String updateClientInfo(String srcMRN, String srcIP, int srcPort, String srcModel){
 		String msg = locatorUpdater.buildUpdate(srcMRN, srcIP, srcPort, srcModel);
+		if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+			String log = "SessionID="+this.SESSION_ID+" Update client information.";
+			mmsLog.addBriefLogForStatus(log);
+			mmsLogForDebug.addLog(this.SESSION_ID, log);
+		}
+		logger.debug("SessionID="+this.SESSION_ID+" Update client information.");
 		return messageOutput.sendToMNS(msg);
 	}
 

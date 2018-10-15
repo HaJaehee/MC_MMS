@@ -15,7 +15,6 @@
 		<!-- junit.version>4.12</junit.version -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	
 	<dependencies>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -111,14 +110,13 @@
 			<artifactId>osgi.cmpn</artifactId>
 			<version>6.0.0</version>
 
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>net.etri</groupId>
-			<artifactId>certificate_auth</artifactId>
-			<scope>system</scope>
-			<version>1.4</version>
-			<systemPath>${project.basedir}/External Jars/certificate_auth-1.4-SNAPSHOT-jar-with-dependencies.jar</systemPath> 
+			<artifactId>net.etri.pkilib</artifactId>
+
 		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>
@@ -161,6 +159,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
+					
 					<execution>
 						<id>copy</id>
 						<phase>install</phase>
@@ -173,16 +172,23 @@
 							</outputDirectory>
 						</configuration>
 					</execution>
+
 				</executions>
 			</plugin>
-
-
 		</plugins>
-
 	</build>
 
 	<url>https://mms-kaist.com/</url>
 	<name>MMS</name>
 	<description>MMS is abbreviation of Maritime Messaging Service. 
 The MMS is a proposed messaging service intended to offer transparent seamless information transfer across different communication links in a carrier agnostic and geolocation context sensitive manner.</description>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>net.etri</groupId>
+				<artifactId>net.etri.pkilib</artifactId>
+				<version>1.4</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

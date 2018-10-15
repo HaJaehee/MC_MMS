@@ -149,6 +149,11 @@ Rev. history : 2018-10-11
 Version : 0.8.0
 	Modified polling client verification.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-15
+Version : 0.8.0
+	Resolved MAVEN dependency problems with library "net.etri.pkilib".
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -413,6 +418,11 @@ public class MessageRelayingHandler  {
 				parser.parseSvcMRNAndHexSign(req);
 				//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
 				if (parser.getHexSignedData() != null) { //In this version 0.8.0, polling client verification is optional. 
+					if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+						String log = "SessionID="+this.SESSION_ID+" Client verification using MRN="+srcMRN+" and signed data.";
+						mmsLog.addBriefLogForStatus(log);
+						mmsLogForDebug.addLog(this.SESSION_ID, log);
+					}
 					logger.info("SessionID="+this.SESSION_ID+" Client verification using MRN="+srcMRN+" and signed data.");
 					isClientVerified = cltVerifier.verifyClient(srcMRN, parser.getHexSignedData());
 					if (isClientVerified) {
@@ -424,6 +434,13 @@ public class MessageRelayingHandler  {
 						}
 						logger.info("SessionID="+this.SESSION_ID+" Client verification is successed.");
 					} else {
+						//Fail to verify the client.
+						if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+							String log = "SessionID="+this.SESSION_ID+" Client verification is failed.";
+							mmsLog.addBriefLogForStatus(log);
+							mmsLogForDebug.addLog(this.SESSION_ID, log);
+						}
+						logger.info("SessionID="+this.SESSION_ID+" Client verification is failed.");
 						throw new IOException("It is failed to verify the client.");
 					}
 				}
@@ -441,6 +458,9 @@ public class MessageRelayingHandler  {
 					logger.info("SessionID="+this.SESSION_ID+" MMSLogForDebug problem detected with MRN="+svcMRN+".");
 					mmsLogForDebug.removeMrn(svcMRN);
 					mmsLogForDebug.addMrn(svcMRN);
+					
+				}
+				finally {
 					mmsLogForDebug.addSessionId(svcMRN, this.SESSION_ID);
 				}
 				
