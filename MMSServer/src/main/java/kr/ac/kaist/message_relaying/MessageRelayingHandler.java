@@ -162,7 +162,6 @@ import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -180,8 +179,6 @@ import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
 import kr.ac.kaist.seamless_roaming.PollingMethodRegDummy;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
-import net.etri.pkilib.server.ServerPKILibrary;
-import net.etri.pkilib.tool.ByteConverter;
 
 
 public class MessageRelayingHandler  {
@@ -551,12 +548,17 @@ public class MessageRelayingHandler  {
 				int srcPort = parser.getSrcPort();
 				String srcModel = parser.getSrcModel();
 				
-				String res = mch.registerClientInfo(srcMRN, srcIP, srcPort, srcModel);
-				if (res.equals("OK")){
-					message = "Registering succeeded".getBytes();
-				} 
+				if (MMSConfiguration.MNS_HOST().equals("localhost")||MMSConfiguration.MNS_HOST().equals("127.0.0.1")) {
+					String res = mch.registerClientInfo(srcMRN, srcIP, srcPort, srcModel);
+					if (res.equals("OK")){
+						message = "Registering succeeded".getBytes();
+					} 
+					else {
+						message = "Registering failed".getBytes();
+					}
+				}
 				else {
-					message = "Registering failed".getBytes();
+					message = "Invalid message.".getBytes();
 				}
 				
 			} 
