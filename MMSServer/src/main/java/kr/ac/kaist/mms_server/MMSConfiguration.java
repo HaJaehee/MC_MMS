@@ -93,7 +93,7 @@ public class MMSConfiguration {
 	
 	private static int HTTP_PORT = 0;
 	private static int HTTPS_PORT = 0;
-	private static String MNS_HOST = "localhost";//null;
+	private static String MNS_HOST = null;
 	private static int MNS_PORT = 8588; //0;
 	
 	private static String MMS_MRN = null;
@@ -106,7 +106,7 @@ public class MMSConfiguration {
 	private static boolean[] LOG_FILE_OUT = {false, false}; //{isSet, value}
 	private static boolean[] LOG_CONSOLE_OUT = {false, false}; //{isSet, value}
 	
-	private static String RABBIT_MQ_HOST = "localhost";//null;
+	private static String RABBIT_MQ_HOST = null;
 	
 
 
@@ -497,7 +497,7 @@ public class MMSConfiguration {
 			}
 			
 			if (RABBIT_MQ_HOST == null) {
-				RABBIT_MQ_HOST = "rabbitmq-db"; //Default is String "rabbitmq-db".
+				RABBIT_MQ_HOST = "localhost"; //Default is String "localhost".
 			}
 			
 			if (MMS_MRN == null) {
