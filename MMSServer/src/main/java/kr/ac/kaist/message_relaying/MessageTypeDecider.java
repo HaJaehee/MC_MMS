@@ -83,6 +83,11 @@ Rev. history : 2018-07-27
 Version : 0.7.2
 	Added geocasting features which cast message to circle or polygon area.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-15
+Version : 0.8.0
+	Resolved MAVEN dependency problems with library "net.etri.pkilib".
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -198,7 +203,7 @@ class MessageTypeDecider {
 	    	}
 	    	
 			//		when registering
-	    	else if (httpMethod == HttpMethod.POST && uri.equals("/registering")) {
+	    	else if (httpMethod == HttpMethod.POST && uri.equals("/registering")) {  //TODO: will be deprecated.
 	    		return msgType.REGISTER_CLIENT;
 	    	}
 			
