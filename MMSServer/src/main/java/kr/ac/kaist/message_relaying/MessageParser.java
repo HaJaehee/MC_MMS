@@ -84,6 +84,9 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import kr.ac.kaist.message_casting.GeolocationCircleInfo;
 import kr.ac.kaist.message_casting.GeolocationPolygonInfo;
+import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.MMSLog;
+import kr.ac.kaist.mms_server.MMSLogForDebug;
 
 public class MessageParser {
 	
@@ -109,10 +112,11 @@ public class MessageParser {
 	private JSONArray geoDstInfo = null;
 	private double seqNum = -1;
 	private String hexSignedData = null;
-
+	private MMSLog mmsLog = null;
+	private MMSLogForDebug mmsLogForDebug = null;
 
 	MessageParser(){
-		this("");
+		this(null);
 	}
 	
 
@@ -136,6 +140,8 @@ public class MessageParser {
 		geoDstInfo = null;
 		hexSignedData = null;
 		seqNum = -1;
+		mmsLog = MMSLog.getInstance();
+		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 	
 
@@ -170,12 +176,19 @@ public class MessageParser {
 		
 		
 		
-		if (req.headers().get("geocasting") != null) {
+		if (this.SESSION_ID != null && req.headers().get("geocasting") != null) {
 			if (req.headers().get("geocasting").equals("circle")) {
 				isGeocasting = true;
 				try {
 					setGeoCircleInfo(req);
-					logger.debug("SessionID="+this.SESSION_ID+" Geocasting request. Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".");
+					if (logger.isDebugEnabled()) {
+						if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+							String log = "SessionID="+this.SESSION_ID+" Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".";
+							mmsLog.addBriefLogForStatus(log);
+							mmsLogForDebug.addLog(this.SESSION_ID, log);
+						}
+						logger.debug("SessionID="+this.SESSION_ID+" Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".");
+					}
 				} 
 				catch (ParseException e) {
 					logger.warn("SessionID="+this.SESSION_ID+" Failed to parse geolocation info.");
@@ -185,8 +198,33 @@ public class MessageParser {
 				isGeocasting = true;
 				try {
 					setGeoPolygonInfo(req);
-					//TODO
-					logger.debug("SessionID="+this.SESSION_ID+" Geocasting request. Lat="+geoPolygonInfo.getGeoLatList()+", Long="+geoPolygonInfo.getGeoLongList()+".");
+					
+					if (logger.isDebugEnabled()) {
+						float [] geoLatList = geoPolygonInfo.getGeoLatList();
+						float [] geoLongList = geoPolygonInfo.getGeoLongList();
+						StringBuffer strGeoPolyInfo = new StringBuffer();
+						strGeoPolyInfo.append("In header, Lat=[");
+						for (int i = 0 ; i < geoLatList.length ; i++) {
+							strGeoPolyInfo.append("\""+geoLatList[i]+"\"");
+							if (i != geoLatList.length-1) {
+								strGeoPolyInfo.append(",");
+							}
+						}
+						strGeoPolyInfo.append("], Long=[");
+						for (int i = 0 ; i < geoLongList.length ; i++) {
+							strGeoPolyInfo.append("\""+geoLongList[i]+"\"");
+							if (i != geoLongList.length-1) {
+								strGeoPolyInfo.append(",");
+							}
+						}
+						strGeoPolyInfo.append("]");
+						if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+							String log = "SessionID="+this.SESSION_ID+" Geocasting polygon request. "+strGeoPolyInfo.toString()+".";
+							mmsLog.addBriefLogForStatus(log);
+							mmsLogForDebug.addLog(this.SESSION_ID, log);
+						}
+						logger.debug("SessionID="+this.SESSION_ID+" Geocasting polygon request. "+strGeoPolyInfo.toString()+".");
+					}
 				} 
 				catch (ParseException e) {
 					logger.warn("SessionID="+this.SESSION_ID+" Failed to parse geolocation info.");
