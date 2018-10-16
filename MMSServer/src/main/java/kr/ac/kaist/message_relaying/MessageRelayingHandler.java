@@ -154,6 +154,11 @@ Rev. history : 2018-10-15
 Version : 0.8.0
 	Resolved MAVEN dependency problems with library "net.etri.pkilib".
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-16
+Version : 0.8.0
+	Modified in order to interact MNS server.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -562,23 +567,28 @@ public class MessageRelayingHandler  {
 			
 			// TODO this condition has to be deprecated.
 			else if (type == MessageTypeDecider.msgType.REGISTER_CLIENT) {
-				parser.parseSvcMRNAndHexSign(req);
-				
-				
-				int srcPort = parser.getSrcPort();
-				String srcModel = parser.getSrcModel();
-				
 				if (MMSConfiguration.MNS_HOST().equals("localhost")||MMSConfiguration.MNS_HOST().equals("127.0.0.1")) {
-					String res = mch.registerClientInfo(srcMRN, srcIP, srcPort, srcModel);
-					if (res.equals("OK")){
-						message = "Registering succeeded".getBytes();
-					} 
+					parser.parseSvcMRNAndHexSign(req);
+					
+					
+					int srcPort = parser.getSrcPort();
+					String srcModel = parser.getSrcModel();
+					
+					if (MMSConfiguration.MNS_HOST().equals("localhost")||MMSConfiguration.MNS_HOST().equals("127.0.0.1")) {
+						String res = mch.registerClientInfo(srcMRN, srcIP, srcPort, srcModel);
+						if (res.equals("OK")){
+							message = "Registering succeeded".getBytes();
+						} 
+						else {
+							message = "Registering failed".getBytes();
+						}
+					}
 					else {
-						message = "Registering failed".getBytes();
+						message = "Invalid message.".getBytes();
 					}
 				}
 				else {
-					message = "Invalid message.".getBytes();
+					message = "".getBytes();
 				}
 				
 			} 
