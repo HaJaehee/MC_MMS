@@ -57,6 +57,11 @@ Rev. history : 2018-10-11
 Version : 0.8.0
 	Modified polling client verification.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-16
+Version : 0.8.0
+	Modified in order to interact with MNS server.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -210,7 +215,7 @@ public class MessageParser {
 		}
 		String[] sepContent = content.split("\n");
 		if (sepContent.length > 0) {
-			if (!sepContent[0].startsWith("urn")) { //TODO: will be deprecated
+			if (!sepContent[0].toLowerCase().startsWith("urn")) { //TODO: will be deprecated
 				String[] svcMRNInfo = sepContent[0].split(":");
 				srcPort = Integer.parseInt(svcMRNInfo[0]);
 				srcModel = svcMRNInfo[1];
