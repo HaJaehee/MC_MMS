@@ -157,7 +157,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-10-16
 Version : 0.8.0
-	Modified in order to interact MNS server.
+	Modified in order to interact with MNS server.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -570,21 +570,15 @@ public class MessageRelayingHandler  {
 				if (MMSConfiguration.MNS_HOST().equals("localhost")||MMSConfiguration.MNS_HOST().equals("127.0.0.1")) {
 					parser.parseSvcMRNAndHexSign(req);
 					
-					
 					int srcPort = parser.getSrcPort();
 					String srcModel = parser.getSrcModel();
 					
-					if (MMSConfiguration.MNS_HOST().equals("localhost")||MMSConfiguration.MNS_HOST().equals("127.0.0.1")) {
-						String res = mch.registerClientInfo(srcMRN, srcIP, srcPort, srcModel);
-						if (res.equals("OK")){
-							message = "Registering succeeded".getBytes();
-						} 
-						else {
-							message = "Registering failed".getBytes();
-						}
-					}
+					String res = mch.registerClientInfo(srcMRN, srcIP, srcPort, srcModel);
+					if (res != null && res.equals("OK")){
+						message = "Registering succeeded".getBytes();
+					} 
 					else {
-						message = "Invalid message.".getBytes();
+						message = "Registering failed".getBytes();
 					}
 				}
 				else {
