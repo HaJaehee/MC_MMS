@@ -22,6 +22,8 @@ sudo docker volume rm $(sudo docker volume ls -q)
 
 #web and database pre-setting
 sudo ./clear.sh
+sudo tar -hxvf ../MMSMonitor.tar.gz
+
 sudo cp -r ../MMSMonitor/var ./ 
 sudo cp -r ../MMSMonitor/apache2 ./
 sudo cp -r ../MMSMonitor/ssl ./
