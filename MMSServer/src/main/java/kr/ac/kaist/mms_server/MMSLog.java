@@ -341,7 +341,7 @@ public class MMSLog {
 	
 	
 	public void addBriefLogForStatus (String arg) {
-		SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
+		SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm:ss");
 		arg = sdf.format(new Date()) + " " + arg;
 
 		if (briefLogForStatus.size() > MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE()) {
