@@ -137,8 +137,8 @@ public class SecureMMSClientHandler {
 		/**
 		 * Argument list&lt;String&gt; messages means the list of messages about polling response.
 		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for polling response.
-		 * @param headerField
-		 * @param messages
+		 * @param headerField	The received header field of the response message 
+		 * @param messages		The response messages
 		 */
 		void callbackMethod(Map<String,List<String>> headerField, List<String> messages);
 	}
@@ -153,12 +153,25 @@ public class SecureMMSClientHandler {
 		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
 		 * Argument list&lt;String&gt; messages means the list of messages about HTTP requests.
 		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP requests.
-		 * @param headerField
-		 * @param message
-		 * @return
+		 * @param headerField	The received header field of the request message 
+		 * @param message		The request message
+		 * @return String		The response message
 		 */
 		String respondToClient(Map<String,List<String>> headerField, String message);
+		/**
+		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
+		 * Argument list&lt;String&gt; messages means the list of messages about HTTP requests.
+		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP requests.
+		 * @return Integer		The response code
+		 */
 		int setResponseCode();
+		
+		/**
+		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
+		 * Argument list&lt;String&gt; messages means the list of messages about HTTP requests.
+		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP requests.
+		 * @return Map		The header field of the response message.
+		 */
 		Map<String,List<String>> setResponseHeader();
 	}
 	
@@ -171,8 +184,8 @@ public class SecureMMSClientHandler {
 		 * When the server sends a response to the HTTP request sent by the client, the client performs a ResponseCallback.
 		 * Argument list&lt;String&gt; messages means the list of messages about response.
 		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for response.
-		 * @param headerField
-		 * @param message
+		 * @param headerField	The received header field of the response message 
+		 * @param message		The response message
 		 */
 		void callbackMethod(Map<String,List<String>> headerField, String message);
 	}
@@ -216,7 +229,7 @@ public class SecureMMSClientHandler {
 	 * the way of response is different.
 	 * @param	dstMRN			the MRN of MMS to request polling
 	 * @param	svcMRN			the MRN of service, which may send to client
-	 * @param	signedHexData	the hex signed data for client verification
+	 * @param	hexSignedData	the hex signed data for client verification
 	 * @param	interval		the frequency of polling (unit of time: ms)
 	 * @param	callback		the callback interface of {@link PollingResponseCallback}
 	 * @throws	IOException 	if exception occurs
@@ -326,10 +339,13 @@ public class SecureMMSClientHandler {
 	 * It is used in a network that supports push method. This method configures default context and 
 	 * it receives messages that url matches the default context. When a message is received via the 
 	 * callback method, it is possible to handle the response to be sent.
-	 * @param	port			the port number
-	 * @param	fileDirectory	the file path (e.g. /files/ocean/waves/)
-	 * @param	fileName		the file name (e.g. mokpo.xml)
-	 * @throws	IOException 	if exception occurs
+	 * @param	port			The port number
+	 * @param	fileDirectory	The file path (e.g. /files/ocean/waves/)
+	 * @param	fileName		The file name (e.g. mokpo.xml)
+	 * @param 	jksDirectory	The directory of the java key store
+	 * @param	jksPassword		The password of the java key store
+	 * @param 	callback		Callback interface of {@link RequestCallback}
+	 * @throws	IOException 	If exception occurs
 	 * @see 	#addFileContext(String, String)
 	 */	
 	public void setFileServerPort (int port, String fileDirectory, String fileName, String jksDirectory, String jksPassword, RequestCallback callback) throws Exception {
@@ -595,7 +611,7 @@ public class SecureMMSClientHandler {
 	 * @param 	fileName		file path and name (e.g. "/get/test.xml")
 	 * @return					returning result of saving file
 	 * 							<code>null</code> if saving file is failed.
-	 * @throws 	Exception
+	 * @throws 	Exception		Exception while requesting a file
 	 */
 	public String requestFile(String dstMRN, String fileName) throws Exception{
 		if (this.sendHandler == null) {

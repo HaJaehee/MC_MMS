@@ -145,8 +145,8 @@ public class MMSClientHandler {
 		/**
 		 * Argument list&lt;String&gt; messages means the list of messages about polling response.
 		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for polling response.
-		 * @param headerField
-		 * @param messages
+		 * @param headerField	The received header field of the response message 
+		 * @param messages		The response messages
 		 */
 		void callbackMethod(Map<String,List<String>> headerField, List<String> messages);
 	}
@@ -161,12 +161,24 @@ public class MMSClientHandler {
 		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
 		 * Argument list&lt;String&gt; messages means the list of messages about HTTP requests.
 		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP requests.
-		 * @param headerField
-		 * @param message
-		 * @return
+		 * @param headerField	The received header field of the request message 
+		 * @param message		The request message
+		 * @return String		The response message
 		 */
 		String respondToClient(Map<String,List<String>> headerField, String message);
+		/**
+		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
+		 * Argument list&lt;String&gt; messages means the list of messages about HTTP requests.
+		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP requests.
+		 * @return Integer		The response code
+		 */
 		int setResponseCode();
+		/**
+		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
+		 * Argument list&lt;String&gt; messages means the list of messages about HTTP requests.
+		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP requests.
+		 * @return Map		The header field of the response message.
+		 */
 		Map<String,List<String>> setResponseHeader();
 	}
 	
@@ -179,8 +191,8 @@ public class MMSClientHandler {
 		 * When the server sends a response to the HTTP request sent by the client, the client performs a ResponseCallback.
 		 * Argument list&lt;String&gt; messages means the list of messages about response.
 		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for response.
-		 * @param headerField
-		 * @param message
+		 * @param headerField	The received header field of the response message 
+		 * @param message		The response message
 		 */
 		void callbackMethod(Map<String,List<String>> headerField, String message);
 	}
@@ -594,7 +606,7 @@ public class MMSClientHandler {
 	 * @param 	fileName		file path and name (e.g. "/get/test.xml")
 	 * @return					returning result of saving file
 	 * 							<code>null</code> if saving file is failed.
-	 * @throws 	Exception
+	 * @throws 	Exception		Exception while requesting a file
 	 */
 	public String requestFile(String dstMRN, String fileName) throws Exception{
 		if (this.sendHandler == null) {
