@@ -1,27 +1,27 @@
 version: '2'
 
 services:
-  mms_server:
-    image: kaistmms/mmsserver
-    environment:
-      - ENV_MNS_HOST=mns_dummy
-      - ENV_MNS_PORT=8588
-    ports:
-      - "8088:8088"
-    stdin_open: true
-    tty: true
-    volumes:
-      - /var/mms/logs/:/app/mms/logs/
-    links:
-      - rabbitmq-db
-      - mns_dummy
+  #mms_server:
+  #image: kaistmms/mmsserver
+  #environment:
+  #    - ENV_MNS_HOST=mns_dummy
+  #    - ENV_MNS_PORT=8588
+  #  ports:
+  #    - "8088:8088"
+  #  stdin_open: true
+  #  tty: true
+  #  volumes:
+  #    - /var/mms/logs/:/app/mms/logs/
+  #  links:
+  #    - rabbitmq-db
+  #    - mns_dummy
 
-  mns_dummy:
-    image: kaistmms/mnsdummy
-    ports:
-      - "8588:8588"
-    stdin_open: true
-    tty: true
+  #mns_dummy:
+  #image: kaistmms/mnsdummy
+  #ports:
+  #    - "8588:8588"
+  #  stdin_open: true
+  #  tty: true
 
   rabbitmq-db:
     build:
@@ -44,7 +44,7 @@ services:
       WORDPRESS_DB_PASSWORD: root
       WORDPRESS_DB_HOST: db:3306
     volumes:
-      - /var/mms/logs/:/var/mms/logs/ 
+      - ../MMSServer/target/logs:/var/mms/logs/ 
     depends_on:
       - db
     links:

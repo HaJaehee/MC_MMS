@@ -13,17 +13,19 @@ then
 fi
 newdomain=$1
 
-sudo docker stop $(sudo docker ps -a -q)
-sudo docker rm $(sudo docker ps -a -q)
-sudo docker rmi $(sudo docker images -q)
+sudo docker stop $(sudo docker ps | grep -E "scripts_mms_server|mms-monitor|scripts_mns_dummy" | cut -c1-12)
+sudo docker rm $(sudo docker ps --all | grep -E "scripts_mms_server|mms-monitor|scripts_mns_dummy" | cut -c1-12)
+sudo docker rmi $(sudo docker images -q  --filter=reference='scripts_mms_monitor:latest')
+sudo docker rmi $(sudo docker images -q  --filter=reference='kaistmms/mmsserver:latest')
+sudo docker rmi $(sudo docker images -q  --filter=reference='kaistmms/mnsdummy:latest')
 sudo docker-compose stop && sudo docker-compose rm -v
-sudo docker volume rm $(sudo docker volume ls -q)
+sudo docker volume prune
+#sudo docker volume rm $(sudo docker volume ls -q)
 
 
 #web and database pre-setting
 sudo ./clear.sh
-sudo tar -hxvf ../MMSMonitor.tar.gz
-
+sudo tar -hxvf ../MMSMonitor.tar.gz -C ../
 sudo cp -r ../MMSMonitor/var ./ 
 sudo cp -r ../MMSMonitor/apache2 ./
 sudo cp -r ../MMSMonitor/ssl ./
@@ -69,4 +71,14 @@ sudo rm -rf ssl
 sudo rm -rf database.sql
 sudo rm -rf wp-cli.phar
 
+cd ../MMSServer/Linux
+sudo nohup sudo sh ./start_mms.sh &
+sudo nohup sudo sh ./start_mns.sh &
 
+sleep 5
+
+#cd ../target
+#sudo ln -sf $(pwd)/logs /var/mms/logs
+
+cd ../../
+sudo rm -r MMSMonitor
