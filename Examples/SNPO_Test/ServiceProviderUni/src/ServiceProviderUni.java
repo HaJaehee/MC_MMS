@@ -9,8 +9,8 @@ import kr.ac.kaist.mms_client.*;
 
 /* -------------------------------------------------------- */
 /** 
-File name : ServiceProvider.java
-	Service Provider only forwards messages to SC having urn:mrn:imo:imo-no:1000001
+File name : ServiceProviderUni.java
+	Service Provider only forwards messages to SC having urn:mrn:mcl:vessel:dma:poul-lowenorn
 Author : Jaehyun Park (jae519@kaist.ac.kr)
 	Haeun Kim (hukim@kaist.ac.kr)
 	Jaehee Ha (jaehee.ha@kaist.ac.kr)
@@ -37,19 +37,27 @@ Rev. history : 2017-11-21
 Version : 0.7.0
 	Compatible with MMS Client beta-0.7.0.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-21
+Version : 0.8.0
+	Created for SNPO test.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
-public class ServiceProvider {
+public class ServiceProviderUni {
+	static MMSClientHandler sender;
+	static MMSClientHandler server;
 	public static void main(String args[]) throws Exception{
 		String myMRN = "URN:MRN:MCP:Service:Instance:SP-Uni";
 		int port = 8902;
 
-		MMSConfiguration.MMS_URL="211.43.202.193:8088";
+		MMSConfiguration.MMS_URL="143.248.57.144:8088";
+		//MMSConfiguration.MMS_URL="211.43.202.193:8088";
 		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 		
-		MMSClientHandler server = new MMSClientHandler(myMRN);
-		MMSClientHandler sender = new MMSClientHandler(myMRN);
+		server = new MMSClientHandler(myMRN);
+		sender = new MMSClientHandler(myMRN);
 		sender.setSender(new MMSClientHandler.ResponseCallback() {
 			//Response Callback from the request message
 			@Override
@@ -58,8 +66,8 @@ public class ServiceProvider {
 				System.out.println(message);
 			}
 		});
-		String context = "/forwarding";
-		server.setServerPort(port, context, new MMSClientHandler.RequestCallback() {
+		
+		server.setServerPort(port, new MMSClientHandler.RequestCallback() {
 			//Request Callback from the request message
 			//it is called when client receives a message
 			
@@ -79,9 +87,27 @@ public class ServiceProvider {
 					}
 					System.out.println(message);
 
-					//it only forwards messages to sc having urn:mrn:imo:imo-no:1000001
-					//String dstMRN = "urn:mrn:imo:imo-no:1000001";
-					//sender.sendPostMsg(dstMRN, message);
+					
+					new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							//it only forwards messages to sc having urn:mrn:mcl:vessel:dma:poul-lowenorn
+							
+							String dstMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
+							for(int i = 0 ; i < 10 ; i++) {
+								String resMsg = "¾È³ç hi \"hello\" " + i;
+								try {
+									sender.sendPostMsg(dstMRN, resMsg);
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+							
+						}
+					}).start();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
