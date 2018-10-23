@@ -52,7 +52,7 @@ public class SCPoulLowenorn {
 		});
 		
 		String dstMRN = "urn:mrn:mcp:service:instance:sp-uni";
-		String data = "Hello message";
+		String data = "";
 		sender.sendPostMsg(dstMRN, data);
 		
 		
