@@ -51,7 +51,7 @@ public class SCPoulLowenorn {
 			}
 		});
 		
-		String dstMRN = "URN:MRN:MCP:Service:Instance:SP-Uni";
+		String dstMRN = "urn:mrn:mcp:service:instance:sp-uni";
 		String data = "Hello message";
 		sender.sendPostMsg(dstMRN, data);
 		
@@ -79,7 +79,7 @@ public class SCPoulLowenorn {
 		
 		int pollInterval = 1000; // The unit is millisecond. 
 		String dstMRNMMS = "urn:mrn:smart-navi:device:mms1";
-		String svcMRN = "URN:MRN:MCP:Service:Instance:SP-Uni";
+		String svcMRN = "urn:mrn:mcp:service:instance:sp-uni";
 
 		polling.startPolling(dstMRNMMS, svcMRN, hexSignedData_active, pollInterval, 
 				new MMSClientHandler.PollingResponseCallback() {

@@ -18,7 +18,7 @@ public class SC_GEO5 {
 	public static void main(String args[]) throws Exception{
 		String myMRN = "urn:mrn:mcp:vessel:smart:mmsi-440108350";
 	
-		MMSConfiguration.MMS_URL="192.168.202.193:8088";
+		MMSConfiguration.MMS_URL="143.248.57.144:8088";
 		
 		//Service Consumer cannot be HTTP server and should poll from MMS. 
 		MMSClientHandler polling = new MMSClientHandler(myMRN);

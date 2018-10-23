@@ -21,10 +21,11 @@ Creation Date : 2018-07-27
 
 public class ServiceProvider_GEO_Polygon {
 	public static void main(String args[]) throws Exception{
-		String myMRN = "URN:MRN:MCP:Service:Instance:SP-Geo";
-		int port = 8912;
+		String myMRN = "urn:mrn:mcp:service:instance:sp-geo";
+		int port = 8903;
 
-		MMSConfiguration.MMS_URL="211.43.202.193:8088";
+		MMSConfiguration.MMS_URL="143.248.57.144:8088";
+		//MMSConfiguration.MMS_URL="211.43.202.193:8088";
 		MMSConfiguration.DEBUG=true;
 		
 		//MMSClientHandler server = new MMSClientHandler(myMRN);
