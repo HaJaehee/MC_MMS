@@ -52,8 +52,8 @@ public class ServiceProviderUni {
 		String myMRN = "urn:mrn:mcp:service:instance:sp-uni";
 		int port = 8902;
 
-		MMSConfiguration.MMS_URL="143.248.57.144:8088";
-		//MMSConfiguration.MMS_URL="211.43.202.193:8088";
+
+		MMSConfiguration.MMS_URL="211.43.202.193:8088";
 		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 		
 		server = new MMSClientHandler(myMRN);
