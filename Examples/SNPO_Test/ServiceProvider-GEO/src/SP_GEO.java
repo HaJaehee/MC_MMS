@@ -24,7 +24,7 @@ public class SP_GEO {
 		String myMRN = "urn:mrn:mcp:service:instance:sp-geo";
 		int port = 8903;
 
-		MMSConfiguration.MMS_URL="143.248.57.144:8088";
+		MMSConfiguration.MMS_URL="211.43.202.193:8088";
 		MMSConfiguration.DEBUG=true;
 		
 		//MMSClientHandler server = new MMSClientHandler(myMRN);
