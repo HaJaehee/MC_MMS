@@ -1,10 +1,20 @@
 import static org.junit.Assert.*;
 
+
+import java.io.IOException;
+
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+
+/** 
+File name : TS3_Test.java
+	Polling request message function for the purpose of testing MMS
+Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
+Creation Date : 2018-10-13
+*/
 
 @FixMethodOrder(MethodSorters.DEFAULT)
 public class TS3_Test {
@@ -19,219 +29,130 @@ public class TS3_Test {
 		offset = 4;
 	}
 	
-	@Test 
-	public void test01() {
+	@Test
+	public void test01() throws IOException, InterruptedException {		
 		int expected = 0;
-		int actual = 0;
+		int actual = 0;				
+				
+		server.sendContent("file0B.txt",actual);	
+		//Thread.sleep(1000);
 		
-		//System.out.println("send data start");
-		server.sendContent(actual);
-		//System.out.println("send data finish");
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+		System.out.println("response : " +server.getResponse());
 		expected = client.pollingReqeust();		
 		assertTrue(server.getResponse() == 200);		
-		assertTrue(expected==(actual)+offset);
+		assertTrue(expected==(actual)+offset);		
 	}
 	
-	@Test 
-	public void test02() {
+	@Test
+	public void test02() throws IOException {
 		int expected = 0;
-		int actual = 170; //170 byte
-		
-		server.sendContent(actual);
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		expected = client.pollingReqeust();
-		assertTrue(server.getResponse() == 200);
-		assertTrue(expected==(actual + offset));
+		int actual = 170;				
+				
+		server.sendContent("file170B.txt",actual);	
+		expected = client.pollingReqeust();		
+		System.out.println("expected : " +expected);
+		assertTrue(server.getResponse() == 200);		
+		assertTrue(expected==(actual)+offset);					
 	}
-	
-	@Test 
-	public void test03() {
+	@Test
+	public void test03() throws IOException {
 		int expected = 0;
-		int actual = 3072; //3Kbyte
-		
-		server.sendContent(actual);
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		expected = client.pollingReqeust();
-		assertTrue(server.getResponse() == 200);
-		assertTrue(expected==(actual + offset));
+		int actual = 3*1024;				
+				
+		server.sendContent("file3KB.txt",actual);	
+		expected = client.pollingReqeust();		
+		assertTrue(server.getResponse() == 200);		
+		assertTrue(expected==(actual)+offset);			
 	}
-	
-	@Test 
-	public void test04() {
+	@Test
+	public void test04() throws IOException {
 		int expected = 0;
-		int actual = 204800; //200Kbyte
-		
-		server.sendContent(actual);
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		expected = client.pollingReqeust();
-	
-		assertTrue(server.getResponse() == 200);
-		assertTrue(expected==(actual + offset));
+		int actual = 200*1024;				
+				
+		server.sendContent("file200KB.txt",actual);	
+		expected = client.pollingReqeust();		
+		assertTrue(server.getResponse() == 200);		
+		assertTrue(expected==(actual)+offset);				
 	}
-	
-	@Test 
-	public void test05() {
+	@Test
+	public void test05() throws IOException {
 		int expected = 0;
-		int actual = 512000; // 500Kbyte
-		
-		server.sendContent(actual);
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		expected = client.pollingReqeust();
-		
-		assertTrue(server.getResponse() == 200);
-		assertTrue(expected==(actual + offset));
+		int actual = 500*1024;				
+				
+		server.sendContent("file500KB.txt",actual);	
+		expected = client.pollingReqeust();		
+		assertTrue(server.getResponse() == 200);		
+		assertTrue(expected==(actual)+offset);		
 	}
-	
-	@Test 
-	public void test06() {
+	@Test
+	public void test06() throws IOException {
 		int expected = 0;
-		int actual = 2097152; // 2Mbyte
-		
-		server.sendContent(actual);
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		expected = client.pollingReqeust();
-		
-		assertTrue(server.getResponse() == 200);
-		assertTrue(expected==(actual + offset));
+		int actual = 2*1024*1024;				
+				
+		server.sendContent("file2MB.txt",actual);	
+		expected = client.pollingReqeust();		
+		assertTrue(server.getResponse() == 200);		
+		assertTrue(expected==(actual)+offset);		
 	}
-	
-	@Test 
-	public void test07() {
+	@Test
+	public void test07() throws IOException {
 		int expected = 0;
-		int actual = 7340032; // 7Mbyte
-		
-		server.sendContent(actual);
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		expected = client.pollingReqeust();
-		
-		assertTrue(server.getResponse() == 200);
-		assertTrue(expected==(actual + offset));
+		int actual = 7*1024*1024;				
+				
+		server.sendContent("file7MB.txt",actual);	
+		expected = client.pollingReqeust();		
+		assertTrue(server.getResponse() == 200);		
+		assertTrue(expected==(actual)+offset);		
 	}
-	
-	@Test 
-	public void test08() {
+	@Test
+	public void test08() throws IOException {
 		int expected = 0;
-		int actual = 10485760; // 10Mbyte
-		
-		server.sendContent(actual);
-		try {
-			Thread.sleep(2000);	
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		expected = client.pollingReqeust();
-		
-		assertTrue(server.getResponse() == 200);
-		assertTrue(expected==(actual + offset));
+		int actual = 10*1024*1024;				
+				
+		server.sendContent("file10MB.txt",actual);	
+		expected = client.pollingReqeust();		
+		assertTrue(server.getResponse() == 200);		
+		assertTrue(expected==(actual)+offset);	
 	}
-	
-	@Test 
-	public void test09() {
+	@Test
+	public void test09() throws IOException {
 		int expected = 0;
-		int actual = 20971520; // 20Mbyte
-		
-		server.sendContent(actual);
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		expected = client.pollingReqeust();
-		
-		assertTrue(server.getResponse() == 200);
-		assertTrue(expected==(actual + offset));
+		int actual = 20*1024*1024;				
+				
+		server.sendContent("file20MB.txt",actual);	
+		expected = client.pollingReqeust();		
+		assertTrue(server.getResponse() == 200);		
+		assertTrue(expected==(actual)+offset);		
 	}
-	
-	@Test 
-	public void test10() {
+	@Test
+	public void test10() throws IOException {
 		int expected = 0;
-		int actual = 31457280; // 30Mbyte
-		
-		server.sendContent(actual);
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		expected = client.pollingReqeust();
-		
-		assertTrue(server.getResponse() == 200);
-		assertTrue(expected==(actual + offset));
+		int actual = 30*1024*1024;				
+				
+		server.sendContent("file30MB.txt",actual);	
+		expected = client.pollingReqeust();		
+		assertTrue(server.getResponse() == 200);		
+		assertTrue(expected==(actual)+offset);		
 	}
-	
-	@Test 
-	public void test11() {
+	@Test
+	public void test11() throws IOException {
 		int expected = 0;
-		int actual = 41943040; // 40Mbyte
-		
-		server.sendContent(actual);
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		expected = client.pollingReqeust();
-		
-		assertTrue(server.getResponse() == 200);
-		assertTrue(expected==(actual + offset));
+		int actual = 40*1024*1024;				
+				
+		server.sendContent("file40MB.txt",actual);	
+		expected = client.pollingReqeust();		
+		assertTrue(server.getResponse() == 200);		
+		assertTrue(expected==(actual)+offset);	
 	}
-	
-	@Test 
-	public void test12() {
+	@Test
+	public void test12() throws IOException {
 		int expected = 0;
-		int actual = 52428800; // 50Mbyte
+		int actual = 50*1024*1024;				
+				
+		server.sendContent("file50MB.txt",actual);			
 		
-		server.sendContent(actual);
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		assertTrue(server.getResponse() == 413);
 		
-//		expected = client.pollingReqeust();
-//		assertTrue(expected==(actual + offset));
 		
 	}
 	

@@ -67,6 +67,7 @@ public class MMSServer {
 			
 			
 			logger.error("MUST check that MNS server is online="+MMSConfiguration.MNS_HOST()+":"+MMSConfiguration.MNS_PORT()+".");
+			logger.error("MUST check that Rabbit MQ server is online="+MMSConfiguration.RABBIT_MQ_HOST()+":5672.");
 			
 			try {
 				InetAddress ip = InetAddress.getByName(MMSConfiguration.MNS_HOST());

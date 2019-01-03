@@ -9,36 +9,11 @@ import kr.ac.kaist.mms_client.MMSConfiguration;
 /* -------------------------------------------------------- */
 /** 
 File name : SC2.java
-	Service Consumer which can only send messages
-Author : Jaehyun Park (jae519@kaist.ac.kr)
-	Haeun Kim (hukim@kaist.ac.kr)
-	Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2016-12-03
+	Service Consumer which can only send messages.
+	Added API; message sender guarantees message sequence.
+Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2018-07-19
 
-Rev. history : 2017-02-01 - Second Issue
-Version : 0.3.01
-
-Rev. history : 2017-04-20 
-Version : 0.5.0
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-04-25
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-06-18
-Version : 0.5.6
-	Changed the variable Map<String,String> headerField to Map<String,List<String>>
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-11-21
-Version : 0.7.0
-	Compatible with MMS Client beta-0.7.0.
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
-
-Rev. history : 2018-07-19
-Version : 0.7.2
-	Added API; message sender guarantees message sequence .
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -115,23 +90,23 @@ public class SC2 {
 			}
 			else if (testNum == 2) { //Short delay
 				thrList.get(0).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(2).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(1).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(3).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(5).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(4).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(8).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(6).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(7).start();
-				Thread.sleep(100);
+				Thread.sleep(500);
 				thrList.get(9).start();
 			}
 			thrList.get(9).join();

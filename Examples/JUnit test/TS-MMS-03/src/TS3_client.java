@@ -12,6 +12,11 @@ File name : TS3_client.java
 	Polling request message function for the purpose of testing MMS
 Author : Jin Jeong (jungst0001@kaist.ac.kr)
 Creation Date : 2017-11-06
+
+Rev.history :2018-10-13
+Version : 0.8.0
+Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
+
 */
 
 public class TS3_client {
@@ -37,16 +42,11 @@ public class TS3_client {
 				@Override
 				public void callbackMethod(Map<String, List<String>> headerField, List<String> messages) {
 					// TODO Auto-generated method stub					
-					
 					List<String> list = headerField.get("content-length");
-					System.out.println("list" +list.get(0));		
+					//System.out.println("list" +list.get(0));		
 															
 				
-					if(list != null){
-						//System.out.println("list" +list.get(0));
-						
-						//System.out.println("message : "+messages.get(0));
-						
+					if(list != null){						
 						content_length = Integer.parseInt(list.get(0));
 						
 						length = content_length;

@@ -162,9 +162,16 @@ public class MMSLog {
 		
 		if (mrn.equals("")) {
 			
-			status.append("<strong>Maritime Name System Dummy:</strong><br/>");
-			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
-			status.append(dumpMNS());
+			
+			if (MMSConfiguration.MNS_HOST().equals("localhost") || MMSConfiguration.MNS_HOST().equals("127.0.0.1")) {
+				status.append("<strong>Maritime Name System Dummy:</strong><br/>");
+				status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
+				status.append(dumpMNS());
+			}
+			else {
+				status.append("<strong>Maritime Name System:</strong><br/>");
+				status.append("MNS host="+MMSConfiguration.MNS_HOST()+":"+MMSConfiguration.MNS_PORT()+"<br/>");
+			}
 			status.append("</div>");
 			status.append("<br/>");
 			
@@ -334,7 +341,7 @@ public class MMSLog {
 	
 	
 	public void addBriefLogForStatus (String arg) {
-		SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm");
+		SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm:ss");
 		arg = sdf.format(new Date()) + " " + arg;
 
 		if (briefLogForStatus.size() > MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE()) {

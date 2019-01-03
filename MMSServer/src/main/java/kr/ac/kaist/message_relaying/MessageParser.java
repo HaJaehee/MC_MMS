@@ -47,9 +47,25 @@ Rev. history : 2018-07-27
 Version : 0.7.2
 	Added geocasting features which cast message to circle or polygon area.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-05
+Version : 0.8.0
+	Added polling client verification optionally.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-11
+Version : 0.8.0
+	Modified polling client verification.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-16
+Version : 0.8.0
+	Modified in order to interact with MNS server.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -66,6 +82,11 @@ import org.slf4j.LoggerFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
+import kr.ac.kaist.message_casting.GeolocationCircleInfo;
+import kr.ac.kaist.message_casting.GeolocationPolygonInfo;
+import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.MMSLog;
+import kr.ac.kaist.mms_server.MMSLogForDebug;
 
 public class MessageParser {
 	
@@ -90,10 +111,12 @@ public class MessageParser {
 	private GeolocationPolygonInfo geoPolygonInfo = null;
 	private JSONArray geoDstInfo = null;
 	private double seqNum = -1;
-
+	private String hexSignedData = null;
+	private MMSLog mmsLog = null;
+	private MMSLogForDebug mmsLogForDebug = null;
 
 	MessageParser(){
-		this("");
+		this(null);
 	}
 	
 
@@ -115,7 +138,10 @@ public class MessageParser {
 		geoCircleInfo = null;
 		geoPolygonInfo = null;
 		geoDstInfo = null;
+		hexSignedData = null;
 		seqNum = -1;
+		mmsLog = MMSLog.getInstance();
+		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 	
 
@@ -150,12 +176,19 @@ public class MessageParser {
 		
 		
 		
-		if (req.headers().get("geocasting") != null) {
+		if (this.SESSION_ID != null && req.headers().get("geocasting") != null) {
 			if (req.headers().get("geocasting").equals("circle")) {
 				isGeocasting = true;
 				try {
 					setGeoCircleInfo(req);
-					logger.debug("SessionID="+this.SESSION_ID+" Geocasting request. Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".");
+					if (logger.isDebugEnabled()) {
+						if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+							String log = "SessionID="+this.SESSION_ID+" Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".";
+							mmsLog.addBriefLogForStatus(log);
+							mmsLogForDebug.addLog(this.SESSION_ID, log);
+						}
+						logger.debug("SessionID="+this.SESSION_ID+" Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".");
+					}
 				} 
 				catch (ParseException e) {
 					logger.warn("SessionID="+this.SESSION_ID+" Failed to parse geolocation info.");
@@ -165,8 +198,33 @@ public class MessageParser {
 				isGeocasting = true;
 				try {
 					setGeoPolygonInfo(req);
-					//TODO
-					logger.debug("SessionID="+this.SESSION_ID+" Geocasting request. Lat="+geoPolygonInfo.getGeoLatList()+", Long="+geoPolygonInfo.getGeoLongList()+".");
+					
+					if (logger.isDebugEnabled()) {
+						float [] geoLatList = geoPolygonInfo.getGeoLatList();
+						float [] geoLongList = geoPolygonInfo.getGeoLongList();
+						StringBuffer strGeoPolyInfo = new StringBuffer();
+						strGeoPolyInfo.append("In header, Lat=[");
+						for (int i = 0 ; i < geoLatList.length ; i++) {
+							strGeoPolyInfo.append("\""+geoLatList[i]+"\"");
+							if (i != geoLatList.length-1) {
+								strGeoPolyInfo.append(",");
+							}
+						}
+						strGeoPolyInfo.append("], Long=[");
+						for (int i = 0 ; i < geoLongList.length ; i++) {
+							strGeoPolyInfo.append("\""+geoLongList[i]+"\"");
+							if (i != geoLongList.length-1) {
+								strGeoPolyInfo.append(",");
+							}
+						}
+						strGeoPolyInfo.append("]");
+						if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+							String log = "SessionID="+this.SESSION_ID+" Geocasting polygon request. "+strGeoPolyInfo.toString()+".";
+							mmsLog.addBriefLogForStatus(log);
+							mmsLogForDebug.addLog(this.SESSION_ID, log);
+						}
+						logger.debug("SessionID="+this.SESSION_ID+" Geocasting polygon request. "+strGeoPolyInfo.toString()+".");
+					}
 				} 
 				catch (ParseException e) {
 					logger.warn("SessionID="+this.SESSION_ID+" Failed to parse geolocation info.");
@@ -180,20 +238,40 @@ public class MessageParser {
 			isGeocasting = false;
 		}
 		
+		
+		
+		
 		uri = req.uri();
 		httpMethod = req.method();
 	}
 	
-	void parseLocInfo(FullHttpRequest req){
-		String locInfo = req.content().toString(Charset.forName("UTF-8")).trim();
-		
-		String[] locInforms = locInfo.split(":");
-		srcPort = Integer.parseInt(locInforms[0]);
-		srcModel = locInforms[1];
-		if (locInforms.length > 2) {
-			svcMRN = locInforms[2];
-			for ( int i = 3; i<locInforms.length; i++){
-				svcMRN += ":"+locInforms[i];
+	void parseSvcMRNAndHexSign(FullHttpRequest req) throws IOException{
+		String content = req.content().toString(Charset.forName("UTF-8")).trim();
+
+		if (content.length() == 0) {
+			throw new IOException ("Invalid content.");
+		}
+		String[] sepContent = content.split("\n");
+		if (sepContent.length > 0) {
+			if (!sepContent[0].toLowerCase().startsWith("urn")) { //TODO: will be deprecated
+				String[] svcMRNInfo = sepContent[0].split(":");
+				srcPort = Integer.parseInt(svcMRNInfo[0]);
+				srcModel = svcMRNInfo[1];
+				if (svcMRNInfo.length > 2) {
+					svcMRN = svcMRNInfo[2];
+					for ( int i = 3; i<svcMRNInfo.length; i++){
+						svcMRN += ":"+svcMRNInfo[i];
+					}
+				}
+			}
+			else {
+				srcPort = 0;
+				srcModel = "1";
+				svcMRN = sepContent[0];
+			}
+			
+			if (sepContent.length > 1 && sepContent[1].length()>0) {
+				hexSignedData = sepContent[1];
 			}
 		}
 
@@ -341,5 +419,9 @@ public class MessageParser {
 	
 	public JSONArray getGeoDstInfo () {
 		return geoDstInfo;
+	}
+	
+	public String getHexSignedData () {
+		return hexSignedData;
 	}
 }

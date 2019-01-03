@@ -33,6 +33,12 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed EXPOSURE_OF_SYSTEM_DATA hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+
+Rev. history : 2018-10-11
+Version : 0.8.0
+	Modified polling client verification.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -68,12 +74,18 @@ class MMSPollHandler {
 		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Polling handler is created");}
 	}
 	
+	MMSPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, int clientPort, int msgType, Map<String,List<String>> headerField) throws IOException{
+		String svcMRNWithHexSign = svcMRN+"\n"+hexSignedData;
+		ph = new PollHandler(clientMRN, dstMRN, svcMRNWithHexSign, interval, clientPort, msgType, headerField);
+		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Polling handler is created");}
+	}
 	//HJH
+	
     class PollHandler extends Thread{
 		private int interval = 0;
 		private String clientMRN = null;
 		private String dstMRN = null;
-		private String svcMRN = null;
+		private String svcMRNWithHexSign = null;
 		private int clientPort = 0;
 		private int clientModel = 0;
 		private boolean interrupted=false;
@@ -81,11 +93,11 @@ class MMSPollHandler {
 		MMSClientHandler.PollingResponseCallback myCallback = null;
 		
 
-    	PollHandler (String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int clientModel, Map<String,List<String>> headerField){
+    	PollHandler (String clientMRN, String dstMRN, String svcMRNWithHexSign, int interval, int clientPort, int clientModel, Map<String,List<String>> headerField){
     		this.interval = interval;
     		this.clientMRN = clientMRN;
     		this.dstMRN = dstMRN;
-    		this.svcMRN = svcMRN;
+    		this.svcMRNWithHexSign = svcMRNWithHexSign;
     		this.clientPort = clientPort;
     		this.clientModel = clientModel;
     		this.headerField = headerField;
@@ -123,10 +135,10 @@ class MMSPollHandler {
 				String url = "http://"+MMSConfiguration.MMS_URL+"/polling"; // MMS Server
 				URL obj = new URL(url);
 				String data;
-				if (svcMRN != null){
-					data = (clientPort + ":" + clientModel + ":" + svcMRN); //To do: add geographical info, channel info, etc. 
-				} else {
-					data = (clientPort + ":" + clientModel + ":");
+				if (svcMRNWithHexSign != null){
+					data = svcMRNWithHexSign; //To do: add geographical info, channel info, etc. 
+				} else { //TODO: will be deprecated
+					data = clientPort + ":" + clientModel + ":";
 				}
 				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 				

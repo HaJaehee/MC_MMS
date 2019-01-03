@@ -139,6 +139,26 @@ Rev. history : 2018-07-27
 Version : 0.7.2
 	Added geocasting features which cast message to circle or polygon area.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-05
+Version : 0.8.0
+	Added polling client verification optionally.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-11
+Version : 0.8.0
+	Modified polling client verification.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-15
+Version : 0.8.0
+	Resolved MAVEN dependency problems with library "net.etri.pkilib".
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-16
+Version : 0.8.0
+	Modified in order to interact with MNS server.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -146,11 +166,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -180,6 +201,7 @@ public class MessageRelayingHandler  {
 	private MessageParser parser = null;
 	private MessageTypeDecider typeDecider = null;
 	private MRH_MessageOutputChannel outputChannel = null;
+	private ClientVerifier cltVerifier = null;
 	
 	private SeamlessRoamingHandler srh = null;
 	private MessageCastingHandler mch = null;
@@ -188,6 +210,9 @@ public class MessageRelayingHandler  {
 	private MMSLogForDebug mmsLogForDebug = null;
 	
 	private String protocol = "";
+	
+	private boolean isClientVerified = false;
+
 	
 	public MessageRelayingHandler(ChannelHandlerContext ctx, FullHttpRequest req, String protocol, String sessionId) {		
 		this.protocol = protocol;
@@ -229,11 +254,11 @@ public class MessageRelayingHandler  {
 	}
 	
 	private void initializeSubModule() {
-//		parser = new MessageParser(this.SESSION_ID);
+		parser = new MessageParser(this.SESSION_ID);
 		sessionBlocker = new Thread();
-		parser = new MessageParser();
 		typeDecider = new MessageTypeDecider(this.SESSION_ID);
 		outputChannel = new MRH_MessageOutputChannel(this.SESSION_ID);
+		cltVerifier = new ClientVerifier();
 	}
 
 	private void processRelaying(MessageTypeDecider.msgType type, ChannelHandlerContext ctx, FullHttpRequest req){
@@ -394,7 +419,37 @@ public class MessageRelayingHandler  {
 				message = "Error: Null destination MRN.".getBytes(Charset.forName("UTF-8"));
 			}
 			else if (type == MessageTypeDecider.msgType.POLLING) {
-				parser.parseLocInfo(req);
+				parser.parseSvcMRNAndHexSign(req);
+				//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
+				if (parser.getHexSignedData() != null) { //In this version 0.8.0, polling client verification is optional. 
+					if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+						String log = "SessionID="+this.SESSION_ID+" Client verification using MRN="+srcMRN+" and signed data.";
+						mmsLog.addBriefLogForStatus(log);
+						mmsLogForDebug.addLog(this.SESSION_ID, log);
+					}
+					logger.info("SessionID="+this.SESSION_ID+" Client verification using MRN="+srcMRN+" and signed data.");
+					isClientVerified = cltVerifier.verifyClient(srcMRN, parser.getHexSignedData());
+					if (isClientVerified) {
+						//Success verifying the client.
+						if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+							String log = "SessionID="+this.SESSION_ID+" Client verification is successed.";
+							mmsLog.addBriefLogForStatus(log);
+							mmsLogForDebug.addLog(this.SESSION_ID, log);
+						}
+						logger.info("SessionID="+this.SESSION_ID+" Client verification is successed.");
+					} else {
+						//Fail to verify the client.
+						if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+							String log = "SessionID="+this.SESSION_ID+" Client verification is failed.";
+							mmsLog.addBriefLogForStatus(log);
+							mmsLogForDebug.addLog(this.SESSION_ID, log);
+						}
+						logger.info("SessionID="+this.SESSION_ID+" Client verification is failed.");
+						throw new IOException("It is failed to verify the client.");
+					}
+				}
+				
+				
 				
 				int srcPort = parser.getSrcPort();
 				String srcModel = parser.getSrcModel();
@@ -407,6 +462,9 @@ public class MessageRelayingHandler  {
 					logger.info("SessionID="+this.SESSION_ID+" MMSLogForDebug problem detected with MRN="+svcMRN+".");
 					mmsLogForDebug.removeMrn(svcMRN);
 					mmsLogForDebug.addMrn(svcMRN);
+					
+				}
+				finally {
 					mmsLogForDebug.addSessionId(svcMRN, this.SESSION_ID);
 				}
 				
@@ -508,18 +566,22 @@ public class MessageRelayingHandler  {
 			
 			// TODO this condition has to be deprecated.
 			else if (type == MessageTypeDecider.msgType.REGISTER_CLIENT) {
-				parser.parseLocInfo(req);
-				
-				
-				int srcPort = parser.getSrcPort();
-				String srcModel = parser.getSrcModel();
-				
-				String res = mch.registerClientInfo(srcMRN, srcIP, srcPort, srcModel);
-				if (res.equals("OK")){
-					message = "Registering succeeded".getBytes();
-				} 
+				if (MMSConfiguration.MNS_HOST().equals("localhost")||MMSConfiguration.MNS_HOST().equals("127.0.0.1")) {
+					parser.parseSvcMRNAndHexSign(req);
+					
+					int srcPort = parser.getSrcPort();
+					String srcModel = parser.getSrcModel();
+					
+					String res = mch.registerClientInfo(srcMRN, srcIP, srcPort, srcModel);
+					if (res != null && res.equals("OK")){
+						message = "Registering succeeded".getBytes();
+					} 
+					else {
+						message = "Registering failed".getBytes();
+					}
+				}
 				else {
-					message = "Registering failed".getBytes();
+					message = "".getBytes();
 				}
 				
 			} 
@@ -746,6 +808,11 @@ public class MessageRelayingHandler  {
 			
 		} 
 		catch (NullPointerException | IOException e) {
+			if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+				String log = "SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".";
+				mmsLog.addBriefLogForStatus(log);
+				mmsLogForDebug.addLog(this.SESSION_ID, log);
+			}
 			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".");
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
@@ -756,7 +823,7 @@ public class MessageRelayingHandler  {
 				if (message == null) {
 					message = "INVALID MESSAGE.".getBytes();
 					logger.info("SessionID="+this.SESSION_ID+" "+"INVALID MESSAGE.");
-					outputChannel.replyToSender(ctx, message, isRealtimeLog, 400);
+					outputChannel.replyToSender(ctx, message, isRealtimeLog); //TODO: MUST HAVE MORE DEFINED EXCEPTION MESSAGES.
 				}
 				else {
 					outputChannel.replyToSender(ctx, message, isRealtimeLog);
@@ -782,6 +849,17 @@ public class MessageRelayingHandler  {
 						}
 					}
 				}
+			}
+			
+			//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
+			//In this version 0.8.0, polling client verification is optional. 
+			if (type == MessageTypeDecider.msgType.POLLING && parser.getHexSignedData() != null && !isClientVerified) {
+				String msg = "";
+				try {
+					msg = "[\""+URLEncoder.encode("It is failed to verify the client.","UTF-8")+"\"]";
+				} catch (UnsupportedEncodingException e) {
+				}
+				outputChannel.replyToSender(ctx, msg.getBytes(), isRealtimeLog);
 			}
 		}
 	}

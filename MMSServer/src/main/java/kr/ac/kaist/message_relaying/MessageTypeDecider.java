@@ -83,6 +83,16 @@ Rev. history : 2018-07-27
 Version : 0.7.2
 	Added geocasting features which cast message to circle or polygon area.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-15
+Version : 0.8.0
+	Resolved MAVEN dependency problems with library "net.etri.pkilib".
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-16
+Version : 0.8.0
+	Modified in order to interact with MNS server.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -91,6 +101,8 @@ import java.text.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.netty.handler.codec.http.HttpMethod;
+import kr.ac.kaist.message_casting.GeolocationCircleInfo;
+import kr.ac.kaist.message_casting.GeolocationPolygonInfo;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 
@@ -196,7 +208,7 @@ class MessageTypeDecider {
 	    	}
 	    	
 			//		when registering
-	    	else if (httpMethod == HttpMethod.POST && uri.equals("/registering")) {
+	    	else if (httpMethod == HttpMethod.POST && uri.equals("/registering") ) {  //TODO: will be deprecated.
 	    		return msgType.REGISTER_CLIENT;
 	    	}
 			

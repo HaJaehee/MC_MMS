@@ -45,11 +45,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.21</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
 			<version>1.7.21</version>
 		</dependency>
@@ -115,11 +110,14 @@
 			<artifactId>osgi.cmpn</artifactId>
 			<version>6.0.0</version>
 
+		</dependency>		
+		<dependency>
+			<groupId>net.etri</groupId>
+			<artifactId>net.etri.pkilib</artifactId>
+
 		</dependency>
 
-
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -161,6 +159,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
+					
 					<execution>
 						<id>copy</id>
 						<phase>install</phase>
@@ -173,16 +172,23 @@
 							</outputDirectory>
 						</configuration>
 					</execution>
+
 				</executions>
 			</plugin>
-
-
 		</plugins>
-
 	</build>
 
 	<url>https://mms-kaist.com/</url>
 	<name>MMS</name>
 	<description>MMS is abbreviation of Maritime Messaging Service. 
 The MMS is a proposed messaging service intended to offer transparent seamless information transfer across different communication links in a carrier agnostic and geolocation context sensitive manner.</description>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>net.etri</groupId>
+				<artifactId>net.etri.pkilib</artifactId>
+				<version>1.4</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

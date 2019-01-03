@@ -10,38 +10,10 @@ import kr.ac.kaist.mms_client.*;
 /* -------------------------------------------------------- */
 /** 
 File name : ServiceProvider.java
-	Service Provider only forwards messages to SC having urn:mrn:imo:imo-no:1000001
-Author : Jaehyun Park (jae519@kaist.ac.kr)
-	Haeun Kim (hukim@kaist.ac.kr)
-	Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2016-12-03
-
-Rev. history : 2017-02-01
-Version : 0.3.01
-	Added header field features.
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-04-20 
-Version : 0.5.0
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-04-25
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-05-02
-Version : 0.5.4
-	Added setting response header
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-11-21
-Version : 0.7.0
-	Compatible with MMS Client beta-0.7.0.
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2018-07-19
-Version : 0.7.2
-	Added API; message sender guarantees message sequence .
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+	Service Provider only receives messages.
+	Added API; message sender guarantees message sequence.
+Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2018-07-19
 */
 /* -------------------------------------------------------- */
 

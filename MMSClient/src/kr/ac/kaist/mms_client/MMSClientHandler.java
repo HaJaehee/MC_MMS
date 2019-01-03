@@ -92,6 +92,11 @@ Rev. history : 2018-07-27
 Version : 0.7.2
 	Modified the awkward meaning of sentence
 Modifier : Kyungjun Park (kjpark525@kaist.ac.kr)
+
+Rev. history : 2018-10-11
+Version : 0.8.0
+	Modified polling client verification.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -102,7 +107,7 @@ import java.util.Map;
 
 /**
  * It is an object that can communicate to MMS through HTTP and send or receive messages of other objects.
- * @version 0.7.3
+ * @version 0.8.0
  * @see SecureMMSClientHandler
  */
 public class MMSClientHandler {
@@ -140,8 +145,8 @@ public class MMSClientHandler {
 		/**
 		 * Argument list&lt;String&gt; messages means the list of messages about polling response.
 		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for polling response.
-		 * @param headerField
-		 * @param messages
+		 * @param headerField	The received header field of the response message 
+		 * @param messages		The response messages
 		 */
 		void callbackMethod(Map<String,List<String>> headerField, List<String> messages);
 	}
@@ -156,12 +161,24 @@ public class MMSClientHandler {
 		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
 		 * Argument list&lt;String&gt; messages means the list of messages about HTTP requests.
 		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP requests.
-		 * @param headerField
-		 * @param message
-		 * @return
+		 * @param headerField	The received header field of the request message 
+		 * @param message		The request message
+		 * @return String		The response message
 		 */
 		String respondToClient(Map<String,List<String>> headerField, String message);
+		/**
+		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
+		 * Argument list&lt;String&gt; messages means the list of messages about HTTP requests.
+		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP requests.
+		 * @return Integer		The response code
+		 */
 		int setResponseCode();
+		/**
+		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
+		 * Argument list&lt;String&gt; messages means the list of messages about HTTP requests.
+		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP requests.
+		 * @return Map		The header field of the response message.
+		 */
 		Map<String,List<String>> setResponseHeader();
 	}
 	
@@ -174,8 +191,8 @@ public class MMSClientHandler {
 		 * When the server sends a response to the HTTP request sent by the client, the client performs a ResponseCallback.
 		 * Argument list&lt;String&gt; messages means the list of messages about response.
 		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for response.
-		 * @param headerField
-		 * @param message
+		 * @param headerField	The received header field of the response message 
+		 * @param message		The response message
 		 */
 		void callbackMethod(Map<String,List<String>> headerField, String message);
 	}
@@ -204,6 +221,36 @@ public class MMSClientHandler {
 				return;
 			}
 			this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
+			this.pollHandler.ph.setPollingResponseCallback(callback);
+			this.pollHandler.ph.start();
+		}
+	}
+	
+	/**
+	 * This method helps client to request polling. If setting this method, send polling request
+	 * per interval. If MMS receives a Polling Request message and send a message to the client,
+ 	 * that message can be handled in the Callback Method.
+	 * @param	dstMRN			the MRN of MMS to request polling
+	 * @param	svcMRN			the MRN of service, which may send to client
+	 * @param	hexSignedData	the hex signed data for client verification
+	 * @param	interval		the frequency of polling (unit of time: ms)
+	 * @param	callback		the callback interface of {@link PollingResponseCallback}
+	 * @throws	IOException 	if exception occurs
+	 * @see 	PollingResponseCallback
+	 */	
+	public void startPolling (String dstMRN, String svcMRN, String hexSignedData, int interval, PollingResponseCallback callback) throws IOException{
+		if (this.sendHandler != null) {
+			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
+		} else if (this.rcvHandler != null) {
+			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
+		} else {
+			if (interval == 0) {
+				System.out.println(TAG+"Long-polling mode"); //TODO: Long-polling could have trouble when session disconnect.
+			} else if (interval < 0){
+				System.out.println(TAG+"Failed! Polling interval must be 0 or positive integer");
+				return;
+			}
+			this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, hexSignedData, interval, headerField);
 			this.pollHandler.ph.setPollingResponseCallback(callback);
 			this.pollHandler.ph.start();
 		}
@@ -559,7 +606,7 @@ public class MMSClientHandler {
 	 * @param 	fileName		file path and name (e.g. "/get/test.xml")
 	 * @return					returning result of saving file
 	 * 							<code>null</code> if saving file is failed.
-	 * @throws 	Exception
+	 * @throws 	Exception		Exception while requesting a file
 	 */
 	public String requestFile(String dstMRN, String fileName) throws Exception{
 		if (this.sendHandler == null) {
@@ -593,7 +640,11 @@ public class MMSClientHandler {
 		PollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, Map<String, List<String>> headerField) throws IOException {
 			super(clientMRN, dstMRN, svcMRN, interval, clientPort, 1, headerField);
 		}
+		PollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, Map<String, List<String>> headerField) throws IOException {
+			super(clientMRN, dstMRN, svcMRN, hexSignedData, interval, clientPort, 1, headerField);
+		}
 	}
+
 	
 	private class GeoReporter extends MMSGeoInfoReporter{
 		GeoReporter(String clientMRN, String svcMRN, int interval) throws IOException {
