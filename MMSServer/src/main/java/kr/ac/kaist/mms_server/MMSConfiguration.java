@@ -62,6 +62,12 @@ Rev. history : 2018-09-21
 Version : 0.8.0
 	Updated RABBIT_MQ_HOST variable in MMSConfiguration.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-01-03
+Version : 0.8.0
+	Removed log level, console out, file out options from MMSConfiguration.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 import java.io.File;
@@ -102,9 +108,12 @@ public class MMSConfiguration {
 	private static int WAITING_MESSAGE_TIMEOUT = 0;
 	
 	private static int MAX_BRIEF_LOG_LIST_SIZE = 0;
-	private static String LOG_LEVEL = null;
-	private static boolean[] LOG_FILE_OUT = {false, false}; //{isSet, value}
-	private static boolean[] LOG_CONSOLE_OUT = {false, false}; //{isSet, value}
+	
+	/*-------- logback.xml has these settings --------*/
+	//private static String LOG_LEVEL = null;
+	//private static boolean[] LOG_FILE_OUT = {false, false}; //{isSet, value}
+	//private static boolean[] LOG_CONSOLE_OUT = {false, false}; //{isSet, value}
+	/*-------- logback.xml has these settings --------*/
 	
 	private static String RABBIT_MQ_HOST = null;
 	
@@ -165,17 +174,17 @@ public class MMSConfiguration {
 		max_brief_log_list_size.setRequired(false);
 		options.addOption(max_brief_log_list_size);
 		
-		Option log_level = new Option ("ll", "log_level", true, "Set the log level of the MMS, i.e., ALL, TRACE, DEBUG, INFO, WARN, ERROR, OFF.");
-		log_level.setRequired(false);
-		options.addOption(log_level);
+		//Option log_level = new Option ("ll", "log_level", true, "Set the log level of the MMS, i.e., ALL, TRACE, DEBUG, INFO, WARN, ERROR, OFF.");
+		//log_level.setRequired(false);
+		//options.addOption(log_level);
 		
-		Option log_file_out = new Option ("fo", "log_file_out", true, "Print the logs of the MMS into the log files if the argument is [true], otherwise disable if [false]. Default is [true].");
-		log_file_out.setRequired(false);
-		options.addOption(log_file_out);
+		//Option log_file_out = new Option ("fo", "log_file_out", true, "Print the logs of the MMS into the log files if the argument is [true], otherwise disable if [false]. Default is [true].");
+		//log_file_out.setRequired(false);
+		//options.addOption(log_file_out);
 		
-		Option log_console_out = new Option ("co", "log_console_out", true, "Print the logs of the MMS to the console if the argument is [true], otherwise disable if [false]. Default is [true].");
-		log_console_out.setRequired(false);
-		options.addOption(log_console_out);
+		//Option log_console_out = new Option ("co", "log_console_out", true, "Print the logs of the MMS to the console if the argument is [true], otherwise disable if [false]. Default is [true].");
+		//log_console_out.setRequired(false);
+		//options.addOption(log_console_out);
 		
 		Option rabbit_mq_host = new Option ("mq", "rabbit_mq_host", true, "Set the host of the Rabbit MQ server.");
 		rabbit_mq_host.setRequired(false);
@@ -189,10 +198,10 @@ public class MMSConfiguration {
 			cmd = clParser.parse(options, args);
 			
 			String usage = "java -cp MC_MMS.jar kr.ac.kaist.mms_server.MMSServer"
-					+ " [-co log_console_out] "
-					+ " [-fo log_file_out]"
-					+ " [-h]"
-					+ " [-ll log_level]"
+					//+ " [-co log_console_out] "
+					//+ " [-fo log_file_out]"
+					+ " [-h help]"
+					//+ " [-ll log_level]"
 					+ " [-mc max_content_size]"
 					+ " [-mls max_brief_log_list_size]"
 					+ " [-mns mns_host]"
@@ -257,7 +266,7 @@ public class MMSConfiguration {
 			if (MAX_BRIEF_LOG_LIST_SIZE == 0) {
 				MAX_BRIEF_LOG_LIST_SIZE = getOptionValueInteger(cmd, "max_brief_log_list_size");
 			}
-			if (LOG_LEVEL == null) {
+			/*if (LOG_LEVEL == null) {
 				LOG_LEVEL = cmd.getOptionValue("log_level");
 			}
 			if (LOG_FILE_OUT[0] == false) {
@@ -265,7 +274,7 @@ public class MMSConfiguration {
 			}
 			if (LOG_CONSOLE_OUT[0] == false) {
 				LOG_CONSOLE_OUT = getOptionValueBoolean(cmd, "log_console_out");
-			}
+			}*/
 
 		}
 		catch (org.apache.commons.cli.ParseException e){
@@ -355,19 +364,19 @@ public class MMSConfiguration {
 				MAX_BRIEF_LOG_LIST_SIZE = Integer.parseInt(s);
 		}		
 		
-		if (LOG_LEVEL == null) {
+		/*if (LOG_LEVEL == null) {
 			String s = System.getenv("ENV_LOG_LEVEL");
 			if (s != null)
 				LOG_LEVEL = s;
 		}
 		
-		//if (!LOG_FILE_OUT[0]) {
-		//	LOG_FILE_OUT = getConfValueBoolean(jobj, "LOG_FILE_OUT");
-		//}
+		if (!LOG_FILE_OUT[0]) {
+			LOG_FILE_OUT = getConfValueBoolean(jobj, "LOG_FILE_OUT");
+		}
 		
-		//if (!LOG_CONSOLE_OUT[0]) {
-		//	LOG_CONSOLE_OUT = getConfValueBoolean(jobj, "LOG_CONSOLE_OUT");
-		//}
+		if (!LOG_CONSOLE_OUT[0]) {
+			LOG_CONSOLE_OUT = getConfValueBoolean(jobj, "LOG_CONSOLE_OUT");
+		}*/
 		
 		
 		
@@ -433,7 +442,7 @@ public class MMSConfiguration {
 				MAX_BRIEF_LOG_LIST_SIZE = getConfValueInteger(jobj, "MAX_BRIEF_LOG_LIST_SIZE");
 			}		
 			
-			if (LOG_LEVEL == null) {
+			/*if (LOG_LEVEL == null) {
 				if (jobj.get("LOG_LEVEL") != null){
 					LOG_LEVEL = (String) jobj.get("LOG_LEVEL");
 					
@@ -446,7 +455,7 @@ public class MMSConfiguration {
 			
 			if (!LOG_CONSOLE_OUT[0]) {
 				LOG_CONSOLE_OUT = getConfValueBoolean(jobj, "LOG_CONSOLE_OUT");
-			}
+			}*/
 		}
 		catch (FileNotFoundException e) {
 			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
@@ -516,7 +525,7 @@ public class MMSConfiguration {
 				MAX_BRIEF_LOG_LIST_SIZE = 200; //Default is integer 200.
 			}
 			
-			if (LOG_LEVEL != null) {
+			/*if (LOG_LEVEL != null) {
 				ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
 			    LOG_LEVEL = LOG_LEVEL.toUpperCase();
 				if (LOG_LEVEL.equals("DEBUG")) {
@@ -590,7 +599,7 @@ public class MMSConfiguration {
 					logger.warn(TAG+"Logback cannot get appander \"STDOUT\"");
 					LOG_CONSOLE_OUT[1] = false;
 				}
-			}
+			}*/
 			
 			logger.warn(TAG+"MMS_MRN="+MMS_MRN);
 			logger.warn(TAG+"HTTP_PORT="+HTTP_PORT);
@@ -598,9 +607,9 @@ public class MMSConfiguration {
 			logger.warn(TAG+"MNS_HOST="+MNS_HOST);
 			logger.warn(TAG+"MNS_PORT="+MNS_PORT);
 			logger.warn(TAG+"RABBIT_MQ_HOST="+RABBIT_MQ_HOST);
-			logger.warn(TAG+"LOG_LEVEL="+LOG_LEVEL);
-			logger.warn(TAG+"LOG_CONSOLE_OUT="+LOG_CONSOLE_OUT[1]);
-			logger.warn(TAG+"LOG_FILE_OUT="+LOG_FILE_OUT[1]);
+			//logger.warn(TAG+"LOG_LEVEL="+LOG_LEVEL);
+			//logger.warn(TAG+"LOG_CONSOLE_OUT="+LOG_CONSOLE_OUT[1]);
+			//logger.warn(TAG+"LOG_FILE_OUT="+LOG_FILE_OUT[1]);
 			logger.warn(TAG+"WEB_LOG_PROVIDING="+WEB_LOG_PROVIDING[1]);
 			logger.warn(TAG+"WEB_MANAGING="+WEB_MANAGING[1]);
 			logger.warn(TAG+"MAX_BRIEF_LOG_LIST_SIZE="+MAX_BRIEF_LOG_LIST_SIZE);
