@@ -40,7 +40,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-08-13
 Version : 0.7.3
-	From this version, this class reads system arguments and configurations from "MMS configuration/MMS.conf" file.
+	From this version, this class reads system arguments and configurations from "MMS-configuration/MMS.conf" file.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-08-20
@@ -132,8 +132,9 @@ public class MMSConfiguration {
 	
 	private void ConfigureMMSSettings (String[] args) {
 		
-		System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, "./MMS configuration/logback.xml");
+		System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, "./MMS-configuration/logback.xml");
 		this.logger = LoggerFactory.getLogger(MMSLog.class);
+		logger.error("Now setting MMS configuration.");
 		
 		Options options = new Options();
 		
@@ -392,7 +393,7 @@ public class MMSConfiguration {
 		JSONParser parser = new JSONParser();
 		FileReader fr = null;
 		try {
-			File f = new File("./MMS configuration/MMS.conf");
+			File f = new File("./MMS-configuration/MMS.conf");
 			fr = new FileReader(f);
 			JSONObject jobj = new JSONObject();
 			jobj = (JSONObject) parser.parse(fr);

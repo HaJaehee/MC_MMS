@@ -31,7 +31,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-08-13
 Version : 0.7.3
-	From this version, MMS reads system arguments and configurations from "MMS configuration/MMS.conf" file.
+	From this version, MMS reads system arguments and configurations from "MMS-configuration/MMS.conf" file.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 */
@@ -59,7 +59,7 @@ public class MMSServer {
 		
 		new MMSConfiguration(args);
 		logger = LoggerFactory.getLogger(MMSServer.class);
-		logger.error("Now setting MMS configuration.");
+		
 		
 		try {
 			File f = new File("./logs");
@@ -68,7 +68,7 @@ public class MMSServer {
 				f = new File("/var/mms/logs");
 				f.mkdirs();
 			}
-			f = new File("./MMS configuration");
+			f = new File("./MMS-configuration");
 			f.mkdirs();
 			Thread.sleep(2000);
 			
