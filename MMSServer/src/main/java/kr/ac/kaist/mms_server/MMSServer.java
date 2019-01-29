@@ -33,6 +33,7 @@ Rev. history : 2018-08-13
 Version : 0.7.3
 	From this version, MMS reads system arguments and configurations from "MMS configuration/MMS.conf" file.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -45,25 +46,31 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public class MMSServer {
 
-	private static final Logger logger = LoggerFactory.getLogger(MMSServer.class);
+	private static Logger logger = null;
 	
 	public static void main(String[] args){
+		
+		new MMSConfiguration(args);
+		logger = LoggerFactory.getLogger(MMSServer.class);
+		logger.error("Now setting MMS configuration.");
 		
 		try {
 			File f = new File("./logs");
 			f.mkdirs();
+			if (SystemUtils.IS_OS_LINUX) {
+				f = new File("/var/mms/logs");
+				f.mkdirs();
+			}
 			f = new File("./MMS configuration");
 			f.mkdirs();
 			Thread.sleep(2000);
-			
-			logger.error("Now setting MMS configuration.");
-			new MMSConfiguration(args);
-			
 			
 			
 			logger.error("MUST check that MNS server is online="+MMSConfiguration.MNS_HOST()+":"+MMSConfiguration.MNS_PORT()+".");

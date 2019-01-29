@@ -68,6 +68,10 @@ Version : 0.8.0
 	Removed log level, console out, file out options from MMSConfiguration.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+
+Rev. history : 2019-01-29
+Version : 0.8.1
+	Specify external logback.xml configuration file.
 */
 /* -------------------------------------------------------- */
 import java.io.File;
@@ -85,12 +89,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
-
+import ch.qos.logback.classic.util.ContextInitializer;
 
 
 public class MMSConfiguration {
 	private static final String TAG = "[MMSConfiguration] ";
-	private static final Logger logger = LoggerFactory.getLogger(MMSLog.class);
+	
 	
 	private static boolean IS_MMS_CONF_SET = false;
 	
@@ -117,7 +121,7 @@ public class MMSConfiguration {
 	
 	private static String RABBIT_MQ_HOST = null;
 	
-
+	private static Logger logger = null;
 
 	public MMSConfiguration (String[] args) {
 		if (!IS_MMS_CONF_SET) {
@@ -127,6 +131,9 @@ public class MMSConfiguration {
 	}
 	
 	private void ConfigureMMSSettings (String[] args) {
+		
+		System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, "./MMS configuration/logback.xml");
+		this.logger = LoggerFactory.getLogger(MMSLog.class);
 		
 		Options options = new Options();
 		
