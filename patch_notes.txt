@@ -1,17 +1,21 @@
 Patch Notes
 ***********
+3-Jan 2019
+MC_MMS 0.8.1 new features/enhancements & bug-fixes:
+1. Supporting message ordering functions are developed.
+
 21-Oct 2018
 MC_MMS 0.8.0 new features/enhancements & bug-fixes:
 1. MMS geocasting circle, geocasting polygon functions are developed.
 
-21-Oct 2018
+13-Oct 2018
 MC_MMS 0.8.0 new features/enhancements & bug-fixes:
 1. MMS Configuration functions are developed.
 
 29-Sep 2018
 MC_MMS 0.8.0 new features/enhancements & bug-fixes:
 1. Dockerize MMS Monitoring Module for the first time.
-2. FOr #1, MMSMonitor Module is uploaded at the "MMSMonitor" folder, and various improvement of scripts.
+2. For #1, MMSMonitor Module is uploaded at the "MMSMonitor" folder, and various improvement of scripts.
 
 18-Sep 2018
 MC_MMS 0.8.0 new features/enhancements & bug-fixes:
