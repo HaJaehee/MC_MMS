@@ -16,13 +16,13 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <intProp name="LoopController.loops">-1</intProp>
+          <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
-        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.num_threads">11000</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">60</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration">600</stringProp>
-        <stringProp name="ThreadGroup.delay">1</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
       </SetupThreadGroup>
       <hashTree>
         <ResultCollector guiclass="GraphVisualizer" testclass="ResultCollector" testname="Graph Results" enabled="true">
@@ -59,7 +59,7 @@
               <connectTime>true</connectTime>
             </value>
           </objProp>
-          <stringProp name="filename">/home/wins/MMS jmeter test/relaying/graph.xml</stringProp>
+          <stringProp name="filename">./graph.xml</stringProp>
         </ResultCollector>
         <hashTree/>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
@@ -96,18 +96,18 @@
               <connectTime>true</connectTime>
             </value>
           </objProp>
-          <stringProp name="filename">/home/wins/MMS jmeter test/relaying/tree.xml</stringProp>
+          <stringProp name="filename">./tree.xml</stringProp>
         </ResultCollector>
         <hashTree/>
         <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
           <collectionProp name="HeaderManager.headers">
             <elementProp name="" elementType="Header">
               <stringProp name="Header.name">srcMRN</stringProp>
-              <stringProp name="Header.value">urn:mrn:imo:imo-no:${count}</stringProp>
+              <stringProp name="Header.value">urn:mrn:smart-navi:device:tm-server</stringProp>
             </elementProp>
             <elementProp name="" elementType="Header">
               <stringProp name="Header.name">dstMRN</stringProp>
-              <stringProp name="Header.value">urn:mrn:smart-navi:device:tm-server</stringProp>
+              <stringProp name="Header.value">urn:mrn:imo:imo-no:${count}</stringProp>
             </elementProp>
           </collectionProp>
         </HeaderManager>
@@ -416,7 +416,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">192.168.0.100</stringProp>
+          <stringProp name="HTTPSampler.domain">192.168.202.193</stringProp>
           <stringProp name="HTTPSampler.port">8088</stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>

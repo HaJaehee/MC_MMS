@@ -59,7 +59,7 @@
               <connectTime>true</connectTime>
             </value>
           </objProp>
-          <stringProp name="filename">/home/wins/MMS jmeter test/polling/graph.xml</stringProp>
+          <stringProp name="filename">./graph.xml</stringProp>
         </ResultCollector>
         <hashTree/>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
@@ -96,7 +96,7 @@
               <connectTime>true</connectTime>
             </value>
           </objProp>
-          <stringProp name="filename">/home/wins/MMS jmeter test/polling/tree.xml</stringProp>
+          <stringProp name="filename">./tree.xml</stringProp>
         </ResultCollector>
         <hashTree/>
         <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
@@ -137,7 +137,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">192.168.0.100</stringProp>
+          <stringProp name="HTTPSampler.domain">192.168.202.193</stringProp>
           <stringProp name="HTTPSampler.port">8088</stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
