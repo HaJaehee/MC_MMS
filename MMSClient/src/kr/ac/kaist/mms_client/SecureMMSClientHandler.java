@@ -87,6 +87,12 @@ Rev. history : 2018-10-11
 Version : 0.8.0
 	Modified polling client verification.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -98,14 +104,14 @@ import java.util.Map;
 
 /**
  * This handler helps client communicate to MMS over HTTPS. Client uses it to send or receive messages.
- * @version 0.8.0
+ * @version 0.8.1
  * @see MMSClientHandler
  */
 public class SecureMMSClientHandler {
 	
 	private String TAG = "[SecureMMSClientHandler] ";
 	private RcvHandler rcvHandler = null;
-	private PollHandler pollHandler = null;
+	private SecureMMSPollHandler pollHandler = null;
 	private SendHandler sendHandler = null;
 	private String clientMRN = "";
 	private int clientPort = 0;
@@ -191,46 +197,32 @@ public class SecureMMSClientHandler {
 	}
 
 	/**
-	 * This method helps client to request polling. If setting this method, send polling request
-	 * per interval (ms). In the MMS that received the polling request, if there is a message toward the client, 
-	 * the message is sent to the MMS client, which requests polling, and in the MMS client,
-	 * the callbackMethod is executed. Depending on whether it is the way of normal polling or long polling,
+	 * This method helps MMS client to request polling to a MMS. When using this method, MMS client sends polling request
+	 * per interval (ms). When the MMS receives the polling request, if there are messages toward the client, 
+	 * the messages are sent to the MMS client, who has requested polling, from the MMS. And then the MMS client executes
+	 * a callbackMethod. Depending on whether it is the way of normal polling or long polling,
 	 * the way of response is different.
 	 * @param	dstMRN			the MRN of MMS to request polling
 	 * @param	svcMRN			the MRN of service, which may send to client
-	 * @param	interval		the frequency of polling (unit of time: ms)
+	 * @param	interval		the frequency of polling (unit of time: ms). If the interval is 0, the client does long polling.
 	 * @param	callback		the callback interface of {@link PollingResponseCallback}
 	 * @throws	IOException 	if exception occurs
 	 * @see 	PollingResponseCallback
 	 */	
 	public void startPolling (String dstMRN, String svcMRN, int interval, PollingResponseCallback callback) throws IOException{
-		if (this.sendHandler != null) {
-			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
-		} else if (this.rcvHandler != null) {
-			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
-		} else {
-			if (interval == 0) {
-				System.out.println(TAG+"Long-polling mode"); //TODO: Long-polling could have trouble when session disconnect.
-			} else if (interval < 0){
-				System.out.println(TAG+"Failed! Polling interval must be 0 or positive integer");
-				return;
-			}
-			this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
-			this.pollHandler.ph.setPollingResponseCallback(callback);
-			this.pollHandler.ph.start();
-		}
+		startPolling (dstMRN, svcMRN, null, interval, callback);
 	}
 	
 	/**
-	 * This method helps client to request polling. If setting this method, send polling request
-	 * per interval (ms). In the MMS that received the polling request, if there is a message toward the client, 
-	 * the message is sent to the MMS client, which requests polling, and in the MMS client,
-	 * the callbackMethod is executed. Depending on whether it is the way of normal polling or long polling,
+	 * This method helps MMS client to request polling to a MMS. When using this method, MMS client sends polling request
+	 * per interval (ms). When the MMS receives the polling request, if there are messages toward the client, 
+	 * the messages are sent to the MMS client, who has requested polling, from the MMS. And then the MMS client executes
+	 * a callbackMethod. Depending on whether it is the way of normal polling or long polling,
 	 * the way of response is different.
 	 * @param	dstMRN			the MRN of MMS to request polling
 	 * @param	svcMRN			the MRN of service, which may send to client
 	 * @param	hexSignedData	the hex signed data for client verification
-	 * @param	interval		the frequency of polling (unit of time: ms)
+	 * @param	interval		the frequency of polling (unit of time: ms). If the interval is 0, the client does long polling.
 	 * @param	callback		the callback interface of {@link PollingResponseCallback}
 	 * @throws	IOException 	if exception occurs
 	 * @see 	PollingResponseCallback
@@ -243,11 +235,13 @@ public class SecureMMSClientHandler {
 		} else {
 			if (interval == 0) {
 				System.out.println(TAG+"Long-polling mode"); //TODO: Long-polling could have trouble when session disconnect.
+				this.pollHandler = new LongPollHandler(clientMRN, dstMRN, svcMRN, hexSignedData, interval, headerField);
 			} else if (interval < 0){
 				System.out.println(TAG+"Failed! Polling interval must be 0 or positive integer");
 				return;
+			} else {
+				this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, hexSignedData, interval, headerField);
 			}
-			this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, hexSignedData, interval, headerField);
 			this.pollHandler.ph.setPollingResponseCallback(callback);
 			this.pollHandler.ph.start();
 		}
@@ -643,15 +637,19 @@ public class SecureMMSClientHandler {
 	
 	private class PollHandler extends SecureMMSPollHandler{
 		
-		
-		PollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, Map<String, List<String>> headerField) throws IOException {
-			super(clientMRN, dstMRN, svcMRN, interval, clientPort, 1, headerField);
-		}
 		PollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, Map<String, List<String>> headerField) throws IOException {
-			super(clientMRN, dstMRN, svcMRN, hexSignedData, interval, clientPort, 1, headerField);
+			super(clientMRN, dstMRN, svcMRN, hexSignedData, interval, "normal", headerField);
 		}
 	}
 	
+	private class LongPollHandler extends SecureMMSPollHandler{
+		
+		LongPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, Map<String, List<String>> headerField) throws IOException {
+			super(clientMRN, dstMRN, svcMRN, hexSignedData, interval, "long", headerField);
+		}
+	}
+	
+	@Deprecated
 	private class GeoReporter extends MMSGeoInfoReporter{
 		GeoReporter(String clientMRN, String svcMRN, int interval) throws IOException {
 			super(clientMRN, svcMRN, interval, clientPort, 1);

@@ -1,5 +1,15 @@
 Patch Notes
 ***********
+8-March 2019
+MC_MMS 0.8.1 new features/enhancements & bug-fixes:
+1.Previously:
+		MMS server had a Map structure that has service MRN strings as keys and long polling booleans as values.
+  Now:
+		MMS client is able to choose its polling method.
+		In a message header;
+			if the url is "/polling", then normal polling method is used.
+			else if the url is "/long_polling", then long polling method is used.
+
 3-Jan 2019
 MC_MMS 0.8.1 new features/enhancements & bug-fixes:
 1. Supporting message ordering functions are developed.

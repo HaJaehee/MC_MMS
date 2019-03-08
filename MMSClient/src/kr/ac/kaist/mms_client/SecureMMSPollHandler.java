@@ -37,6 +37,11 @@ Rev. history : 2018-10-11
 Version : 0.8.0
 	Modified polling client verification.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -79,15 +84,16 @@ class SecureMMSPollHandler {
 	private static final String USER_AGENT = MMSConfiguration.USER_AGENT;
 	private String clientMRN = null;
 	
-	SecureMMSPollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int msgType, Map<String,List<String>> headerField) throws IOException{
-		ph = new SecurePollingHandler(clientMRN, dstMRN, svcMRN, interval, clientPort, msgType, headerField);
+	
+	SecureMMSPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, String pollingMethod, Map<String,List<String>> headerField) throws IOException{
+		String svcMRNWithHexSign = svcMRN;
+		if (hexSignedData != null) {
+			svcMRNWithHexSign = svcMRNWithHexSign+"\n"+hexSignedData;
+		}
+		ph = new SecurePollingHandler(clientMRN, dstMRN, svcMRNWithHexSign, interval, pollingMethod, headerField);
 		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Polling handler is created");}
 	}
-	SecureMMSPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, int clientPort, int msgType, Map<String,List<String>> headerField) throws IOException{
-		String svcMRNWithHexSign = svcMRN+"\n"+hexSignedData;
-		ph = new SecurePollingHandler(clientMRN, dstMRN, svcMRNWithHexSign, interval, clientPort, msgType, headerField);
-		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Polling handler is created");}
-	}
+	
     //HJH
     class SecurePollingHandler extends Thread{
 		private int interval = 0;
@@ -95,19 +101,18 @@ class SecureMMSPollHandler {
 		private String dstMRN = null;
 		private String svcMRNWithHexSign = null;
 		private int clientPort = 0;
-		private int clientModel = 0;
+		private String pollingMethod = null;
 		private Map<String,List<String>> headerField = null;
 		SecureMMSClientHandler.PollingResponseCallback myCallback = null;
 		private HostnameVerifier hv = null;
 		private boolean interrupted=false;
 		
-    	SecurePollingHandler (String clientMRN, String dstMRN, String svcMRNWithHexSign, int interval, int clientPort, int clientModel, Map<String,List<String>> headerField){
+    	SecurePollingHandler (String clientMRN, String dstMRN, String svcMRNWithHexSign, int interval, String pollingMethod, Map<String,List<String>> headerField){
     		this.interval = interval;
     		this.clientMRN = clientMRN;
     		this.dstMRN = dstMRN;
     		this.svcMRNWithHexSign = svcMRNWithHexSign;
-    		this.clientPort = clientPort;
-    		this.clientModel = clientModel;
+    		this.pollingMethod = pollingMethod;
     		this.headerField = headerField;
     	}
     	
@@ -137,14 +142,17 @@ class SecureMMSPollHandler {
 			
 			hv = getHV();
 			
-			String url = "https://"+MMSConfiguration.MMS_URL+"/polling"; // MMS Server
-			URL obj = new URL(url);
-			String data;
-			if (svcMRNWithHexSign != null){
-				data = svcMRNWithHexSign; //To do: add geographical info, channel info, etc. 
-			} else { // TODO: will be deprecated;
-				data = (clientPort + ":" + clientModel + ":");
+			String url = "https://"+MMSConfiguration.MMS_URL;
+			
+			if (pollingMethod == null || pollingMethod.equals("normal")) {
+				url = url+"/polling"; // Polling request to MMS server.
 			}
+			else if (pollingMethod.equals("long")) {
+				url = url+"/long_polling"; // Long polling request to MMS server. 
+			}
+			URL obj = new URL(url);
+			String data = svcMRNWithHexSign; //TODO: add geographical info, channel info, etc. 
+			
 			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 			con.setHostnameVerifier(hv);
 			
