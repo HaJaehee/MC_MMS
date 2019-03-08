@@ -27,6 +27,14 @@ Rev. history : 2017-11-22
 Version : 0.7.0
 	Resolved critical problem caused by duplicated items in the list of mrnSessionIdMapper and sessionIdMrnMapper.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.\
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -56,6 +64,7 @@ public class MMSLogForDebug {
 		sessionIdMrnMapper = new HashMap<String,LinkedHashSet<String>>();
 		maxSessionCount = 50;
 		
+		/*
 		addMrn("urn:mrn:smart:service:instance:mof:S10");
 		addMrn("urn:mrn:smart:service:instance:mof:S11");
 		addMrn("urn:mrn:smart:service:instance:mof:S20");
@@ -73,6 +82,7 @@ public class MMSLogForDebug {
 		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp510fors51");
 		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp520fors52");
 		addMrn("urn:mrn:smart:vessel:imo-no:mof:tmp520fors55");
+		*/
 	}
 	
 	public static MMSLogForDebug getInstance() { //double check synchronization.

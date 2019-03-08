@@ -101,6 +101,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history: 2019-03-09
 Version : 0.8.1
 	MMS Client is able to choose its polling method.
+	Removed locator registration function.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -125,7 +126,7 @@ public class MMSClientHandler {
 	private String clientMRN = "";
 	private int clientPort = 0;
 	private Map<String,List<String>> headerField = null;
-	private GeoReporter geoReporter = null;
+
 	/**
 	 * The Constructor of MMSClientHandler class
 	 * @param	clientMRN		the MRN of client
@@ -202,6 +203,8 @@ public class MMSClientHandler {
 		void callbackMethod(Map<String,List<String>> headerField, String message);
 	}
 	
+	
+	// TODO: Youngjin Kim must inspect this following code.
 	/**
 	 * This method helps MMS client to request polling to a MMS. When using this method, MMS client sends polling request
 	 * per interval (ms). When the MMS receives the polling request, if there are messages toward the client, 
@@ -219,6 +222,8 @@ public class MMSClientHandler {
 		startPolling (dstMRN, svcMRN, null, interval, callback);
 	}
 	
+	
+	// TODO: Youngjin Kim must inspect this following code.
 	/**
 	 * This method helps MMS client to request polling to a MMS. When using this method, MMS client sends polling request
 	 * per interval (ms). When the MMS receives the polling request, if there are messages toward the client, 
@@ -264,26 +269,7 @@ public class MMSClientHandler {
 		this.pollHandler.ph.markInterrupted();
 		this.pollHandler.ph.interrupt();
 	}
-	/**
-	 * This method is being developed now, so do not use this method.
-	 * @param svcMRN
-	 * @param interval
-	 * @throws IOException
-	 */
-	public void startGeoReporting (String svcMRN, int interval) throws IOException{
-		if (this.sendHandler != null) {
-			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
-		} else if (this.rcvHandler != null) {
-			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
-		} else {
-			if (interval > 0) {
-				this.geoReporter = new GeoReporter(clientMRN, svcMRN, interval);
-				this.geoReporter.gr.start();
-			} else {
-				System.out.println(TAG+"Failed! The interval must be larger than 0");
-			}
-		}
-	}
+
 	
 	private boolean isErrorForSettingServerPort (){
 		if (this.sendHandler != null) {
@@ -347,14 +333,12 @@ public class MMSClientHandler {
 		if (!isErrorForSettingServerPort()){
 			this.clientPort = port;
 			this.rcvHandler = new RcvHandler(port, fileDirectory, fileName);
-			registerLocator(port);	
 		}
 	}
 	
 	private void setPortAndCallback (int port, RequestCallback callback) {
 		this.clientPort = port;
 		this.rcvHandler.hrh.setRequestCallback(callback);
-		registerLocator(port);	
 	}
 	
 	/**
@@ -408,22 +392,7 @@ public class MMSClientHandler {
 		
 	}
 	
-	@Deprecated
-	private void registerLocator(int port){
-		try {
-			new MMSSndHandler(clientMRN).registerLocator(port);
-			return;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			if(MMSConfiguration.DEBUG){
-				System.out.print(TAG+" Exception: "+ e.getLocalizedMessage());
-				e.printStackTrace();
-			}
-			
-			return;
-		}
-	}
-	
+
 	//HJH
 	/**
 	 * When sending a message, add custom header to HTTP header field
@@ -637,6 +606,7 @@ public class MMSClientHandler {
 		}
 	}
 	
+	// TODO: Youngjin Kim must inspect this following code.
 	private class PollHandler extends MMSPollHandler{
 
 		PollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, Map<String, List<String>> headerField) throws IOException {
@@ -644,6 +614,7 @@ public class MMSClientHandler {
 		}
 	}
 	
+	// TODO: Youngjin Kim must inspect this following code.
 	private class LongPollHandler extends MMSPollHandler{
 
 		LongPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, Map<String, List<String>> headerField) throws IOException {
@@ -651,11 +622,5 @@ public class MMSClientHandler {
 		}
 	}
 
-	@Deprecated
-	private class GeoReporter extends MMSGeoInfoReporter{ 
-		GeoReporter(String clientMRN, String svcMRN, int interval) throws IOException {
-			super(clientMRN, svcMRN, interval, clientPort, 1);
-		}
-	}
 }
 

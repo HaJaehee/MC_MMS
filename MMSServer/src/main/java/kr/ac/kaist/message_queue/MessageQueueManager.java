@@ -1,7 +1,4 @@
 package kr.ac.kaist.message_queue;
-
-
-
 /* -------------------------------------------------------- */
 /** 
 File name : MessageQueueManager.java
@@ -24,6 +21,13 @@ Rev. history : 2017-09-26
 Version : 0.6.0
 	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.\
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -38,9 +42,9 @@ public class MessageQueueManager {
 		this.SESSION_ID = sessionId;
 	}
 	
-	public void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN ) {
+	public void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN, String pollingMethod) {
 		MessageQueueDequeuer mqd = new MessageQueueDequeuer(this.SESSION_ID);
-		mqd.dequeueMessage(outputChannel, ctx, srcMRN, svcMRN);
+		mqd.dequeueMessage(outputChannel, ctx, srcMRN, svcMRN, pollingMethod);
 	}
 	
 	public void enqueueMessage (String srcMRN, String dstMRN, String message) {

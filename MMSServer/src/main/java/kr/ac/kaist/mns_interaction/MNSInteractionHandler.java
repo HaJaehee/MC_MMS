@@ -41,6 +41,14 @@ Rev. history : 2018-10-15
 Version : 0.8.0
 	Resolved MAVEN dependency problems with library "net.etri.pkilib".
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.\
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -92,8 +100,8 @@ public class MNSInteractionHandler {
 	}
 	
 	@Deprecated
-	public String updateClientInfo(String srcMRN, String srcIP, int srcPort, String srcModel){
-		String msg = locatorUpdater.buildUpdate(srcMRN, srcIP, srcPort, srcModel);
+	public String updateClientInfo(String srcMRN, String srcIP){
+		String msg = locatorUpdater.buildUpdate(srcMRN, srcIP);
 		if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 			String log = "SessionID="+this.SESSION_ID+" Update client information.";
 			mmsLog.addBriefLogForStatus(log);
@@ -104,7 +112,7 @@ public class MNSInteractionHandler {
 	}
 
 	@Deprecated
-	public String registerClientInfo (String srcMRN, String srcIP, int srcPort, String srcModel){
-		return updateClientInfo(srcMRN, srcIP, srcPort, srcModel);
+	public String registerClientInfo (String srcMRN, String srcIP){
+		return updateClientInfo(srcMRN, srcIP);
 	}
 }

@@ -75,6 +75,13 @@ Rev. history : 2018-10-05
 Version : 0.8.0
 	Change the host of rabbit mq from "rabbitmq-db" to "MMSConfiguration.RABBIT_MQ_HOST()".
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.\
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -102,7 +109,6 @@ import kr.ac.kaist.mms_server.Base64Coder;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
-import kr.ac.kaist.seamless_roaming.PollingMethodRegDummy;
 
 
 
@@ -114,10 +120,12 @@ class MessageQueueDequeuer extends Thread{
 	private String queueName = null;
 	private String srcMRN = null;
 	private String svcMRN = null;
+	private String pollingMethod = "normal";
 	private MRH_MessageOutputChannel outputChannel = null;
 	private ChannelHandlerContext ctx = null;
 	private Channel channel = null;
 	private Connection connection = null;
+	
 	
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
@@ -128,13 +136,14 @@ class MessageQueueDequeuer extends Thread{
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 	
-	void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN) {
+	void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN, String pollingMethod) {
 		
 		this.queueName = srcMRN+"::"+svcMRN;
 		this.srcMRN = srcMRN;
 		this.svcMRN = svcMRN;
 		this.outputChannel = outputChannel;
 		this.ctx = ctx;
+		this.pollingMethod = pollingMethod;
 		
 		this.start();
 
@@ -146,7 +155,7 @@ class MessageQueueDequeuer extends Thread{
 	
 	@Override
 	public void run() {
-		
+		// TODO: Youngjin Kim must inspect this following code.
 		super.run();
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 	    try {
@@ -192,8 +201,7 @@ class MessageQueueDequeuer extends Thread{
 			} 
 			else { //If the queue does not have any message, message count == 0
 				message.setLength(0);
-				if (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null //If default polling method is normal polling
-						 || PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING) {
+				if (pollingMethod.equals("normal") ) {//If polling method is normal polling
 					if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 						String log = "SessionID="+this.SESSION_ID+" Empty queue="+queueName+".";
 						mmsLog.addBriefLogForStatus(log);
@@ -206,7 +214,8 @@ class MessageQueueDequeuer extends Thread{
 
 				    outputChannel.replyToSender(ctx, message.toString().getBytes());
 				}
-				else { //If polling method of service having svcMRN is long polling
+				
+				else if (pollingMethod.equals("long")){ //If polling method is long polling
 					//Enroll a delivery listener to the queue channel in order to get a message from the queue.
 					if(MMSConfiguration.WEB_LOG_PROVIDING()) {
 						String log = "SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".";
@@ -393,7 +402,7 @@ class MessageQueueDequeuer extends Thread{
 //		}
 //		} 
 	    finally {
-	    	if ((PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null) || (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) != null && PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING)) { // Default polling method: normal polling
+	    	if (pollingMethod.equals("normal")) { // Polling method: normal polling
 	    		if (channel != null) {
 		    		try {
 						channel.close();

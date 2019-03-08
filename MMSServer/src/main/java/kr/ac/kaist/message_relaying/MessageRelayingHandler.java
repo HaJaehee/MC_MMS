@@ -159,6 +159,14 @@ Rev. history : 2018-10-16
 Version : 0.8.0
 	Modified in order to interact with MNS server.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.\
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -187,7 +195,6 @@ import kr.ac.kaist.message_casting.MessageCastingHandler;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
-import kr.ac.kaist.seamless_roaming.PollingMethodRegDummy;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 
@@ -418,7 +425,8 @@ public class MessageRelayingHandler  {
 			else if (type == MessageTypeDecider.msgType.NULL_DST_MRN) {
 				message = "Error: Null destination MRN.".getBytes(Charset.forName("UTF-8"));
 			}
-			else if (type == MessageTypeDecider.msgType.POLLING) {
+			// TODO: Youngjin Kim must inspect this following code.
+			else if (type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) {
 				parser.parseSvcMRNAndHexSign(req);
 				//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
 				if (parser.getHexSignedData() != null) { //In this version 0.8.0, polling client verification is optional. 
@@ -448,11 +456,7 @@ public class MessageRelayingHandler  {
 						throw new IOException("It is failed to verify the client.");
 					}
 				}
-				
-				
-				
-				int srcPort = parser.getSrcPort();
-				String srcModel = parser.getSrcModel();
+
 				String svcMRN = parser.getSvcMRN();
 			
 				try {
@@ -476,8 +480,12 @@ public class MessageRelayingHandler  {
 						}
 					}
 				}
-
-				srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, srcPort, srcModel, svcMRN);
+				
+				if (type == MessageTypeDecider.msgType.POLLING) {
+					srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, "normal", svcMRN);
+				} else if (type == MessageTypeDecider.msgType.LONG_POLLING) {
+					srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, "long", svcMRN);
+				}
 				
 				return;
 			} 
@@ -563,28 +571,6 @@ public class MessageRelayingHandler  {
 				message = mch.geocast(outputChannel, req, srcMRN, geoDstInfo, protocol, httpMethod);
 				
 			}
-			
-			// TODO this condition has to be deprecated.
-			else if (type == MessageTypeDecider.msgType.REGISTER_CLIENT) {
-				if (MMSConfiguration.MNS_HOST().equals("localhost")||MMSConfiguration.MNS_HOST().equals("127.0.0.1")) {
-					parser.parseSvcMRNAndHexSign(req);
-					
-					int srcPort = parser.getSrcPort();
-					String srcModel = parser.getSrcModel();
-					
-					String res = mch.registerClientInfo(srcMRN, srcIP, srcPort, srcModel);
-					if (res != null && res.equals("OK")){
-						message = "Registering succeeded".getBytes();
-					} 
-					else {
-						message = "Registering failed".getBytes();
-					}
-				}
-				else {
-					message = "".getBytes();
-				}
-				
-			} 
 			else if (type == MessageTypeDecider.msgType.STATUS){
 	    		String status;
 	    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
@@ -754,48 +740,8 @@ public class MessageRelayingHandler  {
 					message = "Wrong parameter.".getBytes(Charset.forName("UTF-8"));
 				}
 			}
-			else if (type == MessageTypeDecider.msgType.POLLING_METHOD) {
-				QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
-	    		Map<String,List<String>> params = qsd.parameters();
-	    		if (params.get("method")==null || params.get("svcMRN")==null) {
-	    			message = "Wrong parameter.".getBytes(Charset.forName("UTF-8"));
-	    		}
-	    		else {
-		    		String method = params.get("method").get(0);
-		    		String svcMRN = params.get("svcMRN").get(0);
-		    		if (method != null && svcMRN != null && !svcMRN.equals(MMSConfiguration.MMS_MRN())) {
-		    			if (method.equals("normal")) {
-		
-		    				PollingMethodRegDummy.pollingMethodReg.put(svcMRN, PollingMethodRegDummy.NORMAL_POLLING);
-		    				message = "OK".getBytes(Charset.forName("UTF-8"));
-		    				logger.warn("SessionID="+this.SESSION_ID+" svcMRN="+svcMRN+" polling method is switched to normal polling.");
-		
-			    		} 
-			    		else if (method.equals("long")) {
-		
-			    			PollingMethodRegDummy.pollingMethodReg.put(svcMRN, PollingMethodRegDummy.LONG_POLLING);
-		    				message = "OK".getBytes(Charset.forName("UTF-8"));
-		     				logger.warn("SessionID="+this.SESSION_ID+" svcMRN="+svcMRN+" polling method is switched to long polling.");
-			    		
-			    		} 
-			    		else if (method.equals("remove")) {
-			    			
-			    			PollingMethodRegDummy.pollingMethodReg.remove(svcMRN);
-		    				message = "OK".getBytes(Charset.forName("UTF-8"));
-		     				logger.warn("SessionID="+this.SESSION_ID+" svcMRN="+svcMRN+" polling method is removed.");
-			    		
-			    		}
-		    		}
-		    		else {
-		    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
-		    		}
-	    		}
-			} 
-			/*
-			else if (type == MessageTypeDecider.EMPTY_QUEUE_LOGS) {
-				MMSLog.setLength(0);
-				message = "OK".getBytes(Charset.forName("UTF-8"));
-			}*/
+
+			
 			else if (type == MessageTypeDecider.msgType.DST_MRN_IS_THIS_MMS_MRN) {
 				message = "Hello, MMS!".getBytes();
 			}
@@ -819,7 +765,7 @@ public class MessageRelayingHandler  {
 			}
 		}
 		finally {
-			if (type != MessageTypeDecider.msgType.POLLING) {
+			if (type != MessageTypeDecider.msgType.POLLING && type != MessageTypeDecider.msgType.LONG_POLLING) {
 				if (message == null) {
 					message = "INVALID MESSAGE.".getBytes();
 					logger.info("SessionID="+this.SESSION_ID+" "+"INVALID MESSAGE.");
@@ -853,7 +799,7 @@ public class MessageRelayingHandler  {
 			
 			//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
 			//In this version 0.8.0, polling client verification is optional. 
-			if (type == MessageTypeDecider.msgType.POLLING && parser.getHexSignedData() != null && !isClientVerified) {
+			if ((type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) && parser.getHexSignedData() != null && !isClientVerified) {
 				String msg = "";
 				try {
 					msg = "[\""+URLEncoder.encode("It is failed to verify the client.","UTF-8")+"\"]";
@@ -936,25 +882,7 @@ public class MessageRelayingHandler  {
 		}
 		return;
 	}
-/*
-//This method will be
-  @Deprecated
-  private void emptyMNS() throws UnknownHostException, IOException{ //
 
-  	Socket MNSSocket = new Socket(MMSConfiguration.MNS_HOST, MMSConfiguration.MNS_PORT);
-  	OutputStreamWriter osw = new OutputStreamWriter(MNSSocket.getOutputStream(),Charset.forName("UTF-8"));
-  	BufferedWriter outToMNS = new BufferedWriter(osw);
-
-  	logger.info("SessionID="+this.SESSION_ID+" "+"Empty-MNS.");
-  	outToMNS.write("Empty-MNS:");
-  	outToMNS.flush();
-  	osw.close();
-  	outToMNS.close();
-  	MNSSocket.close();
-  	
-  	return;
-  }
-  */
   
 //This method will be
   @Deprecated

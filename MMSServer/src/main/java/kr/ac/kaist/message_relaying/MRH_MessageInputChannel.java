@@ -48,6 +48,13 @@ Rev. history : 2018-07-03
 Version : 0.7.2
 	Added handling input messages by FIFO scheduling.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.\
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -145,7 +152,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		        });
 		}
 	}
-	
+	// TODO: Youngjin Kim must inspect this following code.
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
     	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
@@ -154,7 +161,12 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     		if (clientType.equals("p")) {
 
     			logger.warn("SessionID="+this.SESSION_ID+" The polling client is disconnected.");
-    		} else {
+    		} 
+    		else if (clientType.equals("lp")) {
+
+    			logger.warn("SessionID="+this.SESSION_ID+" The long polling client is disconnected.");
+    		}
+    		else {
     			logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected.");
 
     		}
@@ -230,29 +242,33 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 
         if (clientType != null){
           if(clientType.equals("p")){
-  //	    		System.out.println("Client type: Polling Client");
+  //	    System.out.println("Client type: Polling Client");
             errorlog = new String("Client Type=Polling");
-
-          } else {
-  //	    		System.out.println("Client type: Normal Client");
+          } 
+           else if(clientType.equals("lp")){
+  //		System.out.println("Client type: Long Polling Client");
+            errorlog = new String("Client Type=Long Polling");
+          } 
+           else {
+  //	    System.out.println("Client type: Normal Client");
             errorlog = new String("Client Type=Normal");
           }
         }
         else {
-  //    		System.out.println("Client type is unknown");
+  //      System.out.println("Client type is unknown");
           errorlog = new String("Client Type=Unknown");
         }
 
-  //		System.out.println("srcIP: " + reqInfo[0]);
-  //		System.out.println("srcMRN: " +  reqInfo[1]);
+  //	System.out.println("srcIP: " + reqInfo[0]);
+  //	System.out.println("srcMRN: " +  reqInfo[1]);
         errorlog += " srcIP=" + reqInfo[0] + " srcMRN=" + reqInfo[1];
       if (reqInfo.length == 5){
-  //			System.out.println("dstIP: " +  reqInfo[2]);
-  //			System.out.println("dstMRN: " +  reqInfo[3]);
-  //			System.out.println("svcMRN: " + reqInfo[4]);
+  //	System.out.println("dstIP: " +  reqInfo[2]);
+  //	System.out.println("dstMRN: " +  reqInfo[3]);
+  //	System.out.println("svcMRN: " + reqInfo[4]);
         errorlog += " dstIP=" + reqInfo[2] + " dstMRN=" + reqInfo[3] + " svcMRN=" + reqInfo[4];
       }
-  //    	System.out.println("/*****************************************/");
+  //  System.out.println("/*****************************************/");
 		
       errorlog = "SessionID="+this.SESSION_ID+" The client is disconnected, " + errorlog + ".";
 		  logger.warn(errorlog);

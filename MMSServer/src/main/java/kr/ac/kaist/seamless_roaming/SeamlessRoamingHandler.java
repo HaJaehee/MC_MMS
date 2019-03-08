@@ -23,6 +23,14 @@ Rev. history : 2018-10-16
 Version : 0.8.0
 	Modified in order to interact with MNS server.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.\
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -61,18 +69,30 @@ public class SeamlessRoamingHandler {
 		scmh = new SCMessageHandler(this.SESSION_ID);
 	}
 	
-	
-//	poll SC message in queue
-	public void processPollingMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String srcIP, int srcPort, String srcModel, String svcMRN) {
+	// TODO: Youngjin Kim must inspect this following code.
+	// Poll SC message in queue.
+	public void processPollingMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String srcIP, String pollingMethod, String svcMRN) {
 		
-		SessionManager.sessionInfo.put(SESSION_ID, "p");
+
+		if (pollingMethod.equals("normal"))	{
+			SessionManager.sessionInfo.put(SESSION_ID, "p");
+		}
+		else if (pollingMethod.equals("long")) {
+			SessionManager.sessionInfo.put(SESSION_ID, "lp");
+		}
+		
+		//TODO: Duplicated polling request is not allowed.
+		/*
+		 * Jaehee Ha CODE HERE.
+		 * 
+		 */
 		
 		//TODO: will be deprecated.
 		if (MMSConfiguration.MNS_HOST().equals("localhost")||MMSConfiguration.MNS_HOST().equals("127.0.0.1")) {
-			pmh.updateClientInfo(mih, srcMRN, srcIP, srcPort, srcModel);
+			pmh.updateClientInfo(mih, srcMRN, srcIP);
 		}
 		
-		pmh.dequeueSCMessage(outputChannel, ctx, srcMRN, svcMRN);
+		pmh.dequeueSCMessage(outputChannel, ctx, srcMRN, svcMRN, pollingMethod);
 	}
 	
 //	save SC message into queue

@@ -94,6 +94,13 @@ Rev. history : 2018-07-10
 Version : 0.7.2
 	Fixed insecure codes.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.\
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -129,7 +136,6 @@ import org.slf4j.LoggerFactory;
 
 import kr.ac.kaist.message_relaying.MessageRelayingHandler;
 import kr.ac.kaist.message_relaying.SessionManager;
-import kr.ac.kaist.seamless_roaming.PollingMethodRegDummy;
 
 
 public class MMSLog {
@@ -174,23 +180,7 @@ public class MMSLog {
 			}
 			status.append("</div>");
 			status.append("<br/>");
-			
-			
-			status.append("<strong>Polling method:</strong><br/>");
-			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
-			if (!PollingMethodRegDummy.pollingMethodReg.isEmpty()){
-				SortedSet<String> keys = new TreeSet<String>(PollingMethodRegDummy.pollingMethodReg.keySet());
-				for (String key : keys){
-					int value = PollingMethodRegDummy.pollingMethodReg.get(key);
-					status.append(key+", "+((value==PollingMethodRegDummy.NORMAL_POLLING)?"normal":"long")+" polling<br/>");
-				}
-				status.append("Other services, normal polling<br/>");
-			} else {
-				status.append("All services, normal polling<br/>");
-			}
-			status.append("</div>");
-			status.append("<br/>");
-			
+
 			
 			status.append("<strong>Sessions waiting for a message:</strong><br/>");
 			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");

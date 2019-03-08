@@ -9,6 +9,9 @@ MC_MMS 0.8.1 new features/enhancements & bug-fixes:
 		In a message header;
 			if the url is "/polling", then normal polling method is used.
 			else if the url is "/long_polling", then long polling method is used.
+			
+2. Removed locator registering function.
+3. Duplicated polling requests are not allowed.
 
 3-Jan 2019
 MC_MMS 0.8.1 new features/enhancements & bug-fixes:

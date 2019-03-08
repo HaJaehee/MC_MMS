@@ -58,6 +58,13 @@ Rev. history : 2018-07-27
 Version : 0.7.2
 	Added geocasting features which cast message to circle or polygon area.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.\
+	Removed locator registering function.
+	Duplicated polling request is not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -182,14 +189,14 @@ public class MessageCastingHandler {
 				}
 				
 				else if (connType.equals("polling")) {
-					//TODO: implement here
+					
 					String dstMRNInGeoDstInfo = (String) obj.get("dstMRN");
 					String netTypeInGeoDstInfo = (String) obj.get("netType");
 					srh.putSCMessage(srcMRN, dstMRNInGeoDstInfo, req.content().toString(Charset.forName("UTF-8")).trim());
 		    		
 				}
 				else if (connType.equals("push")) {
-					//TODO: implement here
+					
 		        	try {
 		        		String dstMRNInGeoDstInfo = (String) obj.get("dstMRN");
 		        		String dstIPInGeoDstInfo = (String) obj.get("IPAddr");
@@ -223,8 +230,5 @@ public class MessageCastingHandler {
 		return null;
 	}
 	
-	@Deprecated
-	public String registerClientInfo (String srcMRN, String srcIP, int srcPort, String srcModel){
-		return mih.registerClientInfo (srcMRN, srcIP, srcPort, srcModel);
-	}
+	
 }

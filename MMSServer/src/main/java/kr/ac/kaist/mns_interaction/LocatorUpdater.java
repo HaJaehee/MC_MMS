@@ -20,6 +20,13 @@ Rev. history : 2018-06-06
 Version : 0.6.1
 	Deprecated this class.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.\
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -38,8 +45,8 @@ public class LocatorUpdater {
 	LocatorUpdater (String sessionId){
 		this.SESSION_ID = sessionId;
 	}
-	String buildUpdate(String MRN, String IP, int port, String model) {
-		String msg = "Location-Update:" + IP + "," + MRN + "," + Integer.toString(port) + "," + model;
+	String buildUpdate(String MRN, String IP) {
+		String msg = "Location-Update:" + IP + "," + MRN + ",0,1";
 
 		logger.debug("SessionID="+this.SESSION_ID+" "+msg+".");
 		return msg;

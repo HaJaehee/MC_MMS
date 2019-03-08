@@ -37,6 +37,11 @@ Rev. history : 2018-08-01
 Version : 0.7.2
 	Updated header field setter function.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-03-08
+Version : 0.8.1
+	Removed locator registration function.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -86,11 +91,7 @@ class SecureMMSSndHandler {
 		this.myCallback = callback;
 	}
 	
-	@Deprecated
-	void registerLocator(int port) throws IOException {
-		isRgstLoc = true;
-		sendHttpsPost("urn:mrn:smart-navi:device:mms1", "/registering", port+":2", null);
-	}
+
 	void sendHttpsPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws IOException{
 		sendHttpsPost(dstMRN, loc, data, headerField, -1);
 	}

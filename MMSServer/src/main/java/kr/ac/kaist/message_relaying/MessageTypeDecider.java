@@ -93,6 +93,14 @@ Rev. history : 2018-10-16
 Version : 0.8.0
 	Modified in order to interact with MNS server.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.\
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -114,16 +122,17 @@ class MessageTypeDecider {
 	
 	public static enum msgType {
 			POLLING,
+			LONG_POLLING,
 			RELAYING_TO_SC,
 			RELAYING_TO_SC_SEQUENTIALLY,
 			RELAYING_TO_SERVER,
 			RELAYING_TO_SERVER_SEQUENTIALLY,
-			REGISTER_CLIENT,
+			//REGISTER_CLIENT,
 			UNKNOWN_MRN,
 			STATUS,EMPTY_MNSDummy,
 			REMOVE_MNS_ENTRY,
 			ADD_MNS_ENTRY,
-			POLLING_METHOD,
+			//POLLING_METHOD,
 			RELAYING_TO_MULTIPLE_SC,
 			NULL_SRC_MRN,
 			NULL_DST_MRN,
@@ -171,9 +180,12 @@ class MessageTypeDecider {
 		   	else if (MMSConfiguration.WEB_MANAGING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/remove-mns-entry?mrn", 0, 21)){ 
 		   		return msgType.REMOVE_MNS_ENTRY;
 		   	} 
-		   	else if (MMSConfiguration.WEB_MANAGING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/polling?method", 0, 15)){
+			
+		   	/* Deprecated
+		   	 * else if (MMSConfiguration.WEB_MANAGING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/polling?method", 0, 15)){
 		   		return msgType.POLLING_METHOD;
-		   	} 	
+		   	}*/
+			
 		   	else if (MMSConfiguration.WEB_MANAGING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/add-mrn-being-debugged?mrn", 0, 21)) {
 		   		return msgType.ADD_MRN_BEING_DEBUGGED;
 		   	}
@@ -202,16 +214,17 @@ class MessageTypeDecider {
 		}
 		
 		else if (dstMRN.equals(MMSConfiguration.MMS_MRN())) {
-			//    	When polling
+			// TODO: Youngjin Kim must inspect this following code.
+			//When polling
 			if (httpMethod == HttpMethod.POST && uri.equals("/polling")) {
 	    		return msgType.POLLING; 
 	    	}
-	    	
-			//		when registering
-	    	else if (httpMethod == HttpMethod.POST && uri.equals("/registering") ) {  //TODO: will be deprecated.
-	    		return msgType.REGISTER_CLIENT;
-	    	}
 			
+			//When long polling
+			if (httpMethod == HttpMethod.POST && uri.equals("/long_polling")) {
+	    		return msgType.LONG_POLLING; 
+	    	}
+	    	
 	    	else {
 	    		return msgType.DST_MRN_IS_THIS_MMS_MRN;
 	    	}

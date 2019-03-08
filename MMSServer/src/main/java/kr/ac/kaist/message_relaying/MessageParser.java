@@ -62,6 +62,13 @@ Rev. history : 2018-10-16
 Version : 0.8.0
 	Modified in order to interact with MNS server.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.\
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -98,9 +105,7 @@ public class MessageParser {
 	private String dstIP = null;
 	private String dstMRN = null;
 	private String[] multiDstMRN = null;
-	private int srcPort = 0;
 	private int dstPort = 0;
-	private String srcModel = null;
 	private String dstModel = null;
 	private String uri = null;
 	private HttpMethod httpMethod = null;
@@ -128,9 +133,7 @@ public class MessageParser {
 		dstMRN = null;
 		uri = null;
 		httpMethod = null;
-		srcPort = 0;
 		dstPort = 0;
-		srcModel = null;
 		dstModel = null;
 		svcMRN = null;
 		netType = null;
@@ -255,8 +258,6 @@ public class MessageParser {
 		if (sepContent.length > 0) {
 			if (!sepContent[0].toLowerCase().startsWith("urn")) { //TODO: will be deprecated
 				String[] svcMRNInfo = sepContent[0].split(":");
-				srcPort = Integer.parseInt(svcMRNInfo[0]);
-				srcModel = svcMRNInfo[1];
 				if (svcMRNInfo.length > 2) {
 					svcMRN = svcMRNInfo[2];
 					for ( int i = 3; i<svcMRNInfo.length; i++){
@@ -265,8 +266,6 @@ public class MessageParser {
 				}
 			}
 			else {
-				srcPort = 0;
-				srcModel = "1";
 				svcMRN = sepContent[0];
 			}
 			
@@ -345,9 +344,7 @@ public class MessageParser {
 	
 	// Source Information //
 	String getSrcIP(){ return srcIP; }
-	int getSrcPort(){ return srcPort; }
 	String getSrcMRN() { return srcMRN; }
-	String getSrcModel(){ return srcModel; }
 	
 	// Service Information //
 	String getSvcMRN (){ return svcMRN; }

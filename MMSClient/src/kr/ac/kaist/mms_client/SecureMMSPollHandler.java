@@ -138,6 +138,7 @@ class SecureMMSPollHandler {
     		}
     	}
     	
+    	// TODO: Youngjin Kim must inspect this following code.
 		void Poll() throws Exception {
 			
 			hv = getHV();

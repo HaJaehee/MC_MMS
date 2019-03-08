@@ -115,6 +115,7 @@ class MMSPollHandler {
     		interrupted=true;
     	}
     	
+    	
     	public void run(){
     		try{
 	    		while (!Thread.currentThread().isInterrupted() && !interrupted){
@@ -133,6 +134,7 @@ class MMSPollHandler {
     		}
     	}
     	
+    	// TODO: Youngjin Kim must inspect this following code.
 		void Poll(){
 			try {
 				String url = "http://"+MMSConfiguration.MMS_URL;
