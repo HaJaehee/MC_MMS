@@ -247,8 +247,6 @@ public class MessageRelayingHandler  {
 			}
 		}
 
-		
-		
 		processRelaying(type, ctx, req);
 		
 	}
@@ -428,6 +426,12 @@ public class MessageRelayingHandler  {
 			// TODO: Youngjin Kim must inspect this following code.
 			else if (type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) {
 				parser.parseSvcMRNAndHexSign(req);
+				if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+					String log = "SessionID="+this.SESSION_ID+" This is a polling request and the service MRN is " + parser.getSvcMRN();
+					mmsLog.addBriefLogForStatus(log);
+					mmsLogForDebug.addLog(this.SESSION_ID, log);
+				}
+				logger.info("SessionID="+this.SESSION_ID+" This is a polling request and the service MRN is " + parser.getSvcMRN());
 				//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
 				if (parser.getHexSignedData() != null) { //In this version 0.8.0, polling client verification is optional. 
 					if(MMSConfiguration.WEB_LOG_PROVIDING()) {
@@ -482,6 +486,7 @@ public class MessageRelayingHandler  {
 				}
 				
 				if (type == MessageTypeDecider.msgType.POLLING) {
+//					System.out.println("[RelayingHandler]-[InPolling] serviceMRN: " + svcMRN);
 					srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, "normal", svcMRN);
 				} else if (type == MessageTypeDecider.msgType.LONG_POLLING) {
 					srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, "long", svcMRN);

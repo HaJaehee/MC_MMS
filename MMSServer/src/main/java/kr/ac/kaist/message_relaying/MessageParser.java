@@ -69,6 +69,11 @@ Version : 0.8.1
 	Removed locator registering function.
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-19
+Version : 0.8.2
+	MMS server is able to parse a polling request message which is a JSON format.\
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -78,6 +83,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Iterator;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -146,8 +152,6 @@ public class MessageParser {
 		mmsLog = MMSLog.getInstance();
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
-	
-
 
 	void parseMessage(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception{
 		InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
@@ -174,11 +178,8 @@ public class MessageParser {
 			catch (NumberFormatException e) {
 				throw e;
 			}
-			
 		}
-		
-		
-		
+
 		if (this.SESSION_ID != null && req.headers().get("geocasting") != null) {
 			if (req.headers().get("geocasting").equals("circle")) {
 				isGeocasting = true;
@@ -241,22 +242,33 @@ public class MessageParser {
 			isGeocasting = false;
 		}
 		
-		
-		
-		
 		uri = req.uri();
 		httpMethod = req.method();
 	}
 	
-	void parseSvcMRNAndHexSign(FullHttpRequest req) throws IOException{
-		String content = req.content().toString(Charset.forName("UTF-8")).trim();
-
-		if (content.length() == 0) {
-			throw new IOException ("Invalid content.");
+	private void parsePollingRequestToJSON(String httpContents) throws org.json.simple.parser.ParseException{
+		JSONObject pollingRequestContents = null;
+		JSONParser parser = new JSONParser();
+		
+		pollingRequestContents = (JSONObject) parser.parse(httpContents);
+		
+		for (Object key : pollingRequestContents.keySet()){
+			String keyStr = (String) key;
+			if (keyStr.equals("svcMRN")) {
+				svcMRN = (String) pollingRequestContents.get("svcMRN");
+				System.out.println("[Parser] serviceMRN: " + svcMRN);
+			}
+			else if (keyStr.equals("certificate")) {
+				hexSignedData = (String) pollingRequestContents.get("certificate");
+			}
 		}
-		String[] sepContent = content.split("\n");
+	}
+	
+	//TODO: will be deprecated after version 0.9.0
+	private void parsePollingRequestToString(String httpContents){
+		String[] sepContent = httpContents.split("\n");
 		if (sepContent.length > 0) {
-			if (!sepContent[0].toLowerCase().startsWith("urn")) { //TODO: will be deprecated
+			if (!sepContent[0].toLowerCase().startsWith("urn")) { 
 				String[] svcMRNInfo = sepContent[0].split(":");
 				if (svcMRNInfo.length > 2) {
 					svcMRN = svcMRNInfo[2];
@@ -273,7 +285,27 @@ public class MessageParser {
 				hexSignedData = sepContent[1];
 			}
 		}
+	}
+	
+	void parseSvcMRNAndHexSign(FullHttpRequest req) throws IOException{
+		String content = req.content().toString(Charset.forName("UTF-8")).trim();
+		
+		if (content.length() == 0) {
+			throw new IOException ("Invalid content.");
+		}
+		
+		try {
+			parsePollingRequestToJSON(content);
+//			System.out.println("[Test Message] the svcMRN is " + svcMRN);
+//			System.out.println("[Test Message] the certificate is " + hexSignedData.substring(6));
+			
+			return ;
+		} 
+		catch (org.json.simple.parser.ParseException e) {
+			logger.warn("SessionID="+this.SESSION_ID+" Failed to parse service MRN and certificate whose type is a JSON format.");
+		}
 
+		parsePollingRequestToString(content);
 	}
 	
 	void parseDstInfo(String dstInfo){
@@ -295,7 +327,8 @@ public class MessageParser {
 				netType = (String) json.get("netType");
 			}
     	
-		} catch (org.json.simple.parser.ParseException e) {
+		}
+		catch (org.json.simple.parser.ParseException e) {
 			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
