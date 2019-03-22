@@ -88,9 +88,9 @@ public class SeamlessRoamingHandler {
 		 */
 		
 		//TODO: will be deprecated.
-		if (MMSConfiguration.MNS_HOST().equals("localhost")||MMSConfiguration.MNS_HOST().equals("127.0.0.1")) {
+		/*if (MMSConfiguration.MNS_HOST().equals("localhost")||MMSConfiguration.MNS_HOST().equals("127.0.0.1")) {
 			pmh.updateClientInfo(mih, srcMRN, srcIP);
-		}
+		}*/
 		
 		pmh.dequeueSCMessage(outputChannel, ctx, srcMRN, svcMRN, pollingMethod);
 	}
