@@ -3,21 +3,21 @@
 
 help()
 {
-    echo "Usage: $0 [domain name to run]"
+	echo "Usage: $0 [domain name to run]"
 }
 
 if [ $# -ne 1 ]
 then
-    help
-    exit 0
+	help
+	exit 0
 fi
 newdomain=$1
 
 while true; do
-    read -p "Do you wish to install this program? Port number 3306 will be mapped to mariadb container's and port numbers 5672, 15672, 25672 will be mapped to rabbitmq container's! [y/n]" yn
-    echo ""
-    case $yn in
-        [Yy]* )
+	read -p "Do you wish to install this program? Port number 3306 will be mapped to mariadb container's and port numbers 5672, 15672, 25672 will be mapped to rabbitmq container's! [y/n]" yn
+	echo ""
+	case $yn in
+		[Yy]* )
 		echo "Swipe docker containers and images related to MMS Monitoring."
 		sudo docker stop $(sudo docker ps | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb|mcp_mms_monitoring_rabbitmq" | cut -c1-12)
 		sudo docker rm $(sudo docker ps --all | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb|mcp_mms_monitoring_rabbitmq" | cut -c1-12)
@@ -51,7 +51,7 @@ while true; do
 		echo "Make directories."
 		sudo mkdir --parents /var/lib/mcp_mms_monitoring_mariadb
 		sudo mkdir --parents /var/www/mcp_mms_monitoring/html
-        sudo cp -r ./var/www/html/* /var/www/mcp_mms_monitoring/html/
+		sudo cp -r ./var/www/html/* /var/www/mcp_mms_monitoring/html/
 		
 		echo "Set up docker-compose."
 		sudo docker-compose -f ./docker-compose.yml up -d
@@ -112,10 +112,10 @@ while true; do
 
 		exit
 		;;
-        No ) exit
+		No ) exit
 		;;
 	* ) echo "Please answer yes or no.";;
-    esac
+	esac
 done
 
 
