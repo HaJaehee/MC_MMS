@@ -98,8 +98,8 @@ while true; do
 
 		echo "Start MMS."
 		cd ../MMSServer/Linux
-		sudo nohup sudo sh ./start_mms.sh 2>&1 &
-		sudo nohup sudo sh ./start_mns.sh 2>&1 &
+		sudo nohup sudo sh ./start_mms.sh >/dev/null 2>&1 &
+		sudo nohup sudo sh ./start_mns.sh >/dev/null 2>&1 &
 		sleep 5
 
 		#cd ../target
