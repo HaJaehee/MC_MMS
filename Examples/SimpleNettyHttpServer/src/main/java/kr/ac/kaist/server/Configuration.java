@@ -1,89 +1,9 @@
 package kr.ac.kaist.server;
-/* -------------------------------------------------------- */
-/** 
-File name : MMSConfiguration.java
-Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2017-01-24
-Version : 0.3.01
 
-Rev. history : 2017-04-27
-Version : 0.5.2
-	Added AUTO_SAVE_STATUS, SAVE_STATUS_INTERVAL
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr) 
-
-Rev. history : 2017-04-29
-Version : 0.5.3
-	Added SYSTEM_LOGGING, AUTO_SAVE_SYSTEM_LOG, SAVE_SYSTEM_LOG_INTERVAL
-	Changed LOGGING to CONSOLE_LOGGING
-	Changed WEB_LOG_PROVIDING to WEB_LOG_PROVIDING
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr) 
-
-Rev. history : 2017-06-17
-Version : 0.5.6
-	Added normal polling function
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-06-19
-Version : 0.5.7
-	Applied LogBack framework in order to log events
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2017-07-24
-Version : 0.5.9
-	Updated max http contents size
-Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
-
-Rev. history : 2018-07-11
-Version : 0.7.2
-	Added MNS_HOST and MNS_PORT.
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2018-08-13
-Version : 0.7.3
-	From this version, this class reads system arguments and configurations from "MMS-configuration/MMS.conf" file.
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2018-08-20
-Version : 0.7.3
-	From this version, this class reads environment argument.
-Modifier : Jaehyun Park (jae519@kaist.ac.kr)
-
-Rev. history : 2018-08-21
-Version : 0.7.3
-	Updated vague.
-Modifier : Jaehyun Park (jae519@kaist.ac.kr)
-
-Rev. history : 2018-09-21
-Version : 0.8.0
-	Updated Checking initialized variables in MMSConfiguration.
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2018-09-21
-Version : 0.8.0
-	Updated RABBIT_MQ_HOST variable in MMSConfiguration.
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-Rev. history : 2019-01-03
-Version : 0.8.0
-	Removed log level, console out, file out options from MMSConfiguration.
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
-
-Rev. history : 2019-01-29
-Version : 0.8.1
-	Specify external logback.xml configuration file.
-*/
-/* -------------------------------------------------------- */
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 
 import org.apache.commons.cli.*;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 public class Configuration {
 	private static final String TAG = "[MMSConfiguration] ";

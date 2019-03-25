@@ -1,18 +1,5 @@
 package kr.ac.kaist.server;
 
-/* -------------------------------------------------------- */
-/** 
-File name : NettyStartupUtil.java
-Author : Jaehyun Park (jae519@kaist.ac.kr)
-Creation Date : 2017-01-24
-Version : 0.3.01
-
-Rev. history : 2017-06-19
-Version : 0.5.7
-	Applied LogBack framework in order to log events
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-*/
-/* -------------------------------------------------------- */
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
