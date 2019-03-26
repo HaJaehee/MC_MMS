@@ -259,9 +259,6 @@ public class MMSClientHandler {
 		}
 	}
 
-	
-	
-	
 	/**
 	 * This method helps client to stop polling requests using interrupt signal. 
 	 */

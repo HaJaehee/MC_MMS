@@ -92,6 +92,7 @@ public class SeamlessRoamingHandler {
 			pmh.updateClientInfo(mih, srcMRN, srcIP);
 		}*/
 		
+//		System.out.println("[Test Message] srcMRN: " + srcMRN + " svcMRN: " + svcMRN);
 		pmh.dequeueSCMessage(outputChannel, ctx, srcMRN, svcMRN, pollingMethod);
 	}
 	
