@@ -1,5 +1,9 @@
 Patch Notes
 ***********
+26-March 2019
+MC_MMS 0.8.2 new features/enhancements & bug-fixes:
+1. Function and API update: Polling client now uses a paload with json format. 
+
 12-March 2019
 MC_MMS 0.8.1 new features/enhancements & bug-fixes:
 1. Function update: Auto-deplying MMS monitoring module using docker containers.
