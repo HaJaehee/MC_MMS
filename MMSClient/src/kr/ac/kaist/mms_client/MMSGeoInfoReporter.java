@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * It is an object that processes geo-information and registers it to MMS.
  * It is being developed, please do not use it.
- * @version 0.8.1
+ * @version 0.8.2
  * @see MMSClientHandler
  * @see SecureMMSClientHandler
  */

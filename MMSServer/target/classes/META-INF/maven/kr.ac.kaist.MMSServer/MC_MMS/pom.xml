@@ -7,7 +7,7 @@
 
 	<groupId>kr.ac.kaist.MMSServer</groupId>
 
-	<version>0.8.0-SNAPSHOT</version>
+	<version>0.8.2-SNAPSHOT</version>
 	<artifactId>MC_MMS</artifactId>
 	<packaging>jar</packaging>
 	<properties>
@@ -178,7 +178,7 @@
 		</plugins>
 	</build>
 
-	<url>https://mms-kaist.com/</url>
+	<url>https://mms.smartnav.org/</url>
 	<name>MMS</name>
 	<description>MMS is abbreviation of Maritime Messaging Service. 
 The MMS is a proposed messaging service intended to offer transparent seamless information transfer across different communication links in a carrier agnostic and geolocation context sensitive manner.</description>

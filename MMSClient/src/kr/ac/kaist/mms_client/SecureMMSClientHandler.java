@@ -105,7 +105,7 @@ import java.util.Map;
 
 /**
  * This handler helps client communicate to MMS over HTTPS. Client uses it to send or receive messages.
- * @version 0.8.1
+ * @version 0.8.2
  * @see MMSClientHandler
  */
 public class SecureMMSClientHandler {
