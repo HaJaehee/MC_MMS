@@ -2,8 +2,8 @@
 ## This branch is currently under development. Can be corrected without notice.
 
 # MC_MMS
-Beta Version 0.8.1 <br/>
-2019.01.29<br/>
+Beta Version 0.8.2 <br/>
+2019.03.26<br/>
 
 
 # Web Site
