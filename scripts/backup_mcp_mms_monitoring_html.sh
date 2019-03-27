@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo docker run --rm --volumes-from mcp_mms_monitoring -v $(pwd):/backup ubuntu tar cvf /backup/backup.tar /var/www/html/
+sudo tar cf mcp_mms_monitoring_html.tar /var/www/mcp_mms_monitoring/ 

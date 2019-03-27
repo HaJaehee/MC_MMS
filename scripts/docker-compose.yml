@@ -27,7 +27,7 @@ services:
   #  build:
   #    context: .
   #    dockerfile: ./Dockerfile-rabbitmq
-    image: lovesm135/mcp_mms_monitoring_rabbitmq:0.7
+    image: lovesm135/mcp_mms_monitoring_rabbitmq:0.8
       
     ports:
       - "5672:5672"
@@ -38,7 +38,7 @@ services:
    # build:
    #   context: .
    #   dockerfile: ./Dockerfile-monitor
-    image: lovesm135/mcp_mms_monitoring:0.7
+    image: lovesm135/mcp_mms_monitoring:0.8
       
     ports:
       - 80:80
@@ -61,7 +61,7 @@ services:
     container_name: mcp_mms_monitoring
 
   db:
-    image: lovesm135/mcp_mms_monitoring_mariadb:0.7
+    image: lovesm135/mcp_mms_monitoring_mariadb:0.8
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: mydb
