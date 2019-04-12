@@ -72,6 +72,12 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2019-01-29
 Version : 0.8.1
 	Specify external logback.xml configuration file.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+	
+Rev. history: 2019-04-12
+Version : 0.8.2
+	Modified for coding rule conformity.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 import java.io.File;
@@ -290,12 +296,14 @@ public class MMSConfiguration {
 			formatter.printHelp("MMS options", options);
 			Scanner sc = new Scanner(System.in);
 			sc.nextLine();
+			sc.close();
 			System.exit(1);
 		}
 		catch (IOException e) {
 			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
 			Scanner sc = new Scanner(System.in);
 			sc.nextLine();
+			sc.close();
 			System.exit(1);
 		}
 		
@@ -347,8 +355,10 @@ public class MMSConfiguration {
 					try {
 						throw new IOException();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.warn(e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".");
+						for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+							logger.warn(e.getStackTrace()[i]+".");
+						}
 					}
 				}
 			}
@@ -392,6 +402,7 @@ public class MMSConfiguration {
 		
 		JSONParser parser = new JSONParser();
 		FileReader fr = null;
+		boolean isError = false;
 		try {
 			File f = new File("./MMS-configuration/MMS.conf");
 			fr = new FileReader(f);
@@ -464,22 +475,27 @@ public class MMSConfiguration {
 			if (!LOG_CONSOLE_OUT[0]) {
 				LOG_CONSOLE_OUT = getConfValueBoolean(jobj, "LOG_CONSOLE_OUT");
 			}*/
+			
+			
+			fr.close();
+			fr = null;
 		}
 		catch (FileNotFoundException e) {
 			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
-			//System.exit(2);
 		}
 		catch (IOException e) {
 			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
 			Scanner sc = new Scanner(System.in);
 			sc.nextLine();
-			System.exit(3);
+			sc.close();
+			isError = true;
 		}
 		catch (org.json.simple.parser.ParseException e) {
 			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
 			Scanner sc = new Scanner(System.in);
 			sc.nextLine();
-			System.exit(4);
+			sc.close();
+			isError = true;
 		}
 		finally {
 			try {
@@ -489,6 +505,12 @@ public class MMSConfiguration {
 			} catch (IOException e) {
 				logger.warn(TAG+e.getClass()+" "+e.getLocalizedMessage());
 			}
+			
+			if (isError) {
+				System.exit(1);
+			}
+			
+			
 			if (Arrays.equals(WEB_LOG_PROVIDING, new boolean[] {false, false})) {
 				WEB_LOG_PROVIDING = new boolean[] {true, true};
 			}

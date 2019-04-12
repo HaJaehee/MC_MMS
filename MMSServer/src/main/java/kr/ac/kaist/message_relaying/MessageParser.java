@@ -74,6 +74,11 @@ Rev. history: 2019-03-19
 Version : 0.8.2
 	MMS server is able to parse a polling request message which is a JSON format.\
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history: 2019-04-12
+Version : 0.8.2
+	Modified for coding rule conformity.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -153,7 +158,7 @@ public class MessageParser {
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 
-	void parseMessage(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception{
+	void parseMessage(ChannelHandlerContext ctx, FullHttpRequest req) throws NullPointerException, NumberFormatException{
 		InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 	    InetAddress inetaddress = socketAddress.getAddress();
 
@@ -167,35 +172,26 @@ public class MessageParser {
 		dstMRN = req.headers().get("dstMRN");
 		String o = req.headers().get("seqNum");
 		if (o != null) {
-			try {
-				//seqNum must be positive and lower than MAXIMUM VALUE of double. seqNum must be checked.
-				seqNum = Double.parseDouble(o);
-				new BigInteger(o);
-				if (seqNum < 0) {
-					throw new NumberFormatException();
-				}
-			}
-			catch (NumberFormatException e) {
-				throw e;
+			//seqNum must be positive and lower than MAXIMUM VALUE of double. seqNum must be checked.
+			seqNum = Double.parseDouble(o);
+			new BigInteger(o);
+			if (seqNum < 0) {
+				logger.warn("SessionID="+SESSION_ID+" In header, seqNum must be positive integer.");
+				throw new NumberFormatException();
 			}
 		}
 
 		if (this.SESSION_ID != null && req.headers().get("geocasting") != null) {
 			if (req.headers().get("geocasting").equals("circle")) {
-				isGeocasting = true;
-				try {
-					setGeoCircleInfo(req);
-					if (logger.isDebugEnabled()) {
-						if(MMSConfiguration.WEB_LOG_PROVIDING()) {
-							String log = "SessionID="+this.SESSION_ID+" Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".";
-							mmsLog.addBriefLogForStatus(log);
-							mmsLogForDebug.addLog(this.SESSION_ID, log);
-						}
-						logger.debug("SessionID="+this.SESSION_ID+" Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".");
+				isGeocasting = true;	
+				setGeoCircleInfo(req);
+				if (logger.isDebugEnabled()) {
+					if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+						String log = "SessionID="+this.SESSION_ID+" Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".";
+						mmsLog.addBriefLogForStatus(log);
+						mmsLogForDebug.addLog(this.SESSION_ID, log);
 					}
-				} 
-				catch (ParseException e) {
-					logger.warn("SessionID="+this.SESSION_ID+" Failed to parse geolocation info.");
+					logger.debug("SessionID="+this.SESSION_ID+" Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".");
 				}
 			} 
 			else if (req.headers().get("geocasting").equals("polygon")) {
@@ -387,59 +383,56 @@ public class MessageParser {
 		return isGeocasting;
 	}
 	
-	public void setGeoCircleInfo (FullHttpRequest req) throws Exception {
-		try {
-			geoCircleInfo = new GeolocationCircleInfo();
-			geoCircleInfo.setGeoLat(Float.parseFloat(req.headers().get("lat")));
-			geoCircleInfo.setGeoLong(Float.parseFloat(req.headers().get("long")));
-			geoCircleInfo.setGeoRadius(Float.parseFloat(req.headers().get("radius")));
-		} 
-		catch (Exception e) {
-			throw e;
+	public void setGeoCircleInfo (FullHttpRequest req) throws NumberFormatException, NullPointerException {
+		geoCircleInfo = new GeolocationCircleInfo();
+		if (req.headers().get("lat") == null) {
+			throw new NullPointerException("In header, \"lat\" item is missing.");
 		}
+		if (req.headers().get("long") == null) {
+			throw new NullPointerException("In header, \"long\" item is missing.");
+		}
+		if (req.headers().get("radius") == null) {
+			throw new NullPointerException("In header, \"radius\" item is missing.");
+		}
+		geoCircleInfo.setGeoLat(Float.parseFloat(req.headers().get("lat")));
+		geoCircleInfo.setGeoLong(Float.parseFloat(req.headers().get("long")));
+		geoCircleInfo.setGeoRadius(Float.parseFloat(req.headers().get("radius")));	
 	}
 	
 	public GeolocationCircleInfo getGeoCircleInfo() {
 		return geoCircleInfo;
 	}
 	
-	public void setGeoPolygonInfo (FullHttpRequest req) throws Exception {
-		try {
-			geoPolygonInfo = new GeolocationPolygonInfo();
-			float[] geoLatList = parseToFloatList(req.headers().get("lat"));
-			float[] geoLongList = parseToFloatList(req.headers().get("long"));
-			if (geoLatList.length < 3 || geoLongList.length < 3 || geoLatList.length != geoLongList.length) {
-				throw new Exception();
-			}
-			geoPolygonInfo.setGeoLatList(geoLatList);
-			geoPolygonInfo.setGeoLongList(geoLongList);
-		} 
-		catch (Exception e) {
-			throw e;
+	public void setGeoPolygonInfo (FullHttpRequest req) throws NumberFormatException, ParseException, NullPointerException {
+		
+		geoPolygonInfo = new GeolocationPolygonInfo();
+		if (req.headers().get("lat") == null) {
+			throw new NullPointerException("In header, \"lat\" item is missing.");
 		}
+		if (req.headers().get("long") == null) {
+			throw new NullPointerException("In header, \"long\" item is missing.");
+		}
+		float[] geoLatList = parseToFloatList(req.headers().get("lat"));
+		float[] geoLongList = parseToFloatList(req.headers().get("long"));
+		if (geoLatList.length < 3 || geoLongList.length < 3 || geoLatList.length != geoLongList.length) {
+			throw new ParseException(ParseException.ERROR_UNEXPECTED_EXCEPTION);
+		}
+		geoPolygonInfo.setGeoLatList(geoLatList);
+		geoPolygonInfo.setGeoLongList(geoLongList);
 	}
 	
-	private float[] parseToFloatList (String input) throws ParseException, NullPointerException {
+	private float[] parseToFloatList (String input) throws ParseException, NumberFormatException,  NullPointerException {
 		float[] ret = null;
-		if (input != null) {
-			try {
-				input = input.trim();
-				JSONParser parser = new JSONParser();
-				JSONArray arr = (JSONArray) parser.parse(input);
-				ret = new float[arr.size()];
-				for (int i = 0 ; i < arr.size() ; i++) {
-					ret[i] = Float.parseFloat(arr.get(i).toString());
-				}
-			}
-			catch (ParseException e) {
-				throw e;
-			}
-			
-			return ret;
+		
+		input = input.trim();
+		JSONParser parser = new JSONParser();
+		JSONArray arr = (JSONArray) parser.parse(input);
+		ret = new float[arr.size()];
+		for (int i = 0 ; i < arr.size() ; i++) {
+			ret[i] = Float.parseFloat(arr.get(i).toString());
 		}
-		else {
-			throw new NullPointerException();
-		}
+		
+		return ret;
 	}
 	
 	//TODO

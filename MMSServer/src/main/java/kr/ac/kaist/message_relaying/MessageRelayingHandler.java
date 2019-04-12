@@ -167,6 +167,11 @@ Version : 0.8.1
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+
+Rev. history: 2019-04-12
+Version : 0.8.2
+	Modified for coding rule conformity.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -229,7 +234,7 @@ public class MessageRelayingHandler  {
 		initializeSubModule();
 		try {
 			parser.parseMessage(ctx, req);
-		} catch (Exception e) {
+		} catch (NumberFormatException | NullPointerException e) {
 			logger.warn("SessionID="+SESSION_ID+" "+"Exception occured while parsing the message. "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
@@ -809,6 +814,10 @@ public class MessageRelayingHandler  {
 				try {
 					msg = "[\""+URLEncoder.encode("It is failed to verify the client.","UTF-8")+"\"]";
 				} catch (UnsupportedEncodingException e) {
+					logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".");
+					for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+						logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+					}
 				}
 				outputChannel.replyToSender(ctx, msg.getBytes(), isRealtimeLog);
 			}

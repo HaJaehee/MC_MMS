@@ -101,6 +101,10 @@ Version : 0.8.1
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history: 2019-04-12
+Version : 0.8.2
+	Modified for coding rule conformity.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -240,15 +244,27 @@ class MessageTypeDecider {
 				return msgType.GEOCASTING_CIRCLE;
 			}
 			
-			//TODO
+			
 			else if (parser.getGeoPolygonInfo() != null) {
 				GeolocationPolygonInfo geo = parser.getGeoPolygonInfo();
-				String geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geo.getGeoLatList(), geo.getGeoLongList());
-				parser.parseGeocastInfo(geocastInfo);
-				
-				return msgType.GEOCASTING_POLYGON;
+				float[] geoLatList = geo.getGeoLatList();
+				float[] geoLongList = geo.getGeoLongList();
+				String geocastInfo = null;
+				if (geoLatList != null && geoLongList != null) {
+					geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geoLatList, geoLongList);
+					if (geocastInfo != null) {
+						parser.parseGeocastInfo(geocastInfo);
+						return msgType.GEOCASTING_POLYGON;
+					} else {
+						//TODO: MUST define specific error code.
+						return msgType.UNKNOWN_MRN;
+					}
+				}
+				else {
+					//TODO: MUST define specific error code.
+					return msgType.UNKNOWN_MRN;
+				}
 			}
-			
 		 	return msgType.UNKNOWN_MRN;
 		}
     	
