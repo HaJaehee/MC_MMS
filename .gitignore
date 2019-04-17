@@ -5,3 +5,10 @@ MMSServer/target/classes/META-INF/maven/ch.qos.logback/logback-classic/pom.prope
 *.class
 
 MMSServer/target/logs/
+/.metadata/
+
+/.metadata/
+
+**/target/lib/**
+**/target/generated-sources/**
+**/target/classes/**
