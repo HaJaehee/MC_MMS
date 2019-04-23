@@ -88,11 +88,11 @@ while true; do
 		cd ../../scripts
 		sudo rm -r ./html
 		
-		echo "Please reconfigure the mcp_mms_monitoring container's postfix configuration."
-		echo "Run cmd line inside the mcp_mms_monitoring container:"
-		echo "$ sudo dpkg-reconfigure postfix"
+		echo "Please reconfigure the WP Mail SMTP Plugin."
+		echo "We recommend to use Google GMail SMTP service."
+		
 		 		
-
+ 
 		exit
 		;;
 		No ) exit

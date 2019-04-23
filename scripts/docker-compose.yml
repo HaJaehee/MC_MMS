@@ -44,27 +44,14 @@ services:
     ports:
       - 80:80
       - 443:443
-      - 465:465
-      - 25:25
-      - 587:587
     environment:
       WORDPRESS_DB_NAME: mydb
       WORDPRESS_DB_USER: root
       WORDPRESS_DB_PASSWORD: root
       WORDPRESS_DB_HOST: db:3306
-      SMTP_HOST: mail.example.com # required
-      SMTP_PORT: 587 # optional, default 587
-      SMTP_USER: postmaster@example.com # required, must be an email address
-      SMTP_PASSWORD: postmaster # required
-      SMTP_FROM_NAME: example.com # optional, default is hostname
-      ROOT_FORWARD: postmaster@example.com # required
-      CONTAINER_HOSTNAME: example.com # required, must be equal to hostname to verify the hostname is set via docker run
-      FORCE_CONFIG: "yes" # optional, forces reconfiguration
-    hostname: example.com
     volumes:
       - /var/mms/logs/:/var/mms/logs/
       - /var/www/mcp_mms_monitoring/html/:/var/www/html/
-      - /var/mail/mcp_mms_monitoring/:/var/mail/ 
     depends_on:
       - db
     links:
