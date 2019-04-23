@@ -431,6 +431,11 @@ public class MessageRelayingHandler  {
 					mmsLog.addBriefLogForStatus(log);
 					mmsLogForDebug.addLog(this.SESSION_ID, log);
 				}
+				if (parser.getSvcMRN() == null) {
+					String msg = "[Format Error] The service MRN is not included";
+					throw new IOException(msg);
+//					return;
+				}
 				logger.info("SessionID="+this.SESSION_ID+" This is a polling request and the service MRN is " + parser.getSvcMRN());
 				//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
 				if (parser.getHexSignedData() != null) { //In this version 0.8.0, polling client verification is optional. 
@@ -459,6 +464,14 @@ public class MessageRelayingHandler  {
 						logger.info("SessionID="+this.SESSION_ID+" Client verification is failed.");
 						throw new IOException("It is failed to verify the client.");
 					}
+				}
+				else {
+					String log = "SessionID="+this.SESSION_ID+" Client's certificate is not included.";
+					if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+						mmsLog.addBriefLogForStatus(log);
+						mmsLogForDebug.addLog(this.SESSION_ID, log);
+					}
+					logger.info(log);
 				}
 
 				String svcMRN = parser.getSvcMRN();

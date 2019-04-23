@@ -1,10 +1,12 @@
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.net.BindException;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import kr.ac.kaist.mms_client.MMSConfiguration;
 import net.etri.pkilib.client.ClientPKILibrary;
 import net.etri.pkilib.tool.ByteConverter;
 
@@ -20,22 +22,30 @@ Creation Date : 2019-04-16
 case 1: Client sends a polling message, formatted by JSON, with service MRN and certificate.
 
 # These below cases are failed cases.
-case 2: Client sends a polling message, not formatted by JSON (it means a previous formatted message), with service MRN and certificate.
-case 3: Client sends a polling message, formatted by JSON, with only service MRN.
+case 2: Client sends a polling message, not formatted by JSON (it means a previous formatted message), with service MRN and certificate. Currently (the version of MMS is 0.8.X),
+ 		the message is accepted	temporally, but if the MMS is updated (since 0.9.X), this message will be declined by the MMS. 
+case 3: Client sends a polling message, formatted by JSON, with only service MRN. Currently (the version of MMS is 0.8.X),
+ 		the message is accepted	temporally, but if the MMS is updated (since 0.9.X), this message will be declined by the MMS. 
 case 4: Client sends a polling message, formatted by JSON, with only certificate.
+//////
+ * This case is deprecated.
 case 5: Client sends a polling message, formatted by JSON, with service MRN and certificate, but the service MRN has a problem such as not existed MRN.
+//////
 case 6: Client sends a polling message, formatted by JSON, with service MRN and certificate, but the certificate has been revoked.
 case 7: Client sends a polling message, formatted by JSON, with service MRN and certificate, 
 		but the source MRN has a problem that the source MRN does not match a MRN described in the certificate.
 */
 
 public class TS6_Test {
+//	public final static String MMS_URL = "143.248.55.83:8088";
+//	public final static String MMS_URL = "mms.smartnav.org:8088";
 	public final static String MMS_URL = "127.0.0.1:8088";
 	public final static String serverMRN = "urn:mrn:imo:imo-no:ts-mms-06-server";
-	public final static String clientMRN = "";
-	private TS6_Server server;
-	private TS6_Client client;
-	private PollingRequestContents contentsBuilder;
+	public final static String clientMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
+	public final static String server_message = "Hello, polling client!";
+	private static TS6_Server server;
+	private static TS6_Client client;
+	private static PollingRequestContents contentsBuilder;
 	
 	public String getSignedData(boolean isActive) {
 		ClientPKILibrary clientPKILib = ClientPKILibrary.getInstance();
@@ -69,9 +79,11 @@ public class TS6_Test {
 	}
 	
 	@BeforeClass
-	public void initializeClass() {
+	public static void initializeClass() {
+		MMSConfiguration.DEBUG = true;
 		server = new TS6_Server();
 		client = new TS6_Client();
+//		client = new TS6_Client(true);
 		contentsBuilder = new PollingRequestContents(null, null);
 		contentsBuilder.setServiceMRN(server.getMyMRN());
 	}
@@ -82,14 +94,16 @@ public class TS6_Test {
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
 		
-		server.sendMessage();
-		Thread.sleep(1000);
+		server.sendMessage(server_message);
 
 		String signedData = getSignedData(true);
+		contentsBuilder.setServiceMRN(serverMRN);
 		contentsBuilder.setCertificate(signedData);
 		client.sendPollingMessage(contentsBuilder.toString());
 
-		assertTrue(TS6_Client.sentMessage.equals("200"));
+//		System.out.println(TS6_Client.sentMessage);
+		assertTrue(TS6_Client.sentMessage.equals(server_message));
+		
 	}
 	
 	@Test
@@ -98,15 +112,17 @@ public class TS6_Test {
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
 		
-		server.sendMessage();
+		server.sendMessage(server_message);
 		Thread.sleep(1000);
 
 		String message = null;
 		String signedData = getSignedData(true);
-		message = server.getMyMRN() + ":" + signedData;
+		message = serverMRN + "\n" + signedData;
 		client.sendPollingMessage(message);
 
-		assertTrue(TS6_Client.sentMessage.equals("200"));	
+		System.out.println(message);
+		
+		assertTrue(TS6_Client.sentMessage.equals(server_message));	
 	}
 	
 	/**
@@ -120,13 +136,12 @@ public class TS6_Test {
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
 		
-		server.sendMessage();
-		Thread.sleep(1000);
+		server.sendMessage(server_message);
 
 		contentsBuilder.setServiceMRN(server.getMyMRN());
 		client.sendPollingMessage(contentsBuilder.toString());
 
-		assertTrue(TS6_Client.sentMessage.equals("200"));	
+		assertTrue(TS6_Client.sentMessage.equals(server_message));	
 	}
 	
 	@Test
@@ -135,64 +150,62 @@ public class TS6_Test {
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
 		
-		server.sendMessage();
-		Thread.sleep(1000);
+		server.sendMessage(server_message);
 
 		String signedData = getSignedData(true);
 		contentsBuilder.setCertificate(signedData);
 		client.sendPollingMessage(contentsBuilder.toString());
-
-		assertTrue(TS6_Client.sentMessage.equals("INVALID MESSAGE"));	
+		assertTrue(TS6_Client.sentMessage.equals("[Format Error] The service MRN is not included"));	
 	}
 	
-	@Test
-	public void test05() throws IOException, InterruptedException {		
-		TS6_Client.sentMessage = null;
-		contentsBuilder.setCertificate(null);
-		contentsBuilder.setServiceMRN(null);
-		
-		server.sendMessage();
-		Thread.sleep(1000);
-
-		String signedData = getSignedData(true);
-		contentsBuilder.setServiceMRN(server.getMyMRN() + "invalid");
-		contentsBuilder.setCertificate(signedData);
-		client.sendPollingMessage(contentsBuilder.toString());
-
-		assertTrue(TS6_Client.sentMessage.equals("Invalid MRN"));	
-	}
-	
+//	@Test
+//	public void test05() throws IOException, InterruptedException {		
+//		TS6_Client.sentMessage = null;
+//		contentsBuilder.setCertificate(null);
+//		contentsBuilder.setServiceMRN(null);
+//		
+//		server.sendMessage(server_message);
+//
+//		String signedData = getSignedData(true);
+//		contentsBuilder.setServiceMRN(serverMRN + "-invalid");
+//		contentsBuilder.setCertificate(signedData);
+//		client.sendPollingMessage(contentsBuilder.toString());
+//
+//		assertTrue(TS6_Client.sentMessage.equals("Invalid MRN"));	
+//	}
+//	
 	@Test
 	public void test06() throws IOException, InterruptedException {		
 		TS6_Client.sentMessage = null;
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
 		
-		server.sendMessage();
-		Thread.sleep(1000);
+		server.sendMessage(server_message);
 
 		String signedData = getSignedData(false);
+		contentsBuilder.setServiceMRN(serverMRN);
 		contentsBuilder.setCertificate(signedData);
 		client.sendPollingMessage(contentsBuilder.toString());
 
-		assertTrue(TS6_Client.sentMessage.equals("200"));
+		assertTrue(TS6_Client.sentMessage.equals("It is failed to verify the client."));
 	}
-	
+//	
 	@Test
 	public void test07() throws IOException, InterruptedException {		
 		TS6_Client.sentMessage = null;
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
 		
-		server.sendMessage();
-		Thread.sleep(1000);
+		server.sendMessage(server_message);
 
+		TS6_Client theClient = new TS6_Client(TS6_Test.clientMRN + "-attacker");
 		String signedData = getSignedData(true);
+		contentsBuilder.setServiceMRN(serverMRN);
 		contentsBuilder.setCertificate(signedData);
 		
-		TS6_Client theClient = new TS6_Client(TS6_Test.clientMRN + "-attacker");
 		theClient.sendPollingMessage(contentsBuilder.toString());
 
-		assertTrue(TS6_Client.sentMessage.equals("Authentication Failed"));
+//		System.out.println(TS6_Client.sentMessage);
+		assertTrue(TS6_Client.sentMessage.equals("It is failed to verify the client."));
 	}
 }

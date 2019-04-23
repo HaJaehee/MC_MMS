@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -10,12 +11,18 @@ File name : Server.java
 	Polling messsage authentication tests
 Author : Jin Jeong (jungst0001@kaist.ac.kr)
 Creation Date : 2019-04-16
+
+Rev. history : 2019-04-22
+	Add server which is MMSClientHandler.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
 public class TS6_Server {
 	private String myMRN = null;
 	private String dstMRN = null;
-	private MMSClientHandler handler = null;
+	private int port = 8902;
+	private MMSClientHandler server = null;
+	private MMSClientHandler sender = null;
 	
 	public TS6_Server() {
 		this.myMRN = TS6_Test.serverMRN;
@@ -23,8 +30,8 @@ public class TS6_Server {
 		MMSConfiguration.MMS_URL = TS6_Test.MMS_URL;
 		
 		try {
-			handler = new MMSClientHandler(myMRN);
-			handler.setSender(new MMSClientHandler.ResponseCallback() {
+			sender = new MMSClientHandler(myMRN);
+			sender.setSender(new MMSClientHandler.ResponseCallback() {
 				
 				@Override
 				public void callbackMethod(Map<String, List<String>> headerField, String message) {
@@ -32,16 +39,39 @@ public class TS6_Server {
 					
 				}
 			});
+			
+			server = new MMSClientHandler(myMRN);
+			server.setServerPort(port, new MMSClientHandler.RequestCallback() {
+				//Request Callback from the request message
+				//it is called when client receives a message
+				
+				@Override
+				public int setResponseCode() {
+					// TODO Auto-generated method stub
+					return 200;
+				}
+				
+				@Override
+				public String respondToClient(Map<String,List<String>> headerField, String message) {
+					
+					return "OK";
+				}
+
+				@Override
+				public Map<String, List<String>> setResponseHeader() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+			}); 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public void sendMessage() {
-		String data = "Hello, polling client!";
+	public void sendMessage(String data) {
 		try {
-			handler.sendPostMsg(dstMRN, data);
+			sender.sendPostMsg(dstMRN, data);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
