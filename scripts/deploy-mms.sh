@@ -91,7 +91,7 @@ while true; do
 		echo "Please reconfigure the WP Mail SMTP Plugin."
 		echo "We recommend to use Google GMail SMTP service."
 		
-		 		
+		echo "Default admin account of mcp_mms_monitoring is Administrator/Administrator." 		
  
 		exit
 		;;
