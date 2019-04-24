@@ -31,8 +31,8 @@ case 4: Client sends a polling message, formatted by JSON, with only certificate
  * This case is deprecated.
 case 5: Client sends a polling message, formatted by JSON, with service MRN and certificate, but the service MRN has a problem such as not existed MRN.
 //////
-case 6: Client sends a polling message, formatted by JSON, with service MRN and certificate, but the certificate has been revoked.
-case 7: Client sends a polling message, formatted by JSON, with service MRN and certificate, 
+case 5: Client sends a polling message, formatted by JSON, with service MRN and certificate, but the certificate has been revoked.
+case 6: Client sends a polling message, formatted by JSON, with service MRN and certificate, 
 		but the source MRN has a problem that the source MRN does not match a MRN described in the certificate.
 */
 
@@ -158,24 +158,8 @@ public class TS6_Test {
 		assertTrue(TS6_Client.sentMessage.equals("[Format Error] The service MRN is not included"));	
 	}
 	
-//	@Test
-//	public void test05() throws IOException, InterruptedException {		
-//		TS6_Client.sentMessage = null;
-//		contentsBuilder.setCertificate(null);
-//		contentsBuilder.setServiceMRN(null);
-//		
-//		server.sendMessage(server_message);
-//
-//		String signedData = getSignedData(true);
-//		contentsBuilder.setServiceMRN(serverMRN + "-invalid");
-//		contentsBuilder.setCertificate(signedData);
-//		client.sendPollingMessage(contentsBuilder.toString());
-//
-//		assertTrue(TS6_Client.sentMessage.equals("Invalid MRN"));	
-//	}
-//	
 	@Test
-	public void test06() throws IOException, InterruptedException {		
+	public void test05() throws IOException, InterruptedException {		
 		TS6_Client.sentMessage = null;
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
@@ -189,9 +173,9 @@ public class TS6_Test {
 
 		assertTrue(TS6_Client.sentMessage.equals("It is failed to verify the client."));
 	}
-//	
+
 	@Test
-	public void test07() throws IOException, InterruptedException {		
+	public void test06() throws IOException, InterruptedException {		
 		TS6_Client.sentMessage = null;
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);

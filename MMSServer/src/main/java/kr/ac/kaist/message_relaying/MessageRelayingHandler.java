@@ -431,11 +431,11 @@ public class MessageRelayingHandler  {
 					mmsLog.addBriefLogForStatus(log);
 					mmsLogForDebug.addLog(this.SESSION_ID, log);
 				}
-				if (parser.getSvcMRN() == null) {
-					String msg = "[Format Error] The service MRN is not included";
-					throw new IOException(msg);
-//					return;
+				
+				if(parser.getSvcMRN() == null) {
+					throw new IOException("Service MRN is not included");
 				}
+				
 				logger.info("SessionID="+this.SESSION_ID+" This is a polling request and the service MRN is " + parser.getSvcMRN());
 				//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
 				if (parser.getHexSignedData() != null) { //In this version 0.8.0, polling client verification is optional. 
@@ -820,7 +820,12 @@ public class MessageRelayingHandler  {
 			if ((type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) && parser.getHexSignedData() != null && !isClientVerified) {
 				String msg = "";
 				try {
-					msg = "[\""+URLEncoder.encode("It is failed to verify the client.","UTF-8")+"\"]";
+					if (parser.getSvcMRN() == null) {
+						msg = "[Format Error] The service MRN is not included";
+					} 
+					else {
+						msg = "[\""+URLEncoder.encode("It is failed to verify the client.","UTF-8")+"\"]";
+					}
 				} catch (UnsupportedEncodingException e) {
 				}
 				outputChannel.replyToSender(ctx, msg.getBytes(), isRealtimeLog);
