@@ -19,11 +19,13 @@ while true; do
 	case $yn in
 		[Yy]* )
 		echo "Swipe docker containers and images related to MMS Monitoring."
-		sudo docker stop $(sudo docker ps | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb|mcp_mms_monitoring_rabbitmq" | cut -c1-12)
-		sudo docker rm $(sudo docker ps --all | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb|mcp_mms_monitoring_rabbitmq" | cut -c1-12)
+		#sudo docker stop $(sudo docker ps | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb|mcp_mms_monitoring_rabbitmq" | cut -c1-12)
+		#sudo docker rm $(sudo docker ps --all | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb|mcp_mms_monitoring_rabbitmq" | cut -c1-12)
+		sudo docker stop $(sudo docker ps | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb" | cut -c1-12)
+		sudo docker rm $(sudo docker ps --all | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb" | cut -c1-12)
 		sudo docker rmi $(sudo docker images -q  --filter=reference='lovesm135/mcp_mms_monitoring:0.7')
 		sudo docker rmi $(sudo docker images -q  --filter=reference='lovesm135/mcp_mms_monitoring_mariadb:0.7')
-		sudo docker rmi $(sudo docker images -q  --filter=reference='lovesm135/mcp_mms_monitoring_rabbitmq:0.7')
+		#sudo docker rmi $(sudo docker images -q  --filter=reference='lovesm135/mcp_mms_monitoring_rabbitmq:0.7')
 		sudo docker-compose stop && sudo docker-compose rm -v
 		sudo docker volume prune
 		#sudo docker volume rm $(sudo docker volume ls -q)
@@ -44,7 +46,7 @@ while true; do
 		export MY_WEB=$1
 		sudo echo $MY_WEB
 		sudo docker pull lovesm135/mcp_mms_monitoring_mariadb:0.8
-		sudo docker pull lovesm135/mcp_mms_monitoring_rabbitmq:0.8
+		#sudo docker pull lovesm135/mcp_mms_monitoring_rabbitmq:0.8
 		sudo docker pull lovesm135/mcp_mms_monitoring:0.8
 
 		sleep 2

@@ -23,16 +23,16 @@ services:
   #  stdin_open: true
   #  tty: true
 
-  rabbitmq-db:
+  #rabbitmq-db:
   #  build:
   #    context: .
   #    dockerfile: ./Dockerfile-rabbitmq
-    image: lovesm135/mcp_mms_monitoring_rabbitmq:0.8
+  #  image: lovesm135/mcp_mms_monitoring_rabbitmq:0.8
       
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    container_name: mcp_mms_monitoring_rabbitmq
+  #  ports:
+  #    - "5672:5672"
+  #    - "15672:15672"
+  #  container_name: mcp_mms_monitoring_rabbitmq
 
   mms_monitor:
    # build:
