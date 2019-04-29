@@ -14,16 +14,18 @@ fi
 newdomain=$1
 
 while true; do
-	read -p "Do you wish to install this program? Port number 3306 will be mapped to mariadb container's and port numbers 5672, 15672, 25672 will be mapped to rabbitmq container's! [y/n]" yn
+	read -p "Do you wish to install this program? Port number 3306 will be mapped to mariadb container's and port numbers 5672, 15672, 25672 will be mapped to rabbitmq container's! In addition, existing WordPress files and database will be overwritten! [y/n]" yn
 	echo ""
 	case $yn in
 		[Yy]* )
 		echo "Swipe docker containers and images related to MMS Monitoring."
-		sudo docker stop $(sudo docker ps | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb|mcp_mms_monitoring_rabbitmq" | cut -c1-12)
-		sudo docker rm $(sudo docker ps --all | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb|mcp_mms_monitoring_rabbitmq" | cut -c1-12)
+		#sudo docker stop $(sudo docker ps | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb|mcp_mms_monitoring_rabbitmq" | cut -c1-12)
+		#sudo docker rm $(sudo docker ps --all | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb|mcp_mms_monitoring_rabbitmq" | cut -c1-12)
+		sudo docker stop $(sudo docker ps | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb" | cut -c1-12)
+		sudo docker rm $(sudo docker ps --all | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb" | cut -c1-12)
 		sudo docker rmi $(sudo docker images -q  --filter=reference='lovesm135/mcp_mms_monitoring:0.7')
 		sudo docker rmi $(sudo docker images -q  --filter=reference='lovesm135/mcp_mms_monitoring_mariadb:0.7')
-		sudo docker rmi $(sudo docker images -q  --filter=reference='lovesm135/mcp_mms_monitoring_rabbitmq:0.7')
+		#sudo docker rmi $(sudo docker images -q  --filter=reference='lovesm135/mcp_mms_monitoring_rabbitmq:0.7')
 		sudo docker-compose stop && sudo docker-compose rm -v
 		sudo docker volume prune
 		#sudo docker volume rm $(sudo docker volume ls -q)
@@ -37,21 +39,21 @@ while true; do
 		#sudo cp -r ../MMSMonitor/ssl ./
 		#sudo cp -r ../MMSMonitor/database.sql ./
 		#sudo cp -r ../MMSMonitor/wp-cli.phar ./
-		sudo tar -xf mcp_mms_monitoring_html_backup.tar
-		sudo sed -i 's/mms\.smartnav\.org/'$newdomain'/g' ./var/www/html/wp-config.php 
+		sudo tar -xf mcp_mms_monitoring_html.tar
+		sudo sed -i 's/mms\.smartnav\.org/'$newdomain'/g' ./var/www/mcp_mms_monitoring/html/wp-config.php 
 
 		echo "Docker pull."
 		export MY_WEB=$1
 		sudo echo $MY_WEB
-		sudo docker pull lovesm135/mcp_mms_monitoring_mariadb:0.7
-		sudo docker pull lovesm135/mcp_mms_monitoring_rabbitmq:0.7
-		sudo docker pull lovesm135/mcp_mms_monitoring:0.7
+		sudo docker pull lovesm135/mcp_mms_monitoring_mariadb:0.8
+		#sudo docker pull lovesm135/mcp_mms_monitoring_rabbitmq:0.8
+		sudo docker pull lovesm135/mcp_mms_monitoring:0.8
 
 		sleep 2
 		echo "Make directories."
 		sudo mkdir --parents /var/lib/mcp_mms_monitoring_mariadb
 		sudo mkdir --parents /var/www/mcp_mms_monitoring/html
-		sudo cp -r ./var/www/html/* /var/www/mcp_mms_monitoring/html/
+		sudo cp -r ./var/www/mcp_mms_monitoring/html/* /var/www/mcp_mms_monitoring/html/
 		
 		echo "Set up docker-compose."
 		sudo docker-compose -f ./docker-compose.yml up -d
@@ -108,7 +110,7 @@ while true; do
 		echo "Remove temporary files."
 		cd ../../scripts
 		#sudo rm -r MMSMonitor
-		sudo rm -r ./var
+		sudo rm -r ./html
 
 		exit
 		;;
