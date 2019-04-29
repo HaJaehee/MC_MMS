@@ -42,6 +42,11 @@ Rev. history : 2019-03-08
 Version : 0.8.1
 	Removed locator registration function.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-04-29
+Version : 0.8.2
+	Revised Base64 Encoder/Decoder.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -61,6 +66,7 @@ import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -69,8 +75,6 @@ import java.util.Set;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.TrustManager;
-
-import sun.misc.BASE64Decoder;
 
 import javax.net.ssl.*;
 
@@ -219,14 +223,16 @@ class SecureMMSSndHandler {
 			inputMsg.append(inputLine+"\n");
 		}
 		
-		BASE64Decoder base64Decoder = new BASE64Decoder();
-        InputStream encoded = new ByteArrayInputStream(inputMsg.toString().getBytes("UTF-8"));
-        BufferedOutputStream decoded = new BufferedOutputStream(new FileOutputStream(System.getProperty("user.dir")+fileName));
+		Base64.Decoder base64Decoder = Base64.getDecoder();
+        byte[] encoded = inputMsg.toString().getBytes("UTF-8");
+        byte[] decoded = null;
 
-        base64Decoder.decodeBuffer(encoded, decoded);      
+        base64Decoder.decode(encoded, decoded);      
 
-        encoded.close();
-        decoded.close();
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(System.getProperty("user.dir")+fileName));
+        
+        bos.write(decoded);
+        bos.close();
 		in.close();
 		return fileName + " is saved";
 	}
