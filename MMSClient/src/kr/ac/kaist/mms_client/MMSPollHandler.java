@@ -183,7 +183,7 @@ class MMSPollHandler {
 					url = url+"/polling"; // Polling request to MMS server.
 				}
 				else if (pollingMethod.equals("long")) {
-					url = url+"/long_polling"; // Long polling request to MMS server. 
+					url = url+"/long-polling"; // Long polling request to MMS server. 
 				}
 				URL obj = new URL(url);
 				String data = contents.toString(); //TODO: add geographical info, channel info, etc. 

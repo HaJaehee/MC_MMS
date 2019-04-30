@@ -225,7 +225,7 @@ class MessageTypeDecider {
 	    	}
 			
 			//When long polling
-			if (httpMethod == HttpMethod.POST && uri.equals("/long_polling")) {
+			if (httpMethod == HttpMethod.POST && uri.equals("/long-polling")) {
 	    		return msgType.LONG_POLLING; 
 	    	}
 	    	

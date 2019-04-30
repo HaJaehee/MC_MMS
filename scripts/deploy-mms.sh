@@ -14,52 +14,44 @@ fi
 newdomain=$1
 
 while true; do
-	read -p "Do you wish to install this program? Port number 3306 will be mapped to mariadb container's and port numbers 5672, 15672, 25672 will be mapped to rabbitmq container's! In addition, existing WordPress files and database will be overwritten! [y/n]" yn
+	read -p "Do you wish to install this program? Port number 3306 will be mapped to mariadb container's port number and port numbers 80, 443, 25, 465 and 587 will be mapped to mms monitoring container's port numbers. If you want to remap port numbers, please modify docker-compose.yml before this setup. In addition, existing WordPress files and database will be overwritten after this setup. If you want not to overwrite WordPress files and database, just execute docker-compose. [y/n]" yn
 	echo ""
 	case $yn in
 		[Yy]* )
-		echo "Swipe docker containers and images related to MMS Monitoring."
+		#echo "Swipe docker containers and images related to MMS Monitoring."
 		#sudo docker stop $(sudo docker ps | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb|mcp_mms_monitoring_rabbitmq" | cut -c1-12)
 		#sudo docker rm $(sudo docker ps --all | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb|mcp_mms_monitoring_rabbitmq" | cut -c1-12)
 		sudo docker stop $(sudo docker ps | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb" | cut -c1-12)
 		sudo docker rm $(sudo docker ps --all | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb" | cut -c1-12)
-		sudo docker rmi $(sudo docker images -q  --filter=reference='lovesm135/mcp_mms_monitoring:0.7')
-		sudo docker rmi $(sudo docker images -q  --filter=reference='lovesm135/mcp_mms_monitoring_mariadb:0.7')
+		#sudo docker rmi $(sudo docker images -q  --filter=reference='lovesm135/mcp_mms_monitoring:0.7')
+		#sudo docker rmi $(sudo docker images -q  --filter=reference='lovesm135/mcp_mms_monitoring_mariadb:0.7')
 		#sudo docker rmi $(sudo docker images -q  --filter=reference='lovesm135/mcp_mms_monitoring_rabbitmq:0.7')
-		sudo docker-compose stop && sudo docker-compose rm -v
-		sudo docker volume prune
+		#sudo docker-compose stop && sudo docker-compose rm -v
+		#sudo docker volume prune
 		#sudo docker volume rm $(sudo docker volume ls -q)
 
 
 		echo "Web server pre-setting."
-		#sudo ./clear.sh
-		#sudo tar -hxvf ../MMSMonitor.tar.gz -C ../
-		#sudo cp -r ../MMSMonitor/var ./ 
-		#sudo cp -r ../MMSMonitor/apache2 ./
-		#sudo cp -r ../MMSMonitor/ssl ./
-		#sudo cp -r ../MMSMonitor/database.sql ./
-		#sudo cp -r ../MMSMonitor/wp-cli.phar ./
 		sudo tar -xf mcp_mms_monitoring_html.tar
 		sudo sed -i 's/mms\.smartnav\.org/'$newdomain'/g' ./var/www/mcp_mms_monitoring/html/wp-config.php 
 
 		echo "Docker pull."
 		export MY_WEB=$1
 		sudo echo $MY_WEB
-		sudo docker pull lovesm135/mcp_mms_monitoring_mariadb:0.8
-		#sudo docker pull lovesm135/mcp_mms_monitoring_rabbitmq:0.8
-		sudo docker pull lovesm135/mcp_mms_monitoring:0.8
+		sudo docker pull lovesm135/mcp_mms_monitoring_mariadb:0.8.2
+		sudo docker pull lovesm135/mcp_mms_monitoring:0.8.2
+		#sudo docker pull lovesm135/mcp_mms_monitoring_rabbitmq:0.7
 
 		sleep 2
 		echo "Make directories."
 		sudo mkdir --parents /var/lib/mcp_mms_monitoring_mariadb
 		sudo mkdir --parents /var/www/mcp_mms_monitoring/html
+		sudo mkdir --parents /var/mail/mcp_mms_monitoring
 		sudo cp -r ./var/www/mcp_mms_monitoring/html/* /var/www/mcp_mms_monitoring/html/
 		
 		echo "Set up docker-compose."
 		sudo docker-compose -f ./docker-compose.yml up -d
 
-		#sleep 10
-		#docker exec -d mms-monitor -w /etc/wp-cli/ php wp-cli.phar search-replace 'http://143.248.57.144' 'http://$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/
 
 		echo "Database post-setting."
 		sleep 10
@@ -68,50 +60,39 @@ while true; do
 		sleep 10
 		sudo echo $MY_WEB
 		echo "Replace database contents."
-		#sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace 'http://mms.smartnav.org' 'http://$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
-		#sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace 'https://mms.smartnav.org' 'https://$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
+		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '192.168.0.104' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
 		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace 'mms.smartnav.org' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
 		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '192.168.202.193' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
 		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '143.248.55.83' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
 		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '143.248.57.144' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
+		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace 'mms-kaist.com' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
 		sleep 3
 		
-		#sudo docker exec -it mms-monitor bash -c "php /etc/wp-cli/wp-cli.phar search-replace 'http://143.248.57.144' 'http://$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
-		#sudo docker exec -it mms-monitor bash -c "php /etc/wp-cli/wp-cli.phar search-replace 'https://143.248.57.144' 'https://$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
+		echo "Install rabbitmq-server"
+		sudo apt install -y rabbitmq-server
+		sleep 3
 
+		systemctl start rabbitmq-server
+		systemctl status rabbitmq-server
 
-		#mysql -h $newdomain -u root -proot mydb -e "UPDATE wp_options SET option_value = replace(option_value, 'http://www.mywebsite.com', 'http://$newdomain') WHERE option_name = 'home' OR option_name = 'siteurl';";
-		#mysql -h $newdomain -u root -proot mydb -e "UPDATE wp_options SET option_value = replace(option_value, 'https://www.mywebsite.com', 'https://$newdomain') WHERE option_name = 'home' OR option_name = 'siteurl';";
-		#mysql -h $newdomain -u root -proot mydb -e "UPDATE wp_posts SET guid = replace(guid, 'http://www.mywebsite.com', 'http://$newdomain');";
-		#mysql -h $newdomain -u root -proot mydb -e "UPDATE wp_posts SET guid = replace(guid, 'https://www.mywebsite.com', 'https://$newdomain');";
-		#mysql -h $newdomain -u root -proot mydb -e "UPDATE wp_posts SET post_content = replace(post_content, 'http://www.mywebsite.com', 'http://$newdomain');";
-		#mysql -h $newdomain -u root -proot mydb -e "UPDATE wp_posts SET post_content = replace(post_content, 'https://www.mywebsite.com', 'https://$newdomain');";
-		#mysql -h $newdomain -u root -proot mydb -e "UPDATE wp_postmeta SET meta_value = replace(meta_value,'http://www.mywebsite.com', 'http://$newdomain');";
-		#mysql -h $newdomain -u root -proot mydb -e "UPDATE wp_postmeta SET meta_value = replace(meta_value,'https://www.mywebsite.com', 'https://$newdomain');";
-
+		#echo "Start MMS."
+		#cd ../MMSServer/Linux
+		#sudo nohup sudo sh ./start_mms.sh >/dev/null 2>&1 &
+		#sudo nohup sudo sh ./start_mns.sh >/dev/null 2>&1 &
 		#sleep 5
-		#delete completed files
-		#web and database pre-setting
-		#sudo rm -rf var
-		#sudo rm -rf apache2
-		#sudo rm -rf ssl 
-		#sudo rm -rf database.sql
-		#sudo rm -rf wp-cli.phar
-
-		echo "Start MMS."
-		cd ../MMSServer/Linux
-		sudo nohup sudo sh ./start_mms.sh >/dev/null 2>&1 &
-		sudo nohup sudo sh ./start_mns.sh >/dev/null 2>&1 &
-		sleep 5
 
 		#cd ../target
 		#sudo ln -sf $(pwd)/logs /var/mms/logs
 
 		echo "Remove temporary files."
 		cd ../../scripts
-		#sudo rm -r MMSMonitor
 		sudo rm -r ./html
-
+		
+		echo "Please reconfigure the WP Mail SMTP Plugin."
+		echo "We recommend to use Google GMail SMTP service."
+		
+		echo "Default admin account of mcp_mms_monitoring is Administrator/Administrator." 		
+ 
 		exit
 		;;
 		No ) exit

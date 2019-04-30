@@ -33,12 +33,13 @@ services:
   #    - "5672:5672"
   #    - "15672:15672"
   #  container_name: mcp_mms_monitoring_rabbitmq
+  #  restart: unless-stopped
 
   mms_monitor:
-   # build:
-   #   context: .
-   #   dockerfile: ./Dockerfile-monitor
-    image: lovesm135/mcp_mms_monitoring:0.8
+  # build:
+  #   context: .
+  #   dockerfile: ./Dockerfile-monitor
+    image: lovesm135/mcp_mms_monitoring:0.8.2
       
     ports:
       - 80:80
@@ -50,7 +51,7 @@ services:
       WORDPRESS_DB_HOST: db:3306
     volumes:
       - /var/mms/logs/:/var/mms/logs/
-      - /var/www/mcp_mms_monitoring/html/:/var/www/html/ 
+      - /var/www/mcp_mms_monitoring/html/:/var/www/html/
     depends_on:
       - db
     links:
@@ -61,7 +62,7 @@ services:
     container_name: mcp_mms_monitoring
 
   db:
-    image: lovesm135/mcp_mms_monitoring_mariadb:0.8
+    image: lovesm135/mcp_mms_monitoring_mariadb:0.8.2
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: mydb
