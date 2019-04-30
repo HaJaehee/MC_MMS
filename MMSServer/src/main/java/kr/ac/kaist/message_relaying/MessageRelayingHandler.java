@@ -172,6 +172,12 @@ Rev. history: 2019-04-12
 Version : 0.8.2
 	Modified for coding rule conformity.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+
+Rev. history : 2019-04-18
+Version : 0.8.2
+	Applying Asynchronous.
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -197,6 +203,7 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
+import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel.ConnectionThread;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -224,6 +231,7 @@ public class MessageRelayingHandler  {
 	private String protocol = "";
 	
 	private boolean isClientVerified = false;
+    private ConnectionThread thread;
 
 	
 	public MessageRelayingHandler(ChannelHandlerContext ctx, FullHttpRequest req, String protocol, String sessionId) {		
@@ -231,7 +239,7 @@ public class MessageRelayingHandler  {
 		this.SESSION_ID = sessionId;
 		
 		initializeModule();
-		initializeSubModule();
+		initializeSubModule(ctx);
 		try {
 			parser.parseMessage(ctx, req);
 		} catch (NumberFormatException | NullPointerException e) {
@@ -263,13 +271,17 @@ public class MessageRelayingHandler  {
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 	
-	private void initializeSubModule() {
+	private void initializeSubModule(ChannelHandlerContext ctx) {
 		parser = new MessageParser(this.SESSION_ID);
 		sessionBlocker = new Thread();
 		typeDecider = new MessageTypeDecider(this.SESSION_ID);
-		outputChannel = new MRH_MessageOutputChannel(this.SESSION_ID);
+		outputChannel = new MRH_MessageOutputChannel(this.SESSION_ID, ctx);
 		cltVerifier = new ClientVerifier();
 	}
+
+    public ConnectionThread getConnectionThread() {
+        return thread;
+    }
 
 	private void processRelaying(MessageTypeDecider.msgType type, ChannelHandlerContext ctx, FullHttpRequest req){
 		
@@ -547,7 +559,7 @@ public class MessageRelayingHandler  {
 									!itemList.get(0).isExceptionOccured()) || itemList.get(0).getWaitingCount() > 0){
 								setThisSessionWaitingRes(srcDstPair);
 								if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
-									message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); //Execute this relaying process
+									thread = mch.asynchronizedUnicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); // Execute this relaying process
 								}
 								else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 									srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
@@ -573,7 +585,7 @@ public class MessageRelayingHandler  {
 				}
 			}
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
-				message = mch.unicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); //Execute this relaying process
+				thread = mch.asynchronizedUnicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN);
 			}
 			else if (type == MessageTypeDecider.msgType.GEOCASTING_CIRCLE || type == MessageTypeDecider.msgType.GEOCASTING_POLYGON) {
 				
@@ -775,7 +787,7 @@ public class MessageRelayingHandler  {
 			}
 		}
 		finally {
-			if (type != MessageTypeDecider.msgType.POLLING && type != MessageTypeDecider.msgType.LONG_POLLING) {
+			if (type != MessageTypeDecider.msgType.POLLING && type != MessageTypeDecider.msgType.LONG_POLLING && thread == null) {
 				if (message == null) {
 					message = "INVALID MESSAGE.".getBytes();
 					logger.info("SessionID="+this.SESSION_ID+" "+"INVALID MESSAGE.");

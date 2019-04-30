@@ -76,6 +76,14 @@ Rev. history : 2018-07-19
 Version : 0.7.2
 	Added handling input messages by reordering policy.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+
+Rev. history : 2019-04-18
+Version : 0.8.2
+	Modulates related to sendMessage.
+	Add thread ConnectionThread class.
+	Add asynchronous version of SendMessage.
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -127,6 +135,7 @@ public class MRH_MessageOutputChannel{
 	private static final Logger logger = LoggerFactory.getLogger(MRH_MessageOutputChannel.class);
 	
 
+	private ChannelHandlerContext ctx = null;
 	private String SESSION_ID = "";
 	private static Map<String,List<String>> storedHeader = null;
 	private static boolean isStoredHeader = false;
@@ -136,7 +145,8 @@ public class MRH_MessageOutputChannel{
 	private MMSLogForDebug mmsLogForDebug = null;
 	private MMSLog mmsLog = null;
 	
-	MRH_MessageOutputChannel(String sessionId) {
+	MRH_MessageOutputChannel(String sessionId, ChannelHandlerContext ctx) {
+		this.ctx = ctx;
 		this.SESSION_ID = sessionId;
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 		mmsLog = MMSLog.getInstance();
@@ -205,9 +215,8 @@ public class MRH_MessageOutputChannel{
         
         logger.trace("SessionID=" + this.SESSION_ID + " Message is sent completely.");
     }
-	
-//  to do relaying
-	public byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
+
+	public HttpURLConnection requestMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
 		
 		String url = "http://" + IPAddress + ":" + port + req.uri();
 		URL obj = new URL(url);
@@ -250,46 +259,13 @@ public class MRH_MessageOutputChannel{
 		} 
 		
 		// get request doesn't have http body
-		responseCode = con.getResponseCode();
-	
-		Map<String,List<String>> resHeaders = con.getHeaderFields();
-		setResponseHeader(resHeaders);
-		
 		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
-				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters=" + urlParameters+"\n"
-				+ "Response Code=" + responseCode);
-
-		
-		
-		InputStream is = con.getInputStream();
-		ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
-		byte[] buffer = new byte[4096];
-		
-		int bytesRead = -1;
-		while ((bytesRead = is.read(buffer))!=-1){
-			byteOS.write(Arrays.copyOfRange(buffer, 0, bytesRead));
-		}
-		byte[] retBuffer = byteOS.toByteArray();
-
-		is.close();
-		logger.info("SessionID="+this.SESSION_ID+" Received a response.");
-		logger.trace("SessionID="+this.SESSION_ID+" Response="+new String(retBuffer));
-		if(MMSConfiguration.WEB_LOG_PROVIDING()) {
-			String log = "SessionID="+this.SESSION_ID+" Received a response.";
-			mmsLog.addBriefLogForStatus(log);
-			mmsLogForDebug.addLog(this.SESSION_ID, log);
-		}
-		
-		
-		return retBuffer;
+				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters=" + urlParameters+"\n");
+		return con;
 	}
-	
-	
-	
-	
-	
-//  to do secure relaying
-	public byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws NullPointerException, IOException { // 
+
+	public HttpURLConnection requestSecureMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
+		
 
 	  	hv = getHV();
 	  	
@@ -338,38 +314,63 @@ public class MRH_MessageOutputChannel{
 			wr.flush();
 			wr.close();
 		} 
+
+		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters=" + urlParameters+"\n");
 		
+		return con;
+	}
+
+	public byte[] getResponseMessage(HttpURLConnection con) throws IOException {
 		// get request doesn't have http body
-		
-		
 		responseCode = con.getResponseCode();
 		Map<String,List<String>> resHeaders = con.getHeaderFields();
 		setResponseHeader(resHeaders);
 		
-		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
-				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters=" + urlParameters+"\n"
-				+ "Response Code=" + responseCode);
+		
 		
 		InputStream is = con.getInputStream();
 		ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
+		
 		byte[] buffer = new byte[4096];
 		
 		int bytesRead = -1;
 		while ((bytesRead = is.read(buffer))!=-1){
 			byteOS.write(Arrays.copyOfRange(buffer, 0, bytesRead));
 		}
-		byte[] retBuffer = byteOS.toByteArray();
 
+        byte[] retBuffer = byteOS.toByteArray();
+        
 		is.close();
-		logger.info("SessionID="+this.SESSION_ID+" Received a response.");
+		logger.info("SessionID="+this.SESSION_ID+" Received a response." + "Response Code=" + responseCode);
 		if(MMSConfiguration.WEB_LOG_PROVIDING()) {
-			String log = "SessionID="+this.SESSION_ID+" Received a response.";
+			String log = "SessionID="+this.SESSION_ID+" Received a response." + "Response Code=" + responseCode;
 			mmsLog.addBriefLogForStatus(log);
 			mmsLogForDebug.addLog(this.SESSION_ID, log);
 		}
-		
+
 		return retBuffer;
+	}
+
+//  to do relaying
+	public byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
+		return getResponseMessage(requestMessage(req, IPAddress, port, httpMethod, srcMRN, dstMRN));
+	}
 	
+	public ConnectionThread asynchronizeSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
+		HttpURLConnection con = requestMessage(req, IPAddress, port, httpMethod, srcMRN, dstMRN);
+		return new ConnectionThread(con);
+	}
+
+	
+	// to do secure relaying
+	public byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws NullPointerException, IOException { // 
+		HttpURLConnection con = requestSecureMessage(req, IPAddress, port, httpMethod, srcMRN, dstMRN);
+		return getResponseMessage(con);
+	}
+	public ConnectionThread asynchronizeSendSecureMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws NullPointerException, IOException { // 
+		HttpURLConnection con = requestSecureMessage(req, IPAddress, port, httpMethod, srcMRN, dstMRN);
+		return new ConnectionThread(con);
 	}
 	
 	HostnameVerifier getHV (){
@@ -415,6 +416,7 @@ public class MRH_MessageOutputChannel{
         
         return hv;
 	}
+	
 	
 
 	
@@ -523,5 +525,42 @@ public class MRH_MessageOutputChannel{
 		default:
 			return HttpResponseStatus.BAD_REQUEST;
 		}
+	}
+
+	public class ConnectionThread extends Thread {
+		private HttpURLConnection con;
+		private byte[] data;
+		public ConnectionThread(HttpURLConnection con) {
+			this.con = con;
+			data = null;
+		}
+		public void terminate() {
+			data = null;
+	       	con.disconnect();
+	       	try {
+				con.getInputStream().close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+			}
+	    }
+		public byte[] getData() {
+			return data;
+		}
+		public void run(){
+			try {
+				data = getResponseMessage(con);
+			} catch (IOException e) {
+	    		logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+				for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+					logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+				}
+			} finally {
+				if (data == null) {
+					data = "INVALID MESSAGE.".getBytes();
+					logger.info("SessionID=" + SESSION_ID + " " + "INVALID MESSAGE.");
+				}
+				replyToSender(ctx, data);
+			}
+        } 
 	}
 }

@@ -65,10 +65,16 @@ Version : 0.8.1
 	Removed locator registering function.
 	Duplicated polling request is not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-04-18
+Version : 0.8.2
+	Add asynchronous version of unicast.
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
+import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel.ConnectionThread;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
@@ -145,7 +151,6 @@ public class MessageCastingHandler {
 		}
 		return "OK".getBytes(Charset.forName("UTF-8"));
 	}
-
 	public byte[] unicast (MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String dstIP, int dstPort, String protocol, HttpMethod httpMethod, String srcMRN, String dstMRN) {
 		
 		byte[] message = null;
@@ -171,6 +176,35 @@ public class MessageCastingHandler {
 		
 		return message;
 	}
+	
+	public ConnectionThread asynchronizedUnicast(MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String dstIP, int dstPort, String protocol, HttpMethod httpMethod, String srcMRN, String dstMRN) {
+		ConnectionThread thread = null;
+		try {
+    		if (protocol.equals("http")) {
+    			thread = outputChannel.asynchronizeSendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    			thread.start();
+    			
+    			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTP.");
+    		} 
+    		else if (protocol.equals("https")) { 
+    			thread = outputChannel.asynchronizeSendSecureMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    			thread.start();
+    			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTPS.");
+    		} 
+    		else {
+    			logger.info("SessionID="+this.SESSION_ID+" No protocol.");
+    		}
+    		
+		} 
+    	catch (IOException e) {
+    		logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
+		}
+		return thread;
+	}
+	
 	
 	public byte[] geocast (MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String srcMRN, JSONArray geoDstInfo, String protocol, HttpMethod httpMethod) {
 		

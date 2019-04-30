@@ -55,6 +55,11 @@ Version : 0.8.1
 	Removed locator registering function.
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-04-18
+Version : 0.8.2
+	Catch channelInactive event and terminate Http request.
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -77,6 +82,7 @@ import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel.ConnectionThread;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -94,7 +100,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	private String protocol = "";
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
-	
+    private MessageRelayingHandler relayingHandler;
+
 	public MRH_MessageInputChannel(String protocol) {
 		super();
 		this.protocol = protocol;
@@ -118,8 +125,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 
 			SessionManager.sessionInfo.put(SESSION_ID, "");
 			
-
-			new MessageRelayingHandler(ctx, req, protocol, SESSION_ID);
+            relayingHandler = new MessageRelayingHandler(ctx, req, protocol, SESSION_ID);
 		} finally {
           req.release();
       }
@@ -128,6 +134,19 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	
 	
 	static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+	
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        // TODO Auto-generated method stub
+        super.channelInactive(ctx);
+        
+        ConnectionThread thread = relayingHandler.getConnectionThread();
+        if (thread != null) {
+            logger.info("Client disconnected. disconnect To.");
+            thread.terminate();
+        }
+        ctx.close();
+    }
 
 	
 	@Override
