@@ -1,5 +1,5 @@
 /bin/*
 /logs/*
 /logs/
-/target/
+/target/*
 */bin/*

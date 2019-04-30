@@ -252,10 +252,12 @@ public class MessageParser {
 			String keyStr = (String) key;
 			if (keyStr.equals("svcMRN")) {
 				svcMRN = (String) pollingRequestContents.get("svcMRN");
-				System.out.println("[Parser] serviceMRN: " + svcMRN);
+//				System.out.println("[Parser] serviceMRN: " + svcMRN);
+				logger.debug("SessionID="+this.SESSION_ID+" [Parser] serviceMRN: " + svcMRN + ".");
 			}
 			else if (keyStr.equals("certificate")) {
 				hexSignedData = (String) pollingRequestContents.get("certificate");
+				logger.debug("SessionID="+this.SESSION_ID+" [Parser] client's certificate is included.");
 			}
 		}
 	}
@@ -294,11 +296,24 @@ public class MessageParser {
 			parsePollingRequestToJSON(content);
 //			System.out.println("[Test Message] the svcMRN is " + svcMRN);
 //			System.out.println("[Test Message] the certificate is " + hexSignedData.substring(6));
+			if (this.svcMRN == null) {
+				String log = "SessionID="+this.SESSION_ID+" The service MRN is not included.";
+				if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+					mmsLog.addBriefLogForStatus(log);
+					mmsLogForDebug.addLog(this.SESSION_ID, log);
+				}
+				logger.info(log);
+			}
 			
 			return ;
 		} 
 		catch (org.json.simple.parser.ParseException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" Failed to parse service MRN and certificate whose type is a JSON format.");
+			String log = "SessionID="+this.SESSION_ID+" Failed to parse service MRN and certificate whose type is a JSON format.";
+			if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+				mmsLog.addBriefLogForStatus(log);
+				mmsLogForDebug.addLog(this.SESSION_ID, log);
+			}
+			logger.info(log);
 		}
 
 		parsePollingRequestToString(content);
