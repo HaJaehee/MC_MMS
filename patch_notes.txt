@@ -1,5 +1,13 @@
 Patch Notes
 ***********
+30-April 2019
+MC_MMS 0.9.0 new features/enhancements & bug-fixes:
+1. Updated deploying scripts for docker container.
+2. Added polling authentication test cases.
+3. Updated .gitignore.
+4. Bug fixed related to polling.
+5. Bug fixed related to relaying when a service provider does not respond. 
+
 12-April 2019
 MC_MMS 0.8.2 new features/enhancements & bug-fixes:
 1. Modified for coding rule conformity.

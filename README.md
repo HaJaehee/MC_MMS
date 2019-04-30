@@ -2,13 +2,13 @@
 ## This branch is currently under development. Can be corrected without notice.
 
 # MC_MMS
-Beta Version 0.8.2 <br/>
-2019.04.12<br/>
+Beta Version 0.9.0 <br/>
+2019.04.30<br/>
 
 
 # Web Site
 www.mms-kaist.com
-
+mms.smartnav.org
 
 ## Features
 MMS Beta Version<br/>
