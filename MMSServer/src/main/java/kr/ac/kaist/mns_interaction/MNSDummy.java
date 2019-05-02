@@ -184,7 +184,8 @@ public class MNSDummy {
 		MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp520fors53","119.197.77.106:0:1");
 		MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp520fors55","203.250.182.203:0:1");
 
-
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts7-mms-01-server","127.0.0.1:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts7-mms-01-client","127.0.0.1:8906:2");
 
 		//-----------------------------------------------------
 

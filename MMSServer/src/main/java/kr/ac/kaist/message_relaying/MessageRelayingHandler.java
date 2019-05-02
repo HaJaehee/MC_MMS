@@ -204,6 +204,8 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel.ConnectionThread;
+import kr.ac.kaist.mms_server.ErrorCode;
+import kr.ac.kaist.mms_server.ErrorResponseException;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -259,9 +261,11 @@ public class MessageRelayingHandler  {
 				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
 			}
 		}
-
-		processRelaying(type, ctx, req);
-		
+		try {
+			processRelaying(type, ctx, req);
+		} catch(ErrorResponseException e) {
+			e.replyToSender(outputChannel, ctx);
+		}
 	}
 	
 	private void initializeModule() {
@@ -283,8 +287,9 @@ public class MessageRelayingHandler  {
         return thread;
     }
 
-	private void processRelaying(MessageTypeDecider.msgType type, ChannelHandlerContext ctx, FullHttpRequest req){
-		
+	private void processRelaying(MessageTypeDecider.msgType type, ChannelHandlerContext ctx, FullHttpRequest req)
+			throws ErrorResponseException {
+
 		byte[] message = null;
 		boolean isRealtimeLog = false;
 		
@@ -432,13 +437,13 @@ public class MessageRelayingHandler  {
 			
 			
 			if (type == MessageTypeDecider.msgType.NULL_MRN) {
-				message = "Error: Null MRNs.".getBytes(Charset.forName("UTF-8"));
+				message = ErrorCode.NULL_MRN.getUTF8Bytes();
 			}
 			else if (type == MessageTypeDecider.msgType.NULL_SRC_MRN) {
-				message = "Error: Null source MRN.".getBytes(Charset.forName("UTF-8"));
+				message = ErrorCode.NULL_SRC_MRN.getUTF8Bytes();
 			}
 			else if (type == MessageTypeDecider.msgType.NULL_DST_MRN) {
-				message = "Error: Null destination MRN.".getBytes(Charset.forName("UTF-8"));
+				message = ErrorCode.NULL_DST_MRN.getUTF8Bytes();
 			}
 			// TODO: Youngjin Kim must inspect this following code.
 			else if (type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) {
@@ -542,6 +547,7 @@ public class MessageRelayingHandler  {
 							itemList.size() == 0 ||
 							itemList.get(0) == null ||
 							itemList.get(0).getSessionBlocker() == null) { //Check null pointer exception.
+						// TODO 이 코드에 대한 설명 필요
 						throw new NullPointerException();
 					}
 					try {
@@ -550,6 +556,7 @@ public class MessageRelayingHandler  {
 							if (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == itemList.get(0).getPreSeqNum() || 
 									itemList.get(0).getWaitingCount() > 0 ||
 									itemList.get(0).isExceptionOccured()) {
+								// TODO 이 코드에 대한 설명 필요
 								throw new InterruptedException();	
 							}
 							else {
@@ -582,6 +589,7 @@ public class MessageRelayingHandler  {
 								break;
 							}
 							else if (itemList.get(0).isExceptionOccured()) {
+								// TODO 이 위치에 진입하면 message가 null로 설정됩니다. 적당한 할당 필요 by using Error Code
 								printSessionsInSessionMng(srcDstPair);
 								logger.warn("SessionID="+this.SESSION_ID+" Message order exception is occured. Message sequence is reset 0.");
 								if(MMSConfiguration.WEB_LOG_PROVIDING()) {
@@ -596,6 +604,9 @@ public class MessageRelayingHandler  {
 						}
 					}
 				}
+
+				// TODO 이 위치에 진입하면 message가 null로 설정됩니다. 적당한 할당 필요 by using Error Code 
+				// 위에 꺼를 방지하기 위해 이 위치에서 thread도 널이고, message도 널이면 message에 적당한 에러 코드를 삽입하면 좋을듯
 			}
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
 				thread = mch.asynchronizedUnicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN);
@@ -621,12 +632,14 @@ public class MessageRelayingHandler  {
 						message = status.getBytes(Charset.forName("UTF-8"));
 					} 
 					catch (UnknownHostException e) {
+						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
 						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
 		    			}
 					} 
 					catch (IOException e) {
+						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
 						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
@@ -640,12 +653,14 @@ public class MessageRelayingHandler  {
 						message = status.getBytes(Charset.forName("UTF-8"));
 					} 
 					catch (UnknownHostException e) {
+						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
 						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
 		    			}
 					} 
 					catch (IOException e) {
+						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
 						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
@@ -662,12 +677,12 @@ public class MessageRelayingHandler  {
 	    			callback = params.get("callback").get(0);
 	    			realtimeLog = mmsLog.getRealtimeLog(params.get("id").get(0));
 	    			isRealtimeLog = true;
-	    			
 	    		}
 	    		else {
-	    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
+	    			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 	    		}
 				
+	    		// TODO : 위에 wrong_parameter 에 관련된 코드가 있는데 message를 한번 덮어씌워버리네요?
 				message = (callback+"("+realtimeLog+")").getBytes(Charset.forName("UTF-8"));
 			}
 			else if (type == MessageTypeDecider.msgType.ADD_ID_IN_REALTIME_LOG_IDS) {
@@ -680,7 +695,7 @@ public class MessageRelayingHandler  {
 	    			message = "OK".getBytes(Charset.forName("UTF-8"));
 	    		}
 	    		else {
-	    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
+					message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 	    		}
 			}
 			else if (type == MessageTypeDecider.msgType.REMOVE_ID_IN_REALTIME_LOG_IDS) {
@@ -692,7 +707,7 @@ public class MessageRelayingHandler  {
 	    			message = "OK".getBytes(Charset.forName("UTF-8"));
 	    		}
 	    		else {
-	    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
+	    			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 	    		}
 			}
 			else if (type == MessageTypeDecider.msgType.ADD_MRN_BEING_DEBUGGED) {
@@ -705,7 +720,7 @@ public class MessageRelayingHandler  {
 	    			message = "OK".getBytes(Charset.forName("UTF-8"));
 	    		}
 	    		else {
-	    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
+	    			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 	    		}
 			}
 			else if (type == MessageTypeDecider.msgType.REMOVE_MRN_BEING_DEBUGGED) {
@@ -718,7 +733,7 @@ public class MessageRelayingHandler  {
 	    			message = "OK".getBytes(Charset.forName("UTF-8"));
 	    		}
 	    		else {
-	    			message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
+	    			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 	    		}
 			}
 			// TODO this condition has to be deprecated.
@@ -732,12 +747,14 @@ public class MessageRelayingHandler  {
 						message = "OK".getBytes(Charset.forName("UTF-8"));
 					} 
 		    		catch (UnknownHostException e) {
+						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
 		    			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
 		    			}
 					} 
 		    		catch (IOException e) {
+						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
 		    			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
@@ -745,7 +762,7 @@ public class MessageRelayingHandler  {
 					} 
 	    		}
 	    		else {
-					message = "Wrong parameter".getBytes(Charset.forName("UTF-8"));
+					message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 				}
 			} 
 			// TODO this condition has to be deprecated.
@@ -759,12 +776,14 @@ public class MessageRelayingHandler  {
 						message = "OK".getBytes(Charset.forName("UTF-8"));
 					}
 					catch (UnknownHostException e) {
+						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
 						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
 		    			}
 					} 
 		    		catch (IOException e) {
+						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
 		    			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
@@ -772,7 +791,7 @@ public class MessageRelayingHandler  {
 					} 
 				}
 				else {
-					message = "Wrong parameter.".getBytes(Charset.forName("UTF-8"));
+					message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 				}
 			}
 
@@ -784,7 +803,8 @@ public class MessageRelayingHandler  {
 				message = "You are not me.".getBytes();
 			}
 			else if (type == MessageTypeDecider.msgType.UNKNOWN_MRN) {
-				message = "No Device having that MRN.".getBytes();
+				message = ErrorCode.UNKNOWN_MRN.getBytes();
+				logger.info("test "+message);
 			} 
 			
 		} 
@@ -802,7 +822,7 @@ public class MessageRelayingHandler  {
 		finally {
 			if (type != MessageTypeDecider.msgType.POLLING && type != MessageTypeDecider.msgType.LONG_POLLING && thread == null) {
 				if (message == null) {
-					message = "INVALID MESSAGE.".getBytes();
+					message = ErrorCode.UNKNOWN_ERR.getBytes();
 					logger.info("SessionID="+this.SESSION_ID+" "+"INVALID MESSAGE.");
 					outputChannel.replyToSender(ctx, message, isRealtimeLog); //TODO: MUST HAVE MORE DEFINED EXCEPTION MESSAGES.
 				}
@@ -817,6 +837,7 @@ public class MessageRelayingHandler  {
 				String srcDstPair = srcMRN+"::"+dstMRN;
 				List<SessionIdAndThr> itemList = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
 
+				// TODO 이 위치 진입시에 응답 없이 종료 시켜버릴 가능성이 있지 않나요?
 				if (itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
 					if ((itemList.get(0).getPreSeqNum() == SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) && 
 							!itemList.get(0).isExceptionOccured()) || itemList.get(0).getWaitingCount() > 0){
