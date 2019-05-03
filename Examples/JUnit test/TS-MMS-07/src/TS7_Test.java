@@ -1,3 +1,4 @@
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,7 +30,6 @@ public class TS7_Test {
 	
 	@BeforeClass
 	public static void testmain() throws Exception {
-		server = new TS7_server(dstMRN, 8907);
 	}
 
 	public boolean isErrorCode(String s) {
@@ -50,44 +50,53 @@ public class TS7_Test {
 			}
 		});
 	}
+	public static void runServer(String mrn, int port) {
+		try {
+			server = new TS7_server(mrn, port);
+		} catch(Exception e) {
+			assertTrue("run Server make Exception", false);
+		}
+	
+	}
 	public void sendMessageForError(String src, String dst, String message, String expectedCode) throws Exception {
 		TS7_client client = new TS7_client(src);
 		client.sendMessage(dst, message, new MMSClientHandler.ResponseCallback() {		
 			@Override
 			public void callbackMethod(Map<String, List<String>> headerField, String message) {
 				// TODO Auto-generatedX method stub
-				
-				assertTrue(isErrorCode(message));
+
+				assertTrue("result have to be error code.", isErrorCode(message));
 				assertEquals(getErrorCode(message), expectedCode);
 			}
 		});
+		
 	}
 	
 	@Test
 	public void testOK() throws Exception {
+		runServer(dstMRN, PORT);
 		sendMessage(srcMRN, dstMRN, "123", "OK");
 	}
 	@Test
 	public void testUnknownSrcMRN1() throws Exception {
+		runServer(dstMRN, PORT);
 		sendMessageForError("1234", "123", "123", "10001");
 	}
 	@Test
 	public void testUnknownSrcMRN2() throws Exception {
+		runServer(dstMRN, PORT);
 		sendMessageForError(srcMRN, "123", "123", "10001");
 	}
+
 	@Test
-	public void testNullMRN() throws Exception {
-		sendMessageForError("", "", "123", "10004");
-	}
-	@Test
-	public void testNULLSRCMRN() throws Exception {
-		sendMessageForError("", dstMRN, "123", "10002");
-	}
-	@Test
-	public void testNULLDSTMRN() throws Exception {
-		sendMessageForError(srcMRN, "", "123", "10003");
+	public void testWRONGPARAM() throws Exception {
+		// TODO
 	}
 
+	@Test
+	public void testNullMRN() throws Exception {
+		// TODO
+	}
 	
 	
 

@@ -33,10 +33,17 @@ public enum ErrorCode {
 		return message;
 	}
 	public byte[] getBytes() {
-		return String.format("[%5s] %s", code, message).getBytes();
+		return getBytes(this.message);
 	}
 
 	public byte[] getUTF8Bytes() {
+		return getUTF8Bytes(this.message);
+	}
+	public byte[] getBytes(String message) {
+		return String.format("[%5s] %s", code, message).getBytes();
+	}
+
+	public byte[] getUTF8Bytes(String message) {
 		return String.format("[%5s] %s", code, message).getBytes(Charset.forName("UTF-8"));
 	}
 }
