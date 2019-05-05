@@ -171,7 +171,7 @@ public class MRH_MessageOutputChannel{
 	public void replyToSender(ChannelHandlerContext ctx, byte[] data) {
     	if (!realtimeLog) {
 	    	logger.info("SessionID="+this.SESSION_ID+" Reply to sender.");
-	    	if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+	    	if(MMSConfiguration.isWebLogProviding()) {
 	    		String log = "SessionID="+this.SESSION_ID+" Reply to sender.";
 	    		mmsLog.addBriefLogForStatus(log);
 	    		mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -222,7 +222,7 @@ public class MRH_MessageOutputChannel{
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		logger.info("SessionID="+this.SESSION_ID+" Try connecting to url="+url);
-		if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+		if(MMSConfiguration.isWebLogProviding()) {
 			String log = "SessionID="+this.SESSION_ID+" Try connecting to url="+url;
 			mmsLog.addBriefLogForStatus(log);
 			mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -274,7 +274,7 @@ public class MRH_MessageOutputChannel{
 		URL obj = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 		logger.info("SessionID="+this.SESSION_ID+" Try connecting to url="+url);
-		if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+		if(MMSConfiguration.isWebLogProviding()) {
 			String log = "SessionID="+this.SESSION_ID+" Try connecting to url="+url;
 			mmsLog.addBriefLogForStatus(log);
 			mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -343,7 +343,7 @@ public class MRH_MessageOutputChannel{
         
 		is.close();
 		logger.info("SessionID="+this.SESSION_ID+" Received a response." + "Response Code=" + responseCode);
-		if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+		if(MMSConfiguration.isWebLogProviding()) {
 			String log = "SessionID="+this.SESSION_ID+" Received a response." + "Response Code=" + responseCode;
 			mmsLog.addBriefLogForStatus(log);
 			mmsLogForDebug.addLog(this.SESSION_ID, log);

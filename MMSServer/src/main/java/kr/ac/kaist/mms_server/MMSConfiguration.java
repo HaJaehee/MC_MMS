@@ -78,6 +78,12 @@ Rev. history: 2019-04-12
 Version : 0.8.2
 	Modified for coding rule conformity.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+	
+Rev. history: 2019-05-06
+Version : 0.9.0
+	Modified for coding conventions.
+	Added Rabbit MQ port number, username and password configurations.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 import java.io.File;
@@ -126,6 +132,9 @@ public class MMSConfiguration {
 	/*-------- logback.xml has these settings --------*/
 	
 	private static String RABBIT_MQ_HOST = null;
+	private static int RABBIT_MQ_PORT = 0;
+	private static String RABBIT_MQ_USER = null;
+	private static String RABBIT_MQ_PASSWD = null;
 	
 	private static Logger logger = null;
 
@@ -200,9 +209,21 @@ public class MMSConfiguration {
 		//log_console_out.setRequired(false);
 		//options.addOption(log_console_out);
 		
-		Option rabbit_mq_host = new Option ("mq", "rabbit_mq_host", true, "Set the host of the Rabbit MQ server.");
+		Option rabbit_mq_host = new Option ("mqhost", "rabbit_mq_host", true, "Set the host of the Rabbit MQ server.");
 		rabbit_mq_host.setRequired(false);
 		options.addOption(rabbit_mq_host);
+		
+		Option rabbit_mq_port = new Option ("mqport", "rabbit_mq_port", true, "Set the port number of the Rabbit MQ server.");
+		rabbit_mq_port.setRequired(false);
+		options.addOption(rabbit_mq_port);
+		
+		Option rabbit_mq_user = new Option ("mquser", "rabbit_mq_user", true, "Set the username of the Rabbit MQ server.");
+		rabbit_mq_user.setRequired(false);
+		options.addOption(rabbit_mq_user);
+		
+		Option rabbit_mq_passwd = new Option ("mqpasswd", "rabbit_mq_passwd", true, "Set the password of the Rabbit MQ server.");
+		rabbit_mq_passwd.setRequired(false);
+		options.addOption(rabbit_mq_passwd);
 		
 		CommandLineParser clParser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -221,7 +242,10 @@ public class MMSConfiguration {
 					+ " [-mns mns_host]"
 					+ " [-mnsp mns_port]"
 					+ " [-mrn mms_mrn]"
-					+ " [-mq rabbit_mq_host]"
+					+ " [-mqhost rabbit_mq_host]"
+					+ " [-mqport rabbit_mq_port]"
+					+ " [-mquser rabbit_mq_user]"
+					+ " [-mqpasswd rabbit_mq_passwd]"
 					+ " [-p http_port]"
 					+ " [-sp https_port]"
 					+ " [-t waiting_message_timeout]"
@@ -258,6 +282,18 @@ public class MMSConfiguration {
 			
 			if (RABBIT_MQ_HOST == null) {
 				RABBIT_MQ_HOST = cmd.getOptionValue("rabbit_mq_host");
+			}
+			
+			if (RABBIT_MQ_PORT == 0) {
+				RABBIT_MQ_PORT = getOptionValueInteger(cmd, "rabbit_mq_port");
+			}
+			
+			if (RABBIT_MQ_USER == null) {
+				RABBIT_MQ_USER = cmd.getOptionValue("rabbit_mq_user");
+			}
+			
+			if (RABBIT_MQ_PASSWD == null) {
+				RABBIT_MQ_PASSWD = cmd.getOptionValue("rabbit_mq_passwd");
 			}
 			
 			if (MMS_MRN == null) {
@@ -318,32 +354,58 @@ public class MMSConfiguration {
 
 		if (HTTP_PORT == 0) {
 			String s = System.getenv("ENV_HTTP_PORT");
-			if (s != null)
+			if (s != null) {
 				HTTP_PORT = Integer.parseInt(s);
+			}
 		}
 		
 		if (HTTPS_PORT == 0) {
 			String s = System.getenv("ENV_HTTPS_PORT");
-			if (s != null)
+			if (s != null) {
 				HTTPS_PORT = Integer.parseInt(s);
+			}
 		}
 		
 		if (MNS_HOST == null) {
 			String s = System.getenv("ENV_MNS_HOST");
-			if (s != null)
+			if (s != null) {
 				MNS_HOST = s;
+			}
 		}
 		
 		if (MNS_PORT == 0) {
 			String s = System.getenv("ENV_MNS_PORT");
-			if (s != null)
-				MNS_PORT = Integer.parseInt(s);
+			if (s != null) {
+				MNS_PORT = Integer.parseInt(s); 
+			}
 		}
 		
 		if (RABBIT_MQ_HOST == null) {
 			String s = System.getenv("ENV_RABBIT_MQ_HOST");
-			if (s != null)
+			if (s != null) {
 				RABBIT_MQ_HOST = s;
+			}
+		}
+		
+		if (RABBIT_MQ_PORT == 0) {
+			String s = System.getenv("ENV_RABBIT_MQ_PORT");
+			if (s != null) {
+				RABBIT_MQ_PORT = Integer.parseInt(s); 
+			}
+		}
+		
+		if (RABBIT_MQ_USER == null) {
+			String s = System.getenv("ENV_RABBIT_MQ_USER");
+			if (s != null) {
+				RABBIT_MQ_USER = s;
+			}
+		}
+		
+		if (RABBIT_MQ_PASSWD == null) {
+			String s = System.getenv("ENV_RABBIT_MQ_PASSWD");
+			if (s != null) {
+				RABBIT_MQ_PASSWD = s;
+			}
 		}
 			
 		if (MMS_MRN == null) {
@@ -436,7 +498,21 @@ public class MMSConfiguration {
 					RABBIT_MQ_HOST = (String) jobj.get("RABBIT_MQ_HOST");
 				}
 			}
-			
+			if (RABBIT_MQ_PORT == 0) {
+				if (jobj.get("RABBIT_MQ_PORT") != null){
+					RABBIT_MQ_PORT = getConfValueInteger(jobj, "RABBIT_MQ_PORT");
+				}
+			}
+			if (RABBIT_MQ_USER == null) {
+				if (jobj.get("RABBIT_MQ_USER") != null){
+					RABBIT_MQ_USER = (String) jobj.get("RABBIT_MQ_USER");
+				}
+			}
+			if (RABBIT_MQ_PASSWD == null) {
+				if (jobj.get("RABBIT_MQ_PASSWD") != null){
+					RABBIT_MQ_PASSWD = (String) jobj.get("RABBIT_MQ_PASSWD");
+				}
+			}
 			if (MNS_PORT == 0) {
 				MNS_PORT = getConfValueInteger(jobj, "MNS_PORT");
 			}
@@ -539,6 +615,18 @@ public class MMSConfiguration {
 				RABBIT_MQ_HOST = "localhost"; //Default is String "localhost".
 			}
 			
+			if (RABBIT_MQ_PORT == 0) {
+				RABBIT_MQ_PORT = 5672; //Default is integer 5672.
+			}
+			
+			if (RABBIT_MQ_USER == null) {
+				RABBIT_MQ_USER = "guest"; //Default is String "guest".
+			}
+			
+			if (RABBIT_MQ_PASSWD == null) {
+				RABBIT_MQ_PASSWD = "guest"; //Default is String "guest".
+			}
+			
 			if (MMS_MRN == null) {
 				MMS_MRN = "urn:mrn:smart-navi:device:mms1"; //Default is String "urn:mrn:smart-navi:device:mms1".
 			}
@@ -555,7 +643,8 @@ public class MMSConfiguration {
 				MAX_BRIEF_LOG_LIST_SIZE = 200; //Default is integer 200.
 			}
 			
-			/*if (LOG_LEVEL != null) {
+			/* Don't remove below code lines that are commented out. 
+			if (LOG_LEVEL != null) {
 				ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
 			    LOG_LEVEL = LOG_LEVEL.toUpperCase();
 				if (LOG_LEVEL.equals("DEBUG")) {
@@ -637,6 +726,9 @@ public class MMSConfiguration {
 			logger.warn(TAG+"MNS_HOST="+MNS_HOST);
 			logger.warn(TAG+"MNS_PORT="+MNS_PORT);
 			logger.warn(TAG+"RABBIT_MQ_HOST="+RABBIT_MQ_HOST);
+			logger.warn(TAG+"RABBIT_MQ_PORT="+RABBIT_MQ_PORT);
+			logger.warn(TAG+"RABBIT_MQ_USER="+RABBIT_MQ_USER);
+			logger.warn(TAG+"RABBIT_MQ_PASSWD="+RABBIT_MQ_PASSWD);
 			//logger.warn(TAG+"LOG_LEVEL="+LOG_LEVEL);
 			//logger.warn(TAG+"LOG_CONSOLE_OUT="+LOG_CONSOLE_OUT[1]);
 			//logger.warn(TAG+"LOG_FILE_OUT="+LOG_FILE_OUT[1]);
@@ -649,48 +741,60 @@ public class MMSConfiguration {
 		}
 	}
 
-	public static boolean WEB_LOG_PROVIDING() {
+	public static boolean isWebLogProviding() {
 		return WEB_LOG_PROVIDING[1];
 	}
 
-	public static boolean WEB_MANAGING() {
+	public static boolean isWebManaging() {
 		return WEB_MANAGING[1];
 	}
 
-	public static int HTTP_PORT() {
+	public static int getHttpPort() {
 		return HTTP_PORT;
 	}
 
-	public static int HTTPS_PORT() {
+	public static int getHttpsPort() {
 		return HTTPS_PORT;
 	}
 
-	public static String MNS_HOST() {
+	public static String getMnsHost() {
 		return MNS_HOST;
 	}
 
-	public static int MNS_PORT() {
+	public static int getMnsPort() {
 		return MNS_PORT;
 	}
 
-	public static String MMS_MRN() {
+	public static String getMmsMrn() {
 		return MMS_MRN;
 	}
 
-	public static int MAX_CONTENT_SIZE() {
+	public static int getMaxContentSize() {
 		return MAX_CONTENT_SIZE;
 	}
 
-	public static int WAITING_MESSAGE_TIMEOUT() {
+	public static int getWaitingMessageTimeout() {
 		return WAITING_MESSAGE_TIMEOUT;
 	}
 
-	public static int MAX_BRIEF_LOG_LIST_SIZE() {
+	public static int getMaxBriefLogListSize() {
 		return MAX_BRIEF_LOG_LIST_SIZE;
 	}
 	
-	public static String RABBIT_MQ_HOST() {
+	public static String getRabbitMqHost() {
 		return RABBIT_MQ_HOST;
+	}
+	
+	public static int getRabbitMqPort() {
+		return RABBIT_MQ_PORT;
+	}
+	
+	public static String getRabbitMqUser() {
+		return RABBIT_MQ_USER;
+	}
+	
+	public static String getRabbitMqPasswd() {
+		return RABBIT_MQ_PASSWD;
 	}
 	
 	private int getOptionValueInteger (CommandLine cmd, String opt) throws IOException {

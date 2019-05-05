@@ -24,16 +24,22 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history: 2019-03-09
 Version : 0.8.1
-	MMS Client is able to choose its polling method.\
+	MMS Client is able to choose its polling method.
 	Removed locator registering function.
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-05-06
+Version : 0.9.0
+	Added sessionCountList.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
+
+
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
-
 
 public class SessionManager {
 	private String TAG = "[SessionManager] ";
@@ -45,6 +51,6 @@ public class SessionManager {
 	public static HashMap<String, String> sessionInfo = new HashMap<>(); 
 	public static HashMap<String, SessionList<SessionIdAndThr>> mapSrcDstPairAndSessionInfo = new HashMap<>(); //This is used for handling input messages by reordering policy.
 	public static HashMap<String, Double> mapSrcDstPairAndLastSeqNum = new HashMap<>(); //This is used for handling last sequence numbers of sessions.
-	
+	public static ArrayList<SessionCountForFiveSecs> sessionCountList = new ArrayList<SessionCountForFiveSecs>(); //This saves the number of sessions for every five seconds.
 	
 }

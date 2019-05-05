@@ -73,11 +73,11 @@ public class MMSServer {
 			Thread.sleep(2000);
 			
 			
-			logger.error("MUST check that MNS server is online="+MMSConfiguration.MNS_HOST()+":"+MMSConfiguration.MNS_PORT()+".");
-			logger.error("MUST check that Rabbit MQ server is online="+MMSConfiguration.RABBIT_MQ_HOST()+":5672.");
+			logger.error("MUST check that MNS server is online="+MMSConfiguration.getMnsHost()+":"+MMSConfiguration.getMnsPort()+".");
+			logger.error("MUST check that Rabbit MQ server is online="+MMSConfiguration.getRabbitMqHost()+":5672.");
 			
 			try {
-				InetAddress ip = InetAddress.getByName(MMSConfiguration.MNS_HOST());
+				InetAddress ip = InetAddress.getByName(MMSConfiguration.getMnsHost());
 				if (ip == null) {
 					throw new UnknownHostException();
 				}
@@ -109,9 +109,9 @@ public class MMSServer {
 			
 			
 			logger.error("Now starting MMS HTTP server.");
-			NettyStartupUtil.runServer(MMSConfiguration.HTTP_PORT(), pipeline -> {   //runServer(int port, Consumer<ChannelPipeline> initializer)
+			NettyStartupUtil.runServer(MMSConfiguration.getHttpPort(), pipeline -> {   //runServer(int port, Consumer<ChannelPipeline> initializer)
 				pipeline.addLast(new HttpServerCodec());
-				pipeline.addLast(new HttpObjectAggregator(MMSConfiguration.MAX_CONTENT_SIZE()));
+				pipeline.addLast(new HttpObjectAggregator(MMSConfiguration.getMaxContentSize()));
 	            pipeline.addLast(new MRH_MessageInputChannel("http"));
 	        });
 		}

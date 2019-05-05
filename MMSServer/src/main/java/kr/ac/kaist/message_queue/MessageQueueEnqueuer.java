@@ -67,7 +67,12 @@ Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 
 Rev. history : 2018-10-05
 Version : 0.8.0
-	Change the host of rabbit mq from "rabbitmq-db" to "MMSConfiguration.RABBIT_MQ_HOST()".
+	Change the host of rabbit mq from "rabbitmq-db" to "MMSConfiguration.getRabbitMqHost()".
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-06
+Version : 0.9.0
+	Added Rabbit MQ port number, username and password into ConnectionFactory.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 
@@ -93,7 +98,7 @@ class MessageQueueEnqueuer {
 		String queueName = dstMRN+"::"+srcMRN;
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 		 
-		 if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+		 if(MMSConfiguration.isWebLogProviding()) {
 			 String log = "SessionID="+SESSION_ID+" Enqueue="+queueName+".";
 			 mmsLog.addBriefLogForStatus(log);
 			 mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -107,7 +112,10 @@ class MessageQueueEnqueuer {
 		
 		try {
 			ConnectionFactory factory = new ConnectionFactory();
-			factory.setHost(MMSConfiguration.RABBIT_MQ_HOST());
+			factory.setHost(MMSConfiguration.getRabbitMqHost());
+			factory.setPort(MMSConfiguration.getRabbitMqPort());
+			factory.setUsername(MMSConfiguration.getRabbitMqUser());
+			factory.setPassword(MMSConfiguration.getRabbitMqPasswd());
 			Connection connection = factory.newConnection();
 			Channel channel;
 			

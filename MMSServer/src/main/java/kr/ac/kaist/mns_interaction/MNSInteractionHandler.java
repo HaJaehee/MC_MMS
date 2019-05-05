@@ -102,7 +102,7 @@ public class MNSInteractionHandler {
 	@Deprecated
 	public String updateClientInfo(String srcMRN, String srcIP){
 		String msg = locatorUpdater.buildUpdate(srcMRN, srcIP);
-		if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+		if(MMSConfiguration.isWebLogProviding()) {
 			String log = "SessionID="+this.SESSION_ID+" Update client information.";
 			mmsLog.addBriefLogForStatus(log);
 			mmsLogForDebug.addLog(this.SESSION_ID, log);

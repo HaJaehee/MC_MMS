@@ -94,8 +94,8 @@ public class MNSDummy {
 
 	public static void main(String argv[]) throws Exception
 	{
-		ServerSocket Sock = new ServerSocket(MMSConfiguration.MNS_PORT());
-		System.out.println("Listen:"+MMSConfiguration.MNS_PORT());
+		ServerSocket Sock = new ServerSocket(MMSConfiguration.getMnsPort());
+		System.out.println("Listen:"+MMSConfiguration.getMnsPort());
 
 		//logger.error("MNSDummy started.");
 		//       -------------Put MRN --> IP Information -------------

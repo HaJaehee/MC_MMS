@@ -73,7 +73,7 @@ Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 
 Rev. history : 2018-10-05
 Version : 0.8.0
-	Change the host of rabbit mq from "rabbitmq-db" to "MMSConfiguration.RABBIT_MQ_HOST()".
+	Change the host of rabbit mq from "rabbitmq-db" to "MMSConfiguration.getRabbitMqHost()".
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history: 2019-03-09
@@ -81,6 +81,11 @@ Version : 0.8.1
 	MMS Client is able to choose its polling method.\
 	Removed locator registering function.
 	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-06
+Version : 0.9.0
+	Added Rabbit MQ port number, username and password into ConnectionFactory.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -160,7 +165,10 @@ class MessageQueueDequeuer extends Thread{
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 	    try {
 			ConnectionFactory factory = new ConnectionFactory();
-			factory.setHost(MMSConfiguration.RABBIT_MQ_HOST());
+			factory.setHost(MMSConfiguration.getRabbitMqHost());
+			factory.setPort(MMSConfiguration.getRabbitMqPort());
+			factory.setUsername(MMSConfiguration.getRabbitMqUser());
+			factory.setPassword(MMSConfiguration.getRabbitMqPasswd());
 			connection = factory.newConnection();
 			channel = connection.createChannel();
 			channel.queueDeclare(queueName, true, false, false, null);
@@ -186,7 +194,7 @@ class MessageQueueDequeuer extends Thread{
 			if (msgCount > 0) { //If the queue has a message
 				message.append("]");
 				
-				if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+				if(MMSConfiguration.isWebLogProviding()) {
 					String log = "SessionID="+this.SESSION_ID+" Dequeue="+queueName+".";
 					mmsLog.addBriefLogForStatus(log);
 					mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -202,7 +210,7 @@ class MessageQueueDequeuer extends Thread{
 			else { //If the queue does not have any message, message count == 0
 				message.setLength(0);
 				if (pollingMethod.equals("normal") ) {//If polling method is normal polling
-					if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+					if(MMSConfiguration.isWebLogProviding()) {
 						String log = "SessionID="+this.SESSION_ID+" Empty queue="+queueName+".";
 						mmsLog.addBriefLogForStatus(log);
 						mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -217,7 +225,7 @@ class MessageQueueDequeuer extends Thread{
 				
 				else if (pollingMethod.equals("long")){ //If polling method is long polling
 					//Enroll a delivery listener to the queue channel in order to get a message from the queue.
-					if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+					if(MMSConfiguration.isWebLogProviding()) {
 						String log = "SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".";
 						mmsLog.addBriefLogForStatus(log);
 						mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -234,7 +242,7 @@ class MessageQueueDequeuer extends Thread{
 						    if(!ctx.isRemoved()){
 								message.append("[\""+URLEncoder.encode(dqMessage,"UTF-8")+"\"]");
 								
-								if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+								if(MMSConfiguration.isWebLogProviding()) {
 									String log = "SessionID="+SESSION_ID+" Dequeue="+queueName+".";
 									mmsLog.addBriefLogForStatus(log);
 									mmsLogForDebug.addLog(SESSION_ID, log);
@@ -247,7 +255,7 @@ class MessageQueueDequeuer extends Thread{
 							    outputChannel.replyToSender(ctx, message.toString().getBytes());
 								channel.basicAck(envelope.getDeliveryTag(), false);
 							} else {
-								if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+								if(MMSConfiguration.isWebLogProviding()) {
 									String log = "SessionID="+SESSION_ID+" Dequeue="+queueName+".";
 									mmsLog.addBriefLogForStatus(log);
 									mmsLogForDebug.addLog(SESSION_ID, log);

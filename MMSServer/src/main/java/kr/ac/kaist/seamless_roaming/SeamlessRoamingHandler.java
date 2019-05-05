@@ -88,7 +88,7 @@ public class SeamlessRoamingHandler {
 		 */
 		
 		//Removed at version 0.8.2.
-		/*if (MMSConfiguration.MNS_HOST().equals("localhost")||MMSConfiguration.MNS_HOST().equals("127.0.0.1")) {
+		/*if (MMSConfiguration.getMnsHost().equals("localhost")||MMSConfiguration.getMnsHost().equals("127.0.0.1")) {
 			pmh.updateClientInfo(mih, srcMRN, srcIP);
 		}*/
 		

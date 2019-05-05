@@ -186,7 +186,7 @@ public class MessageParser {
 				isGeocasting = true;	
 				setGeoCircleInfo(req);
 				if (logger.isDebugEnabled()) {
-					if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+					if(MMSConfiguration.isWebLogProviding()) {
 						String log = "SessionID="+this.SESSION_ID+" Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".";
 						mmsLog.addBriefLogForStatus(log);
 						mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -218,7 +218,7 @@ public class MessageParser {
 							}
 						}
 						strGeoPolyInfo.append("]");
-						if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+						if(MMSConfiguration.isWebLogProviding()) {
 							String log = "SessionID="+this.SESSION_ID+" Geocasting polygon request. "+strGeoPolyInfo.toString()+".";
 							mmsLog.addBriefLogForStatus(log);
 							mmsLogForDebug.addLog(this.SESSION_ID, log);
@@ -298,7 +298,7 @@ public class MessageParser {
 //			System.out.println("[Test Message] the certificate is " + hexSignedData.substring(6));
 			if (this.svcMRN == null) {
 				String log = "SessionID="+this.SESSION_ID+" The service MRN is not included.";
-				if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+				if(MMSConfiguration.isWebLogProviding()) {
 					mmsLog.addBriefLogForStatus(log);
 					mmsLogForDebug.addLog(this.SESSION_ID, log);
 				}
@@ -309,7 +309,7 @@ public class MessageParser {
 		} 
 		catch (org.json.simple.parser.ParseException e) {
 			String log = "SessionID="+this.SESSION_ID+" Failed to parse service MRN and certificate whose type is a JSON format.";
-			if(MMSConfiguration.WEB_LOG_PROVIDING()) {
+			if(MMSConfiguration.isWebLogProviding()) {
 				mmsLog.addBriefLogForStatus(log);
 				mmsLogForDebug.addLog(this.SESSION_ID, log);
 			}
