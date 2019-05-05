@@ -105,6 +105,11 @@ Rev. history: 2019-04-12
 Version : 0.8.2
 	Modified for coding rule conformity.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-05-05
+Version : 0.9.0
+	Added rest API functions.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -133,7 +138,8 @@ class MessageTypeDecider {
 			RELAYING_TO_SERVER_SEQUENTIALLY,
 			//REGISTER_CLIENT,
 			UNKNOWN_MRN,
-			STATUS,EMPTY_MNSDummy,
+			STATUS,
+			//EMPTY_MNSDummy,
 			REMOVE_MNS_ENTRY,
 			ADD_MNS_ENTRY,
 			//POLLING_METHOD,
@@ -151,7 +157,8 @@ class MessageTypeDecider {
 			ADD_ID_IN_REALTIME_LOG_IDS,
 			REMOVE_ID_IN_REALTIME_LOG_IDS,
 			GEOCASTING_CIRCLE,
-			GEOCASTING_POLYGON
+			GEOCASTING_POLYGON,
+			REST_API
 	}
 
 	
@@ -185,15 +192,21 @@ class MessageTypeDecider {
 		   		return msgType.REMOVE_MNS_ENTRY;
 		   	} 
 			
-		   	/* Deprecated
+		   	/* Removed at version 0.8.2.
 		   	 * else if (MMSConfiguration.WEB_MANAGING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/polling?method", 0, 15)){
 		   		return msgType.POLLING_METHOD;
 		   	}*/
 			
-		   	else if (MMSConfiguration.WEB_MANAGING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/add-mrn-being-debugged?mrn", 0, 21)) {
+			// MMS Restful API
+		   	else if (httpMethod == HttpMethod.GET && uri.regionMatches(0, "/api?", 0, 5)) {
+		   		return msgType.REST_API;
+		   	}
+			
+			
+		   	else if (MMSConfiguration.WEB_MANAGING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/add-mrn-being-debugged?mrn", 0, 27)) {
 		   		return msgType.ADD_MRN_BEING_DEBUGGED;
 		   	}
-		   	else if (MMSConfiguration.WEB_MANAGING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/remove-mrn-being-debugged?mrn", 0, 24)) {
+		   	else if (MMSConfiguration.WEB_MANAGING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/remove-mrn-being-debugged?mrn", 0, 30)) {
 		   		return msgType.REMOVE_MRN_BEING_DEBUGGED;
 		   	}
 		   	else if (MMSConfiguration.WEB_LOG_PROVIDING() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/add-id-realtime-log-ids?id", 0, 27)){

@@ -101,6 +101,11 @@ Version : 0.8.1
 	Removed locator registering function.
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-05-05
+Version : 0.9.0
+	Added rest API functions.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -141,8 +146,6 @@ import kr.ac.kaist.message_relaying.SessionManager;
 public class MMSLog {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MMSLog.class);
-	//public static String MNSLog = "";
-	//public static StringBuffer queueLogForClient = new StringBuffer();
 	
 	private ArrayList<String> briefLogForStatus = new ArrayList<String>();
 	private Map<String,List<String>> briefRealtimeLogEachIDs = new HashMap<String,List<String>>();
@@ -373,5 +376,8 @@ public class MMSLog {
 			briefRealtimeLogEachIDs.remove(id);
 		}
 	}
-
+	
+	public Set<String> getRealtimeLogUsersSet (){
+		return briefRealtimeLogEachIDs.keySet();
+	}
 }

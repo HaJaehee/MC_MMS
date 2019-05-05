@@ -167,17 +167,20 @@ Version : 0.8.1
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
-
 Rev. history: 2019-04-12
 Version : 0.8.2
 	Modified for coding rule conformity.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
-
 Rev. history : 2019-04-18
 Version : 0.8.2
 	Applying Asynchronous.
 Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
+Rev. history: 2019-05-05
+Version : 0.9.0
+	Added rest API functions.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -207,6 +210,7 @@ import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel.ConnectionThread;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
+import kr.ac.kaist.mms_server.MMSRestAPIHandler;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 
@@ -227,7 +231,8 @@ public class MessageRelayingHandler  {
 	
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
-	
+	private MMSRestAPIHandler mmsRestApiHandler = null;
+
 	private String protocol = "";
 	
 	private boolean isClientVerified = false;
@@ -269,6 +274,7 @@ public class MessageRelayingHandler  {
 		mch = new MessageCastingHandler(this.SESSION_ID);
 		mmsLog = MMSLog.getInstance();
 		mmsLogForDebug = MMSLogForDebug.getInstance();
+		mmsRestApiHandler = new MMSRestAPIHandler(this.SESSION_ID);
 	}
 	
 	private void initializeSubModule(ChannelHandlerContext ctx) {
@@ -346,7 +352,15 @@ public class MessageRelayingHandler  {
 				}
 			}
 			
-			if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
+			else if (type == MessageTypeDecider.msgType.REST_API) {
+				QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+	    		Map<String,List<String>> params = qsd.parameters();
+	    		mmsRestApiHandler.setParams(params);
+	    		message = mmsRestApiHandler.getResponse().getBytes(Charset.forName("UTF-8"));
+			}
+			
+			
+			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 				
 				//System.out.println("SessionID="+this.SESSION_ID+" RELAYING_TO_SERVER_SEQUENTIALLY INIT");
 				
@@ -431,7 +445,7 @@ public class MessageRelayingHandler  {
 			}
 			
 			
-			if (type == MessageTypeDecider.msgType.NULL_MRN) {
+			else if (type == MessageTypeDecider.msgType.NULL_MRN) {
 				message = "Error: Null MRNs.".getBytes(Charset.forName("UTF-8"));
 			}
 			else if (type == MessageTypeDecider.msgType.NULL_SRC_MRN) {
