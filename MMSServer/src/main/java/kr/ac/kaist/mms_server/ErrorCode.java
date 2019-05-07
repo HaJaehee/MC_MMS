@@ -25,7 +25,8 @@ public enum ErrorCode {
 	DUMPMNS_LOGGING_ERR("9002", "Failed to connect to dump MNS."),
 	
 	// Number 8XXX is related to the relaying functions.
-	SEQUENTIAL_RELAYING_ERR("8001", "Exception error occured in sequentailly relaying function.");
+	SEQUENTIAL_RELAYING_EXCEPTION_ERR("8001", "Exception error occured in sequentailly relaying function."),
+	SEQUENTIAL_RELAYING_INITIALIZATION_ERR("8002", "Initialization problem occured in sequentailly relaying function.");
 	
 	
 	private String code;

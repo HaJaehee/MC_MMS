@@ -551,6 +551,8 @@ public class MessageRelayingHandler  {
 						// FIXME This condition cannot be reached, because
 						//		 the itemList already appeared in the above condition related to the sequentially relaying.
 						
+						message = ErrorCode.SEQUENTIAL_RELAYING_INITIALIZATION_ERR.getUTF8Bytes();
+						
 						throw new NullPointerException();
 					}
 					try {
@@ -592,7 +594,7 @@ public class MessageRelayingHandler  {
 								break;
 							}
 							else if (itemList.get(0).isExceptionOccured()) {
-								message = ErrorCode.SEQUENTIAL_RELAYING_ERR.getUTF8Bytes();
+								message = ErrorCode.SEQUENTIAL_RELAYING_EXCEPTION_ERR.getUTF8Bytes();
 								
 								printSessionsInSessionMng(srcDstPair);
 								logger.warn("SessionID="+this.SESSION_ID+" Message order exception is occured. Message sequence is reset 0.");
