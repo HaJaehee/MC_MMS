@@ -93,14 +93,22 @@ public class SessionManager {
 				// Do nothing.
 			}
 			
+			while (System.currentTimeMillis() % 5000 > 100 ) { // Avoid busy waiting.
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// Do nothing.
+				}
+			}
+			
 			while (true) { // Start tik tok.
 				
-				long curTimeMillis = System.currentTimeMillis();;
+				long curTimeMillis = System.currentTimeMillis();
 				long correction = 0;
 				
 				if (curTimeMillis % 5000 < 100 ) {
 					correction = curTimeMillis % 5000;
-					for (int i = sessionCountList.size()-288 ; i >= 0 ; i--) {
+					for (int i = sessionCountList.size()-288 ; i >= 0 ; i--) { // Session counts are saved for 24 hours.
 						sessionCountList.remove(sessionCountList.size()-1);
 					}
 					
