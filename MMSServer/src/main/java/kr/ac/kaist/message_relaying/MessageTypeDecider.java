@@ -96,7 +96,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history: 2019-03-09
 Version : 0.8.1
-	MMS Client is able to choose its polling method.\
+	MMS Client is able to choose its polling method.
 	Removed locator registering function.
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
@@ -199,6 +199,7 @@ class MessageTypeDecider {
 			
 			// MMS Restful API
 		   	else if (httpMethod == HttpMethod.GET && uri.regionMatches(0, "/api?", 0, 5)) {
+		   		
 		   		return msgType.REST_API;
 		   	}
 			
@@ -294,13 +295,14 @@ class MessageTypeDecider {
 	        	}  
 	        	//TODO: This function must be defined.
 	        	else if (dstInfo.regionMatches(0, "MULTIPLE_MRN,", 0, 9)){
+	        		SessionManager.getSessionCountList().get(0).incSessionCount();
 	        		parser.parseMultiDstInfo(dstInfo);
 	        		return msgType.RELAYING_TO_MULTIPLE_SC;
 	        	}
 	
 	        	parser.parseDstInfo(dstInfo);
 	        	String model = parser.getDstModel();
-	        	
+	        	SessionManager.getSessionCountList().get(0).incSessionCount();
 				
 				
 	        	if (model.equals("push")) {//model B (destination MSR, MIR, or MSP as servers)

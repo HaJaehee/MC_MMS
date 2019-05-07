@@ -26,7 +26,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history: 2019-03-09
 Version : 0.8.1
-	MMS Client is able to choose its polling method.\
+	MMS Client is able to choose its polling method.
 	Removed locator registering function.
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
@@ -80,6 +80,8 @@ public class SeamlessRoamingHandler {
 		else if (pollingMethod.equals("long")) {
 			SessionManager.getSessionInfo().put(SESSION_ID, "lp");
 		}
+		SessionManager.getSessionCountList().get(0).incPollingSessionCount();
+		
 		
 		//TODO: Duplicated polling request is not allowed.
 		/*

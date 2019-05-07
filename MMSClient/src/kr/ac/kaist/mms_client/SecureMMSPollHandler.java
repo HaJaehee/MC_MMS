@@ -152,7 +152,7 @@ class SecureMMSPollHandler {
 				url = url+"/long-polling"; // Long polling request to MMS server. 
 			}
 			URL obj = new URL(url);
-			String data = svcMRNWithHexSign; //TODO: add geographical info, channel info, etc. 
+			String data = svcMRNWithHexSign; 
 			
 			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 			con.setHostnameVerifier(hv);

@@ -34,10 +34,16 @@ Version : 0.9.0
 	Added sessionCountList.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history: 2019-05-07
+Version : 0.9.0
+	Modified for coding conventions.
+	Added SessionCounter.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -72,10 +78,6 @@ public class SessionManager {
 		private static final SessionManager INSTANCE = new SessionManager();
 	}
 	
-	private void sessionCount () {
-		
-	}
-	
 	private class SessionCounter extends Thread {
 		
 		SessionCounter () {
@@ -85,20 +87,40 @@ public class SessionManager {
 		//TODO
 		@Override
 		public void run() {
-			while (true) {
-				long currentTimeMillis = System.currentTimeMillis();
-				if (currentTimeMillis % 5000 < 100) {
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				// Do nothing.
+			}
+			
+			while (true) { // Start tik tok.
+				
+				long curTimeMillis = System.currentTimeMillis();;
+				long correction = 0;
+				
+				if (curTimeMillis % 5000 < 100 ) {
+					correction = curTimeMillis % 5000;
+					for (int i = sessionCountList.size()-288 ; i >= 0 ; i--) {
+						sessionCountList.remove(sessionCountList.size()-1);
+					}
 					
+					SessionCountForFiveSecs curCount = new SessionCountForFiveSecs(curTimeMillis);
+					sessionCountList.add(0, curCount);
+					
+					/*// print
+					for (int i = 0 ; i < sessionCountList.size() ; i++) {
+						SimpleDateFormat dayTime = new SimpleDateFormat("hh:mm:ss:SSS");
+						System.out.print(dayTime.format(sessionCountList.get(i).getCurTimeInMillis())+"  ");
+					}
+					System.out.println();*/
 					
 					try {
-						Thread.sleep(5000);
+						Thread.sleep(5000 - correction);
 					} catch (InterruptedException e) {
 						// Do nothing.
 					}
-				}
-				else {
 					
-				} //wait
+				}
 			}
 		}
 	}

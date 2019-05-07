@@ -6,6 +6,11 @@ File name : MMSRestAPIHandler.java
 Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Creation Date : 2019-05-05
 Version : 0.9.0
+
+Rev. history: 2019-05-07
+Version : 0.9.0
+	Added session counter functions.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 
@@ -16,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +33,9 @@ public class MMSRestAPIHandler {
 	String SESSION_ID = "";
 	private static Logger logger = null;
 	Map<String,List<String>> params = null;
-	Set<String> clientSessionIds = null;
-	Set<String> mrnsBeingDebugged = null;
-	Set<String> realtimeLogUsers = null; 
+	List<String> clientSessionIds = null;
+	List<String> mrnsBeingDebugged = null;
+	List<String> realtimeLogUsers = null; 
 	double msgQueueCount = -1;
 	double clientSessionCount = -1;
 	boolean isMmsRunning = false;
@@ -50,13 +56,13 @@ public class MMSRestAPIHandler {
 		this.params = params;
 		
 		if (this.params.get("client-session-ids") != null) {
-			clientSessionIds = new TreeSet<String>();
+			clientSessionIds = new ArrayList<String>();
 		}
 		if (this.params.get("mrns-being-debugged") != null) {
-			mrnsBeingDebugged = new TreeSet<String>();
+			mrnsBeingDebugged = new ArrayList<String>();
 		}
 		if (this.params.get("realtime-log-users") != null) {
-			realtimeLogUsers = new TreeSet<String>();
+			realtimeLogUsers = new ArrayList<String>();
 		}
 		if (this.params.get("msg-queue-count") != null) {
 			msgQueueCount = 0;
@@ -77,42 +83,69 @@ public class MMSRestAPIHandler {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public String getResponse () {
 		//TODO: To define error messages.
 		if (params == null) {
 			return "";
 		}
 		else {
+			JSONObject jobj = new JSONObject();
+			
 			if (clientSessionIds != null) {
-				clientSessionIds = (TreeSet<String>) SessionManager.getSessionInfo().keySet();
-				//TODO
+				clientSessionIds.addAll(SessionManager.getSessionInfo().keySet());
+				JSONArray jary = new JSONArray();
+				jary.addAll(clientSessionIds);
+				jobj.put("client-session-ids", jary);
 			}
 			if (mrnsBeingDebugged != null) {
-				mrnsBeingDebugged = MMSLogForDebug.getInstance().getMrnSet();
-				//TODO
+				mrnsBeingDebugged.addAll(MMSLogForDebug.getInstance().getMrnSet());
+				JSONArray jary = new JSONArray();
+				jary.addAll(mrnsBeingDebugged);
+				jobj.put("mrns-being-debugged", jary);
 			}
 			if (realtimeLogUsers != null) {
-				realtimeLogUsers = MMSLog.getInstance().getRealtimeLogUsersSet();
-				//TODO
+				realtimeLogUsers.addAll(MMSLog.getInstance().getRealtimeLogUsersSet());
+				JSONArray jary = new JSONArray();
+				jary.addAll(realtimeLogUsers);
+				jobj.put("realtime-log-users", jary);
 			}
 			if (msgQueueCount != -1) {
 				//TODO
 			}
 			if (clientSessionCount != -1) {
 				clientSessionCount = SessionManager.getSessionInfo().size();
-				//TODO
+				jobj.put("client-session-count", clientSessionCount+"");
 			}
 			if (isMmsRunning != false) {
 				isMmsRunning = true;
-				//TODO
+				jobj.put("mms-running", isMmsRunning+"");
+				
 			}
 			if (relayReqCount != -1) {
-				//TODO
+				int countListSize = SessionManager.getSessionCountList().size();
+				for (int i = 0 ; i < countListSize && i < relayReqMinutes*12 ; i++) { // Adding count up for x minutes.
+					relayReqCount += SessionManager.getSessionCountList().get(i).getSessionCount()
+							- SessionManager.getSessionCountList().get(i).getPollingSessionCount();
+				}
+				JSONObject jobj2 = new JSONObject();
+				jobj2.put("min", relayReqMinutes);
+				jobj2.put("count", relayReqCount);
+				jobj.put("relay-req-count-for", jobj2);
+				
 			}
 			if (pollingReqCount != -1) {
-				//TODO
+				int countListSize = SessionManager.getSessionCountList().size();
+				for (int i = 0 ; i < countListSize && i < pollingReqMinutes*12 ; i++) { // Adding count up for x minutes.
+					pollingReqCount += SessionManager.getSessionCountList().get(i).getPollingSessionCount();
+				}
+				JSONObject jobj2 = new JSONObject();
+				jobj2.put("min", pollingReqMinutes);
+				jobj2.put("count", pollingReqCount);
+				jobj.put("polling-req-count-for", jobj2);
+				
 			}
-			return "";
+			return jobj.toJSONString();
 		}
 	}
 	

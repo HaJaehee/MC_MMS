@@ -48,7 +48,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history: 2019-03-19
 Version : 0.8.2
 	MMS Client sends a polling request message which is a JSON format.
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jin Jung (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -186,7 +186,7 @@ class MMSPollHandler {
 					url = url+"/long-polling"; // Long polling request to MMS server. 
 				}
 				URL obj = new URL(url);
-				String data = contents.toString(); //TODO: add geographical info, channel info, etc. 
+				String data = contents.toString(); 
 				
 				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 				

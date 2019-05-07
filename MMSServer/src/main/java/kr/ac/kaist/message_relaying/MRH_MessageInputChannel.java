@@ -51,7 +51,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history: 2019-03-09
 Version : 0.8.1
-	MMS Client is able to choose its polling method.\
+	MMS Client is able to choose its polling method.
 	Removed locator registering function.
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
@@ -60,6 +60,11 @@ Rev. history : 2019-04-18
 Version : 0.8.2
 	Catch channelInactive event and terminate Http request.
 Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
+Rev. history : 2019-05-09
+Version : 0.9.0
+	Added session counting functions.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -124,6 +129,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			SESSION_ID = ctx.channel().id().asShortText();
 
 			SessionManager.getSessionInfo().put(SESSION_ID, "");
+			
 			
             relayingHandler = new MessageRelayingHandler(ctx, req, protocol, SESSION_ID);
 		} finally {
