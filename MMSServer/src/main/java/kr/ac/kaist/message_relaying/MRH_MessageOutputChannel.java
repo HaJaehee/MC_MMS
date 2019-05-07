@@ -211,7 +211,7 @@ public class MRH_MessageOutputChannel{
             }
         });
     	
-        SessionManager.sessionInfo.remove(SESSION_ID);
+        SessionManager.getSessionInfo().remove(SESSION_ID);
         
         logger.trace("SessionID=" + this.SESSION_ID + " Message is sent completely.");
     }

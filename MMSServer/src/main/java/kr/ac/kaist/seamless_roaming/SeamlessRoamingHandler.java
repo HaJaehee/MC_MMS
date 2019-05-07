@@ -75,10 +75,10 @@ public class SeamlessRoamingHandler {
 		
 
 		if (pollingMethod.equals("normal"))	{
-			SessionManager.sessionInfo.put(SESSION_ID, "p");
+			SessionManager.getSessionInfo().put(SESSION_ID, "p");
 		}
 		else if (pollingMethod.equals("long")) {
-			SessionManager.sessionInfo.put(SESSION_ID, "lp");
+			SessionManager.getSessionInfo().put(SESSION_ID, "lp");
 		}
 		
 		//TODO: Duplicated polling request is not allowed.

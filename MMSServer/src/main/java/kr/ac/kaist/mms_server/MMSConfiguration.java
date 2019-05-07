@@ -136,6 +136,7 @@ public class MMSConfiguration {
 	private static String RABBIT_MQ_USER = null;
 	private static String RABBIT_MQ_PASSWD = null;
 	
+	
 	private static Logger logger = null;
 
 	public MMSConfiguration (String[] args) {

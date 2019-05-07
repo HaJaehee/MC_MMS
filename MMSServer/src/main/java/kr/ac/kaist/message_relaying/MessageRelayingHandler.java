@@ -364,21 +364,22 @@ public class MessageRelayingHandler  {
 				
 				//System.out.println("SessionID="+this.SESSION_ID+" RELAYING_TO_SERVER_SEQUENTIALLY INIT");
 				
-				if (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair) == null ) { //Initialization
-					SessionManager.mapSrcDstPairAndSessionInfo.put(srcDstPair, new SessionList<SessionIdAndThr>());	
-					while (SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair) == null) {}
+				if (SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair) == null ) { //Initialization
+					SessionManager.getMapSrcDstPairAndSessionInfo().put(srcDstPair, new SessionList<SessionIdAndThr>());	
+					while (SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair) == null) {}
 				}
 				
-				if (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == null ) { //Initialization
-					SessionManager.mapSrcDstPairAndLastSeqNum.put(srcDstPair, (double) -1);
-					while (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == null) {
+				if (SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) == null ) { //Initialization
+					SessionManager.getMapSrcDstPairAndLastSeqNum().put(srcDstPair, (double) -1);
+					while (SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) == null) {
 					}
 				}
-				List <SessionIdAndThr> itemList = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
+				List <SessionIdAndThr> itemList = SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair);
 				//System.out.println("SessionID="+this.SESSION_ID+" RELAYING_TO_SERVER_SEQUENTIALLY START");
 				//printSessionsInSessionMng (srcDstPair);
 				if (seqNum == 0) {
-					if (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) != -1) { //Reset sessions in SessionManager related to srcMRN and dstMRN pair.
+					
+					if (SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) != -1) { //Reset sessions in SessionManager related to srcMRN and dstMRN pair.
 						//System.out.println("Reset sessions in SessionManager related to srcMRN and dstMRN pair.");
 						int itemListSize = itemList.size();
 						while (itemListSize > 0) {
@@ -391,10 +392,10 @@ public class MessageRelayingHandler  {
 						}
 						itemList.clear();
 						
-						SessionManager.mapSrcDstPairAndLastSeqNum.put(srcDstPair, (double) -1);
+						SessionManager.getMapSrcDstPairAndLastSeqNum().put(srcDstPair, (double) -1);
 						itemList.add(new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
 					}
-					else { //SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == -1
+					else { //SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) == -1
 						itemList.add(0, new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
 					}
 
@@ -408,7 +409,7 @@ public class MessageRelayingHandler  {
 					
 					int index = 0;
 					int itemListSize = itemList.size();
-					if (seqNum > SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair)) {
+					if (seqNum > SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair)) {
 						while (index < itemListSize) {
 							try {
 								if (seqNum > itemList.get(index).getSeqNum()) {
@@ -549,7 +550,7 @@ public class MessageRelayingHandler  {
 			} 
 			
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
-				List<SessionIdAndThr> itemList = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
+				List<SessionIdAndThr> itemList = SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair);
 
 				while (true) { 
 					if (itemList == null || 
@@ -561,7 +562,7 @@ public class MessageRelayingHandler  {
 					try {
 						//System.out.println("RELAYING_TO_SERVER_SEQUENTIALLY getSessionID="+itemList.get(0).getSessionId());
 						if (itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
-							if (SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == itemList.get(0).getPreSeqNum() || 
+							if (SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) == itemList.get(0).getPreSeqNum() || 
 									itemList.get(0).getWaitingCount() > 0 ||
 									itemList.get(0).isExceptionOccured()) {
 								throw new InterruptedException();	
@@ -582,7 +583,7 @@ public class MessageRelayingHandler  {
 					catch (InterruptedException e) {
 						//System.out.println("Interrupted! This session ID="+SESSION_ID+", Session ID in list="+itemList.get(0).getSessionId()+", isExceptionOccured="+itemList.get(0).isExceptionOccured()+", seq num="+seqNum+", last seq num="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
 						if (itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
-							if ((itemList.get(0).getPreSeqNum() == SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) && 
+							if ((itemList.get(0).getPreSeqNum() == SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) && 
 									!itemList.get(0).isExceptionOccured()) || itemList.get(0).getWaitingCount() > 0){
 								setThisSessionWaitingRes(srcDstPair);
 								if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
@@ -829,10 +830,10 @@ public class MessageRelayingHandler  {
 				String srcMRN = parser.getSrcMRN();
 				String dstMRN = parser.getDstMRN();
 				String srcDstPair = srcMRN+"::"+dstMRN;
-				List<SessionIdAndThr> itemList = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
+				List<SessionIdAndThr> itemList = SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair);
 
 				if (itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
-					if ((itemList.get(0).getPreSeqNum() == SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) && 
+					if ((itemList.get(0).getPreSeqNum() == SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) && 
 							!itemList.get(0).isExceptionOccured()) || itemList.get(0).getWaitingCount() > 0){
 						try {
 							rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcDstPair);
@@ -870,7 +871,7 @@ public class MessageRelayingHandler  {
 	
 
 	private void printSessionsInSessionMng (String srcDstPair) {
-		List<SessionIdAndThr> itemList = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
+		List<SessionIdAndThr> itemList = SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair);
 		if (itemList.size() > 0) {
 			SessionIdAndThr item = itemList.get(0);
 			//System.out.println("index="+0+", SessionID="+item.getSessionId()+", seqNum="+item.getSeqNum()+", waitingCount="+item.getWaitingCount()+", isExceptionOccured="+item.isExceptionOccured());
@@ -883,12 +884,12 @@ public class MessageRelayingHandler  {
 	
 	private void rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked (String srcDstPair) throws IOException, NullPointerException{
 		
-		List <SessionIdAndThr> listItem = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
+		List <SessionIdAndThr> listItem = SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair);
 		if (listItem == null || 
 				listItem.size() == 0 ||
 				listItem.get(0) == null ||
 				listItem.get(0).getSessionBlocker() == null ||
-				SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == null) { //Check null pointer exception.
+				SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) == null) { //Check null pointer exception.
 			throw new NullPointerException();
 		}
 		//System.out.println("Seq number="+listItem.get(0).getSeqNum());
@@ -907,7 +908,7 @@ public class MessageRelayingHandler  {
 				//System.out.println("index="+1+", SessionID="+listItem.get(1).getSessionId()+", seqNum="+listItem.get(1).getSeqNum()+", waitingCount="+listItem.get(1).getWaitingCount()+", isExceptionOccured="+listItem.get(1).isExceptionOccured());
 
 			}
-			SessionManager.mapSrcDstPairAndLastSeqNum.put(srcDstPair, (double) listItem.get(0).getSeqNum());
+			SessionManager.getMapSrcDstPairAndLastSeqNum().put(srcDstPair, (double) listItem.get(0).getSeqNum());
 			//System.out.println("Updated last seq number="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
 			listItem.remove(0); //Remove current relaying process from the schedule. 
 			if (checkNextSeq) { //Wake up next relaying process blocked if exist.
@@ -923,12 +924,12 @@ public class MessageRelayingHandler  {
 	
 	private void setThisSessionWaitingRes (String srcDstPair) throws IOException, NullPointerException{
 		
-		List <SessionIdAndThr> listItem = SessionManager.mapSrcDstPairAndSessionInfo.get(srcDstPair);
+		List <SessionIdAndThr> listItem = SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair);
 		if (listItem == null || 
 				listItem.size() == 0 ||
 				listItem.get(0) == null ||
 				listItem.get(0).getSessionBlocker() == null ||
-				SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair) == null) { //Check null pointer exception.
+				SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) == null) { //Check null pointer exception.
 			throw new NullPointerException();
 		}
 		

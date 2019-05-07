@@ -84,7 +84,7 @@ public class MMSRestAPIHandler {
 		}
 		else {
 			if (clientSessionIds != null) {
-				clientSessionIds = (TreeSet<String>) SessionManager.sessionInfo.keySet();
+				clientSessionIds = (TreeSet<String>) SessionManager.getSessionInfo().keySet();
 				//TODO
 			}
 			if (mrnsBeingDebugged != null) {
@@ -99,7 +99,7 @@ public class MMSRestAPIHandler {
 				//TODO
 			}
 			if (clientSessionCount != -1) {
-				clientSessionCount = SessionManager.sessionInfo.size();
+				clientSessionCount = SessionManager.getSessionInfo().size();
 				//TODO
 			}
 			if (isMmsRunning != false) {

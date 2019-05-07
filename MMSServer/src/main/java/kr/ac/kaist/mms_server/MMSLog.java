@@ -188,10 +188,10 @@ public class MMSLog {
 			status.append("<strong>Sessions waiting for a message:</strong><br/>");
 			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
 			int nPollingSessions = 0;
-			if (!SessionManager.sessionInfo.isEmpty()){
-				SortedSet<String> keys = new TreeSet<String>(SessionManager.sessionInfo.keySet());
+			if (!SessionManager.getSessionInfo().isEmpty()){
+				SortedSet<String> keys = new TreeSet<String>(SessionManager.getSessionInfo().keySet());
 				for (String key : keys){
-					if (SessionManager.sessionInfo.get(key).equals("p")) {
+					if (SessionManager.getSessionInfo().get(key).equals("p")) {
 						status.append("SessionID="+key+"<br/>");
 						nPollingSessions++;
 					}

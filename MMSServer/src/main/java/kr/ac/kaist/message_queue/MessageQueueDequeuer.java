@@ -201,8 +201,8 @@ class MessageQueueDequeuer extends Thread{
 				}
 				logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
 		  
-		    	if (SessionManager.sessionInfo.get(this.SESSION_ID) != null) {
-		    		SessionManager.sessionInfo.remove(this.SESSION_ID);
+		    	if (SessionManager.getSessionInfo().get(this.SESSION_ID) != null) {
+		    		SessionManager.getSessionInfo().remove(this.SESSION_ID);
 		    	}
 
 			    outputChannel.replyToSender(ctx, message.toString().getBytes());
@@ -216,8 +216,8 @@ class MessageQueueDequeuer extends Thread{
 						mmsLogForDebug.addLog(this.SESSION_ID, log);
 					}
 					logger.debug("SessionID="+this.SESSION_ID+" Empty queue="+queueName+".");
-			    	if (SessionManager.sessionInfo.get(this.SESSION_ID) != null) {
-			    		SessionManager.sessionInfo.remove(this.SESSION_ID);
+			    	if (SessionManager.getSessionInfo().get(this.SESSION_ID) != null) {
+			    		SessionManager.getSessionInfo().remove(this.SESSION_ID);
 			    	}
 
 				    outputChannel.replyToSender(ctx, message.toString().getBytes());
@@ -249,8 +249,8 @@ class MessageQueueDequeuer extends Thread{
 								}
 								logger.debug("SessionID="+SESSION_ID+" Dequeue="+queueName+".");
 						    	
-						    	if (SessionManager.sessionInfo.get(SESSION_ID) != null) {
-						    		SessionManager.sessionInfo.remove(SESSION_ID);
+						    	if (SessionManager.getSessionInfo().get(SESSION_ID) != null) {
+						    		SessionManager.getSessionInfo().remove(SESSION_ID);
 						    	}
 							    outputChannel.replyToSender(ctx, message.toString().getBytes());
 								channel.basicAck(envelope.getDeliveryTag(), false);

@@ -34,12 +34,18 @@ Version : 0.7.3
 	From this version, MMS reads system arguments and configurations from "MMS-configuration/MMS.conf" file.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history : 2019-05-07
+Version : 0.9.0
+	Added initialization of SessionManager.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
+import kr.ac.kaist.message_relaying.SessionManager;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -101,19 +107,24 @@ public class MMSServer {
 				System.exit(6);
 			}
 			
-			new SecureMMSServer().runServer(); // Thread
-			MMSLogForDebug.getInstance(); //initialize MMSLogsForDebug
+			logger.error("Now starting MMS session manager.");
+			SessionManager.getInstance(); //initialize SessionManager.
+			Thread.sleep(1000);
 			
-			Thread.sleep(2000);
+			logger.error("Now starting MMS logging module.");
+			MMSLogForDebug.getInstance(); //initialize MMSLogsForDebug.
+			Thread.sleep(1000);
 			
-			
+			logger.error("Now starting MMS HTTPS server.");
+			new SecureMMSServer().runServer(); // MMS HTTPS server thread.
+			Thread.sleep(1000);
 			
 			logger.error("Now starting MMS HTTP server.");
 			NettyStartupUtil.runServer(MMSConfiguration.getHttpPort(), pipeline -> {   //runServer(int port, Consumer<ChannelPipeline> initializer)
 				pipeline.addLast(new HttpServerCodec());
 				pipeline.addLast(new HttpObjectAggregator(MMSConfiguration.getMaxContentSize()));
 	            pipeline.addLast(new MRH_MessageInputChannel("http"));
-	        });
+	        });// MMS HTTP server thread.
 		}
 		catch (InterruptedException e) {
 			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");

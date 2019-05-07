@@ -123,7 +123,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			logger.info("Message received.");
 			SESSION_ID = ctx.channel().id().asShortText();
 
-			SessionManager.sessionInfo.put(SESSION_ID, "");
+			SessionManager.getSessionInfo().put(SESSION_ID, "");
 			
             relayingHandler = new MessageRelayingHandler(ctx, req, protocol, SESSION_ID);
 		} finally {
@@ -174,9 +174,9 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	// TODO: Youngjin Kim must inspect this following code.
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
-    	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
+    	String clientType = SessionManager.getSessionInfo().get(SESSION_ID);
     	if (clientType != null) {
-    		SessionManager.sessionInfo.remove(SESSION_ID);
+    		SessionManager.getSessionInfo().remove(SESSION_ID);
     		if (clientType.equals("p")) {
 
     			logger.warn("SessionID="+this.SESSION_ID+" The polling client is disconnected.");
@@ -199,7 +199,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 
 //    	ctx.channel().
-    	String clientType = SessionManager.sessionInfo.get(SESSION_ID);
+    	String clientType = SessionManager.getSessionInfo().get(SESSION_ID);
 //    	ctx.pipeline().get(HttpHeaderValues.class);
 //    	channels.
     	
@@ -244,7 +244,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     	    printError(srcIP, reqInfo, clientType);
     	}
     	if (clientType != null) {
-    		SessionManager.sessionInfo.remove(SESSION_ID);
+    		SessionManager.getSessionInfo().remove(SESSION_ID);
       }
     	if (!ctx.isRemoved()){
     		  ctx.close();

@@ -48,9 +48,74 @@ public class SessionManager {
 	/* sessionInfo: If client is a polling client, value is "p".
 	If client is a long polling client, value is "lp".
 	Otherwise value is "".*/
-	public static HashMap<String, String> sessionInfo = new HashMap<>(); 
-	public static HashMap<String, SessionList<SessionIdAndThr>> mapSrcDstPairAndSessionInfo = new HashMap<>(); //This is used for handling input messages by reordering policy.
-	public static HashMap<String, Double> mapSrcDstPairAndLastSeqNum = new HashMap<>(); //This is used for handling last sequence numbers of sessions.
-	public static ArrayList<SessionCountForFiveSecs> sessionCountList = new ArrayList<SessionCountForFiveSecs>(); //This saves the number of sessions for every five seconds.
+	private static HashMap<String, String> sessionInfo = null; //This 
+	private static HashMap<String, SessionList<SessionIdAndThr>> mapSrcDstPairAndSessionInfo = null; //This is used for handling input messages by reordering policy.
+	private static HashMap<String, Double> mapSrcDstPairAndLastSeqNum = null; //This is used for handling last sequence numbers of sessions.
+	private static ArrayList<SessionCountForFiveSecs> sessionCountList = null; //This saves the number of sessions for every five seconds.
 	
+	private SessionCounter sessionCounter = null;
+	
+	private SessionManager () {
+		sessionInfo = new HashMap<>(); 
+		mapSrcDstPairAndSessionInfo = new HashMap<>(); //This is used for handling input messages by reordering policy.
+		mapSrcDstPairAndLastSeqNum = new HashMap<>(); //This is used for handling last sequence numbers of sessions.
+		sessionCountList = new ArrayList<SessionCountForFiveSecs>(); //This saves the number of sessions for every five seconds.
+		sessionCounter = new SessionCounter();
+		sessionCounter.start();
+	}
+	
+	public static SessionManager getInstance() { //double check synchronization.
+		return LazyHolder.INSTANCE;
+	}
+	
+	private static class LazyHolder {
+		private static final SessionManager INSTANCE = new SessionManager();
+	}
+	
+	private void sessionCount () {
+		
+	}
+	
+	private class SessionCounter extends Thread {
+		
+		SessionCounter () {
+			super();
+		}
+		
+		//TODO
+		@Override
+		public void run() {
+			while (true) {
+				long currentTimeMillis = System.currentTimeMillis();
+				if (currentTimeMillis % 5000 < 100) {
+					
+					
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						// Do nothing.
+					}
+				}
+				else {
+					
+				} //wait
+			}
+		}
+	}
+	
+	public static HashMap<String, String> getSessionInfo() {
+		return sessionInfo;
+	}
+
+	public static HashMap<String, SessionList<SessionIdAndThr>> getMapSrcDstPairAndSessionInfo() {
+		return mapSrcDstPairAndSessionInfo;
+	}
+
+	public static HashMap<String, Double> getMapSrcDstPairAndLastSeqNum() {
+		return mapSrcDstPairAndLastSeqNum;
+	}
+
+	public static ArrayList<SessionCountForFiveSecs> getSessionCountList() {
+		return sessionCountList;
+	}
 }
