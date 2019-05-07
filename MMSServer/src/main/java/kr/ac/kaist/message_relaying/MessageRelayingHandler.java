@@ -548,6 +548,9 @@ public class MessageRelayingHandler  {
 							itemList.get(0) == null ||
 							itemList.get(0).getSessionBlocker() == null) { //Check null pointer exception.
 						// TODO 이 코드에 대한 설명 필요
+						// FIXME This condition cannot be reached, because
+						//		 the itemList already appeared in the above condition related to the sequentially relaying.
+						
 						throw new NullPointerException();
 					}
 					try {
@@ -589,7 +592,8 @@ public class MessageRelayingHandler  {
 								break;
 							}
 							else if (itemList.get(0).isExceptionOccured()) {
-								// TODO 이 위치에 진입하면 message가 null로 설정됩니다. 적당한 할당 필요 by using Error Code
+								message = ErrorCode.SEQUENTIAL_RELAYING_ERR.getUTF8Bytes();
+								
 								printSessionsInSessionMng(srcDstPair);
 								logger.warn("SessionID="+this.SESSION_ID+" Message order exception is occured. Message sequence is reset 0.");
 								if(MMSConfiguration.WEB_LOG_PROVIDING()) {
@@ -632,14 +636,16 @@ public class MessageRelayingHandler  {
 						message = status.getBytes(Charset.forName("UTF-8"));
 					} 
 					catch (UnknownHostException e) {
-						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
+						message = ErrorCode.MONITORING_CONNECTION_ERR.getUTF8Bytes();
+						
 						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
 		    			}
 					} 
 					catch (IOException e) {
-						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
+						message = ErrorCode.DUMPMNS_LOGGING_ERR.getUTF8Bytes();
+						
 						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
@@ -653,14 +659,16 @@ public class MessageRelayingHandler  {
 						message = status.getBytes(Charset.forName("UTF-8"));
 					} 
 					catch (UnknownHostException e) {
-						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
+						message = ErrorCode.MONITORING_CONNECTION_ERR.getUTF8Bytes();
+						
 						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
 		    			}
 					} 
 					catch (IOException e) {
-						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
+						message = ErrorCode.DUMPMNS_LOGGING_ERR.getUTF8Bytes();
+						
 						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
@@ -748,13 +756,16 @@ public class MessageRelayingHandler  {
 					} 
 		    		catch (UnknownHostException e) {
 						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
+		    			// FIXME This exception process cannot be reached 
+		    			
 		    			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
 		    			}
 					} 
 		    		catch (IOException e) {
-						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
+		    			message = ErrorCode.DUMPMNS_LOGGING_ERR.getUTF8Bytes();
+		    			
 		    			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
@@ -777,13 +788,16 @@ public class MessageRelayingHandler  {
 					}
 					catch (UnknownHostException e) {
 						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
+						// FIXME This exception cannot be reached 
+						
 						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
 		    			}
 					} 
 		    		catch (IOException e) {
-						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
+		    			ErrorCode.DUMPMNS_LOGGING_ERR.getUTF8Bytes();
+		    			
 		    			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
