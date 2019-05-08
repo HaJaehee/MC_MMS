@@ -11,6 +11,11 @@ Rev. history: 2019-05-07
 Version : 0.9.0
 	Added session counter functions.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-05-09
+Version : 0.9.0
+	Added getting total queue number function.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 
@@ -26,12 +31,13 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import kr.ac.kaist.message_queue.MessageQueueManager;
 import kr.ac.kaist.message_relaying.SessionList;
 import kr.ac.kaist.message_relaying.SessionManager;
 
 public class MMSRestAPIHandler {
 	String SESSION_ID = "";
-	private static Logger logger = null;
+	private static final Logger logger = LoggerFactory.getLogger(MMSRestAPIHandler.class);
 	Map<String,List<String>> params = null;
 	List<String> clientSessionIds = null;
 	List<String> mrnsBeingDebugged = null;
@@ -43,12 +49,17 @@ public class MMSRestAPIHandler {
 	int relayReqMinutes = -1;
 	int pollingReqCount = -1;
 	int pollingReqMinutes = -1;
+	
+	MessageQueueManager mqm = null;
 
 	
 	public MMSRestAPIHandler (String sessionId){
 		this.SESSION_ID = sessionId;
-		logger = LoggerFactory.getLogger(MMSRestAPIHandler.class);
-		
+		initializeModules();
+	}
+	
+	private void initializeModules () {
+		mqm = new MessageQueueManager(SESSION_ID);
 	}
 	
 	//TODO: To define error messages.
@@ -111,7 +122,7 @@ public class MMSRestAPIHandler {
 				jobj.put("realtime-log-users", jary);
 			}
 			if (msgQueueCount != -1) {
-				//TODO
+				jobj.put("msg-queue-count", mqm.getTotalQueueNumber());
 			}
 			if (clientSessionCount != -1) {
 				clientSessionCount = SessionManager.getSessionInfo().size();

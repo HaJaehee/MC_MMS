@@ -153,6 +153,7 @@ public class MMSLog {
 	
 	private MMSLog() {
 		logForDebug = MMSLogForDebug.getInstance();
+		//addIdToBriefRealtimeLogEachIDs("JaeheeHa"); // For testing.
 	}
 	
 	public static MMSLog getInstance() { //double check synchronization.

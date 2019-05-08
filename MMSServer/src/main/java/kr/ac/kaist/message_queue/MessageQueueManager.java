@@ -28,14 +28,30 @@ Version : 0.8.1
 	Removed locator registering function.
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-05-09
+Version : 0.9.0
+	Added getTotalQueueNumber function.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.apache.commons.lang3.SystemUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.netty.channel.ChannelHandlerContext;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
+
+
 public class MessageQueueManager {
 	
 	private String SESSION_ID = "";
+	private static final Logger logger = LoggerFactory.getLogger(MessageQueueManager.class);
 	
 	public MessageQueueManager(String sessionId) {
 		
@@ -50,5 +66,89 @@ public class MessageQueueManager {
 	public void enqueueMessage (String srcMRN, String dstMRN, String message) {
 		MessageQueueEnqueuer mqe = new MessageQueueEnqueuer(this.SESSION_ID);
 		mqe.enqueueMessage(srcMRN, dstMRN, message);
+	}
+	
+	public long getTotalQueueNumber ()  {
+		ProcessRunner pr = new ProcessRunner();
+		String processOutput = "No items";
+		try {
+			processOutput = pr.runProcess();
+		} catch (IOException | InterruptedException e) {
+			logger.error("SessionID="+SESSION_ID+" MessageQueueManager has a problem when executing rabbitmqadmin.");
+			logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
+		} 
+		
+		return getTotalQueueNumberFromProcOutput(processOutput);
+	}
+	
+	private long getTotalQueueNumberFromProcOutput (String processOutput) {
+	
+		if (processOutput.equals("No items")) {
+			return 0;
+		}
+		else {
+			int count = 0;
+			for (int i = 0; i < processOutput.length(); i++) {
+			    if (processOutput.charAt(i) == '\n') {
+			        count++;
+			    }
+			}
+			return count-3;
+			// Subtract the number of negligible lines.
+		}
+	}
+	
+	private class ProcessRunner { 
+	    public String runProcess() throws IOException,    InterruptedException {
+	    	String[] command = {""};
+	    	if (SystemUtils.IS_OS_LINUX) {
+	    		command = new String[] { "./rabbitmq-binary/rabbitmqadmin", "list", "queues", "vhost", "name" };
+			}
+	    	else if (SystemUtils.IS_OS_WINDOWS) {
+	    		command = new String[] { "python.exe", "./rabbitmq-binary/rabbitmqadmin", "list", "queues", "vhost", "name" };
+	    	}
+	    	
+	        ProcessRunner runner = new ProcessRunner();
+	        StringBuilder processOutput = runner.byRuntime(command);
+	        return processOutput.toString();
+	    }
+	    private StringBuilder byRuntime(String[] command) throws IOException, InterruptedException {
+	        Runtime runtime = Runtime.getRuntime();
+	        Process process = runtime.exec(command);
+	        return printStream(process);
+	    }
+	
+	    private StringBuilder printStream(Process process) throws IOException, InterruptedException {
+	        process.waitFor();
+	        StringBuilder ret = new StringBuilder();
+	        OutputStream ost = new OutputStream() {
+				
+				@Override
+				public void write(byte[] b, int off, int len) throws IOException {
+					ret.append(new String(b).trim());
+				}
+	
+				@Override
+				public void write(int b) throws IOException {
+					// Do nothing.
+				}
+			};
+	        try (InputStream psout = process.getInputStream()) {
+	            copy(psout, ost);
+	        }
+	        return ret;
+	    }
+	
+	    private void copy(InputStream input, OutputStream output) throws IOException {
+	        byte[] buffer = new byte[1024];
+	        int n = 0;
+	        while ((n = input.read(buffer)) != -1) {
+	            output.write(buffer, 0, n);
+	        }
+	    }
+		    
 	}
 }

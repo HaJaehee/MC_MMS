@@ -31,7 +31,7 @@ public class TS4_client {
 	Map<String, List<String>> headerfield = new HashMap<String, List<String>>();
 
 	public TS4_client() throws Exception {
-		MMSConfiguration.MMS_URL = "143.248.57.144:8088";
+		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
 
 		sender.setSender(new MMSClientHandler.ResponseCallback() {
 

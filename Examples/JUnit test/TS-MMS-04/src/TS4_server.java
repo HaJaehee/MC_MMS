@@ -21,7 +21,7 @@ public class TS4_server {
 	ArrayList<Integer> seqNum = new ArrayList();
 
 	public TS4_server() throws NullPointerException, IOException {
-		MMSConfiguration.MMS_URL = "143.248.57.144:8088";
+		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
 
 		MMSClientHandler server = new MMSClientHandler(myMRN);
 		int port = 8902;

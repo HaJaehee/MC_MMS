@@ -114,7 +114,7 @@
 		<dependency>
 			<groupId>net.etri</groupId>
 			<artifactId>net.etri.pkilib</artifactId>
-
+			<version>1.4</version>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
@@ -190,13 +190,4 @@
 	<name>MMS</name>
 	<description>MMS is abbreviation of Maritime Messaging Service. 
 The MMS is a proposed messaging service intended to offer transparent seamless information transfer across different communication links in a carrier agnostic and geolocation context sensitive manner.</description>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>net.etri</groupId>
-				<artifactId>net.etri.pkilib</artifactId>
-				<version>1.4</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 </project>

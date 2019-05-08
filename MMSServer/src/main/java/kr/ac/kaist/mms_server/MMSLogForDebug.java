@@ -64,6 +64,7 @@ public class MMSLogForDebug {
 		sessionIdMrnMapper = new HashMap<String,LinkedHashSet<String>>();
 		maxSessionCount = 50;
 		
+		//addMrn("urn:mrn:mcl:vessel:dma:poul-lowenorn"); //For testing.
 		/*
 		addMrn("urn:mrn:smart:service:instance:mof:S10");
 		addMrn("urn:mrn:smart:service:instance:mof:S11");
