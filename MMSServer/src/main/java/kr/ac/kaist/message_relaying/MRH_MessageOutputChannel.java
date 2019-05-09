@@ -84,6 +84,11 @@ Version : 0.8.2
 	Add thread ConnectionThread class.
 	Add asynchronous version of SendMessage.
 Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
+Rev. history : 2019-05-09
+Version : 0.8.2
+	Added sendMessage function for connecting to Rabbit MQ management server to implement restful API.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -98,6 +103,7 @@ import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -145,9 +151,18 @@ public class MRH_MessageOutputChannel{
 	private MMSLogForDebug mmsLogForDebug = null;
 	private MMSLog mmsLog = null;
 	
+	public MRH_MessageOutputChannel(String sessionId) {
+		this.SESSION_ID = sessionId;
+		initializeModule();
+	}
+	
 	MRH_MessageOutputChannel(String sessionId, ChannelHandlerContext ctx) {
 		this.ctx = ctx;
 		this.SESSION_ID = sessionId;
+		initializeModule();
+	}
+	
+	private void initializeModule() {
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 		mmsLog = MMSLog.getInstance();
 	}
@@ -216,6 +231,36 @@ public class MRH_MessageOutputChannel{
         logger.trace("SessionID=" + this.SESSION_ID + " Message is sent completely.");
     }
 
+	public HttpURLConnection requestMessage(String IPAddress, int port, HttpMethod httpMethod, String uri, String username, String password) throws IOException {  
+		String url = "http://" + IPAddress + ":" + port + uri;
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+		logger.info("SessionID="+this.SESSION_ID+" Try connecting to url="+url);
+		if(MMSConfiguration.isWebLogProviding()) {
+			String log = "SessionID="+this.SESSION_ID+" Try connecting to url="+url;
+			mmsLog.addBriefLogForStatus(log);
+			mmsLogForDebug.addLog(this.SESSION_ID, log);
+		}
+		
+		//		Setting HTTP method
+		if (httpMethod == httpMethod.POST) {
+			con.setRequestMethod("POST");
+		} else if (httpMethod == httpMethod.GET) {
+			con.setRequestMethod("GET");
+		}
+		
+		String authBasic = username+":"+password;
+		Base64.Encoder encoder = Base64.getEncoder();
+		byte[] encodedBytes = encoder.encode(authBasic.getBytes(Charset.forName("UTF-8")));
+		
+		con.setRequestProperty("Authorization","Basic "+new String(encodedBytes));
+
+		// get request doesn't have http body
+		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+				+ (httpMethod==httpMethod.POST?"POST":"GET")+"\n");
+		return con;
+	}
+	
 	public HttpURLConnection requestMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
 		
 		String url = "http://" + IPAddress + ":" + port + req.uri();
@@ -352,7 +397,12 @@ public class MRH_MessageOutputChannel{
 		return retBuffer;
 	}
 
-//  to do relaying
+	//  To use restful API
+	public byte[] sendMessage(String IPAddress, int port, HttpMethod httpMethod, String uri, String username, String password)  throws IOException {  
+		return getResponseMessage(requestMessage(IPAddress, port, httpMethod, uri, username, password));
+	}
+	
+    //  To do relaying
 	public byte[] sendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
 		return getResponseMessage(requestMessage(req, IPAddress, port, httpMethod, srcMRN, dstMRN));
 	}
@@ -363,7 +413,7 @@ public class MRH_MessageOutputChannel{
 	}
 
 	
-	// to do secure relaying
+	// To do secure relaying
 	public byte[] secureSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws NullPointerException, IOException { // 
 		HttpURLConnection con = requestSecureMessage(req, IPAddress, port, httpMethod, srcMRN, dstMRN);
 		return getResponseMessage(con);

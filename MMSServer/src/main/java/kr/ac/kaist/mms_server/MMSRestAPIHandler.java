@@ -55,10 +55,10 @@ public class MMSRestAPIHandler {
 	
 	public MMSRestAPIHandler (String sessionId){
 		this.SESSION_ID = sessionId;
-		initializeModules();
+		initializeModule();
 	}
 	
-	private void initializeModules () {
+	private void initializeModule () {
 		mqm = new MessageQueueManager(SESSION_ID);
 	}
 	

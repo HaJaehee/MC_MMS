@@ -31,31 +31,44 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history: 2019-05-09
 Version : 0.9.0
-	Added getTotalQueueNumber function.
+	Added getTotalQueueNumber function using rabbitmqadmin.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-05-09
+Version : 0.9.0
+	Replaced from function using rabbitmqadmin to function using Rabbit MQ management restful API.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
-import org.apache.commons.lang3.SystemUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.HttpMethod;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
+import kr.ac.kaist.mms_server.MMSConfiguration;
 
 
 public class MessageQueueManager {
 	
 	private String SESSION_ID = "";
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueManager.class);
+	private MRH_MessageOutputChannel outputChannel = null;
 	
 	public MessageQueueManager(String sessionId) {
 		
 		this.SESSION_ID = sessionId;
+		initializeModule();
+	}
+	
+	private void initializeModule () {
+		outputChannel = new MRH_MessageOutputChannel(SESSION_ID);
 	}
 	
 	public void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN, String pollingMethod) {
@@ -69,22 +82,60 @@ public class MessageQueueManager {
 	}
 	
 	public long getTotalQueueNumber ()  {
-		ProcessRunner pr = new ProcessRunner();
+		
+		long ret = 0;
+		
+		try {
+			byte[] response = outputChannel.sendMessage(MMSConfiguration.getRabbitMqHost(), 
+														MMSConfiguration.getRabbitMqManagingPort(), 
+														HttpMethod.GET, 
+														"/api/queues", 
+														MMSConfiguration.getRabbitMqUser(), 
+														MMSConfiguration.getRabbitMqPasswd());
+			
+			String strRes = new String(response);
+			
+			JSONArray jary = new JSONArray();
+			JSONParser parser = new JSONParser();
+			
+			jary = (JSONArray) parser.parse(strRes);
+			ret = jary.size();
+			
+		} catch (IOException e) {
+			logger.warn("SessionID="+SESSION_ID+" MessageQueueManager has a problem when connecting to RabbitMQ management module.");
+			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
+		} catch (ParseException e) {
+			logger.warn("SessionID="+SESSION_ID+" MessageQueueManager has a problem when parsing response from RabbitMQ management module.");
+			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
+		}
+		
+		return ret;
+		
+		
+		// Unused rabbitmqadmin.
+		/*ProcessRunner pr = new ProcessRunner();
 		String processOutput = "No items";
 		try {
 			processOutput = pr.runProcess();
 		} catch (IOException | InterruptedException e) {
-			logger.error("SessionID="+SESSION_ID+" MessageQueueManager has a problem when executing rabbitmqadmin.");
-			logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			logger.warn("SessionID="+SESSION_ID+" MessageQueueManager has a problem when executing rabbitmqadmin.");
+			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
 			}
 		} 
 		
-		return getTotalQueueNumberFromProcOutput(processOutput);
+		return getTotalQueueNumberFromProcOutput(processOutput);*/ //Unused rabbitmqadmin -- end.
 	}
 	
-	private long getTotalQueueNumberFromProcOutput (String processOutput) {
+	// Unused rabbitmqadmin.
+	/*private long getTotalQueueNumberFromProcOutput (String processOutput) {
 	
 		if (processOutput.equals("No items")) {
 			return 0;
@@ -150,5 +201,5 @@ public class MessageQueueManager {
 	        }
 	    }
 		    
-	}
+	}*/// Unused rabbitmqadmin -- end.
 }
