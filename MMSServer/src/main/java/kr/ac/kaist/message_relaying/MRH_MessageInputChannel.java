@@ -120,7 +120,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
 		//System.out.println("Message in channelRead0");
 		
-		try{
+		try {
 			req.retain();
 
 			parser.parseMessage(ctx, req);
@@ -132,9 +132,10 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			
 			
             relayingHandler = new MessageRelayingHandler(ctx, req, protocol, SESSION_ID);
-		} finally {
-          req.release();
-      }
+		} 	finally {
+			// TODO 이 코드는 무슨의미가 있는가?
+			req.release();
+		}
 	}
 	
 	
