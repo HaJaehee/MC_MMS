@@ -8,6 +8,14 @@ import java.util.Map;
 import kr.ac.kaist.mms_client.MMSClientHandler;
 import kr.ac.kaist.mms_client.MMSConfiguration;
 
+/** 
+File name : TS8_server.java
+	Dropping duplicate long polling request test 
+Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
+Creation Date : 2019-05-10
+*/
+
+
 public class TS8_server {
 	private int response = 0;
 	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-06-server";

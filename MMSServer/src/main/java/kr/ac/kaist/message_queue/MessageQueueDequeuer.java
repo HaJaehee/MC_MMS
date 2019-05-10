@@ -82,6 +82,11 @@ Version : 0.8.1
 	Removed locator registering function.
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-10
+Version : 0.9.0
+	Duplicated polling requests are not allowed.
+Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 

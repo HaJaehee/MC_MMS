@@ -1,4 +1,10 @@
 import static org.junit.Assert.assertTrue;
+/** 
+File name : TS8_test.java
+	Dropping duplicate long polling request test 
+Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
+Creation Date : 2019-05-10
+*/
 
 import java.io.IOException;
 
