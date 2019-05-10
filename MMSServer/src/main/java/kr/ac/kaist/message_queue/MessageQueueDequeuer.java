@@ -93,6 +93,11 @@ Rev. history : 2019-05-10
 Version : 0.9.0
 	Duplicated polling requests are not allowed.
 Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
+
+Rev. history : 2019-05-10
+Version : 0.9.1
+	Added function which drops duplicate polling request for normal polling.
+Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -231,6 +236,9 @@ class MessageQueueDequeuer extends Thread{
 			    		SessionManager.getSessionInfo().remove(this.SESSION_ID);
 			    	}
 
+			    	if(SeamlessRoamingHandler.getDuplicateInfo().get(DUPLICATE_ID)!=null) {
+			    		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
+			    	}
 				    outputChannel.replyToSender(ctx, message.toString().getBytes());
 				}
 				

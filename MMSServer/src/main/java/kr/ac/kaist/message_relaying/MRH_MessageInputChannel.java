@@ -65,6 +65,12 @@ Rev. history : 2019-05-09
 Version : 0.9.0
 	Added session counting functions.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-10
+Version : 0.9.1
+	If client is disconnected, 
+	drop the duplicate id from duplicate hash map.
+Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -92,6 +98,8 @@ import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
+import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
+
 import java.io.IOException;
 
 
@@ -105,8 +113,9 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	private String protocol = "";
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
-    private MessageRelayingHandler relayingHandler;
-
+    private MessageRelayingHandler relayingHandler;   
+	
+    private String DUPLICATE_ID="";
 	public MRH_MessageInputChannel(String protocol) {
 		super();
 		this.protocol = protocol;
@@ -124,6 +133,10 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			req.retain();
 
 			parser.parseMessage(ctx, req);
+			
+			String svcMRN = parser.getSvcMRN();
+    		String srcMRN = parser.getSrcMRN();
+    		DUPLICATE_ID = srcMRN+svcMRN;
       
 			logger.info("Message received.");
 			SESSION_ID = ctx.channel().id().asShortText();
@@ -184,6 +197,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     	String clientType = SessionManager.getSessionInfo().get(SESSION_ID);
     	if (clientType != null) {
     		SessionManager.getSessionInfo().remove(SESSION_ID);
+    		
+    		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
     		if (clientType.equals("p")) {
 
     			logger.warn("SessionID="+this.SESSION_ID+" The polling client is disconnected.");
@@ -207,6 +222,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 
 //    	ctx.channel().
     	String clientType = SessionManager.getSessionInfo().get(SESSION_ID);
+    	String duplicateType = SeamlessRoamingHandler.getDuplicateInfo().get(DUPLICATE_ID);
 //    	ctx.pipeline().get(HttpHeaderValues.class);
 //    	channels.
     	
@@ -251,8 +267,11 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     	    printError(srcIP, reqInfo, clientType);
     	}
     	if (clientType != null) {
-    		SessionManager.getSessionInfo().remove(SESSION_ID);
+    		SessionManager.getSessionInfo().remove(SESSION_ID);    		
       }
+    	if(duplicateType!=null) {
+    		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
+    	}
     	if (!ctx.isRemoved()){
     		  ctx.close();
       }

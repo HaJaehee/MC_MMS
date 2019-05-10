@@ -135,6 +135,7 @@ import io.netty.handler.codec.http.HttpVersion;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
+import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 public class MRH_MessageOutputChannel{
 	
@@ -227,6 +228,7 @@ public class MRH_MessageOutputChannel{
         });
     	
         SessionManager.getSessionInfo().remove(SESSION_ID);
+
         
         logger.trace("SessionID=" + this.SESSION_ID + " Message is sent completely.");
     }
