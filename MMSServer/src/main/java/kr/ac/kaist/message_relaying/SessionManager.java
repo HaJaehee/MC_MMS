@@ -39,6 +39,11 @@ Version : 0.9.0
 	Modified for coding conventions.
 	Added SessionCounter.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-05-10
+Version : 0.9.0
+	Fixed bugs related to session count list.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -54,7 +59,7 @@ public class SessionManager {
 	/* sessionInfo: If client is a polling client, value is "p".
 	If client is a long polling client, value is "lp".
 	Otherwise value is "".*/
-	private static HashMap<String, String> sessionInfo = null; //This 
+	private static HashMap<String, String> sessionInfo = null; //This is used for saving session information which is polling, long-polling, relaying or the others.
 	private static HashMap<String, SessionList<SessionIdAndThr>> mapSrcDstPairAndSessionInfo = null; //This is used for handling input messages by reordering policy.
 	private static HashMap<String, Double> mapSrcDstPairAndLastSeqNum = null; //This is used for handling last sequence numbers of sessions.
 	private static ArrayList<SessionCountForFiveSecs> sessionCountList = null; //This saves the number of sessions for every five seconds.
@@ -87,7 +92,7 @@ public class SessionManager {
 		//TODO
 		@Override
 		public void run() {
-			try {
+			try { // Wait initialization of other threads.
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				// Do nothing.
@@ -107,8 +112,8 @@ public class SessionManager {
 				long correction = 0;
 				
 				if (curTimeMillis % 5000 < 100 ) {
-					correction = curTimeMillis % 5000;
-					for (int i = sessionCountList.size()-288 ; i >= 0 ; i--) { // Session counts are saved for 24 hours.
+					correction = curTimeMillis % 5000; // Session counting list saves the number of sessions for every 5 seconds.
+					for (int i = sessionCountList.size()-(12*60*24) ; i >= 0 ; i--) { // Session counts are saved for 24 hours.
 						sessionCountList.remove(sessionCountList.size()-1);
 					}
 					

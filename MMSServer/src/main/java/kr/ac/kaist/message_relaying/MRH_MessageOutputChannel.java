@@ -387,9 +387,9 @@ public class MRH_MessageOutputChannel{
         byte[] retBuffer = byteOS.toByteArray();
         
 		is.close();
-		logger.info("SessionID="+this.SESSION_ID+" Received a response." + "Response Code=" + responseCode);
+		logger.info("SessionID="+this.SESSION_ID+" Received a response." + " Response Code=" + responseCode);
 		if(MMSConfiguration.isWebLogProviding()) {
-			String log = "SessionID="+this.SESSION_ID+" Received a response." + "Response Code=" + responseCode;
+			String log = "SessionID="+this.SESSION_ID+" Received a response." + " Response Code=" + responseCode;
 			mmsLog.addBriefLogForStatus(log);
 			mmsLogForDebug.addLog(this.SESSION_ID, log);
 		}
