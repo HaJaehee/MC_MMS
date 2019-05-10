@@ -83,10 +83,16 @@ Version : 0.8.1
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+
 Rev. history : 2019-05-06
 Version : 0.9.0
 	Added Rabbit MQ port number, username and password into ConnectionFactory.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-10
+Version : 0.9.0
+	Duplicated polling requests are not allowed.
+Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -114,6 +120,7 @@ import kr.ac.kaist.mms_server.Base64Coder;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
+import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 
 
@@ -121,7 +128,7 @@ class MessageQueueDequeuer extends Thread{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueDequeuer.class);
 	private String SESSION_ID = "";
-	
+	private String DUPLICATE_ID="";
 	private String queueName = null;
 	private String srcMRN = null;
 	private String svcMRN = null;
@@ -149,6 +156,10 @@ class MessageQueueDequeuer extends Thread{
 		this.outputChannel = outputChannel;
 		this.ctx = ctx;
 		this.pollingMethod = pollingMethod;
+		
+		//Youngjin Modified
+		this.DUPLICATE_ID = srcMRN+svcMRN;
+		
 		
 		this.start();
 
@@ -249,9 +260,14 @@ class MessageQueueDequeuer extends Thread{
 								}
 								logger.debug("SessionID="+SESSION_ID+" Dequeue="+queueName+".");
 						    	
+
 						    	if (SessionManager.getSessionInfo().get(SESSION_ID) != null) {
 						    		SessionManager.getSessionInfo().remove(SESSION_ID);
+
+						    	if(SeamlessRoamingHandler.duplicateInfo.get(DUPLICATE_ID)!=null) {
+						    		SeamlessRoamingHandler.duplicateInfo.remove(DUPLICATE_ID);
 						    	}
+						    	
 							    outputChannel.replyToSender(ctx, message.toString().getBytes());
 								channel.basicAck(envelope.getDeliveryTag(), false);
 							} else {
