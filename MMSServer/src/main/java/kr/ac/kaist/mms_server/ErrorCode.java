@@ -16,8 +16,8 @@ public enum ErrorCode {
 	UNKNOWN_MRN("10001", "No Device having that MRN."),
 	NULL_SRC_MRN("10002", "Null source MRN."),
 	NULL_DST_MRN("10003", "Null destination MRN."),
-	WRONG_PARAM("10004", "Null MRNs."),
-	NULL_MRN("10005", "Wrong parameter"),
+	NULL_MRN("10004", "Null MRNs."),
+	WRONG_PARAM("10005", "Wrong parameter"),
 	
 	// Numbers lower than 10000 are internal error codes.
 	// Number 9XXX is related to the MMS monitoring service including dump MNS.
