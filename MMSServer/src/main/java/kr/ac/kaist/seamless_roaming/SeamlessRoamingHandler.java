@@ -106,10 +106,10 @@ public class SeamlessRoamingHandler {
 		// Youngjin code
 
 		String DUPLICATE_ID = srcMRN + svcMRN;
-		System.out.println("Duplicate ID : "+DUPLICATE_ID);
+		//System.out.println("Duplicate ID : "+DUPLICATE_ID);
 
 		if (duplicateInfo.containsKey(DUPLICATE_ID)) {
-			System.out.println("duplicate long polling request");
+			//System.out.println("duplicate long polling request");
 			
 			outputChannel.replyToSender(ctx, "duplicate long polling request".getBytes());
 			//// print message?

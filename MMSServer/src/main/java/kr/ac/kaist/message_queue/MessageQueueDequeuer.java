@@ -252,7 +252,7 @@ class MessageQueueDequeuer extends Thread{
 								logger.debug("SessionID="+SESSION_ID+" Dequeue="+queueName+".");
 						    	
 						    	if (SessionManager.sessionInfo.get(SESSION_ID) != null) {
-						    		SessionManager.sessionInfo.remove(SESSION_ID); //yj : 여기서 session id 를 빼는 것?
+						    		SessionManager.sessionInfo.remove(SESSION_ID); 
 						    	}
 						    	if(SeamlessRoamingHandler.duplicateInfo.get(DUPLICATE_ID)!=null) {
 						    		SeamlessRoamingHandler.duplicateInfo.remove(DUPLICATE_ID);
