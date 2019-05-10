@@ -103,6 +103,11 @@ Version : 0.8.1
 	MMS Client is able to choose its polling method.
 	Removed locator registration function.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-19
+Version : 0.8.2
+	MMS Client sends a polling request message which is a JSON format.
+Modifier : Jin Jung (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -113,7 +118,7 @@ import java.util.Map;
 
 /**
  * It is an object that can communicate to MMS through HTTP and send or receive messages of other objects.
- * @version 0.8.2
+ * @version 0.9.1
  * @see SecureMMSClientHandler
  */
 public class MMSClientHandler {
