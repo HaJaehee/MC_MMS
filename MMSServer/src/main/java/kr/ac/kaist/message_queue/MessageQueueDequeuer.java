@@ -109,6 +109,7 @@ import kr.ac.kaist.mms_server.Base64Coder;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
+import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 
 
@@ -116,7 +117,7 @@ class MessageQueueDequeuer extends Thread{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueDequeuer.class);
 	private String SESSION_ID = "";
-	
+	private String DUPLICATE_ID="";
 	private String queueName = null;
 	private String srcMRN = null;
 	private String svcMRN = null;
@@ -144,6 +145,10 @@ class MessageQueueDequeuer extends Thread{
 		this.outputChannel = outputChannel;
 		this.ctx = ctx;
 		this.pollingMethod = pollingMethod;
+		
+		//Youngjin Modified
+		this.DUPLICATE_ID = srcMRN+svcMRN;
+		
 		
 		this.start();
 
@@ -242,8 +247,12 @@ class MessageQueueDequeuer extends Thread{
 								logger.debug("SessionID="+SESSION_ID+" Dequeue="+queueName+".");
 						    	
 						    	if (SessionManager.sessionInfo.get(SESSION_ID) != null) {
-						    		SessionManager.sessionInfo.remove(SESSION_ID);
+						    		SessionManager.sessionInfo.remove(SESSION_ID); //yj : 여기서 session id 를 빼는 것?
 						    	}
+						    	if(SeamlessRoamingHandler.duplicateInfo.get(DUPLICATE_ID)!=null) {
+						    		SeamlessRoamingHandler.duplicateInfo.remove(DUPLICATE_ID);
+						    	}
+						    	
 							    outputChannel.replyToSender(ctx, message.toString().getBytes());
 								channel.basicAck(envelope.getDeliveryTag(), false);
 							} else {
