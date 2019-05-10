@@ -59,7 +59,8 @@ public class SeamlessRoamingHandler {
 	private SCMessageHandler scmh = null;
 	private MNSInteractionHandler mih = null;
 
-	public static HashMap<String, String> duplicateInfo = new HashMap<>();
+	private static HashMap<String, String> duplicateInfo = new HashMap<>();
+
 
 	public SeamlessRoamingHandler(String sessionId) {
 		this.SESSION_ID = sessionId;
@@ -84,7 +85,7 @@ public class SeamlessRoamingHandler {
 	public void processPollingMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN,
 			String srcIP, String pollingMethod, String svcMRN) {
 
-<
+
 		if (pollingMethod.equals("normal"))	{
 			SessionManager.getSessionInfo().put(SESSION_ID, "p");
 		}
@@ -122,5 +123,9 @@ public class SeamlessRoamingHandler {
 //	save SC message into queue
 	public void putSCMessage(String srcMRN, String dstMRN, String message) {
 		scmh.enqueueSCMessage(srcMRN, dstMRN, message);
+	}
+	
+	public static HashMap<String, String> getDuplicateInfo() {
+		return duplicateInfo;
 	}
 }

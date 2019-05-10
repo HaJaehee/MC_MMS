@@ -263,9 +263,10 @@ class MessageQueueDequeuer extends Thread{
 
 						    	if (SessionManager.getSessionInfo().get(SESSION_ID) != null) {
 						    		SessionManager.getSessionInfo().remove(SESSION_ID);
-
-						    	if(SeamlessRoamingHandler.duplicateInfo.get(DUPLICATE_ID)!=null) {
-						    		SeamlessRoamingHandler.duplicateInfo.remove(DUPLICATE_ID);
+						    	}
+						    	
+						    	if(SeamlessRoamingHandler.getDuplicateInfo().get(DUPLICATE_ID)!=null) {
+						    		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
 						    	}
 						    	
 							    outputChannel.replyToSender(ctx, message.toString().getBytes());
