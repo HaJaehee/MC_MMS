@@ -237,9 +237,11 @@ class MMSPollHandler {
 					JSONArray jsonArr = new JSONArray();
 					JSONParser jsonPars = new JSONParser();
 					jsonArr = (JSONArray) jsonPars.parse(response.toString());
-					for (int i = 0 ; i < jsonArr.size() ; i++) {
+					//System.out.println("response string"+response.toString());
+					for (int i = 0 ; i < jsonArr.size() ; i++) {						
 						resList.add(URLDecoder.decode(jsonArr.get(i).toString(), "UTF-8"));
 					}
+					
 				}
 
 				inB.close();

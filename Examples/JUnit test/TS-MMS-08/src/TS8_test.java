@@ -33,9 +33,23 @@ public class TS8_test {
 		
 		System.out.println("response : " +server.getResponse());
 		//expected = client.pollingReqeust();	
-		client.threadStart();
+		client.singleThreadStart(); /// Do not 
 		Thread.sleep(10000);	
 		//assertTrue(expected==(actual)+offset);		
 	}
 	
+	@Test
+	public void test02() throws IOException, InterruptedException {		
+		int expected = 0;
+		int actual = 0;				
+				
+		server.sendContent(actual);	
+		//Thread.sleep(1000);
+		
+		System.out.println("response : " +server.getResponse());
+		//expected = client.pollingReqeust();	
+		client.multipleThreadStart();
+		Thread.sleep(10000);	
+		//assertTrue(expected==(actual)+offset);		
+	}
 }

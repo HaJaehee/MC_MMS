@@ -45,6 +45,8 @@ import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 
 import org.slf4j.Logger;
@@ -83,7 +85,7 @@ public class SeamlessRoamingHandler {
 	// TODO: Youngjin Kim must inspect this following code.
 	// Poll SC message in queue.
 	public void processPollingMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN,
-			String srcIP, String pollingMethod, String svcMRN) {
+			String srcIP, String pollingMethod, String svcMRN) throws UnsupportedEncodingException {
 
 
 		if (pollingMethod.equals("normal"))	{
@@ -110,7 +112,12 @@ public class SeamlessRoamingHandler {
 			//System.out.println("duplicate long polling request");
 			
 			// TODO: To define error message.
-			outputChannel.replyToSender(ctx, "duplicate long polling request.".getBytes());
+			String message;
+			
+			message = URLEncoder.encode("duplicate long polling request.","UTF-8");
+			message = "[\""+message+"\"]";
+			
+			outputChannel.replyToSender(ctx, message.getBytes());
 			
 		} else {
 			duplicateInfo.put(DUPLICATE_ID, "y");

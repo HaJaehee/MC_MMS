@@ -33,7 +33,7 @@ public class TS8_client {
 //		MMSConfiguration.MMS_URL="mms.smartnav.org:8088";
 //		MMSConfiguration.MMS_URL="143.248.55.83:8088";
 		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
-		MMSConfiguration.DEBUG = false;
+		MMSConfiguration.DEBUG = true;
 		ClientPKILibrary clientPKILib = ClientPKILibrary.getInstance();
 		ByteConverter byteConverter = ByteConverter.getInstance();
 
@@ -55,7 +55,13 @@ public class TS8_client {
 		// threadStart();
 	}
 
-	public static void threadStart() {
+	public static void singleThreadStart() {
+		ThreadEX threadex = new ThreadEX();	
+		Thread thread1 = new Thread(threadex, "A");
+		thread1.start();	
+	}
+	
+	public static void multipleThreadStart() {
 		ThreadEX threadex = new ThreadEX();
 		ThreadEX threadex2 = new ThreadEX();
 		ThreadEX threadex3 = new ThreadEX();
@@ -67,20 +73,10 @@ public class TS8_client {
 		Thread thread4 = new Thread(threadex4, "D");
 
 		thread1.start();
-		//thread2.start();
-		//thread3.start();
-		//thread4.start();
+		thread2.start();
+		thread3.start();
+		thread4.start();	
 		
-		checker =1;
-		
-		/*
-		 * if (thread2.getState() == Thread.State.NEW) {
-		 * System.out.println("thread 2 start"); thread2.start(); } if
-		 * (thread3.getState() == Thread.State.NEW) {
-		 * System.out.println("thread 3 start"); thread3.start(); } if
-		 * (thread4.getState() == Thread.State.NEW) {
-		 * System.out.println("thread 4 start"); thread4.start(); }
-		 */
 	}
 
 }
@@ -115,20 +111,12 @@ class ThreadEX implements Runnable {
 						}
 					});
 
-			/*
-			 * while (length == -1) { // busy waiting the content length try {
-			 * Thread.sleep(1); } catch (InterruptedException e) { // TODO Auto-generated
-			 * catch block e.printStackTrace(); } if (length != -1) { retLength = length;
-			 * System.out.println("retLength : " + retLength); length = -1; break; }
-			 * 
-			 * }
-			 */
+		
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
 		}
-		// myHandler.stopPolling();
-		// return retLength;
+		
 	}
 
 	
