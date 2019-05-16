@@ -7,8 +7,8 @@ Beta Version 0.9.1 <br/>
 
 
 # Web Site
-www.mms-kaist.com
-mms.smartnav.org
+https://www.mms-kaist.com <br/>
+https://mms.smartnav.org
 
 ## Features
 MMS Beta Version<br/>
