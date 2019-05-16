@@ -19,14 +19,14 @@ public enum ErrorCode {
 	NULL_MRN("10004", "Null MRNs."),
 	WRONG_PARAM("10005", "Wrong parameter"),
 	
-	// Numbers lower than 10000 are internal error codes.
-	// Number 9XXX is related to the MMS monitoring service including dump MNS.
-	MONITORING_CONNECTION_ERR("9001", "Failed to connect to MMS monitoring service."),
-	DUMPMNS_LOGGING_ERR("9002", "Failed to connect to dump MNS."),
+	// Numbers greater than 10000 and lower than 20000 are internal error codes.
+	// Number 19XXX is related to the MMS monitoring service including dump MNS.
+	MONITORING_CONNECTION_ERR("19001", "Failed to connect to MMS monitoring service."),
+	DUMPMNS_LOGGING_ERR("19002", "Failed to connect to dump MNS."),
 	
-	// Number 8XXX is related to the relaying functions.
-	SEQUENTIAL_RELAYING_EXCEPTION_ERR("8001", "Exception error occured in sequentailly relaying function."),
-	SEQUENTIAL_RELAYING_INITIALIZATION_ERR("8002", "Initialization problem occured in sequentailly relaying function.");
+	// Number 18XXX is related to the relaying functions.
+	SEQUENTIAL_RELAYING_EXCEPTION_ERR("18001", "Exception error occured in sequentailly relaying function."),
+	SEQUENTIAL_RELAYING_INITIALIZATION_ERR("18002", "Initialization problem occured in sequentailly relaying function.");
 	
 	
 	private String code;
