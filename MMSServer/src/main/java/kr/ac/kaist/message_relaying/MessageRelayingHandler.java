@@ -471,7 +471,7 @@ public class MessageRelayingHandler  {
 				}
 				
 				if(parser.getSvcMRN() == null) {
-					throw new IOException("Service MRN is not included");
+					throw new IOException("Service MRN is not included.");
 				}
 				
 				logger.info("SessionID="+this.SESSION_ID+" This is a polling request and the service MRN is " + parser.getSvcMRN());
@@ -510,6 +510,9 @@ public class MessageRelayingHandler  {
 						mmsLogForDebug.addLog(this.SESSION_ID, log);
 					}
 					logger.info(log);
+					
+					message = ErrorCode.NULL_CERTIFICATE.getUTF8Bytes();
+					throw new IOException("Client's certificate is not included.");
 				}
 
 				String svcMRN = parser.getSvcMRN();

@@ -18,6 +18,7 @@ public enum ErrorCode {
 	NULL_DST_MRN("10003", "Null destination MRN."),
 	NULL_MRN("10004", "Null MRNs."),
 	WRONG_PARAM("10005", "Wrong parameter"),
+	NULL_CERTIFICATE("10006", "The certificate is not inlcuded."),
 	
 	// Numbers lower than 10000 are internal error codes.
 	// Number 9XXX is related to the MMS monitoring service including dump MNS.

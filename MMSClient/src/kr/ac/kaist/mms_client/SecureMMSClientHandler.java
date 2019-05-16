@@ -211,6 +211,7 @@ public class SecureMMSClientHandler {
 	 * @throws	IOException 	if exception occurs
 	 * @see 	PollingResponseCallback
 	 */	
+	@Deprecated
 	public void startPolling (String dstMRN, String svcMRN, int interval, PollingResponseCallback callback) throws IOException{
 		startPolling (dstMRN, svcMRN, null, interval, callback);
 	}
