@@ -1,6 +1,16 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+/** 
+File name : TS8_server.java
+	Dropping duplicate long polling request test 
+Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
+Creation Date : 2019-05-10
+
+
+ * Rev. history : 2019-05-17
+ * Version : 0.9.1
+ *		Added assert statements.
+ * Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+*/
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -8,17 +18,12 @@ import java.util.Map;
 import kr.ac.kaist.mms_client.MMSClientHandler;
 import kr.ac.kaist.mms_client.MMSConfiguration;
 
-/** 
-File name : TS8_server.java
-	Dropping duplicate long polling request test 
-Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
-Creation Date : 2019-05-10
-*/
+
 
 
 public class TS8_server {
 	private int response = 0;
-	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-06-server";
+	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-08-server";
 	private String dstMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 	private MMSClientHandler myHandler = null;
 

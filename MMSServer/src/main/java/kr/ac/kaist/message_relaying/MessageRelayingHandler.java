@@ -187,6 +187,11 @@ Version : 0.9.1
 	Add error codes related to polling authentication message.
 	MMS does not accept the polling request message not formatted by JSON.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-05-17
+Version : 0.9.1
+	From now, MessageParser is initialized in MRH_MessageInputChannel class.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -247,20 +252,15 @@ public class MessageRelayingHandler  {
     private ConnectionThread thread;
 
 	
-	public MessageRelayingHandler(ChannelHandlerContext ctx, FullHttpRequest req, String protocol, String sessionId) {		
+	public MessageRelayingHandler(ChannelHandlerContext ctx, FullHttpRequest req, String protocol, MessageParser parser, String sessionId) {		
 		this.protocol = protocol;
 		this.SESSION_ID = sessionId;
 		
 		initializeModule();
 		initializeSubModule(ctx);
-		try {
-			parser.parseMessage(ctx, req);
-		} catch (NumberFormatException | NullPointerException e) {
-			logger.warn("SessionID="+SESSION_ID+" "+"Exception occured while parsing the message. "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
-		}
+		
+		this.parser = parser;
+	
 		
 		MessageTypeDecider.msgType type = null;
 		try {
@@ -288,7 +288,6 @@ public class MessageRelayingHandler  {
 	}
 	
 	private void initializeSubModule(ChannelHandlerContext ctx) {
-		parser = new MessageParser(this.SESSION_ID);
 		sessionBlocker = new Thread();
 		typeDecider = new MessageTypeDecider(this.SESSION_ID);
 		outputChannel = new MRH_MessageOutputChannel(this.SESSION_ID, ctx);
@@ -469,7 +468,7 @@ public class MessageRelayingHandler  {
 			}
 			// TODO: Youngjin Kim must inspect this following code.
 			else if (type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) {
-				parser.parseSvcMRNAndHexSign(req);
+				//parser.parseSvcMRNAndHexSign(req);
 				
 				if (parser.isJSONOfPollingMsg() == false){
 					message = ErrorCode.JSON_FORMAT_ERR.getJSONFormattedUTF8Bytes();
@@ -499,11 +498,11 @@ public class MessageRelayingHandler  {
 					if (isClientVerified) {
 						//Success verifying the client.
 						if(MMSConfiguration.isWebLogProviding()) {
-							String log = "SessionID="+this.SESSION_ID+" Client verification is successed.";
+							String log = "SessionID="+this.SESSION_ID+" Client verification is succeeded.";
 							mmsLog.addBriefLogForStatus(log);
 							mmsLogForDebug.addLog(this.SESSION_ID, log);
 						}
-						logger.info("SessionID="+this.SESSION_ID+" Client verification is successed.");
+						logger.info("SessionID="+this.SESSION_ID+" Client verification is succeeded.");
 					} else {
 						//Fail to verify the client.
 						if(MMSConfiguration.isWebLogProviding()) {

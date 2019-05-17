@@ -71,6 +71,11 @@ Version : 0.9.1
 	If client is disconnected, 
 	drop the duplicate id from duplicate hash map.
 Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
+
+Rev. history : 2019-05-17
+Version : 0.9.1
+	From now, MessageParser is initialized in MRH_MessageInputChannel class.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -131,8 +136,15 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		
 		try {
 			req.retain();
-
-			parser.parseMessage(ctx, req);
+			try {
+				parser.parseMessage(ctx, req);
+			} catch (NumberFormatException | NullPointerException  e) {
+				logger.warn("SessionID="+SESSION_ID+" "+"Exception occured while parsing the message. "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+				for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+					logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+				}
+			}
+			
 			
 			String svcMRN = parser.getSvcMRN();
     		String srcMRN = parser.getSrcMRN();
@@ -144,7 +156,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			SessionManager.getSessionInfo().put(SESSION_ID, "");
 			
 			
-            relayingHandler = new MessageRelayingHandler(ctx, req, protocol, SESSION_ID);
+            relayingHandler = new MessageRelayingHandler(ctx, req, protocol, parser, SESSION_ID);
 		} 	finally {
 			// TODO 이 코드는 무슨의미가 있는가?
 			req.release();
@@ -262,6 +274,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         		reqInfo[2] = parser.getDstIP();
         		reqInfo[3] = parser.getDstMRN();
         		reqInfo[4] = parser.getSvcMRN();
+        	
         	}
     		
     	    printError(srcIP, reqInfo, clientType);
@@ -271,6 +284,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
       }
     	if(duplicateType!=null) {
     		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
+    		
     	}
     	if (!ctx.isRemoved()){
     		  ctx.close();

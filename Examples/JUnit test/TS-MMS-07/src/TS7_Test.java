@@ -24,8 +24,8 @@ Creation Date : 2019-05-02
 @FixMethodOrder(MethodSorters.DEFAULT)
 public class TS7_Test {
 	static TS7_server server;	
-	public static final String srcMRN = "urn:mrn:imo:imo-no:ts7-mms-01-client";
-	public static final String dstMRN = "urn:mrn:imo:imo-no:ts7-mms-01-server";
+	public static final String srcMRN = "urn:mrn:imo:imo-no:ts-mms-07-client";
+	public static final String dstMRN = "urn:mrn:imo:imo-no:ts-mms-07-server";
 	public static final int PORT = 8907;
 	
 	@BeforeClass

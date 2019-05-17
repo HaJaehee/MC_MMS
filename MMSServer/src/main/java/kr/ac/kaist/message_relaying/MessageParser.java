@@ -79,6 +79,11 @@ Rev. history: 2019-04-12
 Version : 0.8.2
 	Modified for coding rule conformity.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-17
+Version : 0.9.1
+	From now, MessageParser is initialized in MRH_MessageInputChannel class.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -102,6 +107,7 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import kr.ac.kaist.message_casting.GeolocationCircleInfo;
 import kr.ac.kaist.message_casting.GeolocationPolygonInfo;
+import kr.ac.kaist.message_relaying.MessageTypeDecider.msgType;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -159,10 +165,12 @@ public class MessageParser {
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 
-	void parseMessage(ChannelHandlerContext ctx, FullHttpRequest req) throws NullPointerException, NumberFormatException{
+	void parseMessage(ChannelHandlerContext ctx, FullHttpRequest req) throws NullPointerException, NumberFormatException, IOException{
 		InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 	    InetAddress inetaddress = socketAddress.getAddress();
-
+	    uri = req.uri();
+		httpMethod = req.method();
+		
 	    if (inetaddress != null) {
 	    	srcIP = inetaddress.getHostAddress(); // IP address of client
 	    } 
@@ -171,6 +179,13 @@ public class MessageParser {
 	    }
 		srcMRN = req.headers().get("srcMRN");
 		dstMRN = req.headers().get("dstMRN");
+		
+		if (dstMRN.equals(MMSConfiguration.getMmsMrn()) && httpMethod == HttpMethod.POST && (uri.equals("/polling")||uri.equals("/long-polling"))) {
+			//When polling
+			parseSvcMRNAndHexSign(req);
+			
+		}
+		
 		String o = req.headers().get("seqNum");
 		if (o != null) {
 			//seqNum must be positive and lower than MAXIMUM VALUE of double. seqNum must be checked.
@@ -239,8 +254,7 @@ public class MessageParser {
 			isGeocasting = false;
 		}
 		
-		uri = req.uri();
-		httpMethod = req.method();
+		
 	}
 	
 	private void parsePollingRequestToJSON(String httpContents) throws org.json.simple.parser.ParseException{

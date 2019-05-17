@@ -9,12 +9,16 @@ import kr.ac.kaist.mms_client.MMSConfiguration;
 import net.etri.pkilib.client.ClientPKILibrary;
 import net.etri.pkilib.tool.ByteConverter;
 
-//import kr.ac.kaist.mms_client.PollHandler;
 /**
  * File name : TS6_client.java Polling request message function for the purpose
  * of testing MMS Author : Youngjin Kim (jcdad3000@kaist.ac.kr) Creation Date :
  * 2019-05-02
  * 
+ * 
+ * Rev. history : 2019-05-17
+ * Version : 0.9.1
+ *		Added assert statements.
+ * Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
  */
 public class TS8_client {
 
@@ -87,13 +91,14 @@ class ThreadEX implements Runnable {
 
 	private static String myMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 	private static String dstMRN = "urn:mrn:smart-navi:device:mms1";
-	private static String svcMRN = "urn:mrn:imo:imo-no:ts-mms-06-server";
-
+	private static String svcMRN = "urn:mrn:imo:imo-no:ts-mms-08-server";
+	private MMSClientHandler myHandler = null;
+	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
 		int retLength = -1;
-		MMSClientHandler myHandler = null;
+		
 
 		try {
 			myHandler = new MMSClientHandler(myMRN);
@@ -106,11 +111,13 @@ class ThreadEX implements Runnable {
 							// TODO Auto-generated method stub
 
 							for (String s : messages) {
-								System.out.println("message : " + s);
+								TS8_test.response.add(s);
+								//System.out.println("message : " + s);
 							}
+							myHandler.stopPolling();
 						}
 					});
-
+			
 		
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
