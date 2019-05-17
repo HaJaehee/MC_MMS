@@ -7,6 +7,11 @@ File name : ErrorCode.java
 Author : Yunho Choi (choiking10@kaist.ac.kr)
 Creation Date : 2019-05-02
 Version : 0.9.0
+
+Rev. history : 2019-05-17
+Version : 0.9.1
+	Add error codes related to polling authentication message.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 import java.nio.charset.Charset;
 
@@ -19,7 +24,10 @@ public enum ErrorCode {
 	NULL_MRN("10004", "Null MRNs."),
 	WRONG_PARAM("10005", "Wrong parameter"),
 	NULL_CERTIFICATE("10006", "The certificate is not inlcuded."),
-	
+	NULL_SVC_MRN("10007", "The service MRN is not inlcuded."),
+	AUTHENTICATION_FAIL_REVOKED("10008", "It is failed to verify the client. The certificate has been revoked."),
+	JSON_FORMAT_ERR("10009", "The message is not formatted by JSON."),
+	AUTHENTICATION_FAIL_NOTMATCHING("10010", "It is failed to verify the client. The source MRN is not equal to the certificate's."),
 	// Numbers lower than 10000 are internal error codes.
 	// Number 9XXX is related to the MMS monitoring service including dump MNS.
 	MONITORING_CONNECTION_ERR("9001", "Failed to connect to MMS monitoring service."),

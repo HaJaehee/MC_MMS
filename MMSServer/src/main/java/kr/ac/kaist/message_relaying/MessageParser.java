@@ -123,6 +123,7 @@ public class MessageParser {
 	private String svcMRN = null;
 	private String netType = null;
 	private boolean isGeocasting = false;
+	private boolean isJSONOfPollingFormat = false;
 	private GeolocationCircleInfo geoCircleInfo = null;
 	private GeolocationPolygonInfo geoPolygonInfo = null;
 	private JSONArray geoDstInfo = null;
@@ -263,6 +264,7 @@ public class MessageParser {
 	}
 	
 	//TODO: will be deprecated after version 0.9.0
+	@Deprecated
 	private void parsePollingRequestToString(String httpContents){
 		String[] sepContent = httpContents.split("\n");
 		if (sepContent.length > 0) {
@@ -296,6 +298,7 @@ public class MessageParser {
 			parsePollingRequestToJSON(content);
 //			System.out.println("[Test Message] the svcMRN is " + svcMRN);
 //			System.out.println("[Test Message] the certificate is " + hexSignedData.substring(6));
+			isJSONOfPollingFormat = true;
 			if (this.svcMRN == null) {
 				String log = "SessionID="+this.SESSION_ID+" The service MRN is not included.";
 				if(MMSConfiguration.isWebLogProviding()) {
@@ -308,15 +311,17 @@ public class MessageParser {
 			return ;
 		} 
 		catch (org.json.simple.parser.ParseException e) {
-			String log = "SessionID="+this.SESSION_ID+" Failed to parse service MRN and certificate whose type is a JSON format.";
+			String log = "SessionID="+this.SESSION_ID+" Failed to parse polling request content whose type is a JSON format.";
 			if(MMSConfiguration.isWebLogProviding()) {
 				mmsLog.addBriefLogForStatus(log);
 				mmsLogForDebug.addLog(this.SESSION_ID, log);
 			}
 			logger.info(log);
+			
+			isJSONOfPollingFormat = false;
 		}
 
-		parsePollingRequestToString(content);
+		// parsePollingRequestToString(content);
 	}
 	
 	void parseDstInfo(String dstInfo){
@@ -461,5 +466,9 @@ public class MessageParser {
 	
 	public String getHexSignedData () {
 		return hexSignedData;
+	}
+	
+	public boolean isJSONOfPollingMsg() {
+		return isJSONOfPollingFormat;
 	}
 }

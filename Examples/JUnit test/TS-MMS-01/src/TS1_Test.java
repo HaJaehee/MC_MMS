@@ -13,6 +13,12 @@ File name : TS1_Test.java
 	Relaying message function for the purpose of testing MMS
 Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
 Creation Date : 2018-10-13
+
+Rev. history : 2019-05-17
+Version : 0.9.1
+	Change the version from JUnit3 to JUnit4.
+	Running this test case with version 0.9.1 and the test case is succeeded.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 @FixMethodOrder(MethodSorters.DEFAULT)
 public class TS1_Test {
