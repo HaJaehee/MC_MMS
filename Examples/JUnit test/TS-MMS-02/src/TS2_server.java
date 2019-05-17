@@ -3,6 +3,11 @@ File name : TS2_server.java
 	Relaying message function for the purpose of testing MMS
 Author : YoungJin Kim (jcdad3000@kaist.ac.kr)
 Creation Date : 2018-09-13
+
+Rev. history : 2019-05-17
+Version : 0.9.1
+	Running this test case with version 0.9.1 and 
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
 import java.io.IOException;
@@ -36,6 +41,7 @@ public class TS2_server {
 	
 	public TS2_server() throws Exception {
 		MMSConfiguration.MMS_URL="143.248.57.144:8088";
+		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		MMSClientHandler server = new MMSClientHandler(myMRN);
 		int port = 8907;
 		

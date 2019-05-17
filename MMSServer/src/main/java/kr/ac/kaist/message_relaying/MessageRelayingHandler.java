@@ -181,6 +181,12 @@ Rev. history: 2019-05-05
 Version : 0.9.0
 	Added rest API functions.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-17
+Version : 0.9.1
+	Add error codes related to polling authentication message.
+	MMS does not accept the polling request message not formatted by JSON.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -464,6 +470,12 @@ public class MessageRelayingHandler  {
 			// TODO: Youngjin Kim must inspect this following code.
 			else if (type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) {
 				parser.parseSvcMRNAndHexSign(req);
+				
+				if (parser.isJSONOfPollingMsg() == false){
+					message = ErrorCode.JSON_FORMAT_ERR.getJSONFormattedUTF8Bytes();
+					outputChannel.replyToSender(ctx, message, isRealtimeLog);
+				}
+				
 				if(MMSConfiguration.isWebLogProviding()) {
 					String log = "SessionID="+this.SESSION_ID+" This is a polling request and the service MRN is " + parser.getSvcMRN();
 					mmsLog.addBriefLogForStatus(log);
@@ -471,7 +483,7 @@ public class MessageRelayingHandler  {
 				}
 				
 				if(parser.getSvcMRN() == null) {
-					throw new IOException("Service MRN is not included");
+					throw new IOException("Service MRN is not included.");
 				}
 				
 				logger.info("SessionID="+this.SESSION_ID+" This is a polling request and the service MRN is " + parser.getSvcMRN());
@@ -500,7 +512,15 @@ public class MessageRelayingHandler  {
 							mmsLogForDebug.addLog(this.SESSION_ID, log);
 						}
 						logger.info("SessionID="+this.SESSION_ID+" Client verification is failed.");
-						throw new IOException("It is failed to verify the client.");
+						
+						if (cltVerifier.isMatching() == false) {
+							message = ErrorCode.AUTHENTICATION_FAIL_NOTMATCHING.getJSONFormattedUTF8Bytes();
+						}
+						else if (cltVerifier.isVerified() == false) {
+							message = ErrorCode.AUTHENTICATION_FAIL_REVOKED.getJSONFormattedUTF8Bytes();
+						}
+						
+						outputChannel.replyToSender(ctx, message, isRealtimeLog);
 					}
 				}
 				else {
@@ -510,6 +530,18 @@ public class MessageRelayingHandler  {
 						mmsLogForDebug.addLog(this.SESSION_ID, log);
 					}
 					logger.info(log);
+					
+					message = ErrorCode.NULL_CERTIFICATE.getJSONFormattedUTF8Bytes();		
+//					String msg = "The certificate is not inlcuded.";
+//					try {
+//						msg = "[\""+URLEncoder.encode(msg,"UTF-8")+"\"]";
+//					} catch (UnsupportedEncodingException e) {
+//						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".");
+//						for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+//							logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+//						}
+//					}
+					outputChannel.replyToSender(ctx, message, isRealtimeLog);
 				}
 
 				String svcMRN = parser.getSvcMRN();
@@ -888,21 +920,14 @@ public class MessageRelayingHandler  {
 			//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
 			//In this version 0.8.0, polling client verification is optional. 
 			if ((type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) && parser.getHexSignedData() != null && !isClientVerified) {
-				String msg = "";
-				try {
-					if (parser.getSvcMRN() == null) {
-						msg = "[Format Error] The service MRN is not included";
-					} 
-					else {
-						msg = "[\""+URLEncoder.encode("It is failed to verify the client.","UTF-8")+"\"]";
-					}
-				} catch (UnsupportedEncodingException e) {
-					logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".");
-					for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-						logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-					}
+				byte[] msg = null;
+				if (parser.getSvcMRN() == null) {
+					msg = ErrorCode.NULL_SVC_MRN.getJSONFormattedUTF8Bytes();
+				} 
+				else {
+					msg = ErrorCode.AUTHENTICATION_FAIL_REVOKED.getJSONFormattedUTF8Bytes();
 				}
-				outputChannel.replyToSender(ctx, msg.getBytes(), isRealtimeLog);
+				outputChannel.replyToSender(ctx, msg, isRealtimeLog);
 			}
 		}
 	}

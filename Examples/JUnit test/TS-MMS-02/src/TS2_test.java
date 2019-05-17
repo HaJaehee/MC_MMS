@@ -1,10 +1,3 @@
-/** 
-File name : TS2_server.java
-	Relaying message function for the purpose of testing MMS
-Author : YoungJin Kim (jcdad3000@kaist.ac.kr)
-Creation Date : 2018-09-13
-*/
-
 import static org.junit.Assert.*;
 
 import java.awt.List;
@@ -12,6 +5,20 @@ import java.util.ArrayList;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+/** 
+File name : TS2_server.java
+	Relaying message function for the purpose of testing MMS
+Author : YoungJin Kim (jcdad3000@kaist.ac.kr)
+Creation Date : 2018-09-13
+
+Rev. history : 2019-05-17
+Version : 0.9.1
+	Change the version from JUnit3 to JUnit4.
+	Change output because MMS return string is refined.
+	Running this test case with version 0.9.1 and the test is succeeded.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+*/
 
 public class TS2_test {
 
@@ -211,7 +218,7 @@ public class TS2_test {
 		
 		
 		
-		assertTrue(tmp.equals("Error: Null destination MRN."));
+		assertTrue(tmp.equals("[10003] Null destination MRN."));
 		
 	}
 }

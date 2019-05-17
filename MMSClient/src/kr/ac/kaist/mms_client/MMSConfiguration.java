@@ -45,5 +45,5 @@ public class MMSConfiguration {
 	public static final int LOC_UPDATE_INTERVAL = 5000;
 	public static float lat = (float)0.0;
 	public static float lon = (float)0.0;
-	public static final String USER_AGENT = "MMSClient/0.8.1";
+	public static final String USER_AGENT = "MMSClient/0.9.1";
 }

@@ -38,6 +38,8 @@ public class TS1_client {
 	public TS1_client() throws Exception {		
 
 		MMSConfiguration.MMS_URL="mms.smartnav.org:8088";			
+		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.DEBUG = false;
 		
 		sender.setSender(new MMSClientHandler.ResponseCallback() {
 			

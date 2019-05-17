@@ -10,6 +10,11 @@ File name : TS4_Test.java
 	message sequence test
 Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
 Creation Date : 2018-10-13
+
+Rev. history : 2019-05-17
+Version : 0.9.1
+	Running this test case with version 0.9.1 and the test case is succeeded.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
 public class TS4_test {

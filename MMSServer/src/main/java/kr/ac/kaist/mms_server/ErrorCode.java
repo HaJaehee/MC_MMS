@@ -7,6 +7,11 @@ File name : ErrorCode.java
 Author : Yunho Choi (choiking10@kaist.ac.kr)
 Creation Date : 2019-05-02
 Version : 0.9.0
+
+Rev. history : 2019-05-17
+Version : 0.9.1
+	Add error codes related to polling authentication message.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 import java.nio.charset.Charset;
 
@@ -19,10 +24,18 @@ public enum ErrorCode {
 	NULL_MRN("10004", "Null MRNs."),
 	WRONG_PARAM("10005", "Wrong parameter"),
 	
+
+	NULL_CERTIFICATE("10006", "The certificate is not inlcuded."),
+	NULL_SVC_MRN("10007", "The service MRN is not inlcuded."),
+	AUTHENTICATION_FAIL_REVOKED("10008", "It is failed to verify the client. The certificate has been revoked."),
+	JSON_FORMAT_ERR("10009", "The message is not formatted by JSON."),
+	AUTHENTICATION_FAIL_NOTMATCHING("10010", "It is failed to verify the client. The source MRN is not equal to the certificate's."),
+	
 	// Numbers greater than 10000 and lower than 20000 are internal error codes.
 	// Number 19XXX is related to the MMS monitoring service including dump MNS.
 	MONITORING_CONNECTION_ERR("19001", "Failed to connect to MMS monitoring service."),
 	DUMPMNS_LOGGING_ERR("19002", "Failed to connect to dump MNS."),
+
 	
 	// Number 18XXX is related to the relaying functions.
 	SEQUENTIAL_RELAYING_EXCEPTION_ERR("18001", "Exception error occured in sequentailly relaying function."),
@@ -49,11 +62,23 @@ public enum ErrorCode {
 	public byte[] getUTF8Bytes() {
 		return getUTF8Bytes(this.message);
 	}
+	public byte[] getJSONFormattedBytes() {
+		String msg = "[\""+toString()+"\"]";
+		return msg.getBytes();
+	}
+
+	public byte[] getJSONFormattedUTF8Bytes() {
+		String msg = "[\""+toString()+"\"]";
+		return msg.getBytes(Charset.forName("UTF-8"));
+	}
 	public byte[] getBytes(String message) {
-		return String.format("[%5s] %s", code, message).getBytes();
+		return toString().getBytes();
 	}
 
 	public byte[] getUTF8Bytes(String message) {
-		return String.format("[%5s] %s", code, message).getBytes(Charset.forName("UTF-8"));
+		return toString().getBytes(Charset.forName("UTF-8"));
+	}
+	public String toString() {
+		return String.format("[%5s] %s", code, message);
 	}
 }
