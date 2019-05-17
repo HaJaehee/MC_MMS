@@ -124,7 +124,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	public MRH_MessageInputChannel(String protocol) {
 		super();
 		this.protocol = protocol;
-		this.parser = new MessageParser();
+		
 		mmsLog = MMSLog.getInstance();
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
@@ -136,6 +136,14 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		
 		try {
 			req.retain();
+
+      
+			logger.info("Message received.");
+			SESSION_ID = ctx.channel().id().asShortText();
+
+			SessionManager.getSessionInfo().put(SESSION_ID, "");
+			
+			this.parser = new MessageParser(SESSION_ID);
 			try {
 				parser.parseMessage(ctx, req);
 			} catch (NumberFormatException | NullPointerException  e) {
@@ -149,12 +157,6 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			String svcMRN = parser.getSvcMRN();
     		String srcMRN = parser.getSrcMRN();
     		DUPLICATE_ID = srcMRN+svcMRN;
-      
-			logger.info("Message received.");
-			SESSION_ID = ctx.channel().id().asShortText();
-
-			SessionManager.getSessionInfo().put(SESSION_ID, "");
-			
 			
             relayingHandler = new MessageRelayingHandler(ctx, req, protocol, parser, SESSION_ID);
 		} 	finally {

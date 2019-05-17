@@ -138,10 +138,6 @@ public class MessageParser {
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
 
-	MessageParser(){
-		this(null);
-	}
-	
 
 	MessageParser(String sessionId){
 		this.SESSION_ID = sessionId;
@@ -164,7 +160,7 @@ public class MessageParser {
 		mmsLog = MMSLog.getInstance();
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
-
+	
 	void parseMessage(ChannelHandlerContext ctx, FullHttpRequest req) throws NullPointerException, NumberFormatException, IOException{
 		InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 	    InetAddress inetaddress = socketAddress.getAddress();
@@ -180,7 +176,7 @@ public class MessageParser {
 		srcMRN = req.headers().get("srcMRN");
 		dstMRN = req.headers().get("dstMRN");
 		
-		if (dstMRN.equals(MMSConfiguration.getMmsMrn()) && httpMethod == HttpMethod.POST && (uri.equals("/polling")||uri.equals("/long-polling"))) {
+		if (dstMRN != null && dstMRN.equals(MMSConfiguration.getMmsMrn()) && httpMethod == HttpMethod.POST && (uri.equals("/polling")||uri.equals("/long-polling"))) {
 			//When polling
 			parseSvcMRNAndHexSign(req);
 			
