@@ -42,6 +42,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.SessionManager;
+import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 
@@ -110,15 +111,12 @@ public class SeamlessRoamingHandler {
 
 		if (duplicateInfo.containsKey(DUPLICATE_ID)) {
 			
-			System.out.println("duplicate long polling request");
+//			System.out.println("duplicate long polling request");
 			
 			// TODO: To define error message.
-			String message;
+			byte[] message = ErrorCode.DUPLICATE_LONG_POLLING.getJSONFormattedUTF8Bytes();
 			
-			message = URLEncoder.encode("duplicate long polling request.","UTF-8");
-			message = "[\""+message+"\"]";
-			
-			outputChannel.replyToSender(ctx, message.getBytes());
+			outputChannel.replyToSender(ctx, message);
 			
 		} else {
 			duplicateInfo.put(DUPLICATE_ID, "y");

@@ -23,7 +23,6 @@ public enum ErrorCode {
 	NULL_DST_MRN("10003", "Null destination MRN."),
 	NULL_MRN("10004", "Null MRNs."),
 	WRONG_PARAM("10005", "Wrong parameter"),
-	
 
 	NULL_CERTIFICATE("10006", "The certificate is not inlcuded."),
 	NULL_SVC_MRN("10007", "The service MRN is not inlcuded."),
@@ -31,12 +30,13 @@ public enum ErrorCode {
 	JSON_FORMAT_ERR("10009", "The message is not formatted by JSON."),
 	AUTHENTICATION_FAIL_NOTMATCHING("10010", "It is failed to verify the client. The source MRN is not equal to the certificate's."),
 	
+	DUPLICATE_LONG_POLLING("10011", "The long polling request is already received. Duplicate request is not accepted."),
+	
 	// Numbers greater than 10000 and lower than 20000 are internal error codes.
 	// Number 19XXX is related to the MMS monitoring service including dump MNS.
 	MONITORING_CONNECTION_ERR("19001", "Failed to connect to MMS monitoring service."),
 	DUMPMNS_LOGGING_ERR("19002", "Failed to connect to dump MNS."),
 
-	
 	// Number 18XXX is related to the relaying functions.
 	SEQUENTIAL_RELAYING_EXCEPTION_ERR("18001", "Exception error occured in sequentailly relaying function."),
 	SEQUENTIAL_RELAYING_INITIALIZATION_ERR("18002", "Initialization problem occured in sequentailly relaying function.");
