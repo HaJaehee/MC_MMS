@@ -9,7 +9,14 @@ File name : TS5_test.java
 	Validation of MMS polling client
 Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
 Creation Date : 2018-10-16
+
+Rev. history : 2019-05-17
+Version : 0.9.1
+	This test case is deprecated
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
+
+@Deprecated
 public class TS5_test {
 
 	static TS5_client client;

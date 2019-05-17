@@ -1,18 +1,26 @@
 Patch Notes
 ***********
+10-May 2019
+MC_MMS 0.9.1 new features/enhancements & bug-fixes:
+1. Added restful API functions.
+2. Added exception handling functions.
+3. Added test cases for exception handling functions.
+4. Added functions for dropping duplicated polling request.
+5. Added test cases for dropping duplicated polling request.
+6. Updated MMS configuration.
+
 30-April 2019
 MC_MMS 0.9.0 new features/enhancements & bug-fixes:
 1. Updated deploying scripts for docker container.
 2. Added polling authentication test cases.
 3. Updated .gitignore.
 4. Bug fixed related to polling.
-5. Bug fixed related to relaying when a service provider does not respond. 
+5. Bug fixed related to relaying when a service provider does not respond.
 
 12-April 2019
 MC_MMS 0.8.2 new features/enhancements & bug-fixes:
 1. Modified for coding rule conformity.
-2. Updated version of docker containers of MMS monitoring module from 0.7 to 0.8.
-
+2. Updated version of docker containers of MMS monitoring module from 0.7 to 0.8.2.
 
 26-March 2019
 MC_MMS 0.8.2 new features/enhancements & bug-fixes:
@@ -25,12 +33,12 @@ MC_MMS 0.8.1 new features/enhancements & bug-fixes:
 8-March 2019
 MC_MMS 0.8.1 new features/enhancements & bug-fixes:
 1.Previously:
-		MMS server had a Map structure that has service MRN strings as keys and long polling booleans as values.
+	MMS server had a Map structure that has service MRN strings as keys and long polling booleans as values.
   Now:
-		MMS client is able to choose its polling method.
-		In a message header;
-			if the url is "/polling", then normal polling method is used.
-			else if the url is "/long_polling", then long polling method is used.
+	MMS client is able to choose its polling method.
+	In a message header;
+		if the url is "/polling", then normal polling method is used.
+		else if the url is "/long-polling", then long polling method is used.
 			
 2. Removed locator registering function.
 3. Duplicated polling requests are not allowed.

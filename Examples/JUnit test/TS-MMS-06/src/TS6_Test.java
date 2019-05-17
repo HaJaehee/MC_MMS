@@ -17,6 +17,7 @@ File name : TS6_Test.java
 	When measuring total elapsed time, a total time in the end of result must be deducted by n * 1 second such that n is the number of cases.
 Author : Jin Jeong (jungst0001@kaist.ac.kr)
 Creation Date : 2019-04-16
+Version : 0.8.2
 
 # This below case is a successful case.
 case 1: Client sends a polling message, formatted by JSON, with service MRN and certificate.
@@ -27,13 +28,14 @@ case 2: Client sends a polling message, not formatted by JSON (it means a previo
 case 3: Client sends a polling message, formatted by JSON, with only service MRN. Currently (the version of MMS is 0.8.X),
  		the message is accepted	temporally, but if the MMS is updated (since 0.9.X), this message will be declined by the MMS. 
 case 4: Client sends a polling message, formatted by JSON, with only certificate.
-//////
- * This case is deprecated.
-case 5: Client sends a polling message, formatted by JSON, with service MRN and certificate, but the service MRN has a problem such as not existed MRN.
-//////
 case 5: Client sends a polling message, formatted by JSON, with service MRN and certificate, but the certificate has been revoked.
 case 6: Client sends a polling message, formatted by JSON, with service MRN and certificate, 
 		but the source MRN has a problem that the source MRN does not match a MRN described in the certificate.
+		
+Rev. history : 2019-05-17
+Version : 0.9.1
+	Modify output of the test cases because of adding error code.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
 public class TS6_Test {
@@ -90,6 +92,7 @@ public class TS6_Test {
 	
 	@Test
 	public void test01() throws IOException, InterruptedException { 
+		System.out.println("Test 01 Start");
 		TS6_Client.sentMessage = null;
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
@@ -101,13 +104,14 @@ public class TS6_Test {
 		contentsBuilder.setCertificate(signedData);
 		client.sendPollingMessage(contentsBuilder.toString());
 
-//		System.out.println(TS6_Client.sentMessage);
+		System.out.println(TS6_Client.sentMessage);
 		assertTrue(TS6_Client.sentMessage.equals(server_message));
-		
+		System.out.println("Test 01 End");
 	}
 	
 	@Test
-	public void test02() throws IOException, InterruptedException {		
+	public void test02() throws IOException, InterruptedException {	
+		System.out.println("Test 02 Start");
 		TS6_Client.sentMessage = null;
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
@@ -122,7 +126,9 @@ public class TS6_Test {
 
 		System.out.println(message);
 		
-		assertTrue(TS6_Client.sentMessage.equals(server_message));	
+//		assertTrue(TS6_Client.sentMessage.equals(server_message));	
+		assertTrue(TS6_Client.sentMessage.equals("[10009] The message is not formatted by JSON."));
+		System.out.println("Test 02 End");
 	}
 	
 	/**
@@ -141,7 +147,8 @@ public class TS6_Test {
 		contentsBuilder.setServiceMRN(server.getMyMRN());
 		client.sendPollingMessage(contentsBuilder.toString());
 
-		assertTrue(TS6_Client.sentMessage.equals(server_message));	
+//		assertTrue(TS6_Client.sentMessage.equals(server_message));	
+		assertTrue(TS6_Client.sentMessage.equals("[10006] The certificate is not inlcuded."));
 	}
 	
 	@Test
@@ -155,7 +162,7 @@ public class TS6_Test {
 		String signedData = getSignedData(true);
 		contentsBuilder.setCertificate(signedData);
 		client.sendPollingMessage(contentsBuilder.toString());
-		assertTrue(TS6_Client.sentMessage.equals("[Format Error] The service MRN is not included"));	
+		assertTrue(TS6_Client.sentMessage.equals("[10007] The service MRN is not inlcuded."));	
 	}
 	
 	@Test
@@ -171,7 +178,7 @@ public class TS6_Test {
 		contentsBuilder.setCertificate(signedData);
 		client.sendPollingMessage(contentsBuilder.toString());
 
-		assertTrue(TS6_Client.sentMessage.equals("It is failed to verify the client."));
+		assertTrue(TS6_Client.sentMessage.equals("[10008] It is failed to verify the client. The certificate has been revoked."));
 	}
 
 	@Test
@@ -190,6 +197,6 @@ public class TS6_Test {
 		theClient.sendPollingMessage(contentsBuilder.toString());
 
 //		System.out.println(TS6_Client.sentMessage);
-		assertTrue(TS6_Client.sentMessage.equals("It is failed to verify the client."));
+		assertTrue(TS6_Client.sentMessage.equals("[10010] It is failed to verify the client. The source MRN is not equal to the certificate's."));
 	}
 }

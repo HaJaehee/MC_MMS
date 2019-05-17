@@ -109,7 +109,8 @@ public class SeamlessRoamingHandler {
 		//System.out.println("Duplicate ID : "+DUPLICATE_ID);
 
 		if (duplicateInfo.containsKey(DUPLICATE_ID)) {
-			//System.out.println("duplicate long polling request");
+			
+			System.out.println("duplicate long polling request");
 			
 			// TODO: To define error message.
 			String message;

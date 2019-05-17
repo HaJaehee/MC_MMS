@@ -30,7 +30,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 /**
  * It is an object that contains values for setting MMSClientHandler and SecureMMSClientHandler.
- * @version 0.8.2
+ * @version 0.9.1
  * @see MMSClientHandler
  * @see SecureMMSClientHandler
  */
@@ -45,5 +45,5 @@ public class MMSConfiguration {
 	public static final int LOC_UPDATE_INTERVAL = 5000;
 	public static float lat = (float)0.0;
 	public static float lon = (float)0.0;
-	public static final String USER_AGENT = "MMSClient/0.8.1";
+	public static final String USER_AGENT = "MMSClient/0.9.1";
 }

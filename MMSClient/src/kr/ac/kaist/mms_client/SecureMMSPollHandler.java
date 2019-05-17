@@ -71,9 +71,11 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import kr.ac.kaist.mms_client.MMSPollHandler.PollHandler;
+
 
 
 class SecureMMSPollHandler {
@@ -83,15 +85,53 @@ class SecureMMSPollHandler {
 	private String TAG = "[SecureMMSPollHandler] ";
 	private static final String USER_AGENT = MMSConfiguration.USER_AGENT;
 	private String clientMRN = null;
-	
+	private PollingRequestContents contents = null;
 	
 	SecureMMSPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, String pollingMethod, Map<String,List<String>> headerField) throws IOException{
 		String svcMRNWithHexSign = svcMRN;
-		if (hexSignedData != null) {
-			svcMRNWithHexSign = svcMRNWithHexSign+"\n"+hexSignedData;
-		}
+//		if (hexSignedData != null) {
+//			svcMRNWithHexSign = svcMRNWithHexSign+"\n"+hexSignedData;
+//		}
+		
+		contents = new PollingRequestContents(svcMRN, hexSignedData);
 		ph = new SecurePollingHandler(clientMRN, dstMRN, svcMRNWithHexSign, interval, pollingMethod, headerField);
 		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Polling handler is created");}
+	}
+	
+	private class PollingRequestContents {
+		private String svcMRN = null;
+		private String certificate = null;
+		
+		PollingRequestContents (String serviceMRN, String certificate){
+			this.svcMRN = serviceMRN;
+			this.certificate = certificate;
+		}
+		
+		private JSONObject makeJSONData(){
+			JSONObject data = new JSONObject();
+			
+			data.put("svcMRN", this.svcMRN);
+			data.put("certificate", this.certificate);
+		
+			return data;
+		}
+		
+		@Override
+		public String toString(){
+			String contents = this.makeJSONData().toJSONString();
+			
+//			System.out.println("[Test Message] : \n" + contents);
+			
+			return contents;
+		}
+		
+//		String getServiceMRN() {
+//			return this.svcMRN;
+//		}
+//		
+//		String getCertificate() {
+//			return this.certificate;
+//		}
 	}
 	
     //HJH
@@ -152,7 +192,7 @@ class SecureMMSPollHandler {
 				url = url+"/long-polling"; // Long polling request to MMS server. 
 			}
 			URL obj = new URL(url);
-			String data = svcMRNWithHexSign; 
+			String data = contents.toString(); 
 			
 			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 			con.setHostnameVerifier(hv);

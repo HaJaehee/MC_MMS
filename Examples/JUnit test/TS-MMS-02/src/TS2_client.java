@@ -27,6 +27,7 @@ public class TS2_client {
 	private MMSClientHandler empty_sender = new MMSClientHandler("");
 	public TS2_client() throws Exception {
 		MMSConfiguration.MMS_URL = "143.248.57.144:8088";
+		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 
 		sender.setSender(new MMSClientHandler.ResponseCallback() {
 

@@ -105,7 +105,7 @@ import java.util.Map;
 
 /**
  * This handler helps client communicate to MMS over HTTPS. Client uses it to send or receive messages.
- * @version 0.8.2
+ * @version 0.8.1
  * @see MMSClientHandler
  */
 public class SecureMMSClientHandler {
@@ -211,6 +211,7 @@ public class SecureMMSClientHandler {
 	 * @throws	IOException 	if exception occurs
 	 * @see 	PollingResponseCallback
 	 */	
+	@Deprecated
 	public void startPolling (String dstMRN, String svcMRN, int interval, PollingResponseCallback callback) throws IOException{
 		startPolling (dstMRN, svcMRN, null, interval, callback);
 	}

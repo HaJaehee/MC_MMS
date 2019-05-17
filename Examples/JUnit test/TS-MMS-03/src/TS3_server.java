@@ -30,10 +30,9 @@ public class TS3_server {
 	private MMSClientHandler myHandler = null;
 
 	public TS3_server() {
-		//MMSConfiguration.MMS_URL = "143.248.55.83:8088";
-		MMSConfiguration.MMS_URL="143.248.57.144:8088";
-
-//		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+//		MMSConfiguration.MMS_URL = "143.248.55.83:8088";
+//		MMSConfiguration.MMS_URL="143.248.57.144:8088";
+		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		MMSConfiguration.DEBUG = false;
 
 		try {
