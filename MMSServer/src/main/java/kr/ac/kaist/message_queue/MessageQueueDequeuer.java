@@ -220,7 +220,9 @@ class MessageQueueDequeuer extends Thread{
 		    	if (SessionManager.getSessionInfo().get(this.SESSION_ID) != null) {
 		    		SessionManager.getSessionInfo().remove(this.SESSION_ID);
 		    	}
-
+		    	if(SeamlessRoamingHandler.getDuplicateInfo().get(DUPLICATE_ID)!=null) {
+		    		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
+		    	}
 			    outputChannel.replyToSender(ctx, message.toString().getBytes());
 			} 
 			else { //If the queue does not have any message, message count == 0

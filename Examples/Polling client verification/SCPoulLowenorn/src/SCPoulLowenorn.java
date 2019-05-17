@@ -55,12 +55,11 @@ public class SCPoulLowenorn {
 		String hexSignedData_active = byteConverter.byteArrToHexString(signedData_active);
 		
 		//===== revoked certificate =====
-		//String privateKeyPath_revoked = "PrivateKey_POUL_LOWENORN_revoked.pem";
-		//String certPath_revoked = "Certificate_POUL_LOWENORN_revoked.pem";
-		
-		//byte[] signedData_revoked = clientPKILib.generateSignedData(content, privateKeyPath_revoked, certPath_revoked);
-		//String hexSignedData_revoked = byteConverter.byteArrToHexString(signedData_revoked);
-
+//		String privateKeyPath_revoked = "PrivateKey_POUL_LOWENORN_revoked.pem";
+//		String certPath_revoked = "Certificate_POUL_LOWENORN_revoked.pem";
+//		
+//		byte[] signedData_revoked = clientPKILib.generateSignedData(content, privateKeyPath_revoked, certPath_revoked);
+//		String hexSignedData_revoked = byteConverter.byteArrToHexString(signedData_revoked);
 
 		polling.startPolling(dstMRN, svcMRN, hexSignedData_active, pollInterval, 
 				new MMSClientHandler.PollingResponseCallback() {
@@ -70,7 +69,7 @@ public class SCPoulLowenorn {
 			public void callbackMethod(Map<String, List<String>> headerField, List<String> messages) {
 				// TODO Auto-generated method stub
 				for (String s : messages) {
-					System.out.print(s);
+					System.out.println(s);
 				}
 			}
 		});

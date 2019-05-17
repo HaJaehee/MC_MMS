@@ -50,11 +50,23 @@ public enum ErrorCode {
 	public byte[] getUTF8Bytes() {
 		return getUTF8Bytes(this.message);
 	}
+	public byte[] getJSONFormattedBytes() {
+		String msg = "[\""+toString()+"\"]";
+		return msg.getBytes();
+	}
+
+	public byte[] getJSONFormattedUTF8Bytes() {
+		String msg = "[\""+toString()+"\"]";
+		return msg.getBytes(Charset.forName("UTF-8"));
+	}
 	public byte[] getBytes(String message) {
-		return String.format("[%5s] %s", code, message).getBytes();
+		return toString().getBytes();
 	}
 
 	public byte[] getUTF8Bytes(String message) {
-		return String.format("[%5s] %s", code, message).getBytes(Charset.forName("UTF-8"));
+		return toString().getBytes(Charset.forName("UTF-8"));
+	}
+	public String toString() {
+		return String.format("[%5s] %s", code, message);
 	}
 }

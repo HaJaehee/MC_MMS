@@ -511,8 +511,17 @@ public class MessageRelayingHandler  {
 					}
 					logger.info(log);
 					
-					message = ErrorCode.NULL_CERTIFICATE.getUTF8Bytes();
-					throw new IOException("Client's certificate is not included.");
+					message = ErrorCode.NULL_CERTIFICATE.getJSONFormattedUTF8Bytes();		
+//					String msg = "The certificate is not inlcuded.";
+//					try {
+//						msg = "[\""+URLEncoder.encode(msg,"UTF-8")+"\"]";
+//					} catch (UnsupportedEncodingException e) {
+//						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".");
+//						for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+//							logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+//						}
+//					}
+					outputChannel.replyToSender(ctx, message, isRealtimeLog);
 				}
 
 				String svcMRN = parser.getSvcMRN();
@@ -541,6 +550,11 @@ public class MessageRelayingHandler  {
 				
 				if (type == MessageTypeDecider.msgType.POLLING) {
 //					System.out.println("[RelayingHandler]-[InPolling] serviceMRN: " + svcMRN);
+					if(MMSConfiguration.isWebLogProviding()) {
+						String log = "SessionID="+this.SESSION_ID+" aaadwsadsadasd";
+						mmsLog.addBriefLogForStatus(log);
+						mmsLogForDebug.addLog(this.SESSION_ID, log);
+					}
 					srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, "normal", svcMRN);
 				} else if (type == MessageTypeDecider.msgType.LONG_POLLING) {
 					srh.processPollingMessage(outputChannel, ctx, srcMRN, srcIP, "long", svcMRN);
