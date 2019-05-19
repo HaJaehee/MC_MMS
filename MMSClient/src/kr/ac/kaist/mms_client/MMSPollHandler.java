@@ -135,7 +135,9 @@ class MMSPollHandler {
 		private String pollingRequestContents = null;
 		private String pollingMethod = null;
 		private boolean interrupted=false;
-		private Map<String,List<String>> headerField = null;
+		private Map<String,List<String>> headerField = null;	
+		
+	
 		MMSClientHandler.PollingResponseCallback myCallback = null;
 
     	PollHandler (String clientMRN, String dstMRN, int interval, String pollingMethod, Map<String,List<String>> headerField){
@@ -180,10 +182,10 @@ class MMSPollHandler {
 				String url = "http://"+MMSConfiguration.MMS_URL;
 			
 				if (pollingMethod == null || pollingMethod.equals("normal")) {
-					url = url+"/polling"; // Polling request to MMS server.
+					url = url+"/polling"; // Polling request to MMS server.				
 				}
 				else if (pollingMethod.equals("long")) {
-					url = url+"/long-polling"; // Long polling request to MMS server. 
+					url = url+"/long-polling"; // Long polling request to MMS server.					
 				}
 				URL obj = new URL(url);
 				String data = contents.toString(); 
