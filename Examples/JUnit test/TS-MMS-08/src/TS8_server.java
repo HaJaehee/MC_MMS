@@ -41,12 +41,7 @@ public class TS8_server {
 
 				@Override
 				public void callbackMethod(Map<String, List<String>> headerField, String message) {
-					// TODO Auto-generated method stub
-					if (headerField.get("Response-code") != null) {
-						int code = Integer.parseInt(headerField.get("Response-code").get(0));
-						response = code;
-						System.out.println("Response : " +response);
-					}
+					// TODO Auto-generated method stub				
 				}
 
 			});

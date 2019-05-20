@@ -1,14 +1,9 @@
 /** 
-File name : TS8_server.java
-	Dropping duplicate long polling request test 
-Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
-Creation Date : 2019-05-10
+File name : TS9_server.java
+ * Client Type decide junit test 
+ * of testing MMS Author : Youngjin Kim (jcdad3000@kaist.ac.kr) Creation Date :
+ * 2019-05-20
 
-
- * Rev. history : 2019-05-17
- * Version : 0.9.1
- *		Added assert statements.
- * Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 
 import java.io.IOException;

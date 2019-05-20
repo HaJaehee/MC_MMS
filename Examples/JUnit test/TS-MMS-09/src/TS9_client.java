@@ -10,13 +10,11 @@ import net.etri.pkilib.client.ClientPKILibrary;
 import net.etri.pkilib.tool.ByteConverter;
 
 /**
- * File name : TS6_client.java Polling request message function for the purpose
+ * File name : TS9_client.java 
+ * Client Type decide junit test 
  * of testing MMS Author : Youngjin Kim (jcdad3000@kaist.ac.kr) Creation Date :
- * 2019-05-02
- * 
- * 
- * Rev. history : 2019-05-17 Version : 0.9.1 Added assert statements. Modifier :
- * Jaehee Ha (jaehee.ha@kaist.ac.kr)
+ * 2019-05-20
+ 
  */
 public class TS9_client {
 

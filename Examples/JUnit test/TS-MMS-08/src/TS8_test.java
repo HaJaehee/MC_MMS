@@ -41,15 +41,13 @@ public class TS8_test {
 		response = new ArrayList<String>();
 				
 		server.sendContent(actual);	
-		//Thread.sleep(1000);
 		
-		System.out.println("response : " +server.getResponse());
-		//expected = client.pollingReqeust();	
 		client.singleThreadStart(); /// Do not 
 		Thread.sleep(10000);	
 		
 		for (String s : response) {
 			expected = response.size();
+			System.out.println("Message : "+ s);
 			if (s.equals("aa")) {
 				testPass = true;
 				actual++;
@@ -69,15 +67,13 @@ public class TS8_test {
 		response = new ArrayList<String>();
 				
 		server.sendContent(actual);	
-		//Thread.sleep(1000);
 		
-		System.out.println("response : " +server.getResponse());
-		//expected = client.pollingReqeust();	
 		client.multipleThreadStart();
 		Thread.sleep(10000);
 		
 		for (String s : response) {
 			expectedError = response.size()-1;
+			System.out.println("Message : "+ s);
 			if (s.equals("aa")) {
 				testPass = true;
 				actual++;

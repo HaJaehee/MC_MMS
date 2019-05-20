@@ -1,13 +1,10 @@
 /** 
-File name : TS8_test.java
-	Dropping duplicate long polling request test 
-Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
-Creation Date : 2019-05-10
+File name : TS9_test.java
 
- * Rev. history : 2019-05-17
- * Version : 0.9.1
- *		Added assert statements.
- * Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+ * Client Type decide junit test 
+ * of testing MMS Author : Youngjin Kim (jcdad3000@kaist.ac.kr) Creation Date :
+ * 2019-05-20
+
 */
 
 import static org.junit.Assert.assertTrue;
