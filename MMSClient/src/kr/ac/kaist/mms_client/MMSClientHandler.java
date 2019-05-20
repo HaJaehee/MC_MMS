@@ -1,4 +1,5 @@
 package kr.ac.kaist.mms_client;
+
 /* -------------------------------------------------------- */
 /** 
 File name : MMSClientHandler.java
@@ -108,6 +109,11 @@ Rev. history: 2019-03-19
 Version : 0.8.2
 	MMS Client sends a polling request message which is a JSON format.
 Modifier : Jin Jung (jungst0001@kaist.ac.kr)
+
+Rev. history: 2019-05-20
+Version : 0.9.1
+	Long Polling Checker and Normal Polling Checker is added.
+Modifier : YoungJin Kim (jcdad3000@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -115,31 +121,47 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-
 /**
- * It is an object that can communicate to MMS through HTTP and send or receive messages of other objects.
+ * It is an object that can communicate to MMS through HTTP and send or receive
+ * messages of other objects.
+ * 
  * @version 0.9.1
  * @see SecureMMSClientHandler
  */
 public class MMSClientHandler {
-	
+
 	private String TAG = "[MMSClientHandler] ";
-	
+
 	private RcvHandler rcvHandler = null;
 	private MMSPollHandler pollHandler = null;
 	private SendHandler sendHandler = null;
 	private String clientMRN = "";
 	private int clientPort = 0;
-	private Map<String,List<String>> headerField = null;
+	private Map<String, List<String>> headerField = null;
+
+	// Youngjin Added
+	
+	private boolean normalChecker = false;
+	private boolean longChecker = false;
+
+	public boolean getNormalchecker() {
+		return normalChecker;
+	}
+
+	public boolean getLongChecker() {
+		return longChecker;
+	}
+
 
 	/**
 	 * The Constructor of MMSClientHandler class
-	 * @param	clientMRN		the MRN of client
-	 * @throws	IOException 	if exception occurs
-	 */	
-	public MMSClientHandler(String clientMRN) throws IOException, NullPointerException{
+	 * 
+	 * @param clientMRN the MRN of client
+	 * @throws IOException if exception occurs
+	 */
+	public MMSClientHandler(String clientMRN) throws IOException, NullPointerException {
 		if (clientMRN == null) {
-			System.out.println(TAG+"Failed! Client MRN must not be null.");
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
 			throw new NullPointerException();
 		}
 		this.clientMRN = clientMRN;
@@ -147,118 +169,151 @@ public class MMSClientHandler {
 		pollHandler = null;
 		sendHandler = null;
 	}
-	
+
 	/**
 	 * This interface is used to handle the response to polling request.
-	 * @see		MMSClientHandler#startPolling(String, String, int, PollingResponseCallback)
+	 * 
+	 * @see MMSClientHandler#startPolling(String, String, int,
+	 *      PollingResponseCallback)
 	 */
-	public interface PollingResponseCallback{
+	public interface PollingResponseCallback {
 		/**
-		 * Argument list&lt;String&gt; messages means the list of messages about polling response.
-		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for polling response.
-		 * @param headerField	The received header field of the response message 
-		 * @param messages		The response messages
+		 * Argument list&lt;String&gt; messages means the list of messages about polling
+		 * response. Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set
+		 * of headers for polling response.
+		 * 
+		 * @param headerField The received header field of the response message
+		 * @param messages    The response messages
 		 */
-		void callbackMethod(Map<String,List<String>> headerField, List<String> messages);
+		void callbackMethod(Map<String, List<String>> headerField, List<String> messages);
 	}
-	
+
 	/**
-	 * This interface is used to handle the response to be sent when a message is received.
-	 * @see		MMSClientHandler#setServerPort(int, RequestCallback)
-	 * @see		MMSClientHandler#setServerPort(int, String, RequestCallback)
+	 * This interface is used to handle the response to be sent when a message is
+	 * received.
+	 * 
+	 * @see MMSClientHandler#setServerPort(int, RequestCallback)
+	 * @see MMSClientHandler#setServerPort(int, String, RequestCallback)
 	 */
-	public interface RequestCallback{
+	public interface RequestCallback {
 		/**
-		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
-		 * Argument list&lt;String&gt; messages means the list of messages about HTTP requests.
-		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP requests.
-		 * @param headerField	The received header field of the request message 
-		 * @param message		The request message
-		 * @return String		The response message
+		 * When a client sends an HTTP request to a server, the server performs a
+		 * RequestCallback after receiving the request. Argument list&lt;String&gt;
+		 * messages means the list of messages about HTTP requests. Argument
+		 * Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP
+		 * requests.
+		 * 
+		 * @param headerField The received header field of the request message
+		 * @param message     The request message
+		 * @return String The response message
 		 */
-		String respondToClient(Map<String,List<String>> headerField, String message);
+		String respondToClient(Map<String, List<String>> headerField, String message);
+
 		/**
-		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
-		 * Argument list&lt;String&gt; messages means the list of messages about HTTP requests.
-		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP requests.
-		 * @return Integer		The response code
+		 * When a client sends an HTTP request to a server, the server performs a
+		 * RequestCallback after receiving the request. Argument list&lt;String&gt;
+		 * messages means the list of messages about HTTP requests. Argument
+		 * Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP
+		 * requests.
+		 * 
+		 * @return Integer The response code
 		 */
 		int setResponseCode();
+
 		/**
-		 * When a client sends an HTTP request to a server, the server performs a RequestCallback after receiving the request. 
-		 * Argument list&lt;String&gt; messages means the list of messages about HTTP requests.
-		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP requests.
-		 * @return Map		The header field of the response message.
+		 * When a client sends an HTTP request to a server, the server performs a
+		 * RequestCallback after receiving the request. Argument list&lt;String&gt;
+		 * messages means the list of messages about HTTP requests. Argument
+		 * Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for HTTP
+		 * requests.
+		 * 
+		 * @return Map The header field of the response message.
 		 */
-		Map<String,List<String>> setResponseHeader();
+		Map<String, List<String>> setResponseHeader();
 	}
-	
+
 	/**
-	 * This interface is used to handle the response to be received when a message is sent.
-	 * @see		MMSClientHandler#setSender(ResponseCallback)
+	 * This interface is used to handle the response to be received when a message
+	 * is sent.
+	 * 
+	 * @see MMSClientHandler#setSender(ResponseCallback)
 	 */
-	public interface ResponseCallback{
+	public interface ResponseCallback {
 		/**
-		 * When the server sends a response to the HTTP request sent by the client, the client performs a ResponseCallback.
-		 * Argument list&lt;String&gt; messages means the list of messages about response.
-		 * Argument Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for response.
-		 * @param headerField	The received header field of the response message 
-		 * @param message		The response message
+		 * When the server sends a response to the HTTP request sent by the client, the
+		 * client performs a ResponseCallback. Argument list&lt;String&gt; messages
+		 * means the list of messages about response. Argument
+		 * Map&lt;String,List&lt;String&gt;&gt; HeaderField is a set of headers for
+		 * response.
+		 * 
+		 * @param headerField The received header field of the response message
+		 * @param message     The response message
 		 */
-		void callbackMethod(Map<String,List<String>> headerField, String message);
+		void callbackMethod(Map<String, List<String>> headerField, String message);
 	}
-	
-	
+
 	// TODO: Youngjin Kim must inspect this following code.
 	/**
-	 * This method helps MMS client to request polling to a MMS. When using this method, MMS client sends polling request
-	 * per interval (ms). When the MMS receives the polling request, if there are messages toward the client, 
-	 * the messages are sent to the MMS client, who has requested polling, from the MMS. And then the MMS client executes
-	 * a callbackMethod. Depending on whether it is the way of normal polling or long polling,
-	 * the way of response is different.
-	 * @param	dstMRN			the MRN of MMS to request polling
-	 * @param	svcMRN			the MRN of service, which may send to client
-	 * @param	interval		the frequency of polling (unit of time: ms). If interval is 0, the client does long polling.
-	 * @param	callback		the callback interface of {@link PollingResponseCallback}
-	 * @throws	IOException 	if exception occurs
-	 * @see 	PollingResponseCallback
-	 */	
+	 * This method helps MMS client to request polling to a MMS. When using this
+	 * method, MMS client sends polling request per interval (ms). When the MMS
+	 * receives the polling request, if there are messages toward the client, the
+	 * messages are sent to the MMS client, who has requested polling, from the MMS.
+	 * And then the MMS client executes a callbackMethod. Depending on whether it is
+	 * the way of normal polling or long polling, the way of response is different.
+	 * 
+	 * @param dstMRN   the MRN of MMS to request polling
+	 * @param svcMRN   the MRN of service, which may send to client
+	 * @param interval the frequency of polling (unit of time: ms). If interval is
+	 *                 0, the client does long polling.
+	 * @param callback the callback interface of {@link PollingResponseCallback}
+	 * @throws IOException if exception occurs
+	 * @see PollingResponseCallback
+	 */
 	@Deprecated
-	public void startPolling (String dstMRN, String svcMRN, int interval, PollingResponseCallback callback) throws IOException{
-		startPolling (dstMRN, svcMRN, null, interval, callback);
+	public void startPolling(String dstMRN, String svcMRN, int interval, PollingResponseCallback callback)
+			throws IOException {
+		startPolling(dstMRN, svcMRN, null, interval, callback);
 	}
-	
-	
+
 	// TODO: Youngjin Kim must inspect this following code.
 	/**
-	 * This method helps MMS client to request polling to a MMS. When using this method, MMS client sends polling request
-	 * per interval (ms). When the MMS receives the polling request, if there are messages toward the client, 
-	 * the messages are sent to the MMS client, who has requested polling, from the MMS. And then the MMS client executes
-	 * a callbackMethod. Depending on whether it is the way of normal polling or long polling,
-	 * the way of response is different.
-	 * @param	dstMRN			the MRN of MMS to request polling
-	 * @param	svcMRN			the MRN of service, which may send to client
-	 * @param	hexSignedData	the hex signed data for client verification
-	 * @param	interval		the frequency of polling (unit of time: ms). If the interval is 0, the client does long polling.
-	 * @param	callback		the callback interface of {@link PollingResponseCallback}
-	 * @throws	IOException 	if exception occurs
-	 * @see 	PollingResponseCallback
-	 */	
-	public void startPolling (String dstMRN, String svcMRN, String hexSignedData, int interval, PollingResponseCallback callback) throws IOException{
+	 * This method helps MMS client to request polling to a MMS. When using this
+	 * method, MMS client sends polling request per interval (ms). When the MMS
+	 * receives the polling request, if there are messages toward the client, the
+	 * messages are sent to the MMS client, who has requested polling, from the MMS.
+	 * And then the MMS client executes a callbackMethod. Depending on whether it is
+	 * the way of normal polling or long polling, the way of response is different.
+	 * 
+	 * @param dstMRN        the MRN of MMS to request polling
+	 * @param svcMRN        the MRN of service, which may send to client
+	 * @param hexSignedData the hex signed data for client verification
+	 * @param interval      the frequency of polling (unit of time: ms). If the
+	 *                      interval is 0, the client does long polling.
+	 * @param callback      the callback interface of
+	 *                      {@link PollingResponseCallback}
+	 * @throws IOException if exception occurs
+	 * @see PollingResponseCallback
+	 */
+	public void startPolling(String dstMRN, String svcMRN, String hexSignedData, int interval,
+			PollingResponseCallback callback) throws IOException {
 		if (this.sendHandler != null) {
-			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
+			System.out.println(
+					TAG + "Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
 		} else if (this.rcvHandler != null) {
-			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
+			System.out.println(TAG
+					+ "Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
 		} else {
 			if (interval == 0) {
-				System.out.println(TAG+"Long-polling mode"); //TODO: Long-polling could have trouble when session disconnect.
+				System.out.println(TAG + "Long-polling mode"); // TODO: Long-polling could have trouble when session
+																// disconnect.
 				this.pollHandler = new LongPollHandler(clientMRN, dstMRN, svcMRN, hexSignedData, interval, headerField);
-			} else if (interval < 0){
-				System.out.println(TAG+"Failed! Polling interval must be 0 or positive integer");
+				longChecker = true;
+			} else if (interval < 0) {
+				System.out.println(TAG + "Failed! Polling interval must be 0 or positive integer");
 				return;
-			}
-			else {
+			} else {
 				this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, hexSignedData, interval, headerField);
+				normalChecker = true;
 			}
 			this.pollHandler.ph.setPollingResponseCallback(callback);
 			this.pollHandler.ph.start();
@@ -266,364 +321,383 @@ public class MMSClientHandler {
 	}
 
 	/**
-	 * This method helps client to stop polling requests using interrupt signal. 
+	 * This method helps client to stop polling requests using interrupt signal.
 	 */
-	public void stopPolling (){
+	public void stopPolling() {
 		this.pollHandler.ph.markInterrupted();
 		this.pollHandler.ph.interrupt();
 	}
 
-	
-	private boolean isErrorForSettingServerPort (){
+	private boolean isErrorForSettingServerPort() {
 		if (this.sendHandler != null) {
-			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
+			System.out.println(
+					TAG + "Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
 			return true;
 		} else if (this.pollHandler != null) {
-			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done startPolling()");
+			System.out.println(TAG
+					+ "Failed! MMSClientHandler must have exactly one function! It already has done startPolling()");
 			return true;
 		}
 		return false;
 	}
-	
+
 	/**
-	 * This method configures client's port to act as a HTTP server and to create the rcvHandler object.
-	 * It is used in a situation where the network supports push method. It receives all messages toward itself.
-	 * When a message is received via the callback method, it is possible to handle the response to be sent.
-	 * @param	port			port number
-	 * @param	callback		callback interface of {@link RequestCallback}
-	 * @throws	IOException 	if exception occurs
-	 * @see 	#setServerPort(int, String, RequestCallback)
-	 * @see 	#addContext(String)
-	 */	
-	public void setServerPort (int port, RequestCallback callback) throws IOException{
-		if (!isErrorForSettingServerPort()){
+	 * This method configures client's port to act as a HTTP server and to create
+	 * the rcvHandler object. It is used in a situation where the network supports
+	 * push method. It receives all messages toward itself. When a message is
+	 * received via the callback method, it is possible to handle the response to be
+	 * sent.
+	 * 
+	 * @param port     port number
+	 * @param callback callback interface of {@link RequestCallback}
+	 * @throws IOException if exception occurs
+	 * @see #setServerPort(int, String, RequestCallback)
+	 * @see #addContext(String)
+	 */
+	public void setServerPort(int port, RequestCallback callback) throws IOException {
+		if (!isErrorForSettingServerPort()) {
 			this.rcvHandler = new RcvHandler(port);
 			setPortAndCallback(port, callback);
 		}
 	}
-	
+
 	/**
-	 * This method configures client's port to act as a HTTP server and to create the rcvHandler object.
-	 * It is used in a situation where the network supports push method. This method configures default context and 
-	 * it receives messages that url matches the default context. When a message is received via the 
+	 * This method configures client's port to act as a HTTP server and to create
+	 * the rcvHandler object. It is used in a situation where the network supports
+	 * push method. This method configures default context and it receives messages
+	 * that url matches the default context. When a message is received via the
 	 * callback method, it is possible to handle the response to be sent.
-	 * @param	port			port number
-	 * @param	context			context (e.g. /get/messages/)
-	 * @param	callback		callback interface of {@link RequestCallback}
-	 * @throws	IOException 	if exception occurs
-	 * @see 	#setServerPort(int, RequestCallback)
-	 * @see 	#addContext(String)
-	 */	
-	public void setServerPort (int port, String context, RequestCallback callback) throws IOException{
-		if (!isErrorForSettingServerPort()){
+	 * 
+	 * @param port     port number
+	 * @param context  context (e.g. /get/messages/)
+	 * @param callback callback interface of {@link RequestCallback}
+	 * @throws IOException if exception occurs
+	 * @see #setServerPort(int, RequestCallback)
+	 * @see #addContext(String)
+	 */
+	public void setServerPort(int port, String context, RequestCallback callback) throws IOException {
+		if (!isErrorForSettingServerPort()) {
 			this.rcvHandler = new RcvHandler(port, context);
 			setPortAndCallback(port, callback);
 		}
 	}
-	
+
 	/**
-	 * This method configures client's port to act as a HTTP file server and to create the rcvHandler object.
-	 * It is used in a situation where the network supports push method. This method configures default context and 
-	 * it receives messages that url matches the default context. When a message is received via the 
-	 * callback method, it is possible to handle the response to be sent.
-	 * @param	port			the port number
-	 * @param	fileDirectory	the file path (e.g. /files/ocean/waves/)
-	 * @param	fileName		the file name (e.g. mokpo.xml)
-	 * @throws	IOException 	if exception occurs
-	 * @see 	#addFileContext(String, String)
-	 */	
-	public void setFileServerPort (int port, String fileDirectory, String fileName) throws IOException {
-		if (!isErrorForSettingServerPort()){
+	 * This method configures client's port to act as a HTTP file server and to
+	 * create the rcvHandler object. It is used in a situation where the network
+	 * supports push method. This method configures default context and it receives
+	 * messages that url matches the default context. When a message is received via
+	 * the callback method, it is possible to handle the response to be sent.
+	 * 
+	 * @param port          the port number
+	 * @param fileDirectory the file path (e.g. /files/ocean/waves/)
+	 * @param fileName      the file name (e.g. mokpo.xml)
+	 * @throws IOException if exception occurs
+	 * @see #addFileContext(String, String)
+	 */
+	public void setFileServerPort(int port, String fileDirectory, String fileName) throws IOException {
+		if (!isErrorForSettingServerPort()) {
 			this.clientPort = port;
 			this.rcvHandler = new RcvHandler(port, fileDirectory, fileName);
 		}
 	}
-	
-	private void setPortAndCallback (int port, RequestCallback callback) {
+
+	private void setPortAndCallback(int port, RequestCallback callback) {
 		this.clientPort = port;
 		this.rcvHandler.hrh.setRequestCallback(callback);
 	}
-	
+
 	/**
 	 * Add context to client's HTTP server
-	 * @param 	context			the context (e.g. /get/messages/)
-	 * @see 	#setServerPort(int, RequestCallback)
-	 * @see 	#setServerPort(int, String, RequestCallback)
+	 * 
+	 * @param context the context (e.g. /get/messages/)
+	 * @see #setServerPort(int, RequestCallback)
+	 * @see #setServerPort(int, String, RequestCallback)
 	 */
-	public void addContext (String context) {
-		if(this.rcvHandler != null) {
+	public void addContext(String context) {
+		if (this.rcvHandler != null) {
 			this.rcvHandler.addContext(context);
 		} else {
-			System.out.println(TAG+"Failed! HTTP server is required! Do setServerPort()");
+			System.out.println(TAG + "Failed! HTTP server is required! Do setServerPort()");
 		}
 	}
-	
+
 	/**
 	 * Add file directory and file name to client's HTTP file server
-	 * @param 	fileDirectory	the file path (e.g. /files/ocean/waves/)
-	 * @param 	fileName		the file name (e.g. mokpo.xml)
-	 * @see 	#setFileServerPort(int, String, String)
+	 * 
+	 * @param fileDirectory the file path (e.g. /files/ocean/waves/)
+	 * @param fileName      the file name (e.g. mokpo.xml)
+	 * @see #setFileServerPort(int, String, String)
 	 */
-	public void addFileContext (String fileDirectory, String fileName) {
-		if(this.rcvHandler != null) {
+	public void addFileContext(String fileDirectory, String fileName) {
+		if (this.rcvHandler != null) {
 			this.rcvHandler.addFileContext(fileDirectory, fileName);
 		} else {
-			System.out.println(TAG+"Failed! HTTP file server is required! Do setFileServerPort()");
+			System.out.println(TAG + "Failed! HTTP file server is required! Do setFileServerPort()");
 		}
 	}
-	
+
 	/**
-	 * This method is used to set in MMS client in order to send message. If using this method, it is possible 
-	 * to use sendPostMsg and sendGetMsg method. When the client send a message, it can handle the response to 
-	 * be received via callback interface.
-	 * @param 	callback		the callback interface of {@link ResponseCallback} 
-	 * @see 	#sendGetMsg(String)
-	 * @see	 	#sendGetMsg(String, String, String)
-	 * @see 	#sendPostMsg(String, String)
-	 * @see 	#sendPostMsg(String, String, String)
-	 * @see		ResponseCallback
+	 * This method is used to set in MMS client in order to send message. If using
+	 * this method, it is possible to use sendPostMsg and sendGetMsg method. When
+	 * the client send a message, it can handle the response to be received via
+	 * callback interface.
+	 * 
+	 * @param callback the callback interface of {@link ResponseCallback}
+	 * @see #sendGetMsg(String)
+	 * @see #sendGetMsg(String, String, String)
+	 * @see #sendPostMsg(String, String)
+	 * @see #sendPostMsg(String, String, String)
+	 * @see ResponseCallback
 	 */
-	public void setSender (ResponseCallback callback) {
+	public void setSender(ResponseCallback callback) {
 		if (this.rcvHandler != null) {
-			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort()");
+			System.out.println(TAG
+					+ "Failed! MMSClientHandler must have exactly one function! It already has done setServerPort()");
 		} else if (this.pollHandler != null) {
-			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done startPolling()");
+			System.out.println(TAG
+					+ "Failed! MMSClientHandler must have exactly one function! It already has done startPolling()");
 		} else {
 			this.sendHandler = new SendHandler(clientMRN);
 			this.sendHandler.setResponseCallback(callback);
 		}
-		
-	}
-	
 
-	//HJH
+	}
+
+	// HJH
 	/**
 	 * When sending a message, add custom header to HTTP header field
-	 * @param 	headerField		Key and value for additional header
-	 * @throws 	Exception		if exception occurs
+	 * 
+	 * @param headerField Key and value for additional header
+	 * @throws Exception if exception occurs
 	 */
-	public void setMsgHeader(Map<String,List<String>> headerField) throws Exception{
+	public void setMsgHeader(Map<String, List<String>> headerField) throws Exception {
 		this.headerField = headerField;
 	}
-	
+
 	/**
-	 * Send a POST message via MMS to the destination MRN corresponding to the location URL
-	 * @param 	dstMRN			the destination MRN to send data
-	 * @param 	loc				url location
-	 * @param 	data			the data to send
-	 * @throws 	Exception		if exception occurs
-	 * @see		#sendPostMsg(String, String)
-	 * @see		#setSender(ResponseCallback)
+	 * Send a POST message via MMS to the destination MRN corresponding to the
+	 * location URL
+	 * 
+	 * @param dstMRN the destination MRN to send data
+	 * @param loc    url location
+	 * @param data   the data to send
+	 * @throws Exception if exception occurs
+	 * @see #sendPostMsg(String, String)
+	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendPostMsg(String dstMRN, String loc, String data) throws Exception{
+	public void sendPostMsg(String dstMRN, String loc, String data) throws Exception {
 		if (this.sendHandler == null) {
-			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else {
 			this.sendHandler.sendHttpPost(dstMRN, loc, data, headerField);
 		}
 	}
-	
+
 	/**
 	 * Send a POST message to the destination MRN via MMS
-	 * @param 	dstMRN			the destination MRN to send data
-	 * @param 	data			the data to send
-	 * @throws 	Exception		if exception occurs
-	 * @see		#sendPostMsg(String, String, String)
-	 * @see		#setSender(ResponseCallback)
+	 * 
+	 * @param dstMRN the destination MRN to send data
+	 * @param data   the data to send
+	 * @throws Exception if exception occurs
+	 * @see #sendPostMsg(String, String, String)
+	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendPostMsg(String dstMRN, String data) throws Exception{
+	public void sendPostMsg(String dstMRN, String data) throws Exception {
 		if (this.sendHandler == null) {
-			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else {
 			this.sendHandler.sendHttpPost(dstMRN, "", data, headerField);
 		}
 	}
-	
-	//HJH
+
+	// HJH
 	/**
 	 * Send a GET message to the destination MRN via MMS
-	 * @param 	dstMRN			the destination MRN
-	 * @throws 	Exception		if exception occurs
-	 * @see		#sendGetMsg(String, String, String)
-	 * @see		#setSender(ResponseCallback)
+	 * 
+	 * @param dstMRN the destination MRN
+	 * @throws Exception if exception occurs
+	 * @see #sendGetMsg(String, String, String)
+	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendGetMsg(String dstMRN) throws Exception{
+	public void sendGetMsg(String dstMRN) throws Exception {
 		if (this.sendHandler == null) {
-			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else {
 			this.sendHandler.sendHttpGet(dstMRN, "", "", headerField);
 		}
 	}
-	
-	//HJH
+
+	// HJH
 	/**
-	 * Send a GET message via MMS to the destination MRN corresponding to the location URL
-	 * parameter
-	 * @param 	dstMRN			the destination MRN
-	 * @param	loc				url location
-	 * @param	params			parameter
-	 * @throws 	Exception		if exception occurs
-	 * @see		#sendGetMsg(String)
-	 * @see		#setSender(ResponseCallback)
+	 * Send a GET message via MMS to the destination MRN corresponding to the
+	 * location URL parameter
+	 * 
+	 * @param dstMRN the destination MRN
+	 * @param loc    url location
+	 * @param params parameter
+	 * @throws Exception if exception occurs
+	 * @see #sendGetMsg(String)
+	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendGetMsg(String dstMRN, String loc, String params) throws Exception{
+	public void sendGetMsg(String dstMRN, String loc, String params) throws Exception {
 		if (this.sendHandler == null) {
-			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else {
 			this.sendHandler.sendHttpGet(dstMRN, loc, params, headerField);
 		}
 	}
-	
+
 	/*-----------------------------------------------------------------------------------
 	 * Message sender guarantees message sequence.
 	 -----------------------------------------------------------------------------------*/
 	/**
-	 * Send a POST message to the destination MRN that url matches the location via MMS.
-	 * Message sender guarantees message sequence.
-	 * @param 	dstMRN			the destination MRN to send data
-	 * @param 	loc				url location
-	 * @param 	data			the data to send
-	 * @param 	seqNum			sequence number of message
-	 * @throws 	Exception		if exception occurs
-	 * @see		#sendPostMsg(String, String)
-	 * @see		#setSender(ResponseCallback)
+	 * Send a POST message to the destination MRN that url matches the location via
+	 * MMS. Message sender guarantees message sequence.
+	 * 
+	 * @param dstMRN the destination MRN to send data
+	 * @param loc    url location
+	 * @param data   the data to send
+	 * @param seqNum sequence number of message
+	 * @throws Exception if exception occurs
+	 * @see #sendPostMsg(String, String)
+	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendPostMsg(String dstMRN, String loc, String data, int seqNum) throws Exception{
+	public void sendPostMsg(String dstMRN, String loc, String data, int seqNum) throws Exception {
 		if (this.sendHandler == null) {
-			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
-		} 
-		else if (seqNum < 0) {
-			System.out.println(TAG+"Failed! seqNum must be equal to or greater than zero.");
-		}
-		else {
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
+		} else if (seqNum < 0) {
+			System.out.println(TAG + "Failed! seqNum must be equal to or greater than zero.");
+		} else {
 			this.sendHandler.sendHttpPost(dstMRN, loc, data, headerField, seqNum);
 		}
 	}
-	
+
 	/**
-	 * Send a POST message to the destination MRN via MMS.
-	 * Message sender guarantees message sequence.
-	 * @param 	dstMRN			the destination MRN to send data
-	 * @param 	data			the data to send
-	 * @param 	seqNum			sequence number of message
-	 * @throws 	Exception		if exception occurs
-	 * @see		#sendPostMsg(String, String, String)
-	 * @see		#setSender(ResponseCallback)
+	 * Send a POST message to the destination MRN via MMS. Message sender guarantees
+	 * message sequence.
+	 * 
+	 * @param dstMRN the destination MRN to send data
+	 * @param data   the data to send
+	 * @param seqNum sequence number of message
+	 * @throws Exception if exception occurs
+	 * @see #sendPostMsg(String, String, String)
+	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendPostMsg(String dstMRN, String data, int seqNum) throws Exception{
+	public void sendPostMsg(String dstMRN, String data, int seqNum) throws Exception {
 		if (this.sendHandler == null) {
-			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
-		} 
-		else if (seqNum < 0) {
-			System.out.println(TAG+"Failed! seqNum must be equal to or greater than zero.");
-		}
-		else {
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
+		} else if (seqNum < 0) {
+			System.out.println(TAG + "Failed! seqNum must be equal to or greater than zero.");
+		} else {
 			this.sendHandler.sendHttpPost(dstMRN, "", data, headerField, seqNum);
 		}
 	}
-	
-	//HJH
+
+	// HJH
 	/**
-	 * Send a GET message to the destination MRN via MMS.
-	 * Message sender guarantees message sequence.
-	 * @param 	dstMRN			the destination MRN
-	 * @param 	seqNum			sequence number of message
-	 * @throws 	Exception		if exception occurs
-	 * @see		#sendGetMsg(String, String, String)
-	 * @see		#setSender(ResponseCallback)
+	 * Send a GET message to the destination MRN via MMS. Message sender guarantees
+	 * message sequence.
+	 * 
+	 * @param dstMRN the destination MRN
+	 * @param seqNum sequence number of message
+	 * @throws Exception if exception occurs
+	 * @see #sendGetMsg(String, String, String)
+	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendGetMsg(String dstMRN, int seqNum) throws Exception{
+	public void sendGetMsg(String dstMRN, int seqNum) throws Exception {
 		if (this.sendHandler == null) {
-			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
-		} 
-		else if (seqNum < 0) {
-			System.out.println(TAG+"Failed! seqNum must be equal to or greater than zero.");
-		}
-		else {
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
+		} else if (seqNum < 0) {
+			System.out.println(TAG + "Failed! seqNum must be equal to or greater than zero.");
+		} else {
 			this.sendHandler.sendHttpGet(dstMRN, "", "", headerField, seqNum);
 		}
 	}
-	
-	//HJH
+
+	// HJH
 	/**
-	 * Send a GET message which the destination MRN is that url matches the location via MMS and setting
-	 * parameter.
-	 * Message sender guarantees message sequence.
-	 * @param 	dstMRN			the destination MRN
-	 * @param	loc				url location
-	 * @param	params			parameter
-	 * @param 	seqNum			sequence number of message
-	 * @throws 	Exception		if exception occurs
-	 * @see		#sendGetMsg(String)
-	 * @see		#setSender(ResponseCallback)
+	 * Send a GET message which the destination MRN is that url matches the location
+	 * via MMS and setting parameter. Message sender guarantees message sequence.
+	 * 
+	 * @param dstMRN the destination MRN
+	 * @param loc    url location
+	 * @param params parameter
+	 * @param seqNum sequence number of message
+	 * @throws Exception if exception occurs
+	 * @see #sendGetMsg(String)
+	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendGetMsg(String dstMRN, String loc, String params, int seqNum) throws Exception{
+	public void sendGetMsg(String dstMRN, String loc, String params, int seqNum) throws Exception {
 		if (this.sendHandler == null) {
-			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
-		} 
-		else if (seqNum < 0) {
-			System.out.println(TAG+"Failed! seqNum must be equal to or greater than zero.");
-		}
-		else {
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
+		} else if (seqNum < 0) {
+			System.out.println(TAG + "Failed! seqNum must be equal to or greater than zero.");
+		} else {
 			this.sendHandler.sendHttpGet(dstMRN, loc, params, headerField, seqNum);
 		}
 	}
 	/*-----------------------------------------------------------------------------------
 	 * END. Message sender guarantees message sequence. 
 	 -----------------------------------------------------------------------------------*/
-	
-	//OONI
+
+	// OONI
 	/**
-	 * Use when requesting a file from the destination. Send a GET message to a file server mapping to destination MRN
-	 * to request a file that matches the parameterized filename.
-	 * @param 	dstMRN			the destination MRN to send a message
-	 * @param 	fileName		file path and name (e.g. "/get/test.xml")
-	 * @return					returning result of saving file
-	 * 							<code>null</code> if saving file is failed.
-	 * @throws 	Exception		Exception while requesting a file
+	 * Use when requesting a file from the destination. Send a GET message to a file
+	 * server mapping to destination MRN to request a file that matches the
+	 * parameterized filename.
+	 * 
+	 * @param dstMRN   the destination MRN to send a message
+	 * @param fileName file path and name (e.g. "/get/test.xml")
+	 * @return returning result of saving file <code>null</code> if saving file is
+	 *         failed.
+	 * @throws Exception Exception while requesting a file
 	 */
-	public String requestFile(String dstMRN, String fileName) throws Exception{
+	public String requestFile(String dstMRN, String fileName) throws Exception {
 		if (this.sendHandler == null) {
-			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 			return null;
 		} else {
 			return this.sendHandler.sendHttpGetFile(dstMRN, fileName, headerField);
 		}
 	}
-	
-	private class RcvHandler extends MMSRcvHandler{
+
+	private class RcvHandler extends MMSRcvHandler {
 		RcvHandler(int port) throws IOException {
 			super(port);
 		}
+
 		RcvHandler(int port, String context) throws IOException {
 			super(port, context);
 		}
+
 		RcvHandler(int port, String fileDirectory, String fileName) throws IOException {
 			super(port, fileDirectory, fileName);
 		}
 	}
-	
-	private class SendHandler extends MMSSndHandler{
+
+	private class SendHandler extends MMSSndHandler {
 		SendHandler(String clientMRN) {
 			super(clientMRN);
 		}
 	}
-	
-	// TODO: Youngjin Kim must inspect this following code.
-	private class PollHandler extends MMSPollHandler{
 
-		PollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, Map<String, List<String>> headerField) throws IOException {
+	// TODO: Youngjin Kim must inspect this following code.
+	private class PollHandler extends MMSPollHandler {
+
+		PollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval,
+				Map<String, List<String>> headerField) throws IOException {
 			super(clientMRN, dstMRN, svcMRN, hexSignedData, interval, "normal", headerField);
 		}
 	}
-	
-	// TODO: Youngjin Kim must inspect this following code.
-	private class LongPollHandler extends MMSPollHandler{
 
-		LongPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, Map<String, List<String>> headerField) throws IOException {
+	// TODO: Youngjin Kim must inspect this following code.
+	private class LongPollHandler extends MMSPollHandler {
+
+		LongPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval,
+				Map<String, List<String>> headerField) throws IOException {
 			super(clientMRN, dstMRN, svcMRN, hexSignedData, interval, "long", headerField);
 		}
 	}
 
 }
-

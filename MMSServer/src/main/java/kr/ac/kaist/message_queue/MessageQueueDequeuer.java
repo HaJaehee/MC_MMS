@@ -161,10 +161,7 @@ class MessageQueueDequeuer extends Thread{
 		this.outputChannel = outputChannel;
 		this.ctx = ctx;
 		this.pollingMethod = pollingMethod;
-		
-		//Youngjin Modified
-		this.DUPLICATE_ID = srcMRN+svcMRN;
-		
+		this.DUPLICATE_ID = srcMRN+svcMRN;		
 		
 		this.start();
 
