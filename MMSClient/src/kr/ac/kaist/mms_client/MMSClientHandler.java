@@ -109,6 +109,11 @@ Rev. history: 2019-03-19
 Version : 0.8.2
 	MMS Client sends a polling request message which is a JSON format.
 Modifier : Jin Jung (jungst0001@kaist.ac.kr)
+
+Rev. history: 2019-05-20
+Version : 0.9.1
+	Long Polling Checker and Normal Polling Checker is added.
+Modifier : YoungJin Kim (jcdad3000@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
