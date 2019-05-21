@@ -133,8 +133,8 @@ public class SessionManager {
 				br.close();
 				fr.close();
 			} catch (ArrayIndexOutOfBoundsException | NumberFormatException | IOException e1) {
-				logger.warn("File session-count.csv is not found or there is a problem when reading the file.");  
-				logger.warn(e1.getClass().getName()+" "+e1.getStackTrace()[0]+".");
+				logger.info("File session-count.csv is not found or there is a problem when reading the file.");  
+				logger.info(e1.getClass().getName()+" "+e1.getStackTrace()[0]+".");
 	    			for (int i = 1 ; i < e1.getStackTrace().length && i < 4 ; i++) {
 	    				logger.warn(e1.getStackTrace()[i]+".");
 	    			}
@@ -171,8 +171,8 @@ public class SessionManager {
 				br.close();
 				fr.close();
 			} catch (ArrayIndexOutOfBoundsException | NumberFormatException | IOException e1) {
-				logger.warn("File session-count.csv is not found or there is a problem when reading the file.");  
-				logger.warn(e1.getClass().getName()+" "+e1.getStackTrace()[0]+".");
+				logger.info("File session-count.csv is not found or there is a problem when reading the file.");  
+				logger.info(e1.getClass().getName()+" "+e1.getStackTrace()[0]+".");
 	    			for (int i = 1 ; i < e1.getStackTrace().length && i < 4 ; i++) {
 	    				logger.warn(e1.getStackTrace()[i]+".");
 	    			}
@@ -283,8 +283,8 @@ public class SessionManager {
 					}
 				}
 				catch (IOException e1) {
-					logger.warn("File session-count.csv is not found or there is a problem when writing the file.");  
-					logger.warn(e1.getClass().getName()+" "+e1.getStackTrace()[0]+".");
+					logger.info("File session-count.csv is not found or there is a problem when writing the file.");  
+					logger.info(e1.getClass().getName()+" "+e1.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e1.getStackTrace().length && i < 4 ; i++) {
 		    				logger.warn(e1.getStackTrace()[i]+".");
 		    			}
@@ -297,8 +297,8 @@ public class SessionManager {
 						try {
 							bw.close();
 						} catch (IOException e) {
-							logger.warn("Failed to close BufferedWriter.");  
-							logger.warn(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+							logger.info("Failed to close BufferedWriter.");  
+							logger.info(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 				    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				    				logger.warn(e.getStackTrace()[i]+".");
 				    			}
@@ -308,8 +308,8 @@ public class SessionManager {
 						try {
 							fw.close();
 						} catch (IOException e) {
-							logger.warn("Failed to close FileWriter.");  
-							logger.warn(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+							logger.info("Failed to close FileWriter.");  
+							logger.info(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 				    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
 				    				logger.warn(e.getStackTrace()[i]+".");
 				    			}
