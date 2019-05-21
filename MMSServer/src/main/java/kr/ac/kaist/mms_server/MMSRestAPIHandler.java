@@ -22,6 +22,11 @@ Version : 0.9.0
 	Fixed bugs related to session count list.
 	Added checking wrong cases in restful api functions.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-05-22
+Version : 0.9.1
+	Fixed bugs related to relay-req-count-for and polling-req-count-for.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 
@@ -212,7 +217,13 @@ public class MMSRestAPIHandler {
 							- SessionManager.getSessionCountList().get(i).getPollingSessionCount();// Subtract polling session counts from total session counts.
 				}
 				JSONObject jobj2 = new JSONObject();
-				jobj2.put("min", relayReqMinutes);
+				
+				if (countListSize <= 12) {
+					jobj2.put("min", "1");
+				}
+				else {
+					jobj2.put("min", Math.min(countListSize/12, relayReqMinutes));
+				}
 				jobj2.put("count", relayReqCount);
 				jobj.put("relay-req-count-for", jobj2);
 				
@@ -223,7 +234,12 @@ public class MMSRestAPIHandler {
 					pollingReqCount += SessionManager.getSessionCountList().get(i).getPollingSessionCount(); // Polling session counts.
 				}
 				JSONObject jobj2 = new JSONObject();
-				jobj2.put("min", pollingReqMinutes);
+				if (countListSize <= 12) {
+					jobj2.put("min", "1");
+				}
+				else {
+					jobj2.put("min", Math.min(countListSize/12, pollingReqMinutes));
+				}
 				jobj2.put("count", pollingReqCount);
 				jobj.put("polling-req-count-for", jobj2);
 				
