@@ -141,6 +141,7 @@ public class SessionManager {
 			}
 			
 			fileLines -= 12*60*24;
+			long lineCount = fileLines;
 
 			try {
 				FileReader fr = new FileReader(f);
@@ -148,8 +149,8 @@ public class SessionManager {
 				String line;
 
 				while ((line=br.readLine()) != null) {
-					if (fileLines > 0) {
-						fileLines--;
+					if (lineCount > 0) {
+						lineCount--;
 						continue;
 					}
 					if (line.equals("")) {
@@ -177,6 +178,41 @@ public class SessionManager {
 	    			}
 			}
 			
+			FileWriter fw = null;
+			BufferedWriter bw = null;
+			PrintWriter pw = null;
+			
+			/*
+			// Rewrite session-count.csv if the file has more than 24 hours content.
+			if (fileLines > 0 && sessionCountList.size() > 0) { 
+				try {
+					if (f.exists()) {
+						f.delete();
+					}
+					
+					fw = new FileWriter(f, true);
+					bw = new BufferedWriter(fw);
+					pw = new PrintWriter(bw);
+					
+					for (int i = sessionCountList.size()-1 ; i >=0 ; i--) {
+						pw.println(sessionCountList.get(i).getCurTimeInMillis()+","
+								+sessionCountList.get(i).getSessionCount()+","
+								+sessionCountList.get(i).getPollingSessionCount());
+					}
+					pw.close();
+					bw.close();
+					fw.close();
+				}
+				
+				catch (IOException e1) {
+					logger.warn("File session-count.csv is not found or there is a problem when writing the file.");  
+					logger.warn(e1.getClass().getName()+" "+e1.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e1.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn(e1.getStackTrace()[i]+".");
+		    			}
+				} 
+			}*/
+			
 			while (System.currentTimeMillis() % 5000 > 100 ) { // Avoid busy waiting.
 				try {
 					Thread.sleep(100);
@@ -185,71 +221,67 @@ public class SessionManager {
 				}
 			}
 			
-			FileWriter fw = null;
-			BufferedWriter bw = null;
-			PrintWriter pw = null;
 			
-			
-				while (true) { // Start tik tok.
-					try {
-						long curTimeMillis = System.currentTimeMillis();
-						long correction = 0;
+			while (true) { // Start tik tok.
+				try {
+					long curTimeMillis = System.currentTimeMillis();
+					long correction = 0;
+					
+					if (curTimeMillis % 5000 < 100 ) {
+						correction = curTimeMillis % 5000; // Session counting list saves the number of sessions for every 5 seconds.
 						
-						if (curTimeMillis % 5000 < 100 ) {
-							correction = curTimeMillis % 5000; // Session counting list saves the number of sessions for every 5 seconds.
-							
-							
 						
-							
-							long lastTime = 0;
-							if (sessionCountList.size() > 0) {
-								lastTime = sessionCountList.get(0).getCurTimeInMillis();
-							}
-							
+					
 						
-							while (curTimeMillis - lastTime > 10000 && curTimeMillis - lastTime < 1000*60*60*24) { // More than 10 seconds, less than 24 hours.
-								sessionCountList.add(0,new SessionCountForFiveSecs(lastTime+5000)); // Add time slots having 0 session count.
-								lastTime += 5000;
-							}
-							
-							
-							
-							for (int i = sessionCountList.size()-(12*60*24) ; i >= 0 ; i--) { // Session counts are saved for 24 hours.
-								sessionCountList.remove(sessionCountList.size()-1);
-							}
-							
-							fw = new FileWriter(f, true);
-							bw = new BufferedWriter(fw);
-							pw = new PrintWriter(bw);
-							if (sessionCountList.size() > 0) {
-								pw.println(sessionCountList.get(0).getCurTimeInMillis()+","
-										+sessionCountList.get(0).getSessionCount()+","
-										+sessionCountList.get(0).getPollingSessionCount());
-							}
-							pw.close();
-							bw.close();
-							fw.close();
-							
-							SessionCountForFiveSecs curCount = new SessionCountForFiveSecs(curTimeMillis);
-							sessionCountList.add(0, curCount);
-			
-							/*
-							// print
-							for (int i = 0 ; i < sessionCountList.size() ; i++) {
-								SimpleDateFormat dayTime = new SimpleDateFormat("hh:mm:ss:SSS");
-								System.out.print(dayTime.format(sessionCountList.get(i).getCurTimeInMillis())+"  ");
-							}
-							System.out.println();
-							*/
-							
-							try {
-								Thread.sleep(5000 - correction);
-							} catch (InterruptedException e) {
-								// Do nothing.
-							}
-							
+						long lastTime = 0;
+						if (sessionCountList.size() > 0) {
+							lastTime = sessionCountList.get(0).getCurTimeInMillis();
 						}
+						
+					
+						while (curTimeMillis - lastTime > 10000 && curTimeMillis - lastTime < 1000*60*60*24) { // More than 10 seconds, less than 24 hours.
+							sessionCountList.add(0,new SessionCountForFiveSecs(lastTime+5000)); // Add time slots having 0 session count.
+							lastTime += 5000;
+						}
+						
+						
+						
+						for (int i = sessionCountList.size()-(12*60*24) ; i >= 0 ; i--) { // Session counts are saved for 24 hours.
+							sessionCountList.remove(sessionCountList.size()-1);
+						}
+						
+						fw = new FileWriter(f, true);
+						bw = new BufferedWriter(fw);
+						pw = new PrintWriter(bw);
+						if (sessionCountList.size() > 0) {
+							pw.println(sessionCountList.get(0).getCurTimeInMillis()+","
+									+sessionCountList.get(0).getSessionCount()+","
+									+sessionCountList.get(0).getPollingSessionCount());
+						}
+						pw.close();
+						bw.close();
+						fw.close();
+						
+						SessionCountForFiveSecs curCount = new SessionCountForFiveSecs(curTimeMillis);
+						sessionCountList.add(0, curCount);
+		
+						/*
+						// print
+						for (int i = 0 ; i < sessionCountList.size() ; i++) {
+							SimpleDateFormat dayTime = new SimpleDateFormat("hh:mm:ss:SSS");
+							System.out.print(dayTime.format(sessionCountList.get(i).getCurTimeInMillis())+"  ");
+						}
+						System.out.println();
+						*/
+						
+						try {
+							Thread.sleep(5000 - correction);
+						} catch (InterruptedException e) {
+							// Do nothing.
+						}
+						
 					}
+				}
 				catch (IOException e1) {
 					logger.warn("File session-count.csv is not found or there is a problem when writing the file.");  
 					logger.warn(e1.getClass().getName()+" "+e1.getStackTrace()[0]+".");
