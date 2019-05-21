@@ -208,7 +208,7 @@ public class SessionManager {
 							
 						
 							while (curTimeMillis - lastTime > 10000 && curTimeMillis - lastTime < 1000*60*60*24) { // More than 10 seconds, less than 24 hours.
-								sessionCountList.add(0,new SessionCountForFiveSecs(lastTime+5000)); // Add time slots with 0 session count.
+								sessionCountList.add(0,new SessionCountForFiveSecs(lastTime+5000)); // Add time slots having 0 session count.
 								lastTime += 5000;
 							}
 							
@@ -233,12 +233,14 @@ public class SessionManager {
 							SessionCountForFiveSecs curCount = new SessionCountForFiveSecs(curTimeMillis);
 							sessionCountList.add(0, curCount);
 			
+							/*
 							// print
 							for (int i = 0 ; i < sessionCountList.size() ; i++) {
 								SimpleDateFormat dayTime = new SimpleDateFormat("hh:mm:ss:SSS");
 								System.out.print(dayTime.format(sessionCountList.get(i).getCurTimeInMillis())+"  ");
 							}
 							System.out.println();
+							*/
 							
 							try {
 								Thread.sleep(5000 - correction);
