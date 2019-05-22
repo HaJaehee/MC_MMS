@@ -54,6 +54,11 @@ Rev. history : 2019-04-29
 Version : 0.8.2
 	Revised Base64 Encoder/Decoder.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-22
+Version : 0.9.1
+	Add send function with timeout.
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -93,11 +98,18 @@ class MMSSndHandler {
 	void setResponseCallback (MMSClientHandler.ResponseCallback callback){
 		this.myCallback = callback;
 	}
+
+	void sendHttpPostWithTimeout(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int timeout) throws IOException  {
+		sendHttpPost(dstMRN, loc, data, headerField, -1, timeout);
+	}
 	
 	void sendHttpPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws IOException  {
 		sendHttpPost(dstMRN, loc, data, headerField, -1);
 	}
 	void sendHttpPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int seqNum) throws IOException  {
+		sendHttpPost(dstMRN, loc, data, headerField, seqNum, -1);
+	}
+	void sendHttpPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int seqNum, int timeout) throws IOException  {
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
 			loc = "/" + loc;
@@ -105,18 +117,23 @@ class MMSSndHandler {
 		url += loc;
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		
 		//add request header
 		con.setRequestMethod("POST");
 		con.setRequestProperty("User-Agent", USER_AGENT);
 		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 		con.setRequestProperty("srcMRN", clientMRN);
+		
 		if (dstMRN != null) {
 			con.setRequestProperty("dstMRN", dstMRN);
 		}
 		if (seqNum != -1) {
 			con.setRequestProperty("seqNum", ""+seqNum);
+		}
+		
+		if (timeout > 0) {
+			con.setConnectTimeout(timeout);
+			con.setReadTimeout(timeout);
 		}
 		//con.addRequestProperty("Connection","keep-alive");
 		
