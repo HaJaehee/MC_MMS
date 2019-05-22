@@ -1,15 +1,11 @@
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.BeforeClass;
+import org.junit.After;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -18,64 +14,96 @@ import kr.ac.kaist.mms_client.MMSClientHandler;
 
 /** 
 File name : TS10_Test.java
+	Test for testing long response waiting when SP does not response. 
 Author : Yunho Choi (choiking10@kaist.ac.kr)
 Creation Date : 2019-05-22
 */
 @FixMethodOrder(MethodSorters.DEFAULT)
 public class TS10_Test {
-	static TS10_server server;	
+	static MMSClientHandler server;	
 	public static final String srcMRN = "urn:mrn:imo:imo-no:ts-mms-07-client";
 	public static final String dstMRN = "urn:mrn:imo:imo-no:ts-mms-07-server";
 	public static final int PORT = 8907;
 	
-	@BeforeClass
-	public static void testmain() throws Exception {
+	@After
+	public void after() {
+		server.terminateServer();
 	}
-
-	public boolean isErrorCode(String s) {
-		if(s.charAt(0) != '[') return false;
-		if(s.charAt(6) != ']') return false;
-		return true;
-	}
-	public String getErrorCode(String s) {
-		return s.substring(1, 6);
-	}
-	public void sendMessage(String src, String dst, String message, String expectedMessage) throws Exception {
-		TS10_client client = new TS10_client(src);
-		client.sendMessage(dst, message, new MMSClientHandler.ResponseCallback() {		
+	
+	public void sendMessage(String src, String dst, String message, String expectedMessage, int timeout) throws Exception {
+		MMSClientHandler client = new MMSClientHandler(src);
+		client.setSender(new MMSClientHandler.ResponseCallback() {		
 			@Override
 			public void callbackMethod(Map<String, List<String>> headerField, String message) {
 				// TODO Auto-generatedX method stub
 				assertEquals(message, expectedMessage);
 			}
 		});
+		
+		client.sendPostMsgWithTimeout(dst, message, timeout);
 	}
-	public static void runServer(String mrn, int port) {
+	
+	public static void runServer(String mrn, int port, long sleepTime, boolean isError) {
 		try {
-			server = new TS10_server(mrn, port);
-		} catch(Exception e) {
-			assertTrue("run Server make Exception", false);
+		server = new MMSClientHandler(mrn);
+			server.setServerPort(port, new MMSClientHandler.RequestCallback() {
+				
+				@Override
+				public Map<String, List<String>> setResponseHeader() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+				
+				@Override
+				public int setResponseCode() {
+					// TODO Auto-generated method stub
+					return 200;
+				}
+				
+				@Override
+				public String respondToClient(Map<String, List<String>> headerField, String message) {
+					// TODO Auto-generated method stub														
+					try {
+						Thread.sleep(sleepTime);
+						if(isError) {
+							assertTrue("This code must cause an error.", false);
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						if(!isError) {
+							assertTrue("This code must not cause an error.", false);
+						}
+					}
+					return "OK";
+				}
+			});
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	
 	}
-	public void sendMessageForError(String src, String dst, String message, String expectedCode) throws Exception {
-		TS10_client client = new TS10_client(src);
-		client.sendMessage(dst, message, new MMSClientHandler.ResponseCallback() {		
-			@Override
-			public void callbackMethod(Map<String, List<String>> headerField, String message) {
-				// TODO Auto-generatedX method stub
 
-				assertTrue("result have to be error code.", isErrorCode(message));
-				assertEquals(getErrorCode(message), expectedCode);
-			}
-		});
-		
+	@Test
+	public void testOK() throws Exception {
+		runServer(dstMRN, PORT, 0, false);
+		try {
+			sendMessage(srcMRN, dstMRN, "123", "OK", 1000);
+		} catch(IOException e) {
+			assertTrue("this code have to unreachable", false);
+		}
 	}
 	
 	@Test
-	public void testOK() throws Exception {
-		runServer(dstMRN, PORT);
-		sendMessage(srcMRN, dstMRN, "123", "OK");
+	public void testTimeout() throws Exception {
+		runServer(dstMRN, PORT, 10000, true);
+		try {
+			sendMessage(srcMRN, dstMRN, "123", "OK", 1000);
+			assertTrue("this code have to unreachable", false);
+		} catch(IOException e) {
+			
+		}
 	}
+	
 }
 
