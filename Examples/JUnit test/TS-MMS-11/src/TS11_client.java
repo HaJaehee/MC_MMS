@@ -7,9 +7,12 @@
  */
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
 import kr.ac.kaist.mms_client.MMSClientHandler.ResponseCallback;
@@ -18,12 +21,8 @@ import kr.ac.kaist.mms_client.MMSConfiguration;
 
 public class TS11_client {
 
-	public static int checker = 0;
-
-	public static String hexSignedData_active = null;
-
-
 	private static MMSClientHandler myHandler = null;
+	public static JSONObject jobj = null;
 	
 	public TS11_client() {
 
@@ -34,7 +33,7 @@ public class TS11_client {
 		// threadStart();
 	}
 
-	public static void apiTest() throws NullPointerException, IOException {
+	public static void apiTest(String params) throws NullPointerException, IOException {
 
 		myHandler = new MMSClientHandler(null);
 
@@ -44,11 +43,19 @@ public class TS11_client {
 			public void callbackMethod(Map<String, List<String>> headerField, String message) {
 				// TODO Auto-generated method stub
 				System.out.println(message);
+				JSONParser parser = new JSONParser();
+				jobj = new JSONObject();
+				try {
+					jobj = (JSONObject) parser.parse(message);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 		
 		try {
-			myHandler.sendApiReq("api", "mms-running=y&client-session-ids=y&polling-req-count-for=5&realtime-log-users=y&mrns-being-debugged=y&msg-queue-count=y&relay-req-count-for=5");
+			myHandler.sendApiReq("api", params);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

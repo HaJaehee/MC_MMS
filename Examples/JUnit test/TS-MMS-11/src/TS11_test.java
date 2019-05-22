@@ -5,6 +5,8 @@
  * Creation Date : 2019-05-22
  */
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,24 +31,97 @@ public class TS11_test {
 	@Test
 	public void test01() throws IOException, InterruptedException {		
 
-		response = new ArrayList<String>();
-				
-		client.apiTest();
-		Thread.sleep(10000);	
+		String params = "mms-running=y";
 		
-		//assertTrue(!client.getLongchecker()&&client.getNormalchecker());
+		client.apiTest(params);
+		
+		Thread.sleep(1000);	
+		
+		assertTrue(client.jobj.containsKey("mms-running"));
 	}
 	
 	@Test
 	public void test02() throws IOException, InterruptedException {		
 
-		response = new ArrayList<String>();
-	
+		String params = "client-session-ids=y";
 		
-		Thread.sleep(10000);
+		client.apiTest(params);
 		
-		//assertTrue(client.getLongchecker()&&!client.getNormalchecker());
+		Thread.sleep(1000);	
 		
-			
+		assertTrue(client.jobj.containsKey("client-session-ids"));
 	}
+	
+	@Test
+	public void test03() throws IOException, InterruptedException {		
+
+		String params = "realtime-log-users=y";
+		
+		client.apiTest(params);
+		
+		Thread.sleep(1000);	
+		
+		assertTrue(client.jobj.containsKey("realtime-log-users"));
+	}
+	
+	@Test
+	public void test04() throws IOException, InterruptedException {		
+
+		String params = "mrns-being-debugged=y";
+		
+		client.apiTest(params);
+		
+		Thread.sleep(1000);	
+		
+		assertTrue(client.jobj.containsKey("mrns-being-debugged"));
+	}
+	
+	@Test
+	public void test05() throws IOException, InterruptedException {		
+
+		String params = "msg-queue-count=y";
+		
+		client.apiTest(params);
+		
+		Thread.sleep(1000);	
+		
+		assertTrue(client.jobj.containsKey("msg-queue-count"));
+	}
+	
+	@Test
+	public void test06() throws IOException, InterruptedException {		
+
+		String params = "relay-req-count-for=5";
+		
+		client.apiTest(params);
+		
+		Thread.sleep(1000);	
+		
+		assertTrue(client.jobj.containsKey("relay-req-count-for"));
+	}
+	
+	@Test
+	public void test07() throws IOException, InterruptedException {		
+
+		String params = "polling-req-count-for=5";
+		
+		client.apiTest(params);
+		
+		Thread.sleep(1000);	
+		
+		assertTrue(client.jobj.containsKey("polling-req-count-for"));
+	}
+	
+	@Test
+	public void test08() throws IOException, InterruptedException {		
+
+		String params = "msg-queue-counting=y";
+		
+		client.apiTest(params);
+		
+		Thread.sleep(1000);	
+		
+		assertTrue(client.jobj.containsKey("error"));
+	}
+	
 }
