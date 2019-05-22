@@ -18,6 +18,7 @@ File name : TS10_Test.java
 Author : Yunho Choi (choiking10@kaist.ac.kr)
 Creation Date : 2019-05-22
 */
+
 @FixMethodOrder(MethodSorters.DEFAULT)
 public class TS10_Test {
 	static MMSClientHandler server;	
@@ -30,7 +31,8 @@ public class TS10_Test {
 		server.terminateServer();
 	}
 	
-	public void sendMessage(String src, String dst, String message, String expectedMessage, int timeout) throws Exception {
+	public void sendMessage(String src, String dst, 
+			String message, String expectedMessage, int timeout) throws Exception {
 		MMSClientHandler client = new MMSClientHandler(src);
 		client.setSender(new MMSClientHandler.ResponseCallback() {		
 			@Override
@@ -86,7 +88,7 @@ public class TS10_Test {
 
 	@Test
 	public void testOK() throws Exception {
-		runServer(dstMRN, PORT, 0, false);
+		runServer(dstMRN, PORT, 100, false);
 		try {
 			sendMessage(srcMRN, dstMRN, "123", "OK", 1000);
 		} catch(IOException e) {
