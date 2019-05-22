@@ -51,32 +51,45 @@ public class ClientVerifier {
 		pManager = new PollingSessionManager();
 	}
 	
-	public boolean verifyClient (String srcMRN, String hexSignedData) {		
-		PollingSessionManagerCode code = pManager.contains(srcMRN, hexSignedData);
-		
-		if (code == PollingSessionManagerCode.FAIL) {
-//			mmsLog.addBriefLogForStatus("[ClientVerifier] Not exist session");
+	public boolean verifyClient (String srcMRN, String hexSignedData) {	
+		if (!MMSConfiguration.isPollingSessionOn()) {
+			// Authentication Session sets off
 			authenticateUsingMIRAPI(srcMRN, hexSignedData);
 			
 			if(isVerified && isMatching) {
-//				mmsLog.addBriefLogForStatus("[ClientVerifier] Succedd authenticaiton, add session");
-				pManager.add(srcMRN, hexSignedData);
+				return true;
+			} else {
+				return false;
+			}
+			
+		} else {
+			// Authentication Session sets on
+			PollingSessionManagerCode code = pManager.contains(srcMRN, hexSignedData);
+			
+			if (code == PollingSessionManagerCode.FAIL) {
+//				mmsLog.addBriefLogForStatus("[ClientVerifier] Not exist session");
+				authenticateUsingMIRAPI(srcMRN, hexSignedData);
+				
+				if(isVerified && isMatching) {
+//					mmsLog.addBriefLogForStatus("[ClientVerifier] Succeeded authentication, add session");
+					pManager.add(srcMRN, hexSignedData);
+					
+					return true;
+				}
+				
+				return false;
+				
+			} else if (code == PollingSessionManagerCode.CONTAINED) {
+//				mmsLog.addBriefLogForStatus("[ClientVerifier] Contained session");
+				pManager.refresh(srcMRN, hexSignedData);
+				isMatching = true;
+				isVerified = true;
 				
 				return true;
 			}
 			
 			return false;
-			
-		} else if (code == PollingSessionManagerCode.CONTAINED) {
-//			mmsLog.addBriefLogForStatus("[ClientVerifier] Contained session");
-			pManager.refresh(srcMRN, hexSignedData);
-			isMatching = true;
-			isVerified = true;
-			
-			return true;
 		}
-		
-		return false;
 	}
 	
 	private void authenticateUsingMIRAPI(String srcMRN, String hexSignedData) {
