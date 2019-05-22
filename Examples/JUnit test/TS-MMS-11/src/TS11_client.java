@@ -26,7 +26,7 @@ public class TS11_client {
 	
 	public TS11_client() {
 
-		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
+		MMSConfiguration.MMS_URL = "localhost:8088";
 		MMSConfiguration.DEBUG = true;
 
 

@@ -594,9 +594,7 @@ public class MessageRelayingHandler  {
 							itemList.size() == 0 ||
 							itemList.get(0) == null ||
 							itemList.get(0).getSessionBlocker() == null) { //Check null pointer exception.
-						// TODO 이 코드에 대한 설명 필요
-						// FIXME This condition cannot be reached, because
-						//		 the itemList already appeared in the above condition related to the sequentially relaying.
+						// This condition is required for safe coding when using multi-threads.
 						
 						message = ErrorCode.SEQUENTIAL_RELAYING_INITIALIZATION_ERR.getUTF8Bytes();
 						
@@ -804,8 +802,7 @@ public class MessageRelayingHandler  {
 						message = "OK".getBytes(Charset.forName("UTF-8"));
 					} 
 		    		catch (UnknownHostException e) {
-						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
-		    			// FIXME This exception process cannot be reached 
+						// This code block will be deprecated, so there is no definition of error code.
 		    			
 		    			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
@@ -836,8 +833,7 @@ public class MessageRelayingHandler  {
 						message = "OK".getBytes(Charset.forName("UTF-8"));
 					}
 					catch (UnknownHostException e) {
-						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
-						// FIXME This exception cannot be reached 
+						// This code block will be deprecated, so there is no definition of error code.
 						
 						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
@@ -867,7 +863,7 @@ public class MessageRelayingHandler  {
 			}
 			else if (type == MessageTypeDecider.msgType.UNKNOWN_MRN) {
 				message = ErrorCode.UNKNOWN_MRN.getBytes();
-				logger.info("test "+message);
+				//logger.info("test "+message);
 			} 
 			
 		} 

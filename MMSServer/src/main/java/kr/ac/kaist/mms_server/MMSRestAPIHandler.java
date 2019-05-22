@@ -181,7 +181,9 @@ public class MMSRestAPIHandler {
 	public String getResponse () {
 		//TODO: To define error messages.
 		if (!correctParams) {
-			return "{\"error\":\"wrong parameter.\"}";
+			
+			return "{\"error\":\""+ErrorCode.WRONG_PARAM.toString()+"\"}";
+			
 		}
 		else {
 			JSONObject jobj = new JSONObject();
