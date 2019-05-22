@@ -89,6 +89,11 @@ Rev. history : 2019-05-09
 Version : 0.8.2
 	Added sendMessage function for connecting to Rabbit MQ management server to implement restful API.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-22
+Version : 0.9.1
+	Added secureSendMessage function for connecting to Rabbit MQ management HTTPS server to implement restful API.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -367,7 +372,41 @@ public class MRH_MessageOutputChannel{
 		
 		return con;
 	}
+	
+	public HttpURLConnection requestSecureMessage(String IPAddress, int port, HttpMethod httpMethod, String uri, String username, String password) throws IOException {  
 
+	  	hv = getHV();
+	  	
+		String url = "https://" + IPAddress + ":" + port + uri;
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+		logger.info("SessionID="+this.SESSION_ID+" Try connecting to url="+url);
+		if(MMSConfiguration.isWebLogProviding()) {
+			String log = "SessionID="+this.SESSION_ID+" Try connecting to url="+url;
+			mmsLog.addBriefLogForStatus(log);
+			mmsLogForDebug.addLog(this.SESSION_ID, log);
+		}
+		
+		//		Setting HTTP method
+		if (httpMethod == httpMethod.POST) {
+			con.setRequestMethod("POST");
+		} else if (httpMethod == httpMethod.GET) {
+			con.setRequestMethod("GET");
+		}
+		
+		String authBasic = username+":"+password;
+		Base64.Encoder encoder = Base64.getEncoder();
+		byte[] encodedBytes = encoder.encode(authBasic.getBytes(Charset.forName("UTF-8")));
+		
+		con.setRequestProperty("Authorization","Basic "+new String(encodedBytes));
+
+		// get request doesn't have http body
+		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+				+ (httpMethod==httpMethod.POST?"POST":"GET")+"\n");
+		return con;
+	}
+	
+	
 	public byte[] getResponseMessage(HttpURLConnection con) throws IOException {
 		// get request doesn't have http body
 		responseCode = con.getResponseCode();
@@ -420,6 +459,12 @@ public class MRH_MessageOutputChannel{
 		HttpURLConnection con = requestSecureMessage(req, IPAddress, port, httpMethod, srcMRN, dstMRN);
 		return getResponseMessage(con);
 	}
+	
+	//  To use restful API
+	public byte[] secureSendMessage(String IPAddress, int port, HttpMethod httpMethod, String uri, String username, String password)  throws IOException {  
+		return getResponseMessage(requestSecureMessage(IPAddress, port, httpMethod, uri, username, password));
+	}
+	
 	public ConnectionThread asynchronizeSendSecureMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws NullPointerException, IOException { // 
 		HttpURLConnection con = requestSecureMessage(req, IPAddress, port, httpMethod, srcMRN, dstMRN);
 		return new ConnectionThread(con);

@@ -26,7 +26,10 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history: 2019-05-22
 Version : 0.9.1
 	Fixed bugs related to relay-req-count-for and polling-req-count-for.
+	Added protocol parameter. e.g., http or https. 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+
 /* -------------------------------------------------------- */
 
 
@@ -219,7 +222,7 @@ public class MMSRestAPIHandler {
 				JSONObject jobj2 = new JSONObject();
 				
 				if (countListSize <= 12) {
-					jobj2.put("min", "1");
+					jobj2.put("min", 1);
 				}
 				else {
 					jobj2.put("min", Math.min(countListSize/12, relayReqMinutes));
@@ -235,7 +238,7 @@ public class MMSRestAPIHandler {
 				}
 				JSONObject jobj2 = new JSONObject();
 				if (countListSize <= 12) {
-					jobj2.put("min", "1");
+					jobj2.put("min", 1);
 				}
 				else {
 					jobj2.put("min", Math.min(countListSize/12, pollingReqMinutes));

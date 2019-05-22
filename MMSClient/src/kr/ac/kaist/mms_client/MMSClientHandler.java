@@ -114,6 +114,11 @@ Rev. history: 2019-05-20
 Version : 0.9.1
 	Long Polling Checker and Normal Polling Checker is added.
 Modifier : YoungJin Kim (jcdad3000@kaist.ac.kr)
+
+Rev. history: 2019-05-22
+Version : 0.9.1
+	Revised for testing restful API.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -160,15 +165,13 @@ public class MMSClientHandler {
 	 * @throws IOException if exception occurs
 	 */
 	public MMSClientHandler(String clientMRN) throws IOException, NullPointerException {
-		if (clientMRN == null) {
-			System.out.println(TAG + "Failed! Client MRN must not be null.");
-			throw new NullPointerException();
-		}
+		
 		this.clientMRN = clientMRN;
 		rcvHandler = null;
 		pollHandler = null;
 		sendHandler = null;
 	}
+
 
 	/**
 	 * This interface is used to handle the response to polling request.
@@ -295,7 +298,12 @@ public class MMSClientHandler {
 	 * @see PollingResponseCallback
 	 */
 	public void startPolling(String dstMRN, String svcMRN, String hexSignedData, int interval,
-			PollingResponseCallback callback) throws IOException {
+			PollingResponseCallback callback) throws IOException, NullPointerException {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
+		
 		if (this.sendHandler != null) {
 			System.out.println(
 					TAG + "Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
@@ -487,6 +495,10 @@ public class MMSClientHandler {
 	 * @see #setSender(ResponseCallback)
 	 */
 	public void sendPostMsg(String dstMRN, String loc, String data) throws Exception {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else {
@@ -504,6 +516,10 @@ public class MMSClientHandler {
 	 * @see #setSender(ResponseCallback)
 	 */
 	public void sendPostMsg(String dstMRN, String data) throws Exception {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else {
@@ -521,6 +537,10 @@ public class MMSClientHandler {
 	 * @see #setSender(ResponseCallback)
 	 */
 	public void sendGetMsg(String dstMRN) throws Exception {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else {
@@ -541,10 +561,32 @@ public class MMSClientHandler {
 	 * @see #setSender(ResponseCallback)
 	 */
 	public void sendGetMsg(String dstMRN, String loc, String params) throws Exception {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else {
 			this.sendHandler.sendHttpGet(dstMRN, loc, params, headerField);
+		}
+	}
+	
+	// HJH
+	/**
+	 * Send a restful API request message to MMS corresponding to the location and the URL parameter.
+	 * 
+	 * @param loc    url location
+	 * @param params parameter
+	 * @throws Exception if exception occurs
+	 * @see #sendGetMsg(String)
+	 * @see #setSender(ResponseCallback)
+	 */
+	public void sendApiReq(String loc, String params) throws Exception {
+		if (this.sendHandler == null) {
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
+		} else {
+			this.sendHandler.sendHttpGet(null, loc, params, headerField);
 		}
 	}
 
@@ -564,6 +606,10 @@ public class MMSClientHandler {
 	 * @see #setSender(ResponseCallback)
 	 */
 	public void sendPostMsg(String dstMRN, String loc, String data, int seqNum) throws Exception {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else if (seqNum < 0) {
@@ -585,6 +631,10 @@ public class MMSClientHandler {
 	 * @see #setSender(ResponseCallback)
 	 */
 	public void sendPostMsg(String dstMRN, String data, int seqNum) throws Exception {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else if (seqNum < 0) {
@@ -606,6 +656,10 @@ public class MMSClientHandler {
 	 * @see #setSender(ResponseCallback)
 	 */
 	public void sendGetMsg(String dstMRN, int seqNum) throws Exception {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else if (seqNum < 0) {
@@ -629,6 +683,10 @@ public class MMSClientHandler {
 	 * @see #setSender(ResponseCallback)
 	 */
 	public void sendGetMsg(String dstMRN, String loc, String params, int seqNum) throws Exception {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else if (seqNum < 0) {
@@ -654,6 +712,10 @@ public class MMSClientHandler {
 	 * @throws Exception Exception while requesting a file
 	 */
 	public String requestFile(String dstMRN, String fileName) throws Exception {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 			return null;
