@@ -115,10 +115,17 @@ Version : 0.9.1
 	Long Polling Checker and Normal Polling Checker is added.
 Modifier : YoungJin Kim (jcdad3000@kaist.ac.kr)
 
+
 Rev. history: 2019-05-22
 Version : 0.9.1
 	Revised for testing restful API.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-22
+Version : 0.9.1
+	Add send function with timeout.
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -444,7 +451,26 @@ public class MMSClientHandler {
 			System.out.println(TAG + "Failed! HTTP file server is required! Do setFileServerPort()");
 		}
 	}
-
+	
+	/**
+	 * Terminates the servers.
+	 * 
+	 * @see #setServerPort(int, RequestCallback)
+	 * @see #setServerPort(int, String, RequestCallback)
+	 * @see #setFileServerPort(int, String, String)
+	 */
+	public void terminateServer() {
+		if (this.rcvHandler != null) {
+			this.rcvHandler.stopRcv(0);
+			this.rcvHandler = null;
+		} else {
+			System.out.println(TAG + "Failed! HTTP file server is required! Do setFileServerPort()");
+		}
+	}
+	
+	
+	
+	
 	/**
 	 * This method is used to set in MMS client in order to send message. If using
 	 * this method, it is possible to use sendPostMsg and sendGetMsg method. When
@@ -524,6 +550,23 @@ public class MMSClientHandler {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else {
 			this.sendHandler.sendHttpPost(dstMRN, "", data, headerField);
+		}
+	}
+	/**
+	 * Send a POST message to the destination MRN via MMS with timeout.
+	 * 
+	 * @param dstMRN the destination MRN to send data
+	 * @param data   the data to send
+	 * @param timeout 
+	 * @throws Exception if exception occurs
+	 * @see #sendPostMsg(String, String, String)
+	 * @see #setSender(ResponseCallback)
+	 */
+	public void sendPostMsgWithTimeout(String dstMRN, String data, int timeout) throws Exception {
+		if (this.sendHandler == null) {
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
+		} else {
+			this.sendHandler.sendHttpPostWithTimeout(dstMRN, "", data, headerField, timeout);
 		}
 	}
 
