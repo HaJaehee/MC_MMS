@@ -250,7 +250,8 @@ class MessageQueueDequeuer extends Thread{
 					}
 					logger.debug("SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".");
 					
-					
+					//TODO: Even though a polling client disconnects long polling session, this DefaultConsumer holds a channel.
+					//When a polling client disconnects long polling session, this DefaultConsumer have to free the channel. 
 					Consumer consumer = new DefaultConsumer(channel) {
 						 @Override
 						  public void handleDelivery(String consumerTag, Envelope envelope,
