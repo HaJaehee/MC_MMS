@@ -2,7 +2,7 @@ package kr.ac.kaist.mms_server;
 
 /* -------------------------------------------------------- */
 /** 
-File name : MRH_MessageInputChannel.java
+File name : ChannelTerminateListener.java
 	
 Author : Yunho Choi (choiking10@kaist.ac.kr)
 Creation Date : 2019-05-23
