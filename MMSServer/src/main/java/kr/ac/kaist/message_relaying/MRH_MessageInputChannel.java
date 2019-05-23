@@ -76,12 +76,18 @@ Rev. history : 2019-05-17
 Version : 0.9.1
 	From now, MessageParser is initialized in MRH_MessageInputChannel class.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-23
+Version : 0.9.1
+	Fixed a problem where rabbitmq connection was not terminated even when client disconnected by using context-channel attribute.
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.LinkedList;
 import java.util.Random;
 
 import org.slf4j.Logger;
@@ -95,10 +101,12 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel.ConnectionThread;
+import kr.ac.kaist.mms_server.ChannelTerminateListener;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -109,7 +117,7 @@ import java.io.IOException;
 
 
 public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHttpRequest>{
-	
+	public static final AttributeKey<LinkedList<ChannelTerminateListener>> TERMINATOR = AttributeKey.newInstance("terminator");
 	private static final Logger logger = LoggerFactory.getLogger(MRH_MessageInputChannel.class); 
 
 	private String SESSION_ID = "";
@@ -121,6 +129,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     private MessageRelayingHandler relayingHandler;   
 	
     private String DUPLICATE_ID="";
+
 	public MRH_MessageInputChannel(String protocol) {
 		super();
 		this.protocol = protocol;
@@ -153,11 +162,11 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 				}
 			}
 			
-			
 			String svcMRN = parser.getSvcMRN();
     		String srcMRN = parser.getSrcMRN();
     		DUPLICATE_ID = srcMRN+svcMRN;
-			
+
+    		ctx.channel().attr(TERMINATOR).set(new LinkedList<ChannelTerminateListener>());
             relayingHandler = new MessageRelayingHandler(ctx, req, protocol, parser, SESSION_ID);
 		} 	finally {
 			// TODO 이 코드는 무슨의미가 있는가?
@@ -178,6 +187,10 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         if (thread != null) {
             logger.info("Client disconnected. disconnect To.");
             thread.terminate();
+        }
+        LinkedList<ChannelTerminateListener> listeners = ctx.channel().attr(TERMINATOR).get();
+        for(ChannelTerminateListener listener: listeners) {
+        	listener.terminate(ctx);
         }
         ctx.close();
     }

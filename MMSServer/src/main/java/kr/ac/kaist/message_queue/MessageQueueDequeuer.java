@@ -98,11 +98,17 @@ Rev. history : 2019-05-10
 Version : 0.9.1
 	Added function which drops duplicate polling request for normal polling.
 Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
+
+Rev. history : 2019-05-23
+Version : 0.9.1
+	Fixed a problem where rabbitmq connection was not terminated even when client disconnected by using context-channel attribute.
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.LinkedList;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -119,9 +125,11 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.GetResponse;
 import io.netty.channel.ChannelHandlerContext;
+import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.mms_server.Base64Coder;
+import kr.ac.kaist.mms_server.ChannelTerminateListener;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -184,6 +192,30 @@ class MessageQueueDequeuer extends Thread{
 			factory.setPassword(MMSConfiguration.getRabbitMqPasswd());
 			connection = factory.newConnection();
 			channel = connection.createChannel();
+			ctx.channel().attr(MRH_MessageInputChannel.TERMINATOR).get().add(new ChannelTerminateListener() {
+				
+				@Override
+				public void terminate(ChannelHandlerContext ctx) {
+					// TODO Auto-generated method stub
+					try {
+						if(channel.isOpen()) {
+							channel.close();
+						}
+					} catch (IOException e) {
+				    	logger.warn("SessionID="+SESSION_ID+" Channel closing is failed. "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+						for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+							logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+						}
+					} 
+				    catch (TimeoutException e) {
+				    	logger.warn("SessionID="+SESSION_ID+" Channel closing is failed. "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+						for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+							logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+						}
+					} 
+				}
+			});
+			
 			channel.queueDeclare(queueName, true, false, false, null);
 			
 			GetResponse res = null;
