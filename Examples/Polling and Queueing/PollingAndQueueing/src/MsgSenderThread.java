@@ -37,7 +37,7 @@ public class MsgSenderThread extends Thread{
 				@Override
 				public void callbackMethod(Map<String, List<String>> headerField, String message) { // headerField and message of the response message.
 					// TODO Auto-generated method stub
-					PollingAndQueuing.printStampMessage("queueing message complete.");
+					QueuingMain.printStampMessage("queueing message complete.");
 				}
 				
 			});

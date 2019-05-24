@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
@@ -27,15 +28,14 @@ import kr.ac.kaist.mms_client.MMSConfiguration;
 import net.etri.pkilib.client.ClientPKILibrary;
 import net.etri.pkilib.tool.ByteConverter;
 
-public class PollingAndQueuing {
+public class PollingMain {
 	public static int POLLING_INTERVAL = 0 * 1000;
-	public static int QUEUEING_INTERVAL = 60 * 1000;
-	public static int TEST_TIME = 5 * 60 * 1000+1000;
+	public static int TEST_TIME = 5 * 60 * 1000 + 10000;
 
 	public static final String srcMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 	public static final String dstMRN = "urn:mrn:smart-navi:device:mms1";
 	public static final String svcMRN = "urn:mrn:smart-navi:device:service-provider";
-	public static final long START_TIME = System.currentTimeMillis();
+	public static long START_TIME;
 	
 	public static void printStampMessage(String message) {
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -43,6 +43,10 @@ public class PollingAndQueuing {
 	}
 	
 	public static void main(String args[]) throws Exception{
+
+		Scanner readyToStart = new Scanner(System.in);
+		readyToStart.nextLine();
+		START_TIME = System.currentTimeMillis();
 		
 		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
 //		MMSConfiguration.MMS_URL="127.0.0.1:8088";
@@ -78,10 +82,6 @@ public class PollingAndQueuing {
 				}
 			}
 		});
-		if (QUEUEING_INTERVAL != 0) {
-			SendClient client = new SendClient(svcMRN, srcMRN);
-			client.Send(QUEUEING_INTERVAL);
-		}
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			
@@ -91,6 +91,7 @@ public class PollingAndQueuing {
 				printStampMessage("time : " + (System.currentTimeMillis() - START_TIME)/1000 + "seconds");
 			}
 		}, 30000, 30000);
+		
 		Thread.sleep(TEST_TIME);
 		printStampMessage("test ended");
 		System.exit(0);
