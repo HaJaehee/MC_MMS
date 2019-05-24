@@ -208,11 +208,11 @@ public class MMSRestAPIHandler {
 			}
 			if (clientSessionCount != -1) {
 				clientSessionCount = SessionManager.getSessionInfo().size();
-				jobj.put("client-session-count", clientSessionCount+"");
+				jobj.put("client-session-count", clientSessionCount);
 			}
 			if (isMmsRunning != false) {
 				isMmsRunning = true;
-				jobj.put("mms-running", isMmsRunning+"");
+				jobj.put("mms-running", isMmsRunning);
 				
 			}
 			if (relayReqCount != -1) {
