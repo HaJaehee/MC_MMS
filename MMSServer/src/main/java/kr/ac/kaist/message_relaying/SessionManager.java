@@ -50,6 +50,11 @@ Version : 0.9.1
 	Added function of saving and restoring session count list.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history: 2019-05-24
+Version : 0.9.1
+	Fixed session count bugs.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 **/
 /* -------------------------------------------------------- */
 
@@ -153,12 +158,15 @@ public class SessionManager {
 					FileReader fr = new FileReader(f);
 					BufferedReader br = new BufferedReader(fr);
 					String line;
-	
+					long curTimeMillis = System.currentTimeMillis();
+					
 					while ((line=br.readLine()) != null) {
 						if (lineCount > 0) {
 							lineCount--;
 							continue;
 						}
+						
+						
 						if (line.equals("")) {
 							break;
 						}
@@ -166,8 +174,13 @@ public class SessionManager {
 						//print
 						
 						long time = Long.parseLong(timeAndSessionCountAndPollingSessionCount[0]);
+						if (curTimeMillis - time > 1000*60*60*24) {  // More than 24 hours,
+							continue; // ignore.
+						}
+						
 						long sessionCount = Long.parseLong(timeAndSessionCountAndPollingSessionCount[1]);
 						long pollingSessionCount = Long.parseLong(timeAndSessionCountAndPollingSessionCount[2]);
+						
 						
 						SessionCountForFiveSecs scffs = new SessionCountForFiveSecs(time);
 						scffs.setSessionCount(sessionCount);
