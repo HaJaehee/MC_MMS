@@ -46,6 +46,7 @@ public class QueuingMain {
 	public static void main(String args[]) throws Exception{
 		Scanner readyToStart = new Scanner(System.in);
 		readyToStart.nextLine();
+		printStampMessage("test start");
 		START_TIME = System.currentTimeMillis();
 		
 		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
@@ -62,7 +63,7 @@ public class QueuingMain {
 				// TODO Auto-generated method stub
 				printStampMessage("time : " + (System.currentTimeMillis() - START_TIME)/1000 + "seconds");
 			}
-		}, 1000, 1000);
+		}, 30000, 30000);
 		
 		Thread.sleep(TEST_TIME);
 		printStampMessage("test ended");
