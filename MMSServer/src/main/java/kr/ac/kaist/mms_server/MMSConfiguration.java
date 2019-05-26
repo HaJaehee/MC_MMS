@@ -142,8 +142,10 @@ public class MMSConfiguration {
 	private static String RABBIT_MQ_USER = null;
 	private static String RABBIT_MQ_PASSWD = null;
 	
-	private static final boolean POLLING_AUTH_SESSION = true;
-	private static final boolean POLLING_AUTH_PERF = true;
+	@Deprecated
+	private static final boolean POLLING_AUTH_SESSION = false;
+	@Deprecated
+	private static final boolean POLLING_AUTH_PERF = false;
 	
 	private static Logger logger = null;
 
@@ -776,10 +778,11 @@ public class MMSConfiguration {
 		}
 	}
 	
+	@Deprecated
 	public static boolean isPollingSessionOn() {
 		return POLLING_AUTH_SESSION;
 	}
-	
+	@Deprecated
 	public static boolean isPollingTest() {
 		return POLLING_AUTH_PERF;
 	}

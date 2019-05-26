@@ -15,6 +15,7 @@ Version : 0.9.1
 
 */
 
+@Deprecated
 class PollingSession {
 	private String srcMRN;
 	private String hexSignedData;

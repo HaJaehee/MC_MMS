@@ -192,6 +192,12 @@ Rev. history : 2019-05-21
 Version : 0.9.1
 	Added session management of polling message authentication.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-05-26
+Version : 0.9.1
+	Session management of polling message authentication is deprecated.
+	Make error code to be general.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -300,11 +306,12 @@ public class MessageRelayingHandler  {
 		typeDecider = new MessageTypeDecider(this.SESSION_ID);
 		outputChannel = new MRH_MessageOutputChannel(this.SESSION_ID, ctx);
 		
-		if (MMSConfiguration.isPollingTest()) {
-			cltVerifier = new ClientVerifierTest();
-		} else {
-			cltVerifier = new ClientVerifier();
-		}
+		cltVerifier = new ClientVerifier();
+//		if (MMSConfiguration.isPollingTest()) {
+//			cltVerifier = new ClientVerifierTest();
+//		} else {
+//			cltVerifier = new ClientVerifier();
+//		}
 	}
 
     public ConnectionThread getConnectionThread() {
@@ -509,10 +516,10 @@ public class MessageRelayingHandler  {
 					logger.info("SessionID="+this.SESSION_ID+" Client verification using MRN="+srcMRN+" and signed data.");
 					isClientVerified = cltVerifier.verifyClient(srcMRN, parser.getHexSignedData());
 					
-					if (cltVerifier instanceof ClientVerifierTest) {
-						byte[] verificationTime = ((ClientVerifierTest) cltVerifier).verificationTimeJSONString();
-						outputChannel.replyToSender(ctx, verificationTime, isRealtimeLog);
-					}
+//					if (cltVerifier instanceof ClientVerifierTest) {
+//						byte[] verificationTime = ((ClientVerifierTest) cltVerifier).verificationTimeJSONString();
+//						outputChannel.replyToSender(ctx, verificationTime, isRealtimeLog);
+//					}
 					
 					if (isClientVerified) {
 						//Success verifying the client.
@@ -532,10 +539,12 @@ public class MessageRelayingHandler  {
 						logger.info("SessionID="+this.SESSION_ID+" Client verification is failed.");
 						
 						if (cltVerifier.isMatching() == false) {
-							message = ErrorCode.AUTHENTICATION_FAIL_NOTMATCHING.getJSONFormattedUTF8Bytes();
+							// message = ErrorCode.AUTHENTICATION_FAIL_NOTMATCHING.getJSONFormattedUTF8Bytes();
+							message = ErrorCode.AUTHENTICATE_FAIL.getJSONFormattedUTF8Bytes();
 						}
 						else if (cltVerifier.isVerified() == false) {
-							message = ErrorCode.AUTHENTICATION_FAIL_REVOKED.getJSONFormattedUTF8Bytes();
+							//message = ErrorCode.AUTHENTICATION_FAIL_REVOKED.getJSONFormattedUTF8Bytes();
+							message = ErrorCode.AUTHENTICATE_FAIL.getJSONFormattedUTF8Bytes();
 						}
 						
 						outputChannel.replyToSender(ctx, message, isRealtimeLog);
@@ -943,7 +952,8 @@ public class MessageRelayingHandler  {
 					msg = ErrorCode.NULL_SVC_MRN.getJSONFormattedUTF8Bytes();
 				} 
 				else {
-					msg = ErrorCode.AUTHENTICATION_FAIL_REVOKED.getJSONFormattedUTF8Bytes();
+					//msg = ErrorCode.AUTHENTICATION_FAIL_REVOKED.getJSONFormattedUTF8Bytes();
+					msg = ErrorCode.AUTHENTICATE_FAIL.getJSONFormattedUTF8Bytes();
 				}
 				outputChannel.replyToSender(ctx, msg, isRealtimeLog);
 			}

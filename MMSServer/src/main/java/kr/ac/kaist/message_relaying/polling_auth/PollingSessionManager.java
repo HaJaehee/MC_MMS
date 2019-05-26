@@ -16,6 +16,7 @@ Version : 0.9.1
 
 */
 
+@Deprecated
 public class PollingSessionManager {
 	private static PollingSessionList sessionList = new PollingSessionList();
 	public final long TIMEOUT = 30000;

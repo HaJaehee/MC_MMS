@@ -12,6 +12,11 @@ Rev. history : 2019-05-17
 Version : 0.9.1
 	Add error codes related to polling authentication message.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-05-26
+Version : 0.9.1
+	Make error code to be general.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 import java.nio.charset.Charset;
 
@@ -25,9 +30,14 @@ public enum ErrorCode {
 	WRONG_PARAM("10005", "Wrong parameter"),
 	NULL_CERTIFICATE("10006", "The certificate is not inlcuded."),
 	NULL_SVC_MRN("10007", "The service MRN is not inlcuded."),
+	
+	@Deprecated
 	AUTHENTICATION_FAIL_REVOKED("10008", "It is failed to verify the client. The certificate has been revoked."),
 	JSON_FORMAT_ERR("10009", "The message is not formatted by JSON."),
+	
+	@Deprecated
 	AUTHENTICATION_FAIL_NOTMATCHING("10010", "It is failed to verify the client. The source MRN is not equal to the certificate's."),
+	AUTHENTICATE_FAIL("10011", "Authentication is failed."),
 	// Numbers lower than 10000 are internal error codes.
 	// Number 9XXX is related to the MMS monitoring service including dump MNS.
 	MONITORING_CONNECTION_ERR("9001", "Failed to connect to MMS monitoring service."),

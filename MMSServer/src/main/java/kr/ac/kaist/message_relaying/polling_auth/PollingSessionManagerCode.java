@@ -12,6 +12,7 @@ Version : 0.9.1
 
 */
 
+@Deprecated
 public enum PollingSessionManagerCode {
 	OK(0),
 	ADDED(1), 

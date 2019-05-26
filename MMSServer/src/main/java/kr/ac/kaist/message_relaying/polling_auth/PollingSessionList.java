@@ -18,6 +18,7 @@ Version : 0.9.1
 
 */
 
+@Deprecated
 public class PollingSessionList extends ArrayList<PollingSession>{
 	private final MMSLog mmsLog = MMSLog.getInstance();
 	private final int END_INDEX = 128;

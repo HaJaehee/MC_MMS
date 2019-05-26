@@ -21,6 +21,11 @@ Rev. history : 2019-05-21
 Version : 0.9.1
 	Added session management of polling message authentication.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-05-26
+Version : 0.9.1
+	Session management of polling message authentication is deprecated.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -52,44 +57,52 @@ public class ClientVerifier {
 	}
 	
 	public boolean verifyClient (String srcMRN, String hexSignedData) {	
-		if (!MMSConfiguration.isPollingSessionOn()) {
-			// Authentication Session sets off
-			authenticateUsingMIRAPI(srcMRN, hexSignedData);
-			
-			if(isVerified && isMatching) {
-				return true;
-			} else {
-				return false;
-			}
-			
+		authenticateUsingMIRAPI(srcMRN, hexSignedData);
+		
+		if(isVerified && isMatching) {
+			return true;
 		} else {
-			// Authentication Session sets on
-			PollingSessionManagerCode code = pManager.contains(srcMRN, hexSignedData);
-			
-			if (code == PollingSessionManagerCode.FAIL) {
-//				mmsLog.addBriefLogForStatus("[ClientVerifier] Not exist session");
-				authenticateUsingMIRAPI(srcMRN, hexSignedData);
-				
-				if(isVerified && isMatching) {
-//					mmsLog.addBriefLogForStatus("[ClientVerifier] Succeeded authentication, add session");
-					pManager.add(srcMRN, hexSignedData);
-					
-					return true;
-				}
-				
-				return false;
-				
-			} else if (code == PollingSessionManagerCode.CONTAINED) {
-//				mmsLog.addBriefLogForStatus("[ClientVerifier] Contained session");
-				pManager.refresh(srcMRN, hexSignedData);
-				isMatching = true;
-				isVerified = true;
-				
-				return true;
-			}
-			
 			return false;
 		}
+		
+//		if (!MMSConfiguration.isPollingSessionOn()) {
+//			// Authentication Session sets off
+//			authenticateUsingMIRAPI(srcMRN, hexSignedData);
+//			
+//			if(isVerified && isMatching) {
+//				return true;
+//			} else {
+//				return false;
+//			}
+//			
+//		} else {
+//			// Authentication Session sets on
+//			PollingSessionManagerCode code = pManager.contains(srcMRN, hexSignedData);
+//			
+//			if (code == PollingSessionManagerCode.FAIL) {
+////				mmsLog.addBriefLogForStatus("[ClientVerifier] Not exist session");
+//				authenticateUsingMIRAPI(srcMRN, hexSignedData);
+//				
+//				if(isVerified && isMatching) {
+////					mmsLog.addBriefLogForStatus("[ClientVerifier] Succeeded authentication, add session");
+//					pManager.add(srcMRN, hexSignedData);
+//					
+//					return true;
+//				}
+//				
+//				return false;
+//				
+//			} else if (code == PollingSessionManagerCode.CONTAINED) {
+////				mmsLog.addBriefLogForStatus("[ClientVerifier] Contained session");
+//				pManager.refresh(srcMRN, hexSignedData);
+//				isMatching = true;
+//				isVerified = true;
+//				
+//				return true;
+//			}
+//			
+//			return false;
+//		}
 	}
 	
 	private void authenticateUsingMIRAPI(String srcMRN, String hexSignedData) {
