@@ -1,14 +1,10 @@
 /* -------------------------------------------------------- */
 /** 
-File name : PollingAndQueueing.java
-	Polling and Queuing
-Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2018-10-05
+File name : PollinMain.java
+	For Polling
+Author : Yunho Choi (choiking10@kaist.ac.kr)
+Creation Date : 2019-05-25
 
-Rev. history : 2018-10-11
-Version : 0.8.0
-	Modified polling client verification.
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 

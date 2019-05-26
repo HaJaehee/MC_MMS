@@ -1,3 +1,12 @@
+/* -------------------------------------------------------- */
+/** 
+File name : MsgSenderThread.java
+	For sending
+Author : Yunho Choi (choiking10@kaist.ac.kr)
+Creation Date : 2019-05-25
+
+*/
+/* -------------------------------------------------------- */
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
