@@ -19,17 +19,20 @@ Author : Jin Jeong (jungst0001@kaist.ac.kr)
 Creation Date : 2019-04-16
 Version : 0.8.2
 
+Rev. history : 2019-05-26
+Version : 0.9.1
+	Error message is changed.
+	One testcase is deleted.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
 # This below case is a successful case.
 case 1: Client sends a polling message, formatted by JSON, with service MRN and certificate.
 
 # These below cases are failed cases.
-case 2: Client sends a polling message, not formatted by JSON (it means a previous formatted message), with service MRN and certificate. Currently (the version of MMS is 0.8.X),
- 		the message is accepted	temporally, but if the MMS is updated (since 0.9.X), this message will be declined by the MMS. 
-case 3: Client sends a polling message, formatted by JSON, with only service MRN. Currently (the version of MMS is 0.8.X),
- 		the message is accepted	temporally, but if the MMS is updated (since 0.9.X), this message will be declined by the MMS. 
+case 2: Client sends a polling message, not formatted by JSON (it means a previous formatted message), with service MRN and certificate.
+case 3: Client sends a polling message, formatted by JSON, with only service MRN.
 case 4: Client sends a polling message, formatted by JSON, with only certificate.
-case 5: Client sends a polling message, formatted by JSON, with service MRN and certificate, but the certificate has been revoked.
-case 6: Client sends a polling message, formatted by JSON, with service MRN and certificate, 
+case 5: Client sends a polling message, formatted by JSON, with service MRN and certificate, 
 		but the source MRN has a problem that the source MRN does not match a MRN described in the certificate.
 		
 Rev. history : 2019-05-17
@@ -39,9 +42,9 @@ Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
 public class TS6_Test {
-//	public final static String MMS_URL = "143.248.55.83:8088";
+	public final static String MMS_URL = "143.248.55.83:8088";
 //	public final static String MMS_URL = "mms.smartnav.org:8088";
-	public final static String MMS_URL = "127.0.0.1:8088";
+//	public final static String MMS_URL = "127.0.0.1:8088";
 	public final static String serverMRN = "urn:mrn:imo:imo-no:ts-mms-06-server";
 	public final static String clientMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 	public final static String server_message = "Hello, polling client!";
@@ -92,7 +95,6 @@ public class TS6_Test {
 	
 	@Test
 	public void test01() throws IOException, InterruptedException { 
-		System.out.println("Test 01 Start");
 		TS6_Client.sentMessage = null;
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
@@ -106,12 +108,10 @@ public class TS6_Test {
 
 		System.out.println(TS6_Client.sentMessage);
 		assertTrue(TS6_Client.sentMessage.equals(server_message));
-		System.out.println("Test 01 End");
 	}
 	
 	@Test
 	public void test02() throws IOException, InterruptedException {	
-		System.out.println("Test 02 Start");
 		TS6_Client.sentMessage = null;
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
@@ -128,7 +128,6 @@ public class TS6_Test {
 		
 //		assertTrue(TS6_Client.sentMessage.equals(server_message));	
 		assertTrue(TS6_Client.sentMessage.equals("[10009] The message is not formatted by JSON."));
-		System.out.println("Test 02 End");
 	}
 	
 	/**
@@ -148,7 +147,7 @@ public class TS6_Test {
 		client.sendPollingMessage(contentsBuilder.toString());
 
 //		assertTrue(TS6_Client.sentMessage.equals(server_message));	
-		assertTrue(TS6_Client.sentMessage.equals("[10006] The certificate is not inlcuded."));
+		assertTrue(TS6_Client.sentMessage.equals("[10006] The certificate is not included."));
 	}
 	
 	@Test
@@ -162,27 +161,11 @@ public class TS6_Test {
 		String signedData = getSignedData(true);
 		contentsBuilder.setCertificate(signedData);
 		client.sendPollingMessage(contentsBuilder.toString());
-		assertTrue(TS6_Client.sentMessage.equals("[10007] The service MRN is not inlcuded."));	
+		assertTrue(TS6_Client.sentMessage.equals("[10007] The service MRN is not included."));	
 	}
 	
 	@Test
 	public void test05() throws IOException, InterruptedException {		
-		TS6_Client.sentMessage = null;
-		contentsBuilder.setCertificate(null);
-		contentsBuilder.setServiceMRN(null);
-		
-		server.sendMessage(server_message);
-
-		String signedData = getSignedData(false);
-		contentsBuilder.setServiceMRN(serverMRN);
-		contentsBuilder.setCertificate(signedData);
-		client.sendPollingMessage(contentsBuilder.toString());
-
-		assertTrue(TS6_Client.sentMessage.equals("[10008] It is failed to verify the client. The certificate has been revoked."));
-	}
-
-	@Test
-	public void test06() throws IOException, InterruptedException {		
 		TS6_Client.sentMessage = null;
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
@@ -197,6 +180,6 @@ public class TS6_Test {
 		theClient.sendPollingMessage(contentsBuilder.toString());
 
 //		System.out.println(TS6_Client.sentMessage);
-		assertTrue(TS6_Client.sentMessage.equals("[10010] It is failed to verify the client. The source MRN is not equal to the certificate's."));
+		assertTrue(TS6_Client.sentMessage.equals("[10012] Authentication is failed."));
 	}
 }

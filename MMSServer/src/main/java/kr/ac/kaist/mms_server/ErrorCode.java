@@ -29,8 +29,8 @@ public enum ErrorCode {
 	NULL_MRN("10004", "Null MRNs."),
 	WRONG_PARAM("10005", "Wrong parameter"),
 
-	NULL_CERTIFICATE("10006", "The certificate is not inlcuded."),
-	NULL_SVC_MRN("10007", "The service MRN is not inlcuded."),
+	NULL_CERTIFICATE("10006", "The certificate is not included."),
+	NULL_SVC_MRN("10007", "The service MRN is not included."),
 	
 	@Deprecated
 	AUTHENTICATION_FAIL_REVOKED("10008", "It is failed to verify the client. The certificate has been revoked."),
