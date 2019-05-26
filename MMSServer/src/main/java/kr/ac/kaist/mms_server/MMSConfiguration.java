@@ -148,6 +148,10 @@ public class MMSConfiguration {
 	private static String RABBIT_MQ_USER = null;
 	private static String RABBIT_MQ_PASSWD = null;
 	
+	@Deprecated
+	private static final boolean POLLING_AUTH_SESSION = false;
+	@Deprecated
+	private static final boolean POLLING_AUTH_PERF = false;
 	
 	
 	private static Logger logger = null;
@@ -805,6 +809,15 @@ public class MMSConfiguration {
 			logger.warn(TAG+"WAITING_MESSAGE_TIMEOUT="+WAITING_MESSAGE_TIMEOUT+"ms");
 			
 		}
+	}
+	
+	@Deprecated
+	public static boolean isPollingSessionOn() {
+		return POLLING_AUTH_SESSION;
+	}
+	@Deprecated
+	public static boolean isPollingTest() {
+		return POLLING_AUTH_PERF;
 	}
 
 	public static boolean isWebLogProviding() {
