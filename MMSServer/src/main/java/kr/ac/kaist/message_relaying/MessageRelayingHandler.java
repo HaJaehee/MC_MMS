@@ -336,7 +336,7 @@ public class MessageRelayingHandler  {
 			String dstIP = parser.getDstIP();
 			String srcIP = parser.getSrcIP();
 			int dstPort = parser.getDstPort();
-			double seqNum = parser.getSeqNum();
+			long seqNum = parser.getSeqNum();
 			String srcDstPair = srcMRN+"::"+dstMRN;
 			
 			try {

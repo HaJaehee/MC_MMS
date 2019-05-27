@@ -138,7 +138,7 @@ public class MessageParser {
 	private GeolocationCircleInfo geoCircleInfo = null;
 	private GeolocationPolygonInfo geoPolygonInfo = null;
 	private JSONArray geoDstInfo = null;
-	private double seqNum = -1;
+	private long seqNum = -1;
 	private String hexSignedData = null;
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
@@ -190,7 +190,7 @@ public class MessageParser {
 		String o = req.headers().get("seqNum");
 		if (o != null) {
 			//seqNum must be positive and lower than MAXIMUM VALUE of double. seqNum must be checked.
-			seqNum = Double.parseDouble(o);
+			seqNum = Long.parseLong(o);
 			new BigInteger(o);
 			if (seqNum < 0) {
 				logger.warn("SessionID="+SESSION_ID+" In header, seqNum must be positive integer.");
@@ -371,7 +371,7 @@ public class MessageParser {
 	int getDstPort() { return dstPort; }
 	String getDstMRN() { return dstMRN; }
 	String getDstModel() { return dstModel; }
-	double getSeqNum() { return seqNum;	}
+	long getSeqNum() { return seqNum;	}
 	
 	// Destination Special Information //
 	String[] getMultiDstMRN() { 
