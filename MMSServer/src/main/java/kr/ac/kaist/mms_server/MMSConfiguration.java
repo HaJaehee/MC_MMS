@@ -147,6 +147,7 @@ public class MMSConfiguration {
 	
 	private static String RABBIT_MQ_HOST = null;
 	private static int RABBIT_MQ_PORT = 0;
+	private static String RABBIT_MQ_MANAGING_HOST = null;
 	private static int RABBIT_MQ_MANAGING_PORT = 0;
 	private static String RABBIT_MQ_MANAGING_PROTOCOL = null;
 	private static String RABBIT_MQ_USER = null;
@@ -233,6 +234,10 @@ public class MMSConfiguration {
 		rabbit_mq_port.setRequired(false);
 		options.addOption(rabbit_mq_port);
 		
+		Option rabbit_mq_mng_host = new Option ("mqmnghost", "rabbit_mq_managing_host", true, "Set the host of the Rabbit MQ management server.");
+		rabbit_mq_mng_host.setRequired(false);
+		options.addOption(rabbit_mq_mng_host);
+		
 		Option rabbit_mq_managing_port = new Option ("mqmngport", "rabbit_mq_managing_port", true, "Set the port number of the Rabbit MQ management server.");
 		rabbit_mq_managing_port.setRequired(false);
 		options.addOption(rabbit_mq_managing_port);
@@ -268,6 +273,7 @@ public class MMSConfiguration {
 					+ " [-mrn mms_mrn]"
 					+ " [-mqhost rabbit_mq_host]"
 					+ " [-mqport rabbit_mq_port]"
+					+ " [-mqmnghost rabbit_mq_managing_host]"
 					+ " [-mqmngport rabbit_mq_managing_port]"
 					+ " [-mqmngproto rabbit_mq_managing_protocol]"
 					+ " [-mquser rabbit_mq_user]"
@@ -317,6 +323,11 @@ public class MMSConfiguration {
 			if (RABBIT_MQ_PORT == 0) {
 				RABBIT_MQ_PORT = getOptionValueInteger(cmd, "rabbit_mq_port");
 			}
+			
+			if (RABBIT_MQ_MANAGING_HOST == null) {
+				RABBIT_MQ_MANAGING_HOST = cmd.getOptionValue("rabbit_mq_managing_host");
+			}
+			
 			
 			if (RABBIT_MQ_MANAGING_PORT == 0) {
 				RABBIT_MQ_MANAGING_PORT = getOptionValueInteger(cmd, "rabbit_mq_managing_port");
@@ -416,6 +427,13 @@ public class MMSConfiguration {
 			String s = System.getenv("ENV_RABBIT_MQ_PORT");
 			if (s != null) {
 				RABBIT_MQ_PORT = Integer.parseInt(s); 
+			}
+		}
+		
+		if (RABBIT_MQ_MANAGING_HOST == null) {
+			String s = System.getenv("ENV_RABBIT_MQ_MANAGING_HOST");
+			if (s != null) {
+				RABBIT_MQ_MANAGING_HOST = s; 
 			}
 		}
 		
@@ -536,6 +554,9 @@ public class MMSConfiguration {
 					RABBIT_MQ_PORT = getConfValueInteger(jobj, "RABBIT_MQ_PORT");
 				}
 			}
+			if (RABBIT_MQ_MANAGING_HOST == null) {
+				RABBIT_MQ_MANAGING_HOST = (String) jobj.get("RABBIT_MQ_MANAGING_HOST");
+			}
 			if (RABBIT_MQ_MANAGING_PORT == 0) {
 				if (jobj.get("RABBIT_MQ_MANAGING_PORT") != null){
 					RABBIT_MQ_MANAGING_PORT = getConfValueInteger(jobj, "RABBIT_MQ_MANAGING_PORT");
@@ -639,6 +660,10 @@ public class MMSConfiguration {
 				RABBIT_MQ_PORT = 5672; //Default is integer 5672.
 			}
 			
+			if (RABBIT_MQ_MANAGING_HOST == null) {
+				RABBIT_MQ_MANAGING_HOST = "localhost"; //Default is String "localhost".
+			}
+			
 			if (RABBIT_MQ_MANAGING_PORT == 0) {
 				RABBIT_MQ_MANAGING_PORT = 15672; //Default is integer 15672.
 			}
@@ -686,6 +711,7 @@ public class MMSConfiguration {
 			logger.warn(TAG+"MNS_PORT="+MNS_PORT);
 			logger.warn(TAG+"RABBIT_MQ_HOST="+RABBIT_MQ_HOST);
 			logger.warn(TAG+"RABBIT_MQ_PORT="+RABBIT_MQ_PORT);
+			logger.warn(TAG+"RABBIT_MQ_MANAGING_HOST="+RABBIT_MQ_MANAGING_HOST);
 			logger.warn(TAG+"RABBIT_MQ_MANAGING_PORT="+RABBIT_MQ_MANAGING_PORT);
 			logger.warn(TAG+"RABBIT_MQ_MANAGING_PROTOCOL="+RABBIT_MQ_MANAGING_PROTOCOL);
 			logger.warn(TAG+"RABBIT_MQ_USER="+RABBIT_MQ_USER);
@@ -760,6 +786,10 @@ public class MMSConfiguration {
 	
 	public static int getRabbitMqPort() {
 		return RABBIT_MQ_PORT;
+	}
+	
+	public static String getRabbitMqManagingHost() {
+		return RABBIT_MQ_MANAGING_HOST;
 	}
 	
 	public static int getRabbitMqManagingPort() {

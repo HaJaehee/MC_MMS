@@ -95,7 +95,7 @@ public class MessageQueueManager {
 			byte[] response = null;
 			
 			if (MMSConfiguration.getRabbitMqManagingProtocol().equals("http")) {
-				response = outputChannel.sendMessage(MMSConfiguration.getRabbitMqHost(), 
+				response = outputChannel.sendMessage(MMSConfiguration.getRabbitMqManagingHost(), 
 														MMSConfiguration.getRabbitMqManagingPort(), 
 														HttpMethod.GET, 
 														"/api/queues", 
@@ -103,7 +103,7 @@ public class MessageQueueManager {
 														MMSConfiguration.getRabbitMqPasswd());
 			}
 			else if (MMSConfiguration.getRabbitMqManagingProtocol().equals("https")){
-				response = outputChannel.secureSendMessage(MMSConfiguration.getRabbitMqHost(), 
+				response = outputChannel.secureSendMessage(MMSConfiguration.getRabbitMqManagingHost(), 
 						MMSConfiguration.getRabbitMqManagingPort(), 
 						HttpMethod.GET, 
 						"/api/queues", 
