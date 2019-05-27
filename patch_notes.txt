@@ -18,7 +18,7 @@ MC_MMS 0.9.0 new features/enhancements & bug-fixes:
 5. Bug fixed related to relaying when a service provider does not respond.
 
 12-April 2019
-MC_MMS 0.8.2 new features/enhancements & bug-fixes:
+MC_MMS 0.8.2-1 new features/enhancements & bug-fixes:
 1. Modified for coding rule conformity.
 2. Updated version of docker containers of MMS monitoring module from 0.7 to 0.8.2.
 
@@ -27,11 +27,11 @@ MC_MMS 0.8.2 new features/enhancements & bug-fixes:
 1. Function and API update: Polling client now uses a payload using json format. 
 
 12-March 2019
-MC_MMS 0.8.1 new features/enhancements & bug-fixes:
+MC_MMS 0.8.1-2 new features/enhancements & bug-fixes:
 1. Function update: Auto-deplying MMS monitoring module using docker containers.
 
 8-March 2019
-MC_MMS 0.8.1 new features/enhancements & bug-fixes:
+MC_MMS 0.8.1-1 new features/enhancements & bug-fixes:
 1.Previously:
 	MMS server had a Map structure that has service MRN strings as keys and long polling booleans as values.
   Now:
@@ -48,15 +48,15 @@ MC_MMS 0.8.1 new features/enhancements & bug-fixes:
 1. Supporting message ordering functions are developed.
 
 21-Oct 2018
-MC_MMS 0.8.0 new features/enhancements & bug-fixes:
+MC_MMS 0.8.0-3 new features/enhancements & bug-fixes:
 1. MMS geocasting circle, geocasting polygon functions are developed.
 
 13-Oct 2018
-MC_MMS 0.8.0 new features/enhancements & bug-fixes:
+MC_MMS 0.8.0-2 new features/enhancements & bug-fixes:
 1. MMS Configuration functions are developed.
 
 29-Sep 2018
-MC_MMS 0.8.0 new features/enhancements & bug-fixes:
+MC_MMS 0.8.0-1 new features/enhancements & bug-fixes:
 1. Dockerize MMS Monitoring Module for the first time.
 2. For #1, MMSMonitor Module is uploaded at the "MMSMonitor" folder, and various improvement of scripts.
 
@@ -74,7 +74,7 @@ MC_MMS 0.7.3 new features/enhancemants & bug-fixes:
 5. Added MMS configuration functions for CLI arguments and arguments from MMS.conf file.
 
 28-June 2018
-MC_MMS 0.7.1 new features/enhancemants & bug-fixes:
+MC_MMS 0.7.1-1 new features/enhancemants & bug-fixes:
 1. Updated interfaces between MMS and MNS.
 2. Fixed large response issues.
 3. Updated API of RabbitMQ Client from version 4.0 to version 5.3.
