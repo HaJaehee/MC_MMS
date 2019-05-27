@@ -43,6 +43,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
+	Modified for requiring MMS keystore in MMS.conf.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
