@@ -369,6 +369,7 @@ public class MessageRelayingHandler  {
 				}
 			}
 			
+			//Below code MUST be 'if' statement not 'else if'. 
 			if (type == MessageTypeDecider.msgType.REST_API) {
 				
 				QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
@@ -463,7 +464,7 @@ public class MessageRelayingHandler  {
 				//printSessionsInSessionMng (srcDstPair);
 			}
 			
-
+			//Below code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.NULL_MRN) {
 				message = ErrorCode.NULL_MRN.getUTF8Bytes();
 			}
@@ -575,7 +576,9 @@ public class MessageRelayingHandler  {
 				message = mch.castMsgsToMultipleCS(srcMRN, dstMRNs, req.content().toString(Charset.forName("UTF-8")).trim());
 			} 
 			
-			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
+			
+			//Below code MUST be 'if' statement not 'else if'. 
+			if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 				List<SessionIdAndThr> itemList = SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair);
 
 				while (true) { 
@@ -837,6 +840,7 @@ public class MessageRelayingHandler  {
 		}
 		finally {
 			if (type != MessageTypeDecider.msgType.POLLING && type != MessageTypeDecider.msgType.LONG_POLLING && thread == null) {
+
 				if (message == null) {
 					message = ErrorCode.UNKNOWN_ERR.getBytes();
 					mmsLog.info(logger, this.SESSION_ID, "INVALID MESSAGE.");
@@ -1069,16 +1073,10 @@ public class MessageRelayingHandler  {
 		  mmsLog.trace(logger, this.SESSION_ID, "From server=" + queryReply+".");
 
 	  } catch (UnknownHostException e) {
-		  logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+		  mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 		 
 	  } catch (IOException e) {
-		  logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+		  mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 		  
 	  } finally {
 		  if (pw != null) {
@@ -1088,30 +1086,21 @@ public class MessageRelayingHandler  {
 			  try {
 				  isr.close();
 			  } catch (IOException e) {
-				  logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-	    			}
+				  mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 			  }
 		  }
 		  if (br != null) {
 			  try {
 				  br.close();
 			  } catch (IOException e) {
-				  logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-	    			}
+				  mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 			  }
 		  }
 		  if (MNSSocket != null) {
 			  try {
 				  MNSSocket.close();
 			  } catch (IOException e) {
-				  logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-	    			}
+				  mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 			  }
 		  }
 	  }

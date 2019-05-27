@@ -103,6 +103,9 @@ public class MNSDummy {
 		//       (Geo-location added version)   IP_Address:PortNumber:Model:Geo-location
 		//
 		//
+		
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-server","143.248.57.72:8902:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-client","143.248.57.72:0:1");
 		MRNtoIP.put("urn:mrn:imo:imo-no:1000001","223.39.131.117:0:1");
 		MRNtoIP.put("urn:mrn:imo:imo-no:1000001-SCSession","118.220.143.130:0:1");
 		MRNtoIP.put("urn:mrn:imo:imo-no:1000001-kaist","172.25.0.11:0:1");
