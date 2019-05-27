@@ -94,6 +94,11 @@ Rev. history : 2019-05-22
 Version : 0.9.1
 	Added secureSendMessage function for connecting to Rabbit MQ management HTTPS server to implement restful API.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 

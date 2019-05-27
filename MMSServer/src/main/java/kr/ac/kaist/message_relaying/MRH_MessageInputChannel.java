@@ -81,6 +81,11 @@ Rev. history : 2019-05-23
 Version : 0.9.1
 	Fixed a problem where rabbitmq connection was not terminated even when client disconnected by using context-channel attribute.
 Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 

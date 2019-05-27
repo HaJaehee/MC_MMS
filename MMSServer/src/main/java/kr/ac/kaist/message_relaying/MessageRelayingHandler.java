@@ -203,6 +203,11 @@ Version : 0.9.1
 	Session management of polling message authentication is deprecated.
 	Make error code to be general.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 

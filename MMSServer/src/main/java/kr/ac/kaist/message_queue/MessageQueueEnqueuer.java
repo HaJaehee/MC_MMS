@@ -74,6 +74,11 @@ Rev. history : 2019-05-06
 Version : 0.9.0
 	Added Rabbit MQ port number, username and password into ConnectionFactory.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 
 /* -------------------------------------------------------- */

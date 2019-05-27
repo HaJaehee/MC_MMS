@@ -94,6 +94,13 @@ Rev. history: 2019-05-22
 Version : 0.9.1
 	Added RABBIT_MQ_MANAGING_PROTOCOL.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-05-27
+Version : 0.9.1
+	Modified for requiring MMS keystore in MMS.conf.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+
 */
 /* -------------------------------------------------------- */
 import java.io.File;

@@ -39,6 +39,11 @@ Version : 0.9.0
 	Added initialization of SessionManager.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 

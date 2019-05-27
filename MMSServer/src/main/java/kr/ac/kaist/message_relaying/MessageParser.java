@@ -84,6 +84,11 @@ Rev. history : 2019-05-17
 Version : 0.9.1
 	From now, MessageParser is initialized in MRH_MessageInputChannel class.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
