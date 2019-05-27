@@ -198,7 +198,8 @@ class MessageQueueDequeuer extends Thread{
 				public void terminate(ChannelHandlerContext ctx) {
 					// TODO Auto-generated method stub
 					try {
-						if(channel.isOpen()) {
+						
+						if(channel != null && channel.isOpen()) {
 							channel.close();
 						}
 					} catch (IOException | TimeoutException e) {

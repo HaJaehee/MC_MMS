@@ -150,7 +150,7 @@ public class MMSLog {
 	private ArrayList<String> briefLogForStatus = new ArrayList<String>();
 	private Map<String,List<String>> briefRealtimeLogEachIDs = new HashMap<String,List<String>>();
 	private MMSLogForDebug mmsLogForDebug = null;
-	private MMSLog mmsLog = MMSLog.getInstance();
+
 
 	
 	private MMSLog() {
@@ -412,7 +412,7 @@ public class MMSLog {
 			sb.append(log);
 			String newLog = sb.toString();
 			
-			mmsLog.addBriefLogForStatus(newLog);
+			addBriefLogForStatus(newLog);
 			mmsLogForDebug.addLog(SessionId, newLog);
 		}
 	}
@@ -455,18 +455,18 @@ public class MMSLog {
 	
 	public void warnException (Logger logger, String SessionId, String log, Exception e, int traceDepth) {
 		if (logger.isWarnEnabled()) {
-			mmsLog.warn(logger, SessionId, makeExceptionLog(log, e));
+			warn(logger, SessionId, makeExceptionLog(log, e));
 			for (int i = 1 ; i < e.getStackTrace().length && i < traceDepth ; i++) {
-				logger.warn(mmsLog.makeLog(SessionId, e.getStackTrace()[i]+"."));
+				logger.warn(makeLog(SessionId, e.getStackTrace()[i]+"."));
 			}
 		}
 	}
 	
 	public void errorException (Logger logger, String SessionId, String log, Exception e, int traceDepth) {
 		if (logger.isErrorEnabled()) {
-			mmsLog.error(logger, SessionId, makeExceptionLog(log, e));
+			error(logger, SessionId, makeExceptionLog(log, e));
 			for (int i = 1 ; i < e.getStackTrace().length && i < traceDepth ; i++) {
-				logger.error(mmsLog.makeLog(SessionId, e.getStackTrace()[i]+"."));
+				logger.error(makeLog(SessionId, e.getStackTrace()[i]+"."));
 			}
 		}
 	}

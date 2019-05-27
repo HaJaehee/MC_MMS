@@ -123,6 +123,8 @@ public class MMSConfiguration {
 	private static boolean[] WEB_LOG_PROVIDING = {false, false}; //{isSet, value}
 	private static boolean[] WEB_MANAGING = {false, false}; //{isSet, value}
 	
+	private static boolean[] HTTPS_ENABLED = {false, false}; //{isSet, value}
+	
 	private static int HTTP_PORT = 0;
 	private static int HTTPS_PORT = 0;
 	private static String MNS_HOST = null;
@@ -134,12 +136,7 @@ public class MMSConfiguration {
 	private static int WAITING_MESSAGE_TIMEOUT = 0;
 	
 	private static int MAX_BRIEF_LOG_LIST_SIZE = 0;
-	
-	/*-------- logback.xml has these settings --------*/
-	//private static String LOG_LEVEL = null;
-	//private static boolean[] LOG_FILE_OUT = {false, false}; //{isSet, value}
-	//private static boolean[] LOG_CONSOLE_OUT = {false, false}; //{isSet, value}
-	/*-------- logback.xml has these settings --------*/
+
 	
 	private static String RABBIT_MQ_HOST = null;
 	private static int RABBIT_MQ_PORT = 0;
@@ -147,6 +144,8 @@ public class MMSConfiguration {
 	private static String RABBIT_MQ_MANAGING_PROTOCOL = null;
 	private static String RABBIT_MQ_USER = null;
 	private static String RABBIT_MQ_PASSWD = null;
+	
+	private static String KEYSTORE = null;
 	
 	@Deprecated
 	private static final boolean POLLING_AUTH_SESSION = false;
@@ -187,6 +186,10 @@ public class MMSConfiguration {
 		http_port.setRequired(false);
 		options.addOption(http_port);
 		
+		Option https_enabled = new Option ("https","https", false, "Set the HTTPS enabled.");
+		https_enabled.setRequired(false);
+		options.addOption(https_enabled);
+		
 		Option https_port = new Option ("sp","https_port", true, "Set the HTTPS port number of this MMS.");
 		https_port.setRequired(false);
 		options.addOption(https_port);
@@ -215,18 +218,6 @@ public class MMSConfiguration {
 		max_brief_log_list_size.setRequired(false);
 		options.addOption(max_brief_log_list_size);
 		
-		//Option log_level = new Option ("ll", "log_level", true, "Set the log level of the MMS, i.e., ALL, TRACE, DEBUG, INFO, WARN, ERROR, OFF.");
-		//log_level.setRequired(false);
-		//options.addOption(log_level);
-		
-		//Option log_file_out = new Option ("fo", "log_file_out", true, "Print the logs of the MMS into the log files if the argument is [true], otherwise disable if [false]. Default is [true].");
-		//log_file_out.setRequired(false);
-		//options.addOption(log_file_out);
-		
-		//Option log_console_out = new Option ("co", "log_console_out", true, "Print the logs of the MMS to the console if the argument is [true], otherwise disable if [false]. Default is [true].");
-		//log_console_out.setRequired(false);
-		//options.addOption(log_console_out);
-		
 		Option rabbit_mq_host = new Option ("mqhost", "rabbit_mq_host", true, "Set the host of the Rabbit MQ server.");
 		rabbit_mq_host.setRequired(false);
 		options.addOption(rabbit_mq_host);
@@ -251,6 +242,8 @@ public class MMSConfiguration {
 		rabbit_mq_passwd.setRequired(false);
 		options.addOption(rabbit_mq_passwd);
 		
+		
+		
 		CommandLineParser clParser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd;
@@ -259,10 +252,8 @@ public class MMSConfiguration {
 			cmd = clParser.parse(options, args);
 			
 			String usage = "java -cp MC_MMS.jar kr.ac.kaist.mms_server.MMSServer"
-					//+ " [-co log_console_out] "
-					//+ " [-fo log_file_out]"
 					+ " [-h help]"
-					//+ " [-ll log_level]"
+					+ " [-https https]"
 					+ " [-mc max_content_size]"
 					+ " [-mls max_brief_log_list_size]"
 					+ " [-mns mns_host]"
@@ -298,7 +289,11 @@ public class MMSConfiguration {
 			if (HTTP_PORT == 0) {
 				HTTP_PORT = getOptionValueInteger(cmd, "http_port");
 			}
-			if (HTTPS_PORT == 0) {
+			
+			if (HTTPS_ENABLED[0] == false) {
+				HTTPS_ENABLED = getOptionValueBoolean(cmd, "https");
+			}
+			if (HTTPS_ENABLED[1] && HTTPS_PORT == 0) {
 				HTTPS_PORT = getOptionValueInteger(cmd, "https_port");
 			}
 			if (MNS_HOST == null) {
@@ -352,18 +347,10 @@ public class MMSConfiguration {
 			if (MAX_BRIEF_LOG_LIST_SIZE == 0) {
 				MAX_BRIEF_LOG_LIST_SIZE = getOptionValueInteger(cmd, "max_brief_log_list_size");
 			}
-			/*if (LOG_LEVEL == null) {
-				LOG_LEVEL = cmd.getOptionValue("log_level");
-			}
-			if (LOG_FILE_OUT[0] == false) {
-				LOG_FILE_OUT = getOptionValueBoolean(cmd, "log_file_out");
-			}
-			if (LOG_CONSOLE_OUT[0] == false) {
-				LOG_CONSOLE_OUT = getOptionValueBoolean(cmd, "log_console_out");
-			}*/
+
 
 		}
-		catch (org.apache.commons.cli.ParseException e){
+		catch (org.apache.commons.cli.ParseException | IOException e){
 			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
 			formatter.printHelp("MMS options", options);
 			Scanner sc = new Scanner(System.in);
@@ -371,22 +358,7 @@ public class MMSConfiguration {
 			sc.close();
 			System.exit(1);
 		}
-		catch (IOException e) {
-			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
-			Scanner sc = new Scanner(System.in);
-			sc.nextLine();
-			sc.close();
-			System.exit(1);
-		}
-		
-		//Read system environment
-		//if (!WEB_LOG_PROVIDING[0]) {
-		//	WEB_LOG_PROVIDING = getConfValueBoolean(jobj, "WEB_LOG_RROVIDING");
-		//}
-		
-		//if (!WEB_MANAGING[0]) {
-		//	WEB_MANAGING = getConfValueBoolean(jobj, "WEB_MANAGING");
-		//}
+
 
 		if (HTTP_PORT == 0) {
 			String s = System.getenv("ENV_HTTP_PORT");
@@ -395,12 +367,22 @@ public class MMSConfiguration {
 			}
 		}
 		
-		if (HTTPS_PORT == 0) {
+
+		if (HTTPS_ENABLED[0] == false) {
+			String s = System.getenv("ENV_HTTPS_ENABLED");
+			if (s != null) {
+				HTTPS_ENABLED[1] = Boolean.parseBoolean(s);
+				HTTPS_ENABLED[0] = true;
+			}
+		}
+		
+		if (HTTPS_ENABLED[1] && HTTPS_PORT == 0) {
 			String s = System.getenv("ENV_HTTPS_PORT");
 			if (s != null) {
 				HTTPS_PORT = Integer.parseInt(s);
 			}
 		}
+
 		
 		if (MNS_HOST == null) {
 			String s = System.getenv("ENV_MNS_HOST");
@@ -468,7 +450,7 @@ public class MMSConfiguration {
 						throw new IOException();
 					} catch (IOException e) {
 						logger.warn(e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".");
-						for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+						for (int i = 1 ; i < e.getStackTrace().length && i < 5 ; i++) {
 							logger.warn(e.getStackTrace()[i]+".");
 						}
 					}
@@ -493,20 +475,6 @@ public class MMSConfiguration {
 			if (s != null)
 				MAX_BRIEF_LOG_LIST_SIZE = Integer.parseInt(s);
 		}		
-		
-		/*if (LOG_LEVEL == null) {
-			String s = System.getenv("ENV_LOG_LEVEL");
-			if (s != null)
-				LOG_LEVEL = s;
-		}
-		
-		if (!LOG_FILE_OUT[0]) {
-			LOG_FILE_OUT = getConfValueBoolean(jobj, "LOG_FILE_OUT");
-		}
-		
-		if (!LOG_CONSOLE_OUT[0]) {
-			LOG_CONSOLE_OUT = getConfValueBoolean(jobj, "LOG_CONSOLE_OUT");
-		}*/
 		
 		
 		
@@ -533,8 +501,16 @@ public class MMSConfiguration {
 				HTTP_PORT = getConfValueInteger(jobj, "HTTP_PORT");
 			}
 			
-			if (HTTPS_PORT == 0) {
+			if (HTTPS_ENABLED[0] == false) {
+				HTTPS_ENABLED = getConfValueBoolean(jobj, "HTTPS_ENABLED");
+			}
+			
+			if (HTTPS_ENABLED[1] && HTTPS_PORT == 0) {
 				HTTPS_PORT = getConfValueInteger(jobj, "HTTPS_PORT");
+			}
+
+			if (HTTPS_ENABLED[1]) {
+				KEYSTORE = (String) jobj.get("KEYSTORE");
 			}
 			
 			if (MNS_HOST == null) {
@@ -711,86 +687,13 @@ public class MMSConfiguration {
 				MAX_BRIEF_LOG_LIST_SIZE = 200; //Default is integer 200.
 			}
 			
-			/* Don't remove below code lines that are commented out. 
-			if (LOG_LEVEL != null) {
-				ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-			    LOG_LEVEL = LOG_LEVEL.toUpperCase();
-				if (LOG_LEVEL.equals("DEBUG")) {
-			    	root.setLevel(Level.DEBUG);
-			    }
-			    else if (LOG_LEVEL.equals("INFO")) {
-			    	root.setLevel(Level.INFO);
-			    }
-			    else if (LOG_LEVEL.equals("WARN")) {
-			    	root.setLevel(Level.WARN);
-			    }
-			    else if (LOG_LEVEL.equals("TRACE")) {
-			    	root.setLevel(Level.TRACE);
-			    }
-			    else if (LOG_LEVEL.equals("ERROR")) {
-			    	root.setLevel(Level.ERROR);
-			    }
-			    else if (LOG_LEVEL.equals("ALL")) {
-			    	root.setLevel(Level.ALL);
-			    }
-			    else if (LOG_LEVEL.equals("OFF")) {
-			    	root.setLevel(Level.OFF);
-			    }
-			    else {
-			    	try {
-						throw new IOException();
-					} catch (IOException e) {
-						logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
-						Scanner sc = new Scanner(System.in);
-						sc.nextLine();
-						System.exit(3);
-					}
-			    }
-			}
-			else {
-				ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-				LOG_LEVEL = root.getLevel().levelStr.toUpperCase();
-			}
-			
-			if (Arrays.equals(LOG_FILE_OUT, new boolean[] {true, false})) {
-				ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-				if (root.getAppender("FILE")!=null) {
-					root.detachAppender("FILE");
-				}
-				LOG_FILE_OUT[1] = false;
-			}
-			else if (!LOG_FILE_OUT[0] || Arrays.equals(LOG_FILE_OUT, new boolean[] {true, true})) {
-				ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-				if (root.getAppender("FILE")!=null) {
-					LOG_FILE_OUT[1] = true;
-				}
-				else if (root.getAppender("FILE")==null) {
-					logger.warn(TAG+"Logback cannot get appander \"FILE\"");
-					LOG_FILE_OUT[1] = false;
-				}
-			}
-			
-			if (Arrays.equals(LOG_CONSOLE_OUT, new boolean[] {true, false})) {
-				ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-				if (root.getAppender("STDOUT")!=null) {
-					root.detachAppender("STDOUT");
-				}
-				LOG_CONSOLE_OUT[1] = false;
-			}
-			else if (!LOG_CONSOLE_OUT[0] || Arrays.equals(LOG_CONSOLE_OUT, new boolean[] {true, true}) ) {
-				ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-				if (root.getAppender("STDOUT")!=null) {
-					LOG_CONSOLE_OUT[1] = true;
-				}
-				else if (root.getAppender("STDOUT")==null) {
-					logger.warn(TAG+"Logback cannot get appander \"STDOUT\"");
-					LOG_CONSOLE_OUT[1] = false;
-				}
-			}*/
 			
 			logger.warn(TAG+"MMS_MRN="+MMS_MRN);
 			logger.warn(TAG+"HTTP_PORT="+HTTP_PORT);
-			logger.warn(TAG+"HTTPS_PORT="+HTTPS_PORT);
+			logger.warn(TAG+"HTTPS_ENABLED="+HTTPS_ENABLED[1]);
+			if (HTTPS_ENABLED[1]) {
+				logger.warn(TAG+"HTTPS_PORT="+HTTPS_PORT);
+			}
 			logger.warn(TAG+"MNS_HOST="+MNS_HOST);
 			logger.warn(TAG+"MNS_PORT="+MNS_PORT);
 			logger.warn(TAG+"RABBIT_MQ_HOST="+RABBIT_MQ_HOST);
@@ -799,14 +702,14 @@ public class MMSConfiguration {
 			logger.warn(TAG+"RABBIT_MQ_MANAGING_PROTOCOL="+RABBIT_MQ_MANAGING_PROTOCOL);
 			logger.warn(TAG+"RABBIT_MQ_USER="+RABBIT_MQ_USER);
 			logger.warn(TAG+"RABBIT_MQ_PASSWD="+RABBIT_MQ_PASSWD);
-			//logger.warn(TAG+"LOG_LEVEL="+LOG_LEVEL);
-			//logger.warn(TAG+"LOG_CONSOLE_OUT="+LOG_CONSOLE_OUT[1]);
-			//logger.warn(TAG+"LOG_FILE_OUT="+LOG_FILE_OUT[1]);
 			logger.warn(TAG+"WEB_LOG_PROVIDING="+WEB_LOG_PROVIDING[1]);
 			logger.warn(TAG+"WEB_MANAGING="+WEB_MANAGING[1]);
 			logger.warn(TAG+"MAX_BRIEF_LOG_LIST_SIZE="+MAX_BRIEF_LOG_LIST_SIZE);
 			logger.warn(TAG+"MAX_CONTENT_SIZE="+MAX_CONTENT_SIZE+"bytes");
 			logger.warn(TAG+"WAITING_MESSAGE_TIMEOUT="+WAITING_MESSAGE_TIMEOUT+"ms");
+			if (HTTPS_ENABLED[1]) {
+				logger.warn(TAG+"KEYSTORE="+KEYSTORE);
+			}
 			
 		}
 	}
@@ -832,6 +735,9 @@ public class MMSConfiguration {
 		return HTTP_PORT;
 	}
 
+	public static boolean isHttpsEnabled () {
+		return HTTPS_ENABLED[1];
+	}
 	public static int getHttpsPort() {
 		return HTTPS_PORT;
 	}
@@ -882,6 +788,10 @@ public class MMSConfiguration {
 	
 	public static String getRabbitMqPasswd() {
 		return RABBIT_MQ_PASSWD;
+	}
+	
+	public static String getKeystore() {
+		return KEYSTORE;
 	}
 	
 	private int getOptionValueInteger (CommandLine cmd, String opt) throws IOException {

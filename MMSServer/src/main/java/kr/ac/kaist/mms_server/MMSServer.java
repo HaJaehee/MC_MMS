@@ -80,7 +80,7 @@ public class MMSServer {
 			
 			
 			logger.error("MUST check that MNS server is online="+MMSConfiguration.getMnsHost()+":"+MMSConfiguration.getMnsPort()+".");
-			logger.error("MUST check that Rabbit MQ server is online="+MMSConfiguration.getRabbitMqHost()+":5672.");
+			logger.error("MUST check that Rabbit MQ server is online="+MMSConfiguration.getRabbitMqHost()+":"+MMSConfiguration.getRabbitMqPort()+".");
 			
 			try {
 				InetAddress ip = InetAddress.getByName(MMSConfiguration.getMnsHost());
@@ -103,12 +103,15 @@ public class MMSServer {
 			Thread.sleep(1000);
 			
 			logger.error("Now starting MMS logging module.");
+			MMSLog.getInstance(); //initialize MMSLog.
 			MMSLogForDebug.getInstance(); //initialize MMSLogsForDebug.
 			Thread.sleep(1000);
 			
-			logger.error("Now starting MMS HTTPS server.");
-			new SecureMMSServer().runServer(); // MMS HTTPS server thread.
-			Thread.sleep(1000);
+			if (MMSConfiguration.isHttpsEnabled()) {
+				logger.error("Now starting MMS HTTPS server.");
+				new SecureMMSServer().runServer(); // MMS HTTPS server thread.
+				Thread.sleep(1000);
+			}
 			
 			logger.error("Now starting MMS HTTP server.");
 			NettyStartupUtil.runServer(MMSConfiguration.getHttpPort(), pipeline -> {   //runServer(int port, Consumer<ChannelPipeline> initializer)

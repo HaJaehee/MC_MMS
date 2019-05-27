@@ -134,8 +134,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		super();
 		this.protocol = protocol;
 		
-		mmsLog = MMSLog.getInstance();
-		mmsLogForDebug = MMSLogForDebug.getInstance();
+		
 	}
 	
 //	when coming http message
@@ -145,9 +144,10 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		
 		try {
 			req.retain();
+			mmsLog = MMSLog.getInstance();
+			mmsLogForDebug = MMSLogForDebug.getInstance();
 
-      
-			logger.info("Message received.");
+			mmsLog.info(logger, SESSION_ID, "Message received.");
 			SESSION_ID = ctx.channel().id().asShortText();
 
 			SessionManager.getSessionInfo().put(SESSION_ID, "");
