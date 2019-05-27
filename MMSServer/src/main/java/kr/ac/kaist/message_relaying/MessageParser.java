@@ -198,12 +198,7 @@ public class MessageParser {
 				isGeocasting = true;	
 				setGeoCircleInfo(req);
 				if (logger.isDebugEnabled()) {
-					if(MMSConfiguration.isWebLogProviding()) {
-						String log = "SessionID="+this.SESSION_ID+" Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".";
-						mmsLog.addBriefLogForStatus(log);
-						mmsLogForDebug.addLog(this.SESSION_ID, log);
-					}
-					logger.debug("SessionID="+this.SESSION_ID+" Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".");
+					mmsLog.debug(logger, this.SESSION_ID, "Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".");
 				}
 			} 
 			else if (req.headers().get("geocasting").equals("polygon")) {
@@ -230,12 +225,8 @@ public class MessageParser {
 							}
 						}
 						strGeoPolyInfo.append("]");
-						if(MMSConfiguration.isWebLogProviding()) {
-							String log = "SessionID="+this.SESSION_ID+" Geocasting polygon request. "+strGeoPolyInfo.toString()+".";
-							mmsLog.addBriefLogForStatus(log);
-							mmsLogForDebug.addLog(this.SESSION_ID, log);
-						}
-						logger.debug("SessionID="+this.SESSION_ID+" Geocasting polygon request. "+strGeoPolyInfo.toString()+".");
+						mmsLog.debug(logger, this.SESSION_ID, "Geocasting polygon request. "+strGeoPolyInfo.toString()+".");
+
 					}
 				} 
 				catch (ParseException e) {
@@ -310,23 +301,13 @@ public class MessageParser {
 //			System.out.println("[Test Message] the certificate is " + hexSignedData.substring(6));
 			isJSONOfPollingFormat = true;
 			if (this.svcMRN == null) {
-				String log = "SessionID="+this.SESSION_ID+" The service MRN is not included.";
-				if(MMSConfiguration.isWebLogProviding()) {
-					mmsLog.addBriefLogForStatus(log);
-					mmsLogForDebug.addLog(this.SESSION_ID, log);
-				}
-				logger.info(log);
+				mmsLog.warn(logger, this.SESSION_ID, "The service MRN is not included.");
 			}
 			
 			return ;
 		} 
 		catch (org.json.simple.parser.ParseException e) {
-			String log = "SessionID="+this.SESSION_ID+" Failed to parse polling request content whose type is a JSON format.";
-			if(MMSConfiguration.isWebLogProviding()) {
-				mmsLog.addBriefLogForStatus(log);
-				mmsLogForDebug.addLog(this.SESSION_ID, log);
-			}
-			logger.info(log);
+			mmsLog.warnException(logger, this.SESSION_ID, "Failed to parse polling request content whose type is a JSON format.", e, 5);
 			
 			isJSONOfPollingFormat = false;
 		}
@@ -355,10 +336,7 @@ public class MessageParser {
     	
 		}
 		catch (org.json.simple.parser.ParseException e) {
-			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 		}
 	}
 	
@@ -369,15 +347,12 @@ public class MessageParser {
 			geoDstInfo = (JSONArray) parser.parse(geocastInfo);
 			
 		} catch (org.json.simple.parser.ParseException e) {
-			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 		}
 	}
 	
 	void parseMultiDstInfo(String dstInfo){
-		logger.debug("SessionID="+this.SESSION_ID+" Destination info="+dstInfo+".");
+		mmsLog.debug(logger, this.SESSION_ID, "Destination info="+dstInfo+".");
 		String[] dstMRNs = dstInfo.substring(13).split(",");
 		multiDstMRN = dstMRNs;
 	}

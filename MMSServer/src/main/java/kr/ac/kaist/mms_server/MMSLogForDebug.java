@@ -254,11 +254,10 @@ public class MMSLogForDebug {
 		}
 	}
 	
-	public synchronized void addLog (String sessionId, String log) {
+	synchronized void addLog (String sessionId, String log) {
 
 		if (sessionId!=null&&sessionIdLogMapper!=null&&sessionIdLogMapper.get(sessionId)!=null)	{
-			SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm:ss");
-			log = sdf.format(new Date()) + " " + log;
+			
 			
 			sessionIdLogMapper.get(sessionId).add(log);
 		}

@@ -156,10 +156,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			try {
 				parser.parseMessage(ctx, req);
 			} catch (NumberFormatException | NullPointerException  e) {
-				logger.warn("SessionID="+SESSION_ID+" "+"Exception occured while parsing the message. "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-				for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-					logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-				}
+				mmsLog.warnException(logger, SESSION_ID, "Exception occured while parsing the message.", e, 5);
+				
 			}
 			
 			String svcMRN = parser.getSvcMRN();
@@ -185,7 +183,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         
         ConnectionThread thread = relayingHandler.getConnectionThread();
         if (thread != null) {
-            logger.info("Client disconnected. disconnect To.");
+        	mmsLog.info(logger, SESSION_ID, "Client disconnected.");
             thread.terminate();
         }
         LinkedList<ChannelTerminateListener> listeners = ctx.channel().attr(TERMINATOR).get();
@@ -227,16 +225,13 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     		
     		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
     		if (clientType.equals("p")) {
-
-    			logger.warn("SessionID="+this.SESSION_ID+" The polling client is disconnected.");
+    			mmsLog.warn(logger, this.SESSION_ID, "The polling client is disconnected.");
     		} 
     		else if (clientType.equals("lp")) {
-
-    			logger.warn("SessionID="+this.SESSION_ID+" The long polling client is disconnected.");
+    			mmsLog.warn(logger, this.SESSION_ID, "The long polling client is disconnected.");
     		}
     		else {
-    			logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected.");
-
+    			mmsLog.warn(logger, this.SESSION_ID, "The client is disconnected.");
     		}
     	}
     	if (!ctx.isRemoved()){
@@ -343,12 +338,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         errorlog += " dstIP=" + reqInfo[2] + " dstMRN=" + reqInfo[3] + " svcMRN=" + reqInfo[4];
       }
   //  System.out.println("/*****************************************/");
-		
-      errorlog = "SessionID="+this.SESSION_ID+" The client is disconnected, " + errorlog + ".";
-		  logger.warn(errorlog);
-		  if(MMSConfiguration.isWebLogProviding()) {
-				mmsLog.addBriefLogForStatus(errorlog);
-				mmsLogForDebug.addLog(this.SESSION_ID, errorlog);
-		}
+	
+      mmsLog.warn(logger, this.SESSION_ID, "The client is disconnected, " + errorlog + ".");
+     
     }
 }

@@ -98,16 +98,12 @@ class MessageQueueEnqueuer {
 		String queueName = dstMRN+"::"+srcMRN;
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 		 
-		 if(MMSConfiguration.isWebLogProviding()) {
-			 String log = "SessionID="+SESSION_ID+" Enqueue="+queueName+".";
-			 mmsLog.addBriefLogForStatus(log);
-			 mmsLogForDebug.addLog(this.SESSION_ID, log);
-		 }
-		 if(!logger.isTraceEnabled()) {
-			 logger.debug("SessionID="+this.SESSION_ID+" Enqueue="+queueName+".");
+		
+		 if(logger.isTraceEnabled()) {
+			mmsLog.trace(logger, this.SESSION_ID, "Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(message));
 		 }
 		 else {
-			 logger.trace("SessionID="+this.SESSION_ID+" Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(message));
+			 mmsLog.debug(logger, this.SESSION_ID, "Enqueue="+queueName+".");
 		 }
 		
 		try {
@@ -125,16 +121,13 @@ class MessageQueueEnqueuer {
 			channel.basicPublish("", queueName, null, message.getBytes());
 			channel.close();
 			connection.close();
-		} catch (IOException e) {
-			logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.error("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
-		} catch (TimeoutException e) {
-			logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.error("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+		} 
+		catch (IOException e) {
+			mmsLog.errorException(logger, SESSION_ID, "", e, 5);
+			
+		} 
+		catch (TimeoutException e) {
+			mmsLog.errorException(logger, SESSION_ID, "", e, 5);
 		}
 	}
 }

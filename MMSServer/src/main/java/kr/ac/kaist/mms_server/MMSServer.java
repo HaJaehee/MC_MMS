@@ -88,24 +88,15 @@ public class MMSServer {
 					throw new UnknownHostException();
 				}
 			}
-			catch (UnknownHostException e) {
-				logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-				for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-					logger.error(e.getStackTrace()[i]+".");
-				}
+			catch (UnknownHostException | SecurityException e) {
+				MMSLog mmsLog = MMSLog.getInstance();
+				mmsLog.errorException(logger, "", "", e, 10);
+				
 				Scanner sc = new Scanner(System.in);
 				sc.nextLine();
 				System.exit(5);
 			}
-			catch (SecurityException e) {
-				logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-				for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-					logger.error(e.getStackTrace()[i]+".");
-				}
-				Scanner sc = new Scanner(System.in);
-				sc.nextLine();
-				System.exit(6);
-			}
+
 			
 			logger.error("Now starting MMS session manager.");
 			SessionManager.getInstance(); //initialize SessionManager.
@@ -127,19 +118,17 @@ public class MMSServer {
 	        });// MMS HTTP server thread.
 		}
 		catch (InterruptedException e) {
-			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.error(e.getStackTrace()[i]+".");
-			}
+			MMSLog mmsLog = MMSLog.getInstance();
+			mmsLog.errorException(logger, "", "", e, 10);
+
 			Scanner sc = new Scanner(System.in);
 			sc.nextLine();
 			System.exit(7);
 		}
 		catch (Exception e) {
-			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.error(e.getStackTrace()[i]+".");
-			}
+			MMSLog mmsLog = MMSLog.getInstance();
+			mmsLog.errorException(logger, "", "", e, 10);
+			
 			Scanner sc = new Scanner(System.in);
 			sc.nextLine();
 			System.exit(8);

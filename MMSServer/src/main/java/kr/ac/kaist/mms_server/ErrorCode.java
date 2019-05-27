@@ -46,7 +46,7 @@ public enum ErrorCode {
 	// Numbers greater than 10000 and lower than 20000 are internal error codes.
 	// Number 19XXX is related to the MMS monitoring service including dump MNS.
 	MONITORING_CONNECTION_ERR("19001", "Failed to connect to MMS monitoring service."),
-	DUMPMNS_LOGGING_ERR("19002", "Failed to connect to dump MNS."),
+	DUMPMNS_LOGGING_ERR("19002", "Failed to dump MNS."),
 
 	// Number 18XXX is related to the relaying functions.
 	SEQUENTIAL_RELAYING_EXCEPTION_ERR("18001", "Exception error occured in sequentailly relaying function."),
