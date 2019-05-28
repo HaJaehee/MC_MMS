@@ -91,7 +91,7 @@ public class MMSServer {
 			try {
 				InetAddress ip = InetAddress.getByName(MMSConfiguration.getMnsHost());
 				if (ip == null) {
-					throw new UnknownHostException();
+					throw new UnknownHostException("Unknown MNS Host.");
 				}
 			}
 			catch (UnknownHostException | SecurityException e) {
