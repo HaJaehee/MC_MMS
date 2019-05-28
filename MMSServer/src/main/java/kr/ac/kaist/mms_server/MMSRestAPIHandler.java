@@ -29,7 +29,11 @@ Version : 0.9.1
 	Added protocol parameter. e.g., http or https. 
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
-
+Rev. history: 2019-05-29
+Version : 0.9.1
+	Added MMS configuration querying api.
+	Added long polling session count api.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 
@@ -38,6 +42,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -46,6 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import kr.ac.kaist.message_queue.MessageQueueManager;
 import kr.ac.kaist.message_relaying.SessionManager;
+import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 public class MMSRestAPIHandler {
 	String SESSION_ID = "";
@@ -62,6 +70,8 @@ public class MMSRestAPIHandler {
 	private long pollingReqCount = -1;
 	private int pollingReqMinutes = -1;
 	private boolean correctParams = true;
+	private boolean mmsConfiguration = false;
+	private long longPollingSessionCount = -1;
 	
 	MessageQueueManager mqm = null;
 
@@ -86,6 +96,8 @@ public class MMSRestAPIHandler {
 			apiList.add("mms-running");
 			apiList.add("relay-req-count-for");
 			apiList.add("polling-req-count-for");
+			apiList.add("mms-configuration");
+			apiList.add("long-polling-session-count");
 		}
 	}
 	
@@ -99,6 +111,8 @@ public class MMSRestAPIHandler {
 		realtimeLogUsers = checkParamsAndSetLongZero(params, "realtime-log-users");
 		msgQueueCount = checkParamsAndSetLongZero(params, "msg-queue-count");
 		clientSessionCount = checkParamsAndSetLongZero(params, "client-session-count");
+		mmsConfiguration = checkParamsAndSetTrue(params, "mms-configuration");
+		longPollingSessionCount = checkParamsAndSetLongZero(params, "long-polling-session-count");
 
 		if (correctParams && params.get("mms-running") != null && params.get("mms-running").get(0).equals("y")) {
 			isMmsRunning = true;
@@ -157,6 +171,21 @@ public class MMSRestAPIHandler {
 			if (params.get(api) != null) {
 				if (params.get(api).get(0).equals("y")) {
 					ret = 0;
+				}
+				else if (!params.get(api).get(0).equals("y")) {
+					correctParams = false;
+				}
+			}
+		}
+		return ret;
+	}
+	
+	private boolean checkParamsAndSetTrue (Map<String,List<String>> params, String api) {
+		boolean ret = false;
+		if (correctParams) {
+			if (params.get(api) != null) {
+				if (params.get(api).get(0).equals("y")) {
+					ret = true;
 				}
 				else if (!params.get(api).get(0).equals("y")) {
 					correctParams = false;
@@ -249,8 +278,54 @@ public class MMSRestAPIHandler {
 				jobj.put("polling-req-count-for", jobj2);
 				
 			}
+			if (mmsConfiguration) {
+				
+				JSONObject jobj2 = new JSONObject();
+				if (!MMSConfiguration.getMmsConfiguration().isEmpty()) {
+					SortedSet<String> keys = new TreeSet<String>(MMSConfiguration.getMmsConfiguration().keySet());
+					for (String key : keys) {
+						String val = MMSConfiguration.getMmsConfiguration().get(key);
+						if (isNumeric(val)) {
+							jobj2.put(key,Integer.parseInt(val));
+						}
+						else if (isTrue(val)) {
+							jobj2.put(key,true);
+						}
+						else if (isFalse(val)) {
+							jobj2.put(key,false);
+						}
+						else {
+							jobj2.put(key, val);
+						}
+					}
+				}
+				
+				jobj.put("mms-configuration", jobj2);
+			}
+			if (longPollingSessionCount != -1) {
+				jobj.put("long-polling-session-count", SeamlessRoamingHandler.getDuplicateInfoSize());
+			}
+			
 			return jobj.toJSONString();
 		}
 	}
-	
+	private boolean isNumeric(String strNum) {
+	    return strNum.matches("-?\\d+(\\.\\d+)?");
+	}
+	private boolean isTrue(String str) {
+		if (str.equals("true")) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	private boolean isFalse(String str) {
+		if (str.equals("false")) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }
