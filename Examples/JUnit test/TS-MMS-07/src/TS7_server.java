@@ -16,8 +16,9 @@ Creation Date : 2019-05-02
 */
 
 public class TS7_server {
+	MMSClientHandler server;
 	public TS7_server(String myMRN, int port) throws Exception {
-		MMSClientHandler server = new MMSClientHandler(myMRN);
+		server = new MMSClientHandler(myMRN);
 		
 		server.setServerPort(port, new MMSClientHandler.RequestCallback() {
 			
@@ -40,5 +41,8 @@ public class TS7_server {
 				return "OK";
 			}
 		});
+	}
+	public void terminate() {
+		server.terminateServer();
 	}
 }

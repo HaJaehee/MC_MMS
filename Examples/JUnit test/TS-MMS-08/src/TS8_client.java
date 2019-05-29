@@ -34,9 +34,8 @@ public class TS8_client {
 
 	public TS8_client() {
 
-//		MMSConfiguration.MMS_URL="mms.smartnav.org:8088";
-//		MMSConfiguration.MMS_URL="143.248.55.83:8088";
-		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
+
+		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
 		MMSConfiguration.DEBUG = true;
 		ClientPKILibrary clientPKILib = ClientPKILibrary.getInstance();
 		ByteConverter byteConverter = ByteConverter.getInstance();

@@ -89,6 +89,11 @@ Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-29
+Version : 0.9.1
+	Resolved a bug related to realtime log function.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -134,6 +139,7 @@ public class MessageParser {
 	private String svcMRN = null;
 	private String netType = null;
 	private boolean isGeocasting = false;
+
 	private boolean isJSONOfPollingFormat = false;
 	private GeolocationCircleInfo geoCircleInfo = null;
 	private GeolocationPolygonInfo geoPolygonInfo = null;
@@ -142,6 +148,7 @@ public class MessageParser {
 	private String hexSignedData = null;
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
+	private boolean isRealtimeLogReq = false;
 
 
 	MessageParser(String sessionId){
@@ -161,6 +168,7 @@ public class MessageParser {
 		geoPolygonInfo = null;
 		geoDstInfo = null;
 		hexSignedData = null;
+		isRealtimeLogReq = false;
 		seqNum = -1;
 		mmsLog = MMSLog.getInstance();
 		mmsLogForDebug = MMSLogForDebug.getInstance();
@@ -186,6 +194,11 @@ public class MessageParser {
 			parseSvcMRNAndHexSign(req);
 			
 		}
+		
+		if (MMSConfiguration.isWebLogProviding() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/realtime-log?id", 0, 16)){
+			//If a request is a realtime logging service request.
+			isRealtimeLogReq = true;
+		} 
 		
 		String o = req.headers().get("seqNum");
 		if (o != null) {
@@ -460,5 +473,9 @@ public class MessageParser {
 	
 	public boolean isJSONOfPollingMsg() {
 		return isJSONOfPollingFormat;
+	}
+	
+	public boolean isRealtimeLogReq() {
+		return isRealtimeLogReq;
 	}
 }

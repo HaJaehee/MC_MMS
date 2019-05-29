@@ -104,8 +104,6 @@ public class MNSDummy {
 		//
 		//
 		
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-server","143.248.57.72:8902:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-client","143.248.57.72:0:1");
 		MRNtoIP.put("urn:mrn:imo:imo-no:1000001","223.39.131.117:0:1");
 		MRNtoIP.put("urn:mrn:imo:imo-no:1000001-SCSession","118.220.143.130:0:1");
 		MRNtoIP.put("urn:mrn:imo:imo-no:1000001-kaist","172.25.0.11:0:1");
@@ -189,12 +187,18 @@ public class MNSDummy {
 
 		
 		// LOCAL TEST //
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-07-server","127.0.0.1:8907:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-07-client","127.0.0.1:8906:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-01-server","127.0.0.1:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-01-client","127.0.0.1:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-02-server","127.0.0.1:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-01-server","143.248.57.72:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-02-client","127.0.0.1:0:1");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-02-server","143.248.57.72:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-03-server","143.248.57.72:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-client","143.248.57.72:0:1");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-server","143.248.57.72:8902:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-06-server","143.248.57.72:8902:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-07-client","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-07-server","143.248.57.72:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-10-client","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-10-server","143.248.57.72:8907:2");
 		MRNtoIP.put("urn:mrn:smart-navi:device:service-provider","127.0.0.1:0:2");
 		//-----------------------------------------------------
 

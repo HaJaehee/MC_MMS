@@ -86,6 +86,11 @@ Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-29
+Version : 0.9.1
+	Resolved a bug related to realtime log function.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -105,6 +110,7 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.Future;
@@ -152,9 +158,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			mmsLog = MMSLog.getInstance();
 			mmsLogForDebug = MMSLogForDebug.getInstance();
 
-			mmsLog.info(logger, SESSION_ID, "Message received.");
 			SESSION_ID = ctx.channel().id().asShortText();
-
 			SessionManager.getSessionInfo().put(SESSION_ID, "");
 			
 			this.parser = new MessageParser(SESSION_ID);
@@ -164,6 +168,9 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 				mmsLog.warnException(logger, SESSION_ID, "Exception occured while parsing the message.", e, 5);
 				
 			}
+			if (!parser.isRealtimeLogReq()) {
+				mmsLog.info(logger, SESSION_ID, "Message received."); 
+			}// If a request is not a realtime logging service request.
 			
 			String svcMRN = parser.getSvcMRN();
     		String srcMRN = parser.getSrcMRN();

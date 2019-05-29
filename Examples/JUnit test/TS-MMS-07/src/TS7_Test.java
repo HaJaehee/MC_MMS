@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -28,8 +29,8 @@ public class TS7_Test {
 	public static final String dstMRN = "urn:mrn:imo:imo-no:ts-mms-07-server";
 	public static final int PORT = 8907;
 	
-	@BeforeClass
-	public static void testmain() throws Exception {
+	@After
+	public void testmain() throws Exception {
 	}
 
 	public boolean isErrorCode(String s) {
@@ -74,31 +75,27 @@ public class TS7_Test {
 	
 	@Test
 	public void testOK() throws Exception {
+
 		runServer(dstMRN, PORT);
 		sendMessage(srcMRN, dstMRN, "123", "OK");
+		server.terminate();
 	}
 	@Test
 	public void testUnknownSrcMRN1() throws Exception {
+
 		runServer(dstMRN, PORT);
 		sendMessageForError("1234", "123", "123", "10001");
+		server.terminate();
+		
+		
 	}
 	@Test
 	public void testUnknownSrcMRN2() throws Exception {
 		runServer(dstMRN, PORT);
 		sendMessageForError(srcMRN, "123", "123", "10001");
-	}
 
-	@Test
-	public void testWRONGPARAM() throws Exception {
-		// TODO
+		server.terminate();
 	}
-
-	@Test
-	public void testNullMRN() throws Exception {
-		// TODO
-	}
-	
-	
 
 }
 

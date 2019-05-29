@@ -39,9 +39,9 @@ public class TS3_client {
 	private static int length = -1;
 	
 	public TS3_client(){
-//		MMSConfiguration.MMS_URL="143.248.57.144:8088";
-		MMSConfiguration.MMS_URL="143.248.55.83:8088";
-//		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+
+		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
+
 		MMSConfiguration.DEBUG = true;
 		
 		try {
