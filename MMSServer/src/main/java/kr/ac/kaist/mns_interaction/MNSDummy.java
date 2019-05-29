@@ -192,6 +192,7 @@ public class MNSDummy {
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-01-client","127.0.0.1:0:1");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-02-server","127.0.0.1:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-02-client","127.0.0.1:0:1");
+		MRNtoIP.put("urn:mrn:smart-navi:device:service-provider","127.0.0.1:0:2");
 		//-----------------------------------------------------
 
 		while(true)
