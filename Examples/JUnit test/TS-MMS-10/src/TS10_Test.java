@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -15,7 +16,7 @@ import kr.ac.kaist.mms_client.MMSConfiguration;
 
 /** 
 File name : TS10_Test.java
-	Test for testing long response waiting when SP does not response. 
+	This test is for testing long response waiting when SP does not response. 
 Author : Yunho Choi (choiking10@kaist.ac.kr)
 Creation Date : 2019-05-22
 */
@@ -23,9 +24,17 @@ Creation Date : 2019-05-22
 @FixMethodOrder(MethodSorters.DEFAULT)
 public class TS10_Test {
 	static MMSClientHandler server;	
+	
+	// WARN: you have to change your dstMRN(mms-10-server) at MNS. At the website,
+	// Add MNS entry having MRN=[urn:mrn:imo:imo-no:ts-mms-10-server], IP=[your-ip], PortNumber=[8907], Model=[2] and ADD!
 	public static final String srcMRN = "urn:mrn:imo:imo-no:ts-mms-10-client";
 	public static final String dstMRN = "urn:mrn:imo:imo-no:ts-mms-10-server";
 	public static final int PORT = 8907;
+	
+	@BeforeClass
+	public static void beforeClass() {
+		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
+	}
 	
 	@After
 	public void after() {
@@ -89,7 +98,6 @@ public class TS10_Test {
 
 	@Test
 	public void testOK() throws Exception {
-		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
 		runServer(dstMRN, PORT, 100, false);
 		try {
 			sendMessage(srcMRN, dstMRN, "123", "OK", 1000);
@@ -100,7 +108,6 @@ public class TS10_Test {
 	
 	@Test
 	public void testTimeout() throws Exception {
-		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
 		runServer(dstMRN, PORT, 10000, true);
 		try {
 			sendMessage(srcMRN, dstMRN, "123", "OK", 1000);

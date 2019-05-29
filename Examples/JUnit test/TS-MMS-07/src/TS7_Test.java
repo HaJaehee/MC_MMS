@@ -10,27 +10,40 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
+import kr.ac.kaist.mms_client.MMSConfiguration;
 
 /** 
 File name : TS7_Test.java
+	This test is for testing whether MMS give a error message properly or not.
 Author : Yunho Choi (choiking10@kaist.ac.kr)
 Creation Date : 2019-05-02
 */
 @FixMethodOrder(MethodSorters.DEFAULT)
 public class TS7_Test {
 	static TS7_server server;	
+
+	// WARN: you have to change your dstMRN(mms-07-server) at MNS. At the website,
+	// Add MNS entry having MRN=[urn:mrn:imo:imo-no:ts-mms-07-server], IP=[your-ip], PortNumber=[8907], Model=[2] and ADD!
 	public static final String srcMRN = "urn:mrn:imo:imo-no:ts-mms-07-client";
 	public static final String dstMRN = "urn:mrn:imo:imo-no:ts-mms-07-server";
 	public static final int PORT = 8907;
 	
+	@Before
+	public void before() {
+		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
+		runServer(dstMRN, PORT);
+	}
+	
 	@After
-	public void testmain() throws Exception {
+	public void after() throws Exception {
+		server.terminate();
 	}
 
 	public boolean isErrorCode(String s) {
@@ -75,26 +88,15 @@ public class TS7_Test {
 	
 	@Test
 	public void testOK() throws Exception {
-
-		runServer(dstMRN, PORT);
 		sendMessage(srcMRN, dstMRN, "123", "OK");
-		server.terminate();
 	}
 	@Test
 	public void testUnknownSrcMRN1() throws Exception {
-
-		runServer(dstMRN, PORT);
 		sendMessageForError("1234", "123", "123", "10001");
-		server.terminate();
-		
-		
 	}
 	@Test
 	public void testUnknownSrcMRN2() throws Exception {
-		runServer(dstMRN, PORT);
 		sendMessageForError(srcMRN, "123", "123", "10001");
-
-		server.terminate();
 	}
 
 }

@@ -10,7 +10,7 @@ import kr.ac.kaist.mms_client.MMSConfiguration;
 
 /** 
 File name : TS7_server.java
-	Relaying message function for the purpose of testing MMS
+	This test server is for testing whether MMS give a error message properly or not.
 Author : Yunho Choi (choiking10@kaist.ac.kr)
 Creation Date : 2019-05-02
 */
