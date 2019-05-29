@@ -269,7 +269,9 @@ class SecureMMSSndHandler {
 		con.setRequestProperty("User-Agent", USER_AGENT);
 		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-		con.setRequestProperty("srcMRN", clientMRN);
+		if (clientMRN != null) {
+			con.setRequestProperty("srcMRN", clientMRN);
+		}
 		if (dstMRN != null) {
 			con.setRequestProperty("dstMRN", dstMRN);
 		}

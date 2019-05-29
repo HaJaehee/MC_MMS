@@ -44,17 +44,42 @@ Rev. history: 2019-05-10
 Version : 0.9.0
 	Fixed bugs related to session count list.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-*/
+
+Rev. history: 2019-05-21
+Version : 0.9.1
+	Added function of saving and restoring session count list.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-05-24
+Version : 0.9.1
+	Fixed session count bugs.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+**/
 /* -------------------------------------------------------- */
 
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import kr.ac.kaist.mms_server.MMSLog;
+
 public class SessionManager {
 	private String TAG = "[SessionManager] ";
 	
+	private static Logger logger = null;
 	// TODO: Youngjin Kim must inspect this following code.
 	/* sessionInfo: If client is a polling client, value is "p".
 	If client is a long polling client, value is "lp".
@@ -67,6 +92,7 @@ public class SessionManager {
 	private SessionCounter sessionCounter = null;
 	
 	private SessionManager () {
+		this.logger = LoggerFactory.getLogger(SessionManager.class);
 		sessionInfo = new HashMap<>(); 
 		mapSrcDstPairAndSessionInfo = new HashMap<>(); //This is used for handling input messages by reordering policy.
 		mapSrcDstPairAndLastSeqNum = new HashMap<>(); //This is used for handling last sequence numbers of sessions.
@@ -92,10 +118,117 @@ public class SessionManager {
 		//TODO
 		@Override
 		public void run() {
-			try { // Wait initialization of other threads.
+			try { // Wait for initializing other threads.
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				// Do nothing.
+			}
+			
+			File f = new File("./session-count.csv");
+			
+			FileWriter fw = null;
+			BufferedWriter bw = null;
+			PrintWriter pw = null;
+			
+			if (f.exists()) {
+				long fileLines = 0;
+				try {
+					FileReader fr = new FileReader(f);
+					BufferedReader br = new BufferedReader(fr);
+					String line;
+	
+					while ((line=br.readLine()) != null) {
+						fileLines++;
+					}
+					
+					br.close();
+					fr.close();
+				} catch (ArrayIndexOutOfBoundsException | NumberFormatException | IOException e1) {
+					logger.info("File session-count.csv is not found or there is a problem when reading the file.");  
+					logger.info(e1.getClass().getName()+" "+e1.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e1.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn(e1.getStackTrace()[i]+".");
+		    			}
+				}
+				
+				fileLines -= 12*60*24;
+				long lineCount = fileLines;
+	
+				try {
+					FileReader fr = new FileReader(f);
+					BufferedReader br = new BufferedReader(fr);
+					String line;
+					long curTimeMillis = System.currentTimeMillis();
+					
+					while ((line=br.readLine()) != null) {
+						if (lineCount > 0) {
+							lineCount--;
+							continue;
+						}
+						
+						
+						if (line.equals("")) {
+							break;
+						}
+						String[] timeAndSessionCountAndPollingSessionCount = line.split(",");
+						//print
+						
+						long time = Long.parseLong(timeAndSessionCountAndPollingSessionCount[0]);
+						if (curTimeMillis - time > 1000*60*60*24) {  // More than 24 hours,
+							continue; // ignore.
+						}
+						
+						long sessionCount = Long.parseLong(timeAndSessionCountAndPollingSessionCount[1]);
+						long pollingSessionCount = Long.parseLong(timeAndSessionCountAndPollingSessionCount[2]);
+						
+						
+						SessionCountForFiveSecs scffs = new SessionCountForFiveSecs(time);
+						scffs.setSessionCount(sessionCount);
+						scffs.setPollingSessionCount(pollingSessionCount);
+						sessionCountList.add(0,scffs);
+					}
+					br.close();
+					fr.close();
+				} catch (ArrayIndexOutOfBoundsException | NumberFormatException | IOException e1) {
+					logger.info("File session-count.csv is not found or there is a problem when reading the file.");  
+					logger.info(e1.getClass().getName()+" "+e1.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e1.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn(e1.getStackTrace()[i]+".");
+		    			}
+				}
+				
+				
+				
+				/*
+				// Rewrite session-count.csv if the file has more than 24 hours content.
+				if (fileLines > 0 && sessionCountList.size() > 0) { 
+					try {
+						if (f.exists()) {
+							f.delete();
+						}
+						
+						fw = new FileWriter(f, true);
+						bw = new BufferedWriter(fw);
+						pw = new PrintWriter(bw);
+						
+						for (int i = sessionCountList.size()-1 ; i >=0 ; i--) {
+							pw.println(sessionCountList.get(i).getCurTimeInMillis()+","
+									+sessionCountList.get(i).getSessionCount()+","
+									+sessionCountList.get(i).getPollingSessionCount());
+						}
+						pw.close();
+						bw.close();
+						fw.close();
+					}
+					
+					catch (IOException e1) {
+						logger.warn("File session-count.csv is not found or there is a problem when writing the file.");  
+						logger.warn(e1.getClass().getName()+" "+e1.getStackTrace()[0]+".");
+			    			for (int i = 1 ; i < e1.getStackTrace().length && i < 4 ; i++) {
+			    				logger.warn(e1.getStackTrace()[i]+".");
+			    			}
+					} 
+				}*/
 			}
 			
 			while (System.currentTimeMillis() % 5000 > 100 ) { // Avoid busy waiting.
@@ -106,35 +239,102 @@ public class SessionManager {
 				}
 			}
 			
+			
 			while (true) { // Start tik tok.
-				
-				long curTimeMillis = System.currentTimeMillis();
-				long correction = 0;
-				
-				if (curTimeMillis % 5000 < 100 ) {
-					correction = curTimeMillis % 5000; // Session counting list saves the number of sessions for every 5 seconds.
-					for (int i = sessionCountList.size()-(12*60*24) ; i >= 0 ; i--) { // Session counts are saved for 24 hours.
-						sessionCountList.remove(sessionCountList.size()-1);
+				try {
+					long curTimeMillis = System.currentTimeMillis();
+					long correction = 0;
+					
+					if (curTimeMillis % 5000 < 100 ) {
+						correction = curTimeMillis % 5000; // Session counting list saves the number of sessions for every 5 seconds.
+						
+						
+					
+						
+						long lastTime = 0;
+						if (sessionCountList.size() > 0) {
+							lastTime = sessionCountList.get(0).getCurTimeInMillis();
+						}
+						
+					
+						while (curTimeMillis - lastTime > 10000 && curTimeMillis - lastTime < 1000*60*60*24) { // More than 10 seconds, less than 24 hours.
+							sessionCountList.add(0,new SessionCountForFiveSecs(lastTime+5000)); // Add time slots having 0 session count.
+							lastTime += 5000;
+						}
+						
+						
+						
+						for (int i = sessionCountList.size()-(12*60*24) ; i >= 0 ; i--) { // Session counts are saved for 24 hours.
+							sessionCountList.remove(sessionCountList.size()-1);
+						}
+						
+						fw = new FileWriter(f, true);
+						bw = new BufferedWriter(fw);
+						pw = new PrintWriter(bw);
+						if (sessionCountList.size() > 0) {
+							pw.println(sessionCountList.get(0).getCurTimeInMillis()+","
+									+sessionCountList.get(0).getSessionCount()+","
+									+sessionCountList.get(0).getPollingSessionCount());
+						}
+						pw.close();
+						bw.close();
+						fw.close();
+						
+						SessionCountForFiveSecs curCount = new SessionCountForFiveSecs(curTimeMillis);
+						sessionCountList.add(0, curCount);
+		
+						/*
+						// print
+						for (int i = 0 ; i < sessionCountList.size() ; i++) {
+							SimpleDateFormat dayTime = new SimpleDateFormat("hh:mm:ss:SSS");
+							System.out.print(dayTime.format(sessionCountList.get(i).getCurTimeInMillis())+"  ");
+						}
+						System.out.println();
+						*/
+						
+						try {
+							Thread.sleep(5000 - correction);
+						} catch (InterruptedException e) {
+							// Do nothing.
+						}
+						
 					}
-					
-					SessionCountForFiveSecs curCount = new SessionCountForFiveSecs(curTimeMillis);
-					sessionCountList.add(0, curCount);
-					
-					/*// print
-					for (int i = 0 ; i < sessionCountList.size() ; i++) {
-						SimpleDateFormat dayTime = new SimpleDateFormat("hh:mm:ss:SSS");
-						System.out.print(dayTime.format(sessionCountList.get(i).getCurTimeInMillis())+"  ");
-					}
-					System.out.println();*/
-					
-					try {
-						Thread.sleep(5000 - correction);
-					} catch (InterruptedException e) {
-						// Do nothing.
-					}
-					
 				}
-			}
+				catch (IOException e1) {
+					logger.info("File session-count.csv is not found or there is a problem when writing the file.");  
+					logger.info(e1.getClass().getName()+" "+e1.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e1.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn(e1.getStackTrace()[i]+".");
+		    			}
+				} 
+				finally {
+					if (pw != null) {
+						pw.close();
+					}
+					if (bw != null) {
+						try {
+							bw.close();
+						} catch (IOException e) {
+							logger.info("Failed to close BufferedWriter.");  
+							logger.info(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+				    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				    				logger.warn(e.getStackTrace()[i]+".");
+				    			}
+						}
+					}
+					if (fw != null) {
+						try {
+							fw.close();
+						} catch (IOException e) {
+							logger.info("Failed to close FileWriter.");  
+							logger.info(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+				    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				    				logger.warn(e.getStackTrace()[i]+".");
+				    			}
+						}
+					}
+				}
+			} 
 		}
 	}
 	

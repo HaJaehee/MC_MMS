@@ -89,6 +89,11 @@ Rev. history: 2019-05-09
 Version : 0.9.0
 	Added configuration of port number of Rabbit MQ management server.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-05-22
+Version : 0.9.1
+	Added RABBIT_MQ_MANAGING_PROTOCOL.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 import java.io.File;
@@ -139,8 +144,14 @@ public class MMSConfiguration {
 	private static String RABBIT_MQ_HOST = null;
 	private static int RABBIT_MQ_PORT = 0;
 	private static int RABBIT_MQ_MANAGING_PORT = 0;
+	private static String RABBIT_MQ_MANAGING_PROTOCOL = null;
 	private static String RABBIT_MQ_USER = null;
 	private static String RABBIT_MQ_PASSWD = null;
+	
+	@Deprecated
+	private static final boolean POLLING_AUTH_SESSION = false;
+	@Deprecated
+	private static final boolean POLLING_AUTH_PERF = false;
 	
 	
 	private static Logger logger = null;
@@ -228,6 +239,10 @@ public class MMSConfiguration {
 		rabbit_mq_managing_port.setRequired(false);
 		options.addOption(rabbit_mq_managing_port);
 		
+		Option rabbit_mq_managing_protocol = new Option ("mqmngproto", "rabbit_mq_managing_protocol", true, "Set the protocol of the Rabbit MQ management server.");
+		rabbit_mq_managing_protocol.setRequired(false);
+		options.addOption(rabbit_mq_managing_protocol);
+		
 		Option rabbit_mq_user = new Option ("mquser", "rabbit_mq_user", true, "Set the username of the Rabbit MQ server.");
 		rabbit_mq_user.setRequired(false);
 		options.addOption(rabbit_mq_user);
@@ -256,6 +271,7 @@ public class MMSConfiguration {
 					+ " [-mqhost rabbit_mq_host]"
 					+ " [-mqport rabbit_mq_port]"
 					+ " [-mqmngport rabbit_mq_managing_port]"
+					+ " [-mqmngproto rabbit_mq_managing_protocol]"
 					+ " [-mquser rabbit_mq_user]"
 					+ " [-mqpasswd rabbit_mq_passwd]"
 					+ " [-p http_port]"
@@ -302,6 +318,10 @@ public class MMSConfiguration {
 			
 			if (RABBIT_MQ_MANAGING_PORT == 0) {
 				RABBIT_MQ_MANAGING_PORT = getOptionValueInteger(cmd, "rabbit_mq_managing_port");
+			}
+			
+			if (RABBIT_MQ_MANAGING_PROTOCOL == null) {
+				RABBIT_MQ_MANAGING_PROTOCOL = cmd.getOptionValue("rabbit_mq_managing_protocol");
 			}
 			
 			if (RABBIT_MQ_USER == null) {
@@ -417,6 +437,13 @@ public class MMSConfiguration {
 			}
 		}
 		
+		if (RABBIT_MQ_MANAGING_PROTOCOL == null) {
+			String s = System.getenv("ENV_RABBIT_MQ_MANAGING_PROTOCOL");
+			if (s != null) {
+				RABBIT_MQ_MANAGING_PROTOCOL = s; 
+			}
+		}
+		
 		if (RABBIT_MQ_USER == null) {
 			String s = System.getenv("ENV_RABBIT_MQ_USER");
 			if (s != null) {
@@ -529,6 +556,11 @@ public class MMSConfiguration {
 			if (RABBIT_MQ_MANAGING_PORT == 0) {
 				if (jobj.get("RABBIT_MQ_MANAGING_PORT") != null){
 					RABBIT_MQ_MANAGING_PORT = getConfValueInteger(jobj, "RABBIT_MQ_MANAGING_PORT");
+				}
+			}
+			if (RABBIT_MQ_MANAGING_PROTOCOL == null) {
+				if (jobj.get("RABBIT_MQ_MANAGING_PROTOCOL") != null){
+					RABBIT_MQ_MANAGING_PROTOCOL =  (String) jobj.get("RABBIT_MQ_MANAGING_PROTOCOL");
 				}
 			}
 			if (RABBIT_MQ_USER == null) {
@@ -651,6 +683,10 @@ public class MMSConfiguration {
 				RABBIT_MQ_MANAGING_PORT = 15672; //Default is integer 15672.
 			}
 			
+			if (RABBIT_MQ_MANAGING_PROTOCOL == null) {
+				RABBIT_MQ_MANAGING_PROTOCOL = "http"; //Default is http.
+			}
+			
 			if (RABBIT_MQ_USER == null) {
 				RABBIT_MQ_USER = "guest"; //Default is String "guest".
 			}
@@ -760,6 +796,7 @@ public class MMSConfiguration {
 			logger.warn(TAG+"RABBIT_MQ_HOST="+RABBIT_MQ_HOST);
 			logger.warn(TAG+"RABBIT_MQ_PORT="+RABBIT_MQ_PORT);
 			logger.warn(TAG+"RABBIT_MQ_MANAGING_PORT="+RABBIT_MQ_MANAGING_PORT);
+			logger.warn(TAG+"RABBIT_MQ_MANAGING_PROTOCOL="+RABBIT_MQ_MANAGING_PROTOCOL);
 			logger.warn(TAG+"RABBIT_MQ_USER="+RABBIT_MQ_USER);
 			logger.warn(TAG+"RABBIT_MQ_PASSWD="+RABBIT_MQ_PASSWD);
 			//logger.warn(TAG+"LOG_LEVEL="+LOG_LEVEL);
@@ -772,6 +809,15 @@ public class MMSConfiguration {
 			logger.warn(TAG+"WAITING_MESSAGE_TIMEOUT="+WAITING_MESSAGE_TIMEOUT+"ms");
 			
 		}
+	}
+	
+	@Deprecated
+	public static boolean isPollingSessionOn() {
+		return POLLING_AUTH_SESSION;
+	}
+	@Deprecated
+	public static boolean isPollingTest() {
+		return POLLING_AUTH_PERF;
 	}
 
 	public static boolean isWebLogProviding() {
@@ -824,6 +870,10 @@ public class MMSConfiguration {
 	
 	public static int getRabbitMqManagingPort() {
 		return RABBIT_MQ_MANAGING_PORT;
+	}
+	
+	public static String getRabbitMqManagingProtocol() {
+		return RABBIT_MQ_MANAGING_PROTOCOL;
 	}
 	
 	public static String getRabbitMqUser() {

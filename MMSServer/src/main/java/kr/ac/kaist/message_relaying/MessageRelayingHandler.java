@@ -192,6 +192,17 @@ Rev. history : 2019-05-17
 Version : 0.9.1
 	From now, MessageParser is initialized in MRH_MessageInputChannel class.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-21
+Version : 0.9.1
+	Added session management of polling message authentication.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-05-26
+Version : 0.9.1
+	Session management of polling message authentication is deprecated.
+	Make error code to be general.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -218,6 +229,8 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel.ConnectionThread;
+import kr.ac.kaist.message_relaying.polling_auth.ClientVerifier;
+import kr.ac.kaist.message_relaying.polling_auth.ClientVerifierTest;
 import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.ErrorResponseException;
 import kr.ac.kaist.mms_server.MMSConfiguration;
@@ -291,7 +304,13 @@ public class MessageRelayingHandler  {
 		sessionBlocker = new Thread();
 		typeDecider = new MessageTypeDecider(this.SESSION_ID);
 		outputChannel = new MRH_MessageOutputChannel(this.SESSION_ID, ctx);
+		
 		cltVerifier = new ClientVerifier();
+//		if (MMSConfiguration.isPollingTest()) {
+//			cltVerifier = new ClientVerifierTest();
+//		} else {
+//			cltVerifier = new ClientVerifier();
+//		}
 	}
 
     public ConnectionThread getConnectionThread() {
@@ -495,6 +514,12 @@ public class MessageRelayingHandler  {
 					}
 					logger.info("SessionID="+this.SESSION_ID+" Client verification using MRN="+srcMRN+" and signed data.");
 					isClientVerified = cltVerifier.verifyClient(srcMRN, parser.getHexSignedData());
+					
+//					if (cltVerifier instanceof ClientVerifierTest) {
+//						byte[] verificationTime = ((ClientVerifierTest) cltVerifier).verificationTimeJSONString();
+//						outputChannel.replyToSender(ctx, verificationTime, isRealtimeLog);
+//					}
+					
 					if (isClientVerified) {
 						//Success verifying the client.
 						if(MMSConfiguration.isWebLogProviding()) {
@@ -513,10 +538,12 @@ public class MessageRelayingHandler  {
 						logger.info("SessionID="+this.SESSION_ID+" Client verification is failed.");
 						
 						if (cltVerifier.isMatching() == false) {
-							message = ErrorCode.AUTHENTICATION_FAIL_NOTMATCHING.getJSONFormattedUTF8Bytes();
+							// message = ErrorCode.AUTHENTICATION_FAIL_NOTMATCHING.getJSONFormattedUTF8Bytes();
+							message = ErrorCode.AUTHENTICATE_FAIL.getJSONFormattedUTF8Bytes();
 						}
 						else if (cltVerifier.isVerified() == false) {
-							message = ErrorCode.AUTHENTICATION_FAIL_REVOKED.getJSONFormattedUTF8Bytes();
+							//message = ErrorCode.AUTHENTICATION_FAIL_REVOKED.getJSONFormattedUTF8Bytes();
+							message = ErrorCode.AUTHENTICATE_FAIL.getJSONFormattedUTF8Bytes();
 						}
 						
 						outputChannel.replyToSender(ctx, message, isRealtimeLog);
@@ -594,9 +621,7 @@ public class MessageRelayingHandler  {
 							itemList.size() == 0 ||
 							itemList.get(0) == null ||
 							itemList.get(0).getSessionBlocker() == null) { //Check null pointer exception.
-						// TODO 이 코드에 대한 설명 필요
-						// FIXME This condition cannot be reached, because
-						//		 the itemList already appeared in the above condition related to the sequentially relaying.
+						// This condition is required for safe coding when using multi-threads.
 						
 						message = ErrorCode.SEQUENTIAL_RELAYING_INITIALIZATION_ERR.getUTF8Bytes();
 						
@@ -804,8 +829,7 @@ public class MessageRelayingHandler  {
 						message = "OK".getBytes(Charset.forName("UTF-8"));
 					} 
 		    		catch (UnknownHostException e) {
-						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
-		    			// FIXME This exception process cannot be reached 
+						// This code block will be deprecated, so there is no definition of error code.
 		    			
 		    			logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
@@ -836,8 +860,7 @@ public class MessageRelayingHandler  {
 						message = "OK".getBytes(Charset.forName("UTF-8"));
 					}
 					catch (UnknownHostException e) {
-						// TODO 이 위치에 진입하면 message가 null로 설정될 가능성이 있습니다. 적당한 할당 필요 by using Error Code 
-						// FIXME This exception cannot be reached 
+						// This code block will be deprecated, so there is no definition of error code.
 						
 						logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
@@ -867,7 +890,7 @@ public class MessageRelayingHandler  {
 			}
 			else if (type == MessageTypeDecider.msgType.UNKNOWN_MRN) {
 				message = ErrorCode.UNKNOWN_MRN.getBytes();
-				logger.info("test "+message);
+				//logger.info("test "+message);
 			} 
 			
 		} 
@@ -924,7 +947,8 @@ public class MessageRelayingHandler  {
 					msg = ErrorCode.NULL_SVC_MRN.getJSONFormattedUTF8Bytes();
 				} 
 				else {
-					msg = ErrorCode.AUTHENTICATION_FAIL_REVOKED.getJSONFormattedUTF8Bytes();
+					//msg = ErrorCode.AUTHENTICATION_FAIL_REVOKED.getJSONFormattedUTF8Bytes();
+					msg = ErrorCode.AUTHENTICATE_FAIL.getJSONFormattedUTF8Bytes();
 				}
 				outputChannel.replyToSender(ctx, msg, isRealtimeLog);
 			}
