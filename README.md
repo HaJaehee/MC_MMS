@@ -63,7 +63,7 @@ In order to use email service, please reconfigure the WP Mail SMTP Plugin of Wor
 We recommend to use Google SSMTP service.<br/>
 Default admin account of MMS Monitoring Module (WordPress wp-login.php) is Administrator/wins2-champion.<br/>
 
-<b>TLS SUPPORT:</b></br> check web sites below:<br/>
+<b>TLS SUPPORT:</b> check web sites below:</br>
 [RabbitMQ TLS Support](https://www.rabbitmq.com/ssl.html)  <br/>
 [Docker Tutorial](https://www.tutorialspoint.com/docker/)<br/>
 [Apache Install SSL Certificate](https://www.digicert.com/csr-ssl-installation/apache-openssl.htm)<br/>
