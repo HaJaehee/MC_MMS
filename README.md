@@ -61,14 +61,14 @@ It will automatically build and run MMS Server, MMS Monitoring Module and relate
 ### After accomplishment
 In order to use email service, please reconfigure the WP Mail SMTP Plugin of WordPress admin panel.<br/>
 We recommend to use Google SSMTP service.<br/>
-Default admin account of mcp_mms_monitoring is Administrator/wins2-champion.<br/>
+Default admin account of MMS Monitoring Module (WordPress wp-login.php) is Administrator/wins2-champion.<br/>
 
-<b>TLS SUPPORT:</b></br> check web sites below:
+<b>TLS SUPPORT:</b></br> check web sites below:<br/>
 [RabbitMQ TLS Support](https://www.rabbitmq.com/ssl.html)  <br/>
 [Docker Tutorial](https://www.tutorialspoint.com/docker/)<br/>
 [Apache Install SSL Certificate](https://www.digicert.com/csr-ssl-installation/apache-openssl.htm)<br/>
 [HTTPS for WordPress](https://make.wordpress.org/support/user-manual/web-publishing/https-for-wordpress/) <br/>
-<b>MMS TLS SUPPORT:</b> check instructions below:
+<b>MMS TLS SUPPORT:</b> check instructions below:<br/>
 [Import Individual Certificates into your Keystore](https://www.attachmate.com/documentation/gateway-1-1/gateway-admin-guide/data/fxg_keytool_importcert.htm)<br/>
 In order to get Base64 endcoded keystore for SSL enabled MMS from the jks, use [MMSKeystoreCoder] <br/>
 and get Base64encoded string that is printed out to the console. <br/>
