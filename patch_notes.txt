@@ -3,6 +3,7 @@ Patch Notes
 29-May 2019
 MC_MMS 0.9.1-1 new features/enhancements & bug-fixes:
 1. Updated MMS one-time installation script.
+2. Fixed several bugs.
 
 10-May 2019
 MC_MMS 0.9.1 new features/enhancements & bug-fixes:
