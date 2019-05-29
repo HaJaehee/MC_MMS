@@ -42,12 +42,12 @@ First of all, MMS server is dependent on OpenJDK 1.8, RabbitMQ 3.7.14, erlang/OT
 and Docker 18.09.2.<br/>
 When using Linux, follow instructions below and install dependencies before executing <br/>
 script [MMSServer/scripts/deploy-mms.sh]:<br/>
-<code>sudo apt update <br/>
-sudo apt install default-jdk maven rabbitmq-server docker docker-compose</code> <br/>
+<code><pre>sudo apt update 
+sudo apt install default-jdk maven rabbitmq-server docker docker-compose</pre></code> <br/>
 Before building MMS server, specify configuration files in [MMSServer/MMS-configuration] directory.<br/>
 
 <b>QUICK DEPLOY:</b> run the script [deploy-mms.sh] at the directory [MMSServer/scripts/]. <br/>
-<code>cd MMSServer/scripts <br/>
+<code>cd MMSServer/scripts 
 sudo sh deploy-mms.sh </code><br/>
 It will automatically build and run MMS Server and related services.<br/>
 
