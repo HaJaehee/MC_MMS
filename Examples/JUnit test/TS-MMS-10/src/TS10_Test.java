@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
+import kr.ac.kaist.mms_client.MMSConfiguration;
 
 /** 
 File name : TS10_Test.java
@@ -22,8 +23,8 @@ Creation Date : 2019-05-22
 @FixMethodOrder(MethodSorters.DEFAULT)
 public class TS10_Test {
 	static MMSClientHandler server;	
-	public static final String srcMRN = "urn:mrn:imo:imo-no:ts-mms-07-client";
-	public static final String dstMRN = "urn:mrn:imo:imo-no:ts-mms-07-server";
+	public static final String srcMRN = "urn:mrn:imo:imo-no:ts-mms-10-client";
+	public static final String dstMRN = "urn:mrn:imo:imo-no:ts-mms-10-server";
 	public static final int PORT = 8907;
 	
 	@After
@@ -47,7 +48,7 @@ public class TS10_Test {
 	
 	public static void runServer(String mrn, int port, long sleepTime, boolean isError) {
 		try {
-		server = new MMSClientHandler(mrn);
+			server = new MMSClientHandler(mrn);
 			server.setServerPort(port, new MMSClientHandler.RequestCallback() {
 				
 				@Override
@@ -88,6 +89,7 @@ public class TS10_Test {
 
 	@Test
 	public void testOK() throws Exception {
+		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
 		runServer(dstMRN, PORT, 100, false);
 		try {
 			sendMessage(srcMRN, dstMRN, "123", "OK", 1000);
@@ -98,6 +100,7 @@ public class TS10_Test {
 	
 	@Test
 	public void testTimeout() throws Exception {
+		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
 		runServer(dstMRN, PORT, 10000, true);
 		try {
 			sendMessage(srcMRN, dstMRN, "123", "OK", 1000);
