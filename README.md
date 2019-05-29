@@ -38,24 +38,25 @@ Jaehyun Park<br/>
 email: jae519@kaist.ac.kr<br/>
 
 ## Usage
-First of all, MMS server is dependent on OpenJDK 1.8, RabbitMQ 3.7.14, erlang/OTP 22.0, Maven 3.3.9 <br/>
-and Docker 18.09.2.<br/>
-When using Linux, follow instructions below and install dependencies before executing <br/>
+First of all, MMS Server including MMS Monitoring Module depends on Ubuntu 16.04, OpenJDK 1.8, <br/>
+RabbitMQ 3.7.14, erlang/OTP 22.0, Maven 3.3.9 and Docker 18.09.2.<br/>
+Also, MMS Server is compilable and runnable on Windows 10.<br/>
+When using Debian/Ubuntu Linux, follow instructions below and install dependencies before executing <br/>
 script [MMSServer/scripts/deploy-mms.sh]:<br/>
-<code>sudo apt update</code>
+<code>sudo apt update</code><br/>
 <code>sudo apt install default-jdk maven rabbitmq-server docker docker-compose</code> <br/>
-Before building MMS server, specify configuration files in [MMSServer/MMS-configuration] directory.<br/>
+Before building MMS Server, specify configuration files in [MMSServer/MMS-configuration] directory.<br/>
 
 <b>QUICK DEPLOY:</b> run the script [deploy-mms.sh] at the directory [MMSServer/scripts/]. <br/>
-<code>cd MMSServer/scripts 
-sudo sh deploy-mms.sh </code><br/>
-It will automatically build and run MMS Server and related services.<br/>
+<code>cd MMSServer/scripts </code><br/>
+<code>sudo sh deploy-mms.sh </code><br/>
+It will automatically build and run MMS Server, MMS Monitoring Module and related services.<br/>
 
 <b>ONLY BUILD AND START MMS:</b> run the scripts at the directory [MMSServer/Linux/].<br/>
-<code>cd MMSServer/Linux <br/>
-sudo sh build_mms.sh <br/>
-sudo sh start_mms.sh <br/>
-sudo sh start_mns.sh </code><br/>
+<code>cd MMSServer/Linux </code><br/>
+<code>sudo sh build_mms.sh </code><br/>
+<code>sudo sh start_mms.sh </code><br/>
+<code>sudo sh start_mns.sh </code><br/>
 
 ###After accomplishment
 In order to use email service, please reconfigure the WP Mail SMTP Plugin of WordPress admin panel.<br/>
@@ -72,7 +73,7 @@ Default admin account of mcp_mms_monitoring is Administrator/wins2-champion.<br/
 In order to get Base64 endcoded keystore for SSL enabled MMS from the jks, use [MMSKeystoreCoder] <br/>
 and get Base64encoded string that is printed out to the console. <br/>
 Copy the string and paste it to a value of "KEYSTORE" in [MMSServer/target/MMS-configuration/MMS.conf]. <br/>
-After then, restart MMS server.<br/>
+After then, restart the MMS Server.<br/>
 
 <br/>
 
