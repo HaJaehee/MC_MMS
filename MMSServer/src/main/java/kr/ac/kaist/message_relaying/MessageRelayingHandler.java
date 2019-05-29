@@ -381,6 +381,7 @@ public class MessageRelayingHandler  {
 	    		Map<String,List<String>> params = qsd.parameters();
 	    		mmsRestApiHandler.setParams(params);
 	    		message = mmsRestApiHandler.getResponse().getBytes(Charset.forName("UTF-8"));
+	    		mmsLog.info(logger, this.SESSION_ID, "Respond to a REST API request.");
 			}
 			
 			
