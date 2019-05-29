@@ -32,6 +32,8 @@ Jaehee Ha<br/>
 email: jaehee.ha@kaist.ac.kr<br/>
 Jin Jeong<br/>
 email: jungst0001@kaist.ac.kr<br/>
+Youngjin Kim<br/>
+email: jcdad3000@kaist.ac.kr<br/>
 Yoonho Choi<br/>
 email: choiking10@kaist.ac.kr<br/>
 Jaehyun Park<br/>
