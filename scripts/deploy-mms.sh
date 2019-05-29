@@ -76,7 +76,6 @@ while true; do
 
 		echo "Start rabbitmq-server."
 		systemctl start rabbitmq-server
-		systemctl status rabbitmq-server
 		systemctl enable rabbitmq-server
 
 		read -p "It will build MMS server. Before building MMS server, specify configuration files in [MMSServer/MMS-configuration] directory."
@@ -97,11 +96,6 @@ while true; do
 		cd ../../scripts
 		sudo rm -r ./var
 		
-		echo "In order to use email service, please reconfigure the WP Mail SMTP Plugin of WordPress admin panel."
-		echo "We recommend to use Google SSMTP service."
-		
-		echo "Default admin account of mcp_mms_monitoring is Administrator/wins2-champion." 		
- 
 		exit
 		;;
 		No ) exit
