@@ -169,7 +169,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 				
 			}
 			if (!parser.isRealtimeLogReq()) {
-				mmsLog.info(logger, SESSION_ID, "Message received."); 
+				mmsLog.info(logger, SESSION_ID, "Receive a message."); 
 			}// If a request is not a realtime logging service request.
 			
 			String svcMRN = parser.getSvcMRN();
