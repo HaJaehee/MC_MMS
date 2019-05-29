@@ -106,6 +106,11 @@ Rev. history: 2019-05-05
 Version : 0.9.0
 	Added rest API functions.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -149,10 +154,12 @@ public class MMSLog {
 	
 	private ArrayList<String> briefLogForStatus = new ArrayList<String>();
 	private Map<String,List<String>> briefRealtimeLogEachIDs = new HashMap<String,List<String>>();
-	private MMSLogForDebug logForDebug = null;
+	private MMSLogForDebug mmsLogForDebug = null;
+
+
 	
 	private MMSLog() {
-		logForDebug = MMSLogForDebug.getInstance();
+		mmsLogForDebug = MMSLogForDebug.getInstance();
 		//addIdToBriefRealtimeLogEachIDs("JaeheeHa"); // For testing.
 	}
 	
@@ -207,8 +214,8 @@ public class MMSLog {
 			
 			status.append("<strong>MRNs being debugged:</strong><br/>");
 			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
-			if (!logForDebug.getMrnSet().isEmpty()) {
-				SortedSet<String> keys = new TreeSet<String>(logForDebug.getMrnSet());
+			if (!mmsLogForDebug.getMrnSet().isEmpty()) {
+				SortedSet<String> keys = new TreeSet<String>(mmsLogForDebug.getMrnSet());
 				for (String key : keys) {
 					status.append(key+"<br/>");
 				}
@@ -241,8 +248,8 @@ public class MMSLog {
 		} 
 		else {
 			
-			status.append("<strong>MMS Brief Log for MRN="+mrn+"<br/>(Maximum session count:"+logForDebug.getMaxSessionCount()+"):</strong><br/>");
-			String log = logForDebug.getLog(mrn);
+			status.append("<strong>MMS Brief Log for MRN="+mrn+"<br/>(Maximum session count:"+mmsLogForDebug.getMaxSessionCount()+"):</strong><br/>");
+			String log = mmsLogForDebug.getLog(mrn);
 			if (log != null) {
 				status.append(log);
 			}
@@ -334,9 +341,8 @@ public class MMSLog {
 	
 	
 	
-	public void addBriefLogForStatus (String arg) {
-		SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm:ss");
-		arg = sdf.format(new Date()) + " " + arg;
+	private void addBriefLogForStatus (String arg) {
+		
 
 		if (briefLogForStatus.size() > MMSConfiguration.getMaxBriefLogListSize()) {
 			briefLogForStatus.remove(0);
@@ -380,5 +386,106 @@ public class MMSLog {
 	
 	public Set<String> getRealtimeLogUsersSet (){
 		return briefRealtimeLogEachIDs.keySet();
+	}
+	
+	private String makeLog (String SessionId, String log) {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("SessionID=");
+		sb.append(SessionId);
+		if (!Character.isWhitespace(log.charAt(0))) {
+			sb.append(" ");
+		}
+		sb.append(log);
+		if (!log.endsWith(".")) {
+			sb.append(".");
+		}
+		
+		return sb.toString(); 
+	}
+
+	
+	private void addWebLog (String SessionId, String log, String logLevel) {
+		
+		if (MMSConfiguration.isWebLogProviding()) {
+			StringBuilder sb = new StringBuilder();
+			SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm:ss");
+			sb.append(sdf.format(new Date()));
+			sb.append(" ");
+			sb.append(logLevel);
+			sb.append(" ");
+			sb.append(log);
+			String newLog = sb.toString();
+			
+			addBriefLogForStatus(newLog);
+			mmsLogForDebug.addLog(SessionId, newLog);
+		}
+	}
+	
+	public void trace (Logger logger, String SessionId, String log) {
+		if (logger.isTraceEnabled()) {
+			String newLog = makeLog(SessionId, log);
+			addWebLog(SessionId, newLog, "TRACE");
+			logger.trace(newLog);
+		}
+	}
+	public void debug (Logger logger, String SessionId, String log) {
+		if (logger.isDebugEnabled()) {
+			String newLog = makeLog(SessionId, log);
+			addWebLog(SessionId, newLog, "DEBUG");
+			logger.debug(newLog);
+		}
+	}
+	public void info (Logger logger, String SessionId, String log) {
+		if (logger.isInfoEnabled()) {
+			String newLog = makeLog(SessionId, log);
+			addWebLog(SessionId, newLog, "INFO");
+			logger.info(newLog);
+		}
+	}
+	public void warn (Logger logger, String SessionId, String log) {
+		if (logger.isWarnEnabled()) {
+			String newLog = makeLog(SessionId, log);
+			addWebLog(SessionId, newLog, "WARN");
+			logger.warn(newLog);
+		}
+	}
+	public void error (Logger logger, String SessionId, String log) {
+		if (logger.isErrorEnabled()) {
+			String newLog = makeLog(SessionId, log);
+			addWebLog(SessionId, newLog, "ERROR");
+			logger.error(newLog);
+		}
+	}
+	
+	public void warnException (Logger logger, String SessionId, String log, Exception e, int traceDepth) {
+		if (logger.isWarnEnabled()) {
+			warn(logger, SessionId, makeExceptionLog(log, e));
+			for (int i = 1 ; i < e.getStackTrace().length && i < traceDepth ; i++) {
+				logger.warn(makeLog(SessionId, e.getStackTrace()[i]+"."));
+			}
+		}
+	}
+	
+	public void errorException (Logger logger, String SessionId, String log, Exception e, int traceDepth) {
+		if (logger.isErrorEnabled()) {
+			error(logger, SessionId, makeExceptionLog(log, e));
+			for (int i = 1 ; i < e.getStackTrace().length && i < traceDepth ; i++) {
+				logger.error(makeLog(SessionId, e.getStackTrace()[i]+"."));
+			}
+		}
+	}
+
+	private String makeExceptionLog (String log, Exception e){
+		StringBuilder sb = new StringBuilder();
+		sb.append(log);
+		sb.append(" ");
+		sb.append(e.getMessage());
+		sb.append(" ");
+		sb.append(e.getClass().getName());
+		sb.append(" ");
+		sb.append(e.getStackTrace()[0]);
+		sb.append(".");
+		return sb.toString();
 	}
 }

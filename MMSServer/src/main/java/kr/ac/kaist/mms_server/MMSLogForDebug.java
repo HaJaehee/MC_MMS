@@ -35,6 +35,11 @@ Version : 0.8.1
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -254,11 +259,10 @@ public class MMSLogForDebug {
 		}
 	}
 	
-	public synchronized void addLog (String sessionId, String log) {
+	synchronized void addLog (String sessionId, String log) {
 
 		if (sessionId!=null&&sessionIdLogMapper!=null&&sessionIdLogMapper.get(sessionId)!=null)	{
-			SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm:ss");
-			log = sdf.format(new Date()) + " " + log;
+			
 			
 			sessionIdLogMapper.get(sessionId).add(log);
 		}

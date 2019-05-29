@@ -115,6 +115,42 @@ public class TS11_test {
 	@Test
 	public void test08() throws IOException, InterruptedException {		
 
+		String params = "client-session-count=y";
+		
+		client.apiTest(params);
+		
+		Thread.sleep(1000);	
+		
+		assertTrue(client.jobj.containsKey("client-session-count"));
+	}
+	
+	@Test
+	public void test09() throws IOException, InterruptedException {		
+
+		String params = "long-polling-session-count=y";
+		
+		client.apiTest(params);
+		
+		Thread.sleep(1000);	
+		
+		assertTrue(client.jobj.containsKey("long-polling-session-count"));
+	}
+	
+	@Test
+	public void test10() throws IOException, InterruptedException {		
+
+		String params = "mms-configuration=y";
+		
+		client.apiTest(params);
+		
+		Thread.sleep(1000);	
+		
+		assertTrue(client.jobj.containsKey("mms-configuration"));
+	}
+	
+	@Test
+	public void test11() throws IOException, InterruptedException {		
+
 		String params = "msg-queue-counting=y";
 		
 		client.apiTest(params);
@@ -123,5 +159,4 @@ public class TS11_test {
 		
 		assertTrue(client.jobj.containsKey("error"));
 	}
-	
 }

@@ -35,6 +35,11 @@ Rev. history : 2019-05-07
 Version : 0.9.0
 	Duplicated polling requests are not allowed.
 Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
+
+Rev. history: 2019-05-29
+Version : 0.9.1
+	Added long polling session count api.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -133,5 +138,9 @@ public class SeamlessRoamingHandler {
 	
 	public static HashMap<String, String> getDuplicateInfo() {
 		return duplicateInfo;
+	}
+	
+	public static long getDuplicateInfoSize() {
+		return duplicateInfo.size();
 	}
 }

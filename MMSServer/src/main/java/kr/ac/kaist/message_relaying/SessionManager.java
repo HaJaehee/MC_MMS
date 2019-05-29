@@ -55,6 +55,10 @@ Version : 0.9.1
 	Fixed session count bugs.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */
 
@@ -143,12 +147,11 @@ public class SessionManager {
 					
 					br.close();
 					fr.close();
-				} catch (ArrayIndexOutOfBoundsException | NumberFormatException | IOException e1) {
-					logger.info("File session-count.csv is not found or there is a problem when reading the file.");  
-					logger.info(e1.getClass().getName()+" "+e1.getStackTrace()[0]+".");
-		    			for (int i = 1 ; i < e1.getStackTrace().length && i < 4 ; i++) {
-		    				logger.warn(e1.getStackTrace()[i]+".");
-		    			}
+					
+				} //TODO: logger 사용 변경 
+				catch (ArrayIndexOutOfBoundsException | NumberFormatException | IOException e1) {
+					MMSLog mmsLog = MMSLog.getInstance();
+					mmsLog.warnException(logger, "", "File session-count.csv is not found or there is a problem when reading the file.", e1, 5);
 				}
 				
 				fileLines -= 12*60*24;
@@ -190,11 +193,9 @@ public class SessionManager {
 					br.close();
 					fr.close();
 				} catch (ArrayIndexOutOfBoundsException | NumberFormatException | IOException e1) {
-					logger.info("File session-count.csv is not found or there is a problem when reading the file.");  
-					logger.info(e1.getClass().getName()+" "+e1.getStackTrace()[0]+".");
-		    			for (int i = 1 ; i < e1.getStackTrace().length && i < 4 ; i++) {
-		    				logger.warn(e1.getStackTrace()[i]+".");
-		    			}
+					MMSLog mmsLog = MMSLog.getInstance();
+					mmsLog.warnException(logger, "", "File session-count.csv is not found or there is a problem when reading the file.", e1, 5);
+
 				}
 				
 				
@@ -301,11 +302,9 @@ public class SessionManager {
 					}
 				}
 				catch (IOException e1) {
-					logger.info("File session-count.csv is not found or there is a problem when writing the file.");  
-					logger.info(e1.getClass().getName()+" "+e1.getStackTrace()[0]+".");
-		    			for (int i = 1 ; i < e1.getStackTrace().length && i < 4 ; i++) {
-		    				logger.warn(e1.getStackTrace()[i]+".");
-		    			}
+					MMSLog mmsLog = MMSLog.getInstance();
+					mmsLog.warnException(logger, "","File session-count.csv is not found or there is a problem when writing the file.", e1, 5);
+					
 				} 
 				finally {
 					if (pw != null) {
@@ -315,22 +314,18 @@ public class SessionManager {
 						try {
 							bw.close();
 						} catch (IOException e) {
-							logger.info("Failed to close BufferedWriter.");  
-							logger.info(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-				    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				    				logger.warn(e.getStackTrace()[i]+".");
-				    			}
+							MMSLog mmsLog = MMSLog.getInstance();
+							mmsLog.warnException(logger, "","Failed to close BufferedWriter.", e, 5);
+		
 						}
 					}
 					if (fw != null) {
 						try {
 							fw.close();
 						} catch (IOException e) {
-							logger.info("Failed to close FileWriter.");  
-							logger.info(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-				    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				    				logger.warn(e.getStackTrace()[i]+".");
-				    			}
+							MMSLog mmsLog = MMSLog.getInstance();
+							mmsLog.warnException(logger, "","Failed to close FileWriter.", e, 5);
+						
 						}
 					}
 				}

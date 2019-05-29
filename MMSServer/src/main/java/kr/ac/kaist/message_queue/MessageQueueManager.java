@@ -38,6 +38,11 @@ Rev. history: 2019-05-09
 Version : 0.9.0
 	Replaced from function using rabbitmqadmin to function using Rabbit MQ management restful API.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -53,6 +58,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpMethod;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.MMSLog;
 
 
 public class MessageQueueManager {
@@ -89,7 +95,7 @@ public class MessageQueueManager {
 			byte[] response = null;
 			
 			if (MMSConfiguration.getRabbitMqManagingProtocol().equals("http")) {
-				response = outputChannel.sendMessage(MMSConfiguration.getRabbitMqHost(), 
+				response = outputChannel.sendMessage(MMSConfiguration.getRabbitMqManagingHost(), 
 														MMSConfiguration.getRabbitMqManagingPort(), 
 														HttpMethod.GET, 
 														"/api/queues", 
@@ -97,7 +103,7 @@ public class MessageQueueManager {
 														MMSConfiguration.getRabbitMqPasswd());
 			}
 			else if (MMSConfiguration.getRabbitMqManagingProtocol().equals("https")){
-				response = outputChannel.secureSendMessage(MMSConfiguration.getRabbitMqHost(), 
+				response = outputChannel.secureSendMessage(MMSConfiguration.getRabbitMqManagingHost(), 
 						MMSConfiguration.getRabbitMqManagingPort(), 
 						HttpMethod.GET, 
 						"/api/queues", 
@@ -113,18 +119,16 @@ public class MessageQueueManager {
 			jary = (JSONArray) parser.parse(strRes);
 			ret = jary.size();
 			
-		} catch (IOException e) {
-			logger.warn("SessionID="+SESSION_ID+" MessageQueueManager has a problem when connecting to RabbitMQ management module.");
-			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
-		} catch (ParseException e) {
-			logger.warn("SessionID="+SESSION_ID+" MessageQueueManager has a problem when parsing response from RabbitMQ management module.");
-			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+		} 
+		catch (IOException e) {
+			MMSLog mmsLog = MMSLog.getInstance();
+			mmsLog.warnException(logger, SESSION_ID, "MessageQueueManager has a problem when connecting to RabbitMQ management module.", e, 5);
+
+		} 
+		catch (ParseException e) {
+			MMSLog mmsLog = MMSLog.getInstance();
+			mmsLog.warnException(logger, SESSION_ID, "MessageQueueManager has a problem when connecting to RabbitMQ management module.", e, 5);
+
 		}
 		
 		return ret;

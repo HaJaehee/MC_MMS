@@ -20,7 +20,7 @@ public class ServiceProvider {
 	public static void main(String args[]) throws Exception{
 		String myMRN = "urn:mrn:smart-navi:device:service-provider";
 
-		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
+//		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
 		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 		

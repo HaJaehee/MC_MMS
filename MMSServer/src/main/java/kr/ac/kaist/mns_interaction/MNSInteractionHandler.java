@@ -1,14 +1,5 @@
 package kr.ac.kaist.mns_interaction;
 
-import java.text.ParseException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import kr.ac.kaist.mms_server.MMSConfiguration;
-import kr.ac.kaist.mms_server.MMSLog;
-import kr.ac.kaist.mms_server.MMSLogForDebug;
-
 /* -------------------------------------------------------- */
 /** 
 File name : MNSInteractionHandler.java
@@ -49,8 +40,24 @@ Version : 0.8.1
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
+
+
+import java.text.ParseException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.MMSLog;
+import kr.ac.kaist.mms_server.MMSLogForDebug;
+
 
 public class MNSInteractionHandler {
 	
@@ -102,12 +109,7 @@ public class MNSInteractionHandler {
 	@Deprecated
 	public String updateClientInfo(String srcMRN, String srcIP){
 		String msg = locatorUpdater.buildUpdate(srcMRN, srcIP);
-		if(MMSConfiguration.isWebLogProviding()) {
-			String log = "SessionID="+this.SESSION_ID+" Update client information.";
-			mmsLog.addBriefLogForStatus(log);
-			mmsLogForDebug.addLog(this.SESSION_ID, log);
-		}
-		logger.debug("SessionID="+this.SESSION_ID+" Update client information.");
+		mmsLog.debug(logger, this.SESSION_ID, "Update client information.");
 		return messageOutput.sendToMNS(msg);
 	}
 

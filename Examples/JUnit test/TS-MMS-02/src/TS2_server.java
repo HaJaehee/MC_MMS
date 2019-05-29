@@ -40,8 +40,8 @@ public class TS2_server {
 	String Realm=null;
 	
 	public TS2_server() throws Exception {
-		MMSConfiguration.MMS_URL="143.248.57.144:8088";
-		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
+		//MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		MMSClientHandler server = new MMSClientHandler(myMRN);
 		int port = 8907;
 		

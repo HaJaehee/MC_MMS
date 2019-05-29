@@ -19,13 +19,13 @@ public class SessionIdAndThr {
 	private String sessionId = "";
 	private Thread sessionBlocker = null;
 	private boolean isWaitingRes = false;
-	private double seqNum = -1;
-	private double preSeqNum = -1;
-	private double nextSeqNum = -1;
+	private long seqNum = -1;
+	private long preSeqNum = -1;
+	private long nextSeqNum = -1;
 	private int waitingCount = -1;
 	private boolean exceptionFlag = false;
 	
-	public SessionIdAndThr (String aSessionId, Thread aSessionBlocker, double aSeqNum) {
+	public SessionIdAndThr (String aSessionId, Thread aSessionBlocker, long aSeqNum) {
 		sessionId = aSessionId;
 		sessionBlocker = aSessionBlocker;
 		seqNum = aSeqNum;

@@ -26,6 +26,11 @@ Rev. history : 2017-06-19
 Version : 0.5.7
 	Applied LogBack framework in order to log events
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 import java.io.ByteArrayInputStream;
@@ -132,70 +137,23 @@ public final class SecureMMSServer extends Thread {
 	            logger.error("Ready for 0.0.0.0:" + MMSConfiguration.getHttpsPort());
 	            b.bind(MMSConfiguration.getHttpsPort()).sync().channel().closeFuture().sync();
 	        } catch (InterruptedException e) {
-	        	logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-    				logger.error(e.getStackTrace()[i]+".");
-    			}
+	        	MMSLog mmsLog = MMSLog.getInstance();
+				mmsLog.errorException(logger, "", "", e, 10);
+				
 			} finally {
 	            bossGroup.shutdownGracefully();
 	            workerGroup.shutdownGracefully();
 	        }
 			
 		} 
-        catch (CertificateException e) {
-			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.error(e.getStackTrace()[i]+".");
-			}
+        catch (CertificateException | UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException | IOException e) {
+        	MMSLog mmsLog = MMSLog.getInstance();
+			mmsLog.errorException(logger, "", "", e, 10);
+			
 			Scanner sc = new Scanner(System.in);
 			sc.nextLine();
 			System.exit(10);
 		} 
-        catch (SSLException e) {
-			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.error(e.getStackTrace()[i]+".");
-			}
-			Scanner sc = new Scanner(System.in);
-			sc.nextLine();
-			System.exit(11);
-		} 
-        catch (UnrecoverableKeyException e) {
-			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.error(e.getStackTrace()[i]+".");
-			}
-			Scanner sc = new Scanner(System.in);
-			sc.nextLine();
-			System.exit(12);
-		} 
-        catch (KeyStoreException e) {
-			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.error(e.getStackTrace()[i]+".");
-			}
-			Scanner sc = new Scanner(System.in);
-			sc.nextLine();
-			System.exit(13);
-		} 
-        catch (NoSuchAlgorithmException e) {
-			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.error(e.getStackTrace()[i]+".");
-			}
-			Scanner sc = new Scanner(System.in);
-			sc.nextLine();
-			System.exit(14);
-		} 
-        catch (IOException e) {
-			logger.error(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.error(e.getStackTrace()[i]+".");
-			}
-			Scanner sc = new Scanner(System.in);
-			sc.nextLine();
-			System.exit(15);
-		}
-        
+
     }
 }

@@ -29,8 +29,8 @@ public class TS1_server {
 	
 	
 	public TS1_server() throws Exception {
-		MMSConfiguration.MMS_URL="mms.smartnav.org:8088";
-		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
+		//MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		MMSConfiguration.DEBUG = false;
 		MMSClientHandler server = new MMSClientHandler(myMRN);
 		int port = 8907;

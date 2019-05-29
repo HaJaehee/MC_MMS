@@ -103,6 +103,11 @@ Rev. history : 2019-05-23
 Version : 0.9.1
 	Fixed a problem where rabbitmq connection was not terminated even when client disconnected by using context-channel attribute.
 Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -198,20 +203,13 @@ class MessageQueueDequeuer extends Thread{
 				public void terminate(ChannelHandlerContext ctx) {
 					// TODO Auto-generated method stub
 					try {
-						if(channel.isOpen()) {
+						
+						if(channel != null && channel.isOpen()) {
 							channel.close();
 						}
-					} catch (IOException e) {
-				    	logger.warn("SessionID="+SESSION_ID+" Channel closing is failed. "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-						for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-							logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-						}
-					} 
-				    catch (TimeoutException e) {
-				    	logger.warn("SessionID="+SESSION_ID+" Channel closing is failed. "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-						for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-							logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-						}
+					} catch (IOException | TimeoutException e) {
+						mmsLog.warnException(logger, SESSION_ID, "Channel closing is failed.", e, 5);
+				    	
 					} 
 				}
 			});
@@ -239,12 +237,7 @@ class MessageQueueDequeuer extends Thread{
 			if (msgCount > 0) { //If the queue has a message
 				message.append("]");
 				
-				if(MMSConfiguration.isWebLogProviding()) {
-					String log = "SessionID="+this.SESSION_ID+" Dequeue="+queueName+".";
-					mmsLog.addBriefLogForStatus(log);
-					mmsLogForDebug.addLog(this.SESSION_ID, log);
-				}
-				logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
+				mmsLog.debug(logger, this.SESSION_ID, "Dequeue="+queueName+".");
 		  
 		    	if (SessionManager.getSessionInfo().get(this.SESSION_ID) != null) {
 		    		SessionManager.getSessionInfo().remove(this.SESSION_ID);
@@ -257,12 +250,8 @@ class MessageQueueDequeuer extends Thread{
 			else { //If the queue does not have any message, message count == 0
 				message.setLength(0);
 				if (pollingMethod.equals("normal") ) {//If polling method is normal polling
-					if(MMSConfiguration.isWebLogProviding()) {
-						String log = "SessionID="+this.SESSION_ID+" Empty queue="+queueName+".";
-						mmsLog.addBriefLogForStatus(log);
-						mmsLogForDebug.addLog(this.SESSION_ID, log);
-					}
-					logger.debug("SessionID="+this.SESSION_ID+" Empty queue="+queueName+".");
+					mmsLog.debug(logger, this.SESSION_ID, "Empty queue="+queueName+".");
+
 			    	if (SessionManager.getSessionInfo().get(this.SESSION_ID) != null) {
 			    		SessionManager.getSessionInfo().remove(this.SESSION_ID);
 			    	}
@@ -275,12 +264,7 @@ class MessageQueueDequeuer extends Thread{
 				
 				else if (pollingMethod.equals("long")){ //If polling method is long polling
 					//Enroll a delivery listener to the queue channel in order to get a message from the queue.
-					if(MMSConfiguration.isWebLogProviding()) {
-						String log = "SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".";
-						mmsLog.addBriefLogForStatus(log);
-						mmsLogForDebug.addLog(this.SESSION_ID, log);
-					}
-					logger.debug("SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".");
+					mmsLog.debug(logger, this.SESSION_ID, "Client is waiting the message queue="+queueName+".");
 					
 					//TODO: Even though a polling client disconnects long polling session, this DefaultConsumer holds a channel.
 					//When a polling client disconnects long polling session, this DefaultConsumer have to free the channel. 
@@ -293,13 +277,7 @@ class MessageQueueDequeuer extends Thread{
 						    if(!ctx.isRemoved()){
 								message.append("[\""+URLEncoder.encode(dqMessage,"UTF-8")+"\"]");
 								
-								if(MMSConfiguration.isWebLogProviding()) {
-									String log = "SessionID="+SESSION_ID+" Dequeue="+queueName+".";
-									mmsLog.addBriefLogForStatus(log);
-									mmsLogForDebug.addLog(SESSION_ID, log);
-								}
-								logger.debug("SessionID="+SESSION_ID+" Dequeue="+queueName+".");
-						    	
+								mmsLog.debug(logger, SESSION_ID, "Dequeue="+queueName+".");
 
 						    	if (SessionManager.getSessionInfo().get(SESSION_ID) != null) {
 						    		SessionManager.getSessionInfo().remove(SESSION_ID);
@@ -312,16 +290,9 @@ class MessageQueueDequeuer extends Thread{
 							    outputChannel.replyToSender(ctx, message.toString().getBytes());
 								channel.basicAck(envelope.getDeliveryTag(), false);
 							} else {
-								if(MMSConfiguration.isWebLogProviding()) {
-									String log = "SessionID="+SESSION_ID+" Dequeue="+queueName+".";
-									mmsLog.addBriefLogForStatus(log);
-									mmsLogForDebug.addLog(SESSION_ID, log);
-									log = "SessionID="+SESSION_ID+" "+srcMRN+" is disconnected. Requeue.";
-									mmsLog.addBriefLogForStatus(log);
-									mmsLogForDebug.addLog(SESSION_ID, log);
-								}
-								logger.debug("SessionID="+SESSION_ID+" Dequeue="+queueName+".");
-								logger.warn("SessionID="+SESSION_ID+" "+srcMRN+" is disconnected. Requeue.");
+								mmsLog.debug(logger, SESSION_ID, "Dequeue="+queueName+".");
+								mmsLog.warn(logger, SESSION_ID, srcMRN+" is disconnected. Re-enqueue the messages.");
+
 								channel.basicNack(envelope.getDeliveryTag(), false, true);
 							}
 						    
@@ -334,10 +305,7 @@ class MessageQueueDequeuer extends Thread{
 						    		connection.close();
 						    	}
 							} catch (TimeoutException e) {
-								logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-				    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-				    			}
+								mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 							}
 
 						  }
@@ -436,56 +404,25 @@ class MessageQueueDequeuer extends Thread{
 			//It do not block this thread.
 			
 		} 
-	    catch (IOException e) {
-	    	logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+	    catch (IOException | TimeoutException | ConsumerCancelledException e) {
+	    	mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+
 		} 
-	    catch (TimeoutException e) {
-	    	logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
-		} 
-//	    catch (ShutdownSignalException e) {
-//			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-//		for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-//			logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-//		}
-//		} 
-	    catch (ConsumerCancelledException e) {
-	    	logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
-		} 
-//	    catch (InterruptedException e) {
-//			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-//		for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-//			logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-//		}
-//		} 
+
 	    finally {
 	    	if (pollingMethod.equals("normal")) { // Polling method: normal polling
 	    		if (channel != null) {
 		    		try {
 						channel.close();
 					} catch (IOException | TimeoutException e) {
-						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-		    			}
+						mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 					}
 		    	}
 				if (connection != null) {
 					try {
 						connection.close();
 					} catch (IOException e) {
-						logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-		    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-		    			}
+						mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 					}
 				}
 	    	}

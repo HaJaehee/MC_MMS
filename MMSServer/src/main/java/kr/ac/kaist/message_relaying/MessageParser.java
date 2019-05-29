@@ -84,6 +84,11 @@ Rev. history : 2019-05-17
 Version : 0.9.1
 	From now, MessageParser is initialized in MRH_MessageInputChannel class.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -133,7 +138,7 @@ public class MessageParser {
 	private GeolocationCircleInfo geoCircleInfo = null;
 	private GeolocationPolygonInfo geoPolygonInfo = null;
 	private JSONArray geoDstInfo = null;
-	private double seqNum = -1;
+	private long seqNum = -1;
 	private String hexSignedData = null;
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
@@ -185,7 +190,7 @@ public class MessageParser {
 		String o = req.headers().get("seqNum");
 		if (o != null) {
 			//seqNum must be positive and lower than MAXIMUM VALUE of double. seqNum must be checked.
-			seqNum = Double.parseDouble(o);
+			seqNum = Long.parseLong(o);
 			new BigInteger(o);
 			if (seqNum < 0) {
 				logger.warn("SessionID="+SESSION_ID+" In header, seqNum must be positive integer.");
@@ -198,12 +203,7 @@ public class MessageParser {
 				isGeocasting = true;	
 				setGeoCircleInfo(req);
 				if (logger.isDebugEnabled()) {
-					if(MMSConfiguration.isWebLogProviding()) {
-						String log = "SessionID="+this.SESSION_ID+" Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".";
-						mmsLog.addBriefLogForStatus(log);
-						mmsLogForDebug.addLog(this.SESSION_ID, log);
-					}
-					logger.debug("SessionID="+this.SESSION_ID+" Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".");
+					mmsLog.debug(logger, this.SESSION_ID, "Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".");
 				}
 			} 
 			else if (req.headers().get("geocasting").equals("polygon")) {
@@ -230,12 +230,8 @@ public class MessageParser {
 							}
 						}
 						strGeoPolyInfo.append("]");
-						if(MMSConfiguration.isWebLogProviding()) {
-							String log = "SessionID="+this.SESSION_ID+" Geocasting polygon request. "+strGeoPolyInfo.toString()+".";
-							mmsLog.addBriefLogForStatus(log);
-							mmsLogForDebug.addLog(this.SESSION_ID, log);
-						}
-						logger.debug("SessionID="+this.SESSION_ID+" Geocasting polygon request. "+strGeoPolyInfo.toString()+".");
+						mmsLog.debug(logger, this.SESSION_ID, "Geocasting polygon request. "+strGeoPolyInfo.toString()+".");
+
 					}
 				} 
 				catch (ParseException e) {
@@ -310,23 +306,13 @@ public class MessageParser {
 //			System.out.println("[Test Message] the certificate is " + hexSignedData.substring(6));
 			isJSONOfPollingFormat = true;
 			if (this.svcMRN == null) {
-				String log = "SessionID="+this.SESSION_ID+" The service MRN is not included.";
-				if(MMSConfiguration.isWebLogProviding()) {
-					mmsLog.addBriefLogForStatus(log);
-					mmsLogForDebug.addLog(this.SESSION_ID, log);
-				}
-				logger.info(log);
+				mmsLog.warn(logger, this.SESSION_ID, "The service MRN is not included.");
 			}
 			
 			return ;
 		} 
 		catch (org.json.simple.parser.ParseException e) {
-			String log = "SessionID="+this.SESSION_ID+" Failed to parse polling request content whose type is a JSON format.";
-			if(MMSConfiguration.isWebLogProviding()) {
-				mmsLog.addBriefLogForStatus(log);
-				mmsLogForDebug.addLog(this.SESSION_ID, log);
-			}
-			logger.info(log);
+			mmsLog.warnException(logger, this.SESSION_ID, "Failed to parse polling request content whose type is a JSON format.", e, 5);
 			
 			isJSONOfPollingFormat = false;
 		}
@@ -355,10 +341,7 @@ public class MessageParser {
     	
 		}
 		catch (org.json.simple.parser.ParseException e) {
-			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 		}
 	}
 	
@@ -369,15 +352,12 @@ public class MessageParser {
 			geoDstInfo = (JSONArray) parser.parse(geocastInfo);
 			
 		} catch (org.json.simple.parser.ParseException e) {
-			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 		}
 	}
 	
 	void parseMultiDstInfo(String dstInfo){
-		logger.debug("SessionID="+this.SESSION_ID+" Destination info="+dstInfo+".");
+		mmsLog.debug(logger, this.SESSION_ID, "Destination info="+dstInfo+".");
 		String[] dstMRNs = dstInfo.substring(13).split(",");
 		multiDstMRN = dstMRNs;
 	}
@@ -391,7 +371,7 @@ public class MessageParser {
 	int getDstPort() { return dstPort; }
 	String getDstMRN() { return dstMRN; }
 	String getDstModel() { return dstModel; }
-	double getSeqNum() { return seqNum;	}
+	long getSeqNum() { return seqNum;	}
 	
 	// Destination Special Information //
 	String[] getMultiDstMRN() { 

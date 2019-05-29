@@ -81,6 +81,11 @@ Rev. history : 2019-05-23
 Version : 0.9.1
 	Fixed a problem where rabbitmq connection was not terminated even when client disconnected by using context-channel attribute.
 Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -134,8 +139,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		super();
 		this.protocol = protocol;
 		
-		mmsLog = MMSLog.getInstance();
-		mmsLogForDebug = MMSLogForDebug.getInstance();
+		
 	}
 	
 //	when coming http message
@@ -145,9 +149,10 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		
 		try {
 			req.retain();
+			mmsLog = MMSLog.getInstance();
+			mmsLogForDebug = MMSLogForDebug.getInstance();
 
-      
-			logger.info("Message received.");
+			mmsLog.info(logger, SESSION_ID, "Message received.");
 			SESSION_ID = ctx.channel().id().asShortText();
 
 			SessionManager.getSessionInfo().put(SESSION_ID, "");
@@ -156,10 +161,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			try {
 				parser.parseMessage(ctx, req);
 			} catch (NumberFormatException | NullPointerException  e) {
-				logger.warn("SessionID="+SESSION_ID+" "+"Exception occured while parsing the message. "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-				for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-					logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-				}
+				mmsLog.warnException(logger, SESSION_ID, "Exception occured while parsing the message.", e, 5);
+				
 			}
 			
 			String svcMRN = parser.getSvcMRN();
@@ -185,7 +188,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         
         ConnectionThread thread = relayingHandler.getConnectionThread();
         if (thread != null) {
-            logger.info("Client disconnected. disconnect To.");
+        	mmsLog.info(logger, SESSION_ID, "Client disconnected.");
             thread.terminate();
         }
         LinkedList<ChannelTerminateListener> listeners = ctx.channel().attr(TERMINATOR).get();
@@ -227,16 +230,13 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     		
     		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
     		if (clientType.equals("p")) {
-
-    			logger.warn("SessionID="+this.SESSION_ID+" The polling client is disconnected.");
+    			mmsLog.warn(logger, this.SESSION_ID, "The polling client is disconnected.");
     		} 
     		else if (clientType.equals("lp")) {
-
-    			logger.warn("SessionID="+this.SESSION_ID+" The long polling client is disconnected.");
+    			mmsLog.warn(logger, this.SESSION_ID, "The long polling client is disconnected.");
     		}
     		else {
-    			logger.warn("SessionID="+this.SESSION_ID+" The client is disconnected.");
-
+    			mmsLog.warn(logger, this.SESSION_ID, "The client is disconnected.");
     		}
     	}
     	if (!ctx.isRemoved()){
@@ -343,12 +343,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         errorlog += " dstIP=" + reqInfo[2] + " dstMRN=" + reqInfo[3] + " svcMRN=" + reqInfo[4];
       }
   //  System.out.println("/*****************************************/");
-		
-      errorlog = "SessionID="+this.SESSION_ID+" The client is disconnected, " + errorlog + ".";
-		  logger.warn(errorlog);
-		  if(MMSConfiguration.isWebLogProviding()) {
-				mmsLog.addBriefLogForStatus(errorlog);
-				mmsLogForDebug.addLog(this.SESSION_ID, errorlog);
-		}
+	
+      mmsLog.warn(logger, this.SESSION_ID, "The client is disconnected, " + errorlog + ".");
+     
     }
 }

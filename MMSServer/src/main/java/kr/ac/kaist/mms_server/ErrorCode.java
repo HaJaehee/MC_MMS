@@ -17,7 +17,16 @@ Rev. history : 2019-05-26
 Version : 0.9.1
 	Make error code to be general.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
+/* -------------------------------------------------------- */
+
+
 import java.nio.charset.Charset;
 
 public enum ErrorCode {
@@ -46,7 +55,7 @@ public enum ErrorCode {
 	// Numbers greater than 10000 and lower than 20000 are internal error codes.
 	// Number 19XXX is related to the MMS monitoring service including dump MNS.
 	MONITORING_CONNECTION_ERR("19001", "Failed to connect to MMS monitoring service."),
-	DUMPMNS_LOGGING_ERR("19002", "Failed to connect to dump MNS."),
+	DUMPMNS_LOGGING_ERR("19002", "Failed to dump MNS."),
 
 	// Number 18XXX is related to the relaying functions.
 	SEQUENTIAL_RELAYING_EXCEPTION_ERR("18001", "Exception error occured in sequentailly relaying function."),
