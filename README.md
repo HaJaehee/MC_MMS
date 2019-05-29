@@ -58,7 +58,7 @@ It will automatically build and run MMS Server, MMS Monitoring Module and relate
 <code>sudo sh start_mms.sh </code><br/>
 <code>sudo sh start_mns.sh </code><br/>
 
-###After accomplishment
+### After accomplishment
 In order to use email service, please reconfigure the WP Mail SMTP Plugin of WordPress admin panel.<br/>
 We recommend to use Google SSMTP service.<br/>
 Default admin account of mcp_mms_monitoring is Administrator/wins2-champion.<br/>
