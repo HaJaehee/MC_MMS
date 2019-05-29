@@ -411,7 +411,7 @@ public class MRH_MessageOutputChannel{
         byte[] retBuffer = byteOS.toByteArray();
         
 		is.close();
-		mmsLog.info(logger, this.SESSION_ID, "Received a response." + " Response Code=" + responseCode);
+		mmsLog.info(logger, this.SESSION_ID, "Receive a response." + " Response Code=" + responseCode);
 
 		return retBuffer;
 	}
