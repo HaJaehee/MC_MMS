@@ -189,13 +189,13 @@ public class MessageParser {
 		srcMRN = req.headers().get("srcMRN");
 		dstMRN = req.headers().get("dstMRN");
 		
-		if (dstMRN != null && dstMRN.equals(MMSConfiguration.getMmsMrn()) && httpMethod == HttpMethod.POST && (uri.equals("/polling")||uri.equals("/long-polling"))) {
+		if (srcMRN != null && dstMRN != null && dstMRN.equals(MMSConfiguration.getMmsMrn()) && httpMethod == HttpMethod.POST && (uri.equals("/polling")||uri.equals("/long-polling"))) {
 			//When polling
 			parseSvcMRNAndHexSign(req);
 			
 		}
 		
-		if (MMSConfiguration.isWebLogProviding() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/realtime-log?id", 0, 16)){
+		if (srcMRN == null && dstMRN == null && MMSConfiguration.isWebLogProviding() && httpMethod == HttpMethod.GET && uri.regionMatches(0, "/realtime-log?id", 0, 16)){
 			//If a request is a realtime logging service request.
 			isRealtimeLogReq = true;
 		} 
