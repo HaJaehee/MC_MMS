@@ -4,6 +4,7 @@
 help()
 {
 	echo "Usage: $0 [domain name to run]"
+	echo "Do not use loopback, localhost, and 127.0.0.1 as a domain name."
 }
 
 if [ $# -ne 1 ]
@@ -14,10 +15,11 @@ fi
 newdomain=$1
 
 while true; do
-	read -p "Do you wish to install this program? Port number 3306 will be mapped to mariadb container's port number and port numbers 80, 443, 25, 465 and 587 will be mapped to mms monitoring container's port numbers. If you want to remap port numbers, please modify docker-compose.yml before this setup. In addition, existing WordPress files and database will be overwritten after this setup. If you want not to overwrite WordPress files and database, just execute docker-compose. [y/n]" yn
+	read -p "Do you wish to install this program? Please read it carefully. Port number 3306 will be mapped to mariadb container's port number and port numbers 80, 443, 25, 465 and 587 will be mapped to mms monitoring container's port numbers. If you want to remap port numbers, please modify 'docker-compose.yml' before executing this setup script. In addition, existing WordPress files and database will be overwritten after this setup. If you want not to overwrite WordPress files and database, just execute docker-compose with docker-compose.yml. Do you agree with it? [y/n]" yn
 	echo ""
 	case $yn in
 		[Yy]* )
+		echo "Remove existing docker containers."
 		#echo "Swipe docker containers and images related to MMS Monitoring."
 		#sudo docker stop $(sudo docker ps | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb|mcp_mms_monitoring_rabbitmq" | cut -c1-12)
 		#sudo docker rm $(sudo docker ps --all | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb|mcp_mms_monitoring_rabbitmq" | cut -c1-12)
@@ -68,30 +70,37 @@ while true; do
 		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace 'mms-kaist.com' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
 		sleep 3
 		
-		echo "Install rabbitmq-server"
+		echo "Install rabbitmq-server."
 		sudo apt install -y rabbitmq-server
 		sleep 3
 
+		echo "Start rabbitmq-server."
 		systemctl start rabbitmq-server
 		systemctl status rabbitmq-server
+		systemctl enable rabbitmq-server
 
-		#echo "Start MMS."
-		#cd ../MMSServer/Linux
-		#sudo nohup sudo sh ./start_mms.sh >/dev/null 2>&1 &
-		#sudo nohup sudo sh ./start_mns.sh >/dev/null 2>&1 &
-		#sleep 5
+		read -p "It will build MMS server. Before building MMS server, specify configuration files in [MMSServer/MMS-configuration] directory."
+
+		echo "Build MMS server."
+		cd ../MMSServer/Linux
+		sudo sh ./build_mms.sh
+
+		echo "Start MMS server in background."
+		sudo nohup sudo sh ./start_mms.sh >/dev/null 2>&1 &
+		sudo nohup sudo sh ./start_mns.sh >/dev/null 2>&1 &
+		sleep 5
 
 		#cd ../target
 		#sudo ln -sf $(pwd)/logs /var/mms/logs
 
 		echo "Remove temporary files."
 		cd ../../scripts
-		sudo rm -r ./html
+		sudo rm -r ./var
 		
-		echo "Please reconfigure the WP Mail SMTP Plugin."
-		echo "We recommend to use Google GMail SMTP service."
+		echo "In order to use email service, please reconfigure the WP Mail SMTP Plugin of WordPress admin panel."
+		echo "We recommend to use Google SSMTP service."
 		
-		echo "Default admin account of mcp_mms_monitoring is Administrator/Administrator." 		
+		echo "Default admin account of mcp_mms_monitoring is Administrator/wins2-champion." 		
  
 		exit
 		;;

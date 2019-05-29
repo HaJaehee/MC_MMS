@@ -1,10 +1,10 @@
 ## Caution!
-## This branch is currently under development. Can be corrected without notice.
+## This branch is currently under development.
+## Can be corrected without notice.
 
 # MC_MMS
 Beta Version 0.9.1 <br/>
 2019.05.29 <br/>
-
 
 # Web Site
 https://www.mms-kaist.com <br/>
@@ -21,26 +21,11 @@ Supports switching polling method between long polling or normal polling.<br/>
 Supports maintaining long polling client session.<br/>
 Supports saving MMS logs automatically.<br/>
 Supports displaying MMS logs on web browser.<br/>
-Supports MMS web management<br/>
-Supports MMS REST API<br/>
-Maritime Name System Dummy<br/>
-Service Consumer Examples<br/>
-Service Provider Examples<br/>
-
-
-## Usage
-First of all, install Java 1.8, RabbitMQ 3.7.14, erlang/OTP 22.0 and <br/>
-Docker 18.09.2.<br/>
-QUICK DEPLOY: run the script at [scripts/deploy-mms.sh] at the directory. <br/>
-It will automatically build and run MMS Server and related services.<br/>
-<br/>
-See [OpenJDK](https://openjdk.java.net/) https://openjdk.java.net <br/>
-See [RabbitMQ](https://www.rabbitmq.com/#getstarted) https://www.rabbitmq.com/#getstarted <br/>
-See [Erlang/OTP](https://www.erlang.org/downloads) https://www.erlang.org/downloads <br/>
-See [Docker](https://www.docker.com/) https://www.docker.com <br/>
-See [WordPress](https://www.wordpress.com) https://www.wordpress.com <br/>
-See [MariaDB](https://mariadb.com/) https://mariadb.com <br/>
-<br/>
+Supports MMS web management.<br/>
+Supports MMS REST API.<br/>
+Has Maritime Name System Dummy.<br/>
+Has Service Consumer Examples.<br/>
+Has Service Provider Examples.<br/>
 
 ## Developing
 Jaehee Ha<br/>
@@ -52,13 +37,60 @@ email: choiking10@kaist.ac.kr<br/>
 Jaehyun Park<br/>
 email: jae519@kaist.ac.kr<br/>
 
+## Usage
+First of all, MMS server is dependent on OpenJDK 1.8, RabbitMQ 3.7.14, erlang/OTP 22.0, Maven 3.3.9 <br/>
+and Docker 18.09.2.<br/>
+When using Linux, follow instructions below and install dependencies before executing <br/>
+script [MMSServer/scripts/deploy-mms.sh]:<br/>
+<code>sudo apt update <br/>
+sudo apt install default-jdk maven rabbitmq-server docker docker-compose</code> <br/>
+Before building MMS server, specify configuration files in [MMSServer/MMS-configuration] directory.<br/>
 
-### Tools and licenses
-<b>MMS is created with [Eclipse](https://www.eclipse.org/org/documents/epl-v10.php) https://www.eclipse.org/org/documents/epl-v10.php</b><br/>
-Eclipse Public License - v 1.0<br/>
+<b>QUICK DEPLOY:</b> run the script [deploy-mms.sh] at the directory [MMSServer/scripts/]. <br/>
+<code>cd MMSServer/scripts <br/>
+sudo sh deploy-mms.sh </code><br/>
+It will automatically build and run MMS Server and related services.<br/>
+
+<b>ONLY BUILD AND START MMS:</b> run the scripts at the directory [MMSServer/Linux/].<br/>
+<code>cd MMSServer/Linux <br/>
+sudo sh build_mms.sh <br/>
+sudo sh start_mms.sh <br/>
+sudo sh start_mns.sh </code><br/>
+
+###After accomplishment
+In order to use email service, please reconfigure the WP Mail SMTP Plugin of WordPress admin panel.<br/>
+We recommend to use Google SSMTP service.<br/>
+Default admin account of mcp_mms_monitoring is Administrator/wins2-champion.<br/>
+
+<b>TLS SUPPORT:</b></br> check web sites below:
+[RabbitMQ TLS Support](https://www.rabbitmq.com/ssl.html)  <br/>
+[Docker Tutorial](https://www.tutorialspoint.com/docker/)<br/>
+[Apache Install SSL Certificate](https://www.digicert.com/csr-ssl-installation/apache-openssl.htm)<br/>
+[HTTPS for WordPress](https://make.wordpress.org/support/user-manual/web-publishing/https-for-wordpress/) <br/>
+<b>MMS TLS SUPPORT:</b> check instructions below:
+[Import Individual Certificates into your Keystore](https://www.attachmate.com/documentation/gateway-1-1/gateway-admin-guide/data/fxg_keytool_importcert.htm)<br/>
+In order to get Base64 endcoded keystore for SSL enabled MMS from the jks, use [MMSKeystoreCoder] <br/>
+and get Base64encoded string that is printed out to the console. <br/>
+Copy the string and paste it to a value of "KEYSTORE" in [MMSServer/target/MMS-configuration/MMS.conf]. <br/>
+After then, restart MMS server.<br/>
+
 <br/>
 
-<b>MMS uses [Netty Project](http://netty.io/) http://netty.io/<b><br/>
+### See also
+See [OpenJDK](https://openjdk.java.net/) https://openjdk.java.net <br/>
+See [Maven](https://maven.apache.org/) https://maven.apache.org <br/>
+See [RabbitMQ](https://www.rabbitmq.com/#getstarted) https://www.rabbitmq.com/#getstarted <br/>
+See [Erlang/OTP](https://www.erlang.org/downloads) https://www.erlang.org/downloads <br/>
+See [Docker](https://www.docker.com/) https://www.docker.com <br/>
+See [WordPress](https://www.wordpress.com) https://www.wordpress.com <br/>
+See [MariaDB](https://mariadb.com/) https://mariadb.com <br/>
+<br/>
+
+## Tools and licenses
+<b>MMS is created with [Eclipse](https://www.eclipse.org/org/documents/epl-v10.php) https://www.eclipse.org/org/documents/epl-v10.php</b><br/>
+<br/>
+
+<b>MMS uses [Netty Project](http://netty.io/) http://netty.io/</b><br/>
 Copyright 2014 The Netty Project<br/>
 The Netty Project licenses this file to you under the Apache License,<br/>
 version 2.0 (the "License"); you may not use this file except in compliance<br/>
@@ -124,6 +156,6 @@ The GNU project mantains an official page with information about the GNU <br/>
 GPL 2 license, including a FAQ and various translations. <br/>
 <br/>
 
-### Databases
+## Databases
 [RabbitMQ](https://www.rabbitmq.com/) https://www.rabbitmq.com<br/>
 [MariaDB](https://mariadb.com/) https://mariadb.com
