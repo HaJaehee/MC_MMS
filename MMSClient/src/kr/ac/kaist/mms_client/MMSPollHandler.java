@@ -33,6 +33,21 @@ Rev. history : 2018-04-23
 Version : 0.7.1
 	Removed EXPOSURE_OF_SYSTEM_DATA hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-11
+Version : 0.8.0
+	Modified polling client verification.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-19
+Version : 0.8.2
+	MMS Client sends a polling request message which is a JSON format.
+Modifier : Jin Jung (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -53,41 +68,84 @@ import java.util.Map;
 import java.util.Set;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 class MMSPollHandler {
 	PollHandler ph = null;
 	//HJH
-	private static final String USER_AGENT = "MMSClient/0.7.1";
+	private static final String USER_AGENT = MMSConfiguration.USER_AGENT;
 	private String TAG = "[MMSPollHandler] ";
 	private String clientMRN = null;
-	
-	MMSPollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int msgType, Map<String,List<String>> headerField) throws IOException{
-		ph = new PollHandler(clientMRN, dstMRN, svcMRN, interval, clientPort, msgType, headerField);
+	private PollingRequestContents contents = null;
+
+	MMSPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, String pollingMethod, Map<String,List<String>> headerField) throws IOException{
+//		String svcMRNWithHexSign = svcMRN;
+//		if (hexSignedData != null) {
+//			svcMRNWithHexSign = svcMRNWithHexSign+"\n"+hexSignedData;
+//		}
+		contents = new PollingRequestContents(svcMRN, hexSignedData);
+		ph = new PollHandler(clientMRN, dstMRN, interval, pollingMethod, headerField);
 		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Polling handler is created");}
 	}
-	
 	//HJH
+	
+
+	private class PollingRequestContents {
+		private String svcMRN = null;
+		private String certificate = null;
+		
+		PollingRequestContents (String serviceMRN, String certificate){
+			this.svcMRN = serviceMRN;
+			this.certificate = certificate;
+		}
+		
+		private JSONObject makeJSONData(){
+			JSONObject data = new JSONObject();
+			
+			data.put("svcMRN", this.svcMRN);
+			data.put("certificate", this.certificate);
+		
+			return data;
+		}
+		
+		@Override
+		public String toString(){
+			String contents = this.makeJSONData().toJSONString();
+			
+//			System.out.println("[Test Message] : \n" + contents);
+			
+			return contents;
+		}
+		
+//		String getServiceMRN() {
+//			return this.svcMRN;
+//		}
+//		
+//		String getCertificate() {
+//			return this.certificate;
+//		}
+
+	}
+	
     class PollHandler extends Thread{
 		private int interval = 0;
 		private String clientMRN = null;
 		private String dstMRN = null;
-		private String svcMRN = null;
-		private int clientPort = 0;
-		private int clientModel = 0;
+		private String pollingRequestContents = null;
+		private String pollingMethod = null;
 		private boolean interrupted=false;
-		private Map<String,List<String>> headerField = null;
-		MMSClientHandler.PollingResponseCallback myCallback = null;
+		private Map<String,List<String>> headerField = null;	
 		
+	
+		MMSClientHandler.PollingResponseCallback myCallback = null;
 
-    	PollHandler (String clientMRN, String dstMRN, String svcMRN, int interval, int clientPort, int clientModel, Map<String,List<String>> headerField){
+    	PollHandler (String clientMRN, String dstMRN, int interval, String pollingMethod, Map<String,List<String>> headerField){
     		this.interval = interval;
     		this.clientMRN = clientMRN;
     		this.dstMRN = dstMRN;
-    		this.svcMRN = svcMRN;
-    		this.clientPort = clientPort;
-    		this.clientModel = clientModel;
+    		this.pollingMethod = pollingMethod;
     		this.headerField = headerField;
     		interrupted=false;
     	}
@@ -99,6 +157,7 @@ class MMSPollHandler {
     	void markInterrupted(){
     		interrupted=true;
     	}
+    	
     	
     	public void run(){
     		try{
@@ -118,16 +177,20 @@ class MMSPollHandler {
     		}
     	}
     	
+    	// TODO: Youngjin Kim must inspect this following code.
 		void Poll(){
 			try {
-				String url = "http://"+MMSConfiguration.MMS_URL+"/polling"; // MMS Server
-				URL obj = new URL(url);
-				String data;
-				if (svcMRN != null){
-					data = (clientPort + ":" + clientModel + ":" + svcMRN); //To do: add geographical info, channel info, etc. 
-				} else {
-					data = (clientPort + ":" + clientModel + ":");
+				String url = "http://"+MMSConfiguration.MMS_URL;
+			
+				if (pollingMethod == null || pollingMethod.equals("normal")) {
+					url = url+"/polling"; // Polling request to MMS server.				
 				}
+				else if (pollingMethod.equals("long")) {
+					url = url+"/long-polling"; // Long polling request to MMS server.					
+				}
+				URL obj = new URL(url);
+				String data = contents.toString(); 
+				
 				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 				
 				//add request header
@@ -177,9 +240,11 @@ class MMSPollHandler {
 					JSONArray jsonArr = new JSONArray();
 					JSONParser jsonPars = new JSONParser();
 					jsonArr = (JSONArray) jsonPars.parse(response.toString());
-					for (int i = 0 ; i < jsonArr.size() ; i++) {
+					//System.out.println("response string"+response.toString());
+					for (int i = 0 ; i < jsonArr.size() ; i++) {						
 						resList.add(URLDecoder.decode(jsonArr.get(i).toString(), "UTF-8"));
 					}
+					
 				}
 
 				inB.close();

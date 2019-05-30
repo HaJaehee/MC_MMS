@@ -8,6 +8,7 @@
 	</classpathentry>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
 		<attributes>
+			<attribute name="test" value="true"/>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
@@ -31,10 +32,9 @@
 	<classpathentry kind="lib" path="External Jars/amqp-client-5.3.0.jar"/>
 	<classpathentry kind="lib" path="External Jars/netty-all-4.1.25.Final.jar"/>
 	<classpathentry kind="lib" path="External Jars/netty-all-4.1.25.Final-sources.jar"/>
-	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="External Jars/pkilib-1.4.jar"/>
+	<classpathentry kind="lib" path="External Jars/commons-cli-1.4.jar"/>
+
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
+

@@ -1,28 +1,4 @@
 package kr.ac.kaist.mms_server;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.Security;
-import java.security.UnrecoverableKeyException;
-
-/* -------------------------------------------------------- */
-/** 
-File name : SecureMMSServer.java
-	It is executable class of MMS Secure Server.
-Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-Creation Date : 2017-03-20
-Version : 0.4.0
-
-Rev. history : 2017-06-19
-Version : 0.5.7
-	Applied LogBack framework in order to log events
-Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-*/
-/* -------------------------------------------------------- */
-
 /*
  * Copyright 2012 The Netty Project
  *
@@ -38,8 +14,39 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+/* -------------------------------------------------------- */
+/** 
+File name : SecureMMSServer.java
+	It is executable class of MMS Secure Server.
+Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2017-03-20
+Version : 0.4.0
+
+Rev. history : 2017-06-19
+Version : 0.5.7
+	Applied LogBack framework in order to log events
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+*/
+/* -------------------------------------------------------- */
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Security;
+import java.security.UnrecoverableKeyException;
+
+
+
+
 
 import java.security.cert.CertificateException;
+import java.util.Scanner;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -127,27 +134,26 @@ public final class SecureMMSServer extends Thread {
 	             .channel(NioServerSocketChannel.class)
 	             .handler(new LoggingHandler(LogLevel.INFO))
 	             .childHandler(new SecureMMSServerInitializer(sslCtx));
-	            logger.error("Ready for 0.0.0.0:" + MMSConfiguration.HTTPS_PORT);
-	            b.bind(MMSConfiguration.HTTPS_PORT).sync().channel().closeFuture().sync();
+	            logger.error("Ready for 0.0.0.0:" + MMSConfiguration.getHttpsPort());
+	            b.bind(MMSConfiguration.getHttpsPort()).sync().channel().closeFuture().sync();
 	        } catch (InterruptedException e) {
-	        	logger.error(e.getMessage()+".");
+	        	MMSLog mmsLog = MMSLog.getInstance();
+				mmsLog.errorException(logger, "", "", e, 10);
+				
 			} finally {
 	            bossGroup.shutdownGracefully();
 	            workerGroup.shutdownGracefully();
 	        }
 			
-		} catch (CertificateException e) {
-			logger.error(e.getMessage()+".");
-		} catch (SSLException e1) {
-			logger.error(e1.getMessage()+".");
-		} catch (UnrecoverableKeyException e1) {
-			logger.error(e1.getMessage()+".");
-		} catch (KeyStoreException e1) {
-			logger.error(e1.getMessage()+".");
-		} catch (NoSuchAlgorithmException e1) {
-			logger.error(e1.getMessage()+".");
-		} catch (IOException e1) {
-			logger.error(e1.getMessage()+".");
-		}
+		} 
+        catch (CertificateException | UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException | IOException e) {
+        	MMSLog mmsLog = MMSLog.getInstance();
+			mmsLog.errorException(logger, "", "", e, 10);
+			
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
+			System.exit(10);
+		} 
+
     }
 }

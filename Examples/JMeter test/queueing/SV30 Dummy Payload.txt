@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SV30_Route:DataSet xmlns:SV30_Route="http://www.iho.int/SV30_Route/gml/1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:gml="http://www.opengis.net/gml/3.2"
+	xmlns:S100="http://www.iho.int/s100gml/1.0"
+	xmlns:xlink="http://www.w3.org/1999/xlink" gml:id="SV30_Route,1.2">
+	<gml:boundedBy>
+		<gml:Envelope srsName="EPSG:4326">
+			<gml:lowerCorner>34.871900 127.686667</gml:lowerCorner>
+			<gml:upperCorner>34.944830 127.765900</gml:upperCorner>
+		</gml:Envelope>
+	</gml:boundedBy>
+	<DatasetIdentificationInformation>
+		<S100:encodingSpecification>S-100</S100:encodingSpecification>
+		<S100:encodingSpecificationEdition>1.2</S100:encodingSpecificationEdition>
+		<S100:productIdentifier>S-100</S100:productIdentifier>
+		<S100:productEdition>SV30</S100:productEdition>
+		<S100:applicationProfile>e-Navi</S100:applicationProfile>
+		<S100:datasetFileIdentifier>e-Navi</S100:datasetFileIdentifier>
+		<S100:datasetTitle>Sample dataset for SV30</S100:datasetTitle>
+		<S100:datasetReferenceDate>2017-11-13</S100:datasetReferenceDate>
+		<S100:datasetLanguage>en</S100:datasetLanguage>
+		<S100:datasetAbstract>e-Navi</S100:datasetAbstract>
+		<S100:datasetTopicCategory>e-Navi</S100:datasetTopicCategory>
+	</DatasetIdentificationInformation>
+	<imember>
+		<SV30_Route:RouteInfo gml:id="IM.0001">
+			<issueDate>20171013T120000</issueDate>
+			<vvd>001E</vvd>
+			<destinationDtg>34.000000</destinationDtg>
+			<destinationTtg>060000</destinationTtg>
+			<eta>20171013T180000</eta>
+		</SV30_Route:RouteInfo>
+	</imember>
+	<imember>
+		<SV30_Route:ShipSpec gml:id="IM.0002">
+			<shipName>Test Vessel</shipName>
+			<shipId>1</shipId>
+			<mmsi>123123123</mmsi>
+			<imoNo>1234567</imoNo>
+			<callSign>A2C4E</callSign>
+			<netTonnage>4700.000000</netTonnage>
+			<grossTonnage>8400.000000</grossTonnage>
+			<length>120.000000</length>
+			<breadth>30.000000</breadth>
+			<depth>10.000000</depth>
+			<vsslTp>test</vsslTp>
+			<hullTp>test</hullTp>
+			<shipSvrType>Routine</shipSvrType>
+			<inOutPortType>OuterPort</inOutPortType>
+			<buildDate>20071013T110000</buildDate>
+			<ownerNationality>S.Korea</ownerNationality>
+			<owner>e-Nav</owner>
+			<shipOperator>e-Nav</shipOperator>
+			<operatorFlag>S.Korea</operatorFlag>
+			<previousCallsign>1B3D5</previousCallsign>
+			<vesselFlag>S.Korea</vesselFlag>
+			<mainEngHp>6500.000000</mainEngHp>
+			<regstPort>Busan</regstPort>
+		</SV30_Route:ShipSpec>
+	</imember>
+	<imember>
+		<SV30_Route:ShipCondi gml:id="IM.0003">
+			<displacement>5300.000000</displacement>
+			<draftFwd>4.500000</draftFwd>
+			<draftAft>6.200000</draftAft>
+		</SV30_Route:ShipCondi>
+	</imember>
+	<member>
+		<SV30_Route:Route gml:id="M.0001">
+			<routeService gml:id="a.0001" xlink:href="#M.0002" xlink:role="use"/>
+			<routeService gml:id="a.0005" xlink:href="#M.0004" xlink:role="use"/>
+			<routeService gml:id="a.0009" xlink:href="#M.0006" xlink:role="use"/>
+			<routeService gml:id="a.0013" xlink:href="#M.0008" xlink:role="use"/>
+			<routeService gml:id="a.0017" xlink:href="#M.0010" xlink:role="use"/>
+			<routeService gml:id="a.0021" xlink:href="#M.0012" xlink:role="use"/>
+			<routeAdditionalInformation gml:id="a.0023" xlink:href="#IM.0001" xlink:role="role"/>
+			<shipInformation gml:id="a.0024" xlink:href="#IM.0002" xlink:role="role"/>
+			<shipInformation gml:id="a.0025" xlink:href="#IM.0003" xlink:role="role"/>
+			<startLat>34.912550</startLat>
+			<startLong>127.686667</startLong>
+			<endLat>34.871900</endLat>
+			<endLong>127.765900</endLong>
+			<waypointCount>6</waypointCount>
+			<routeType>SafeRoute</routeType>
+		</SV30_Route:Route>
+	</member>
+	<member>
+		<SV30_Route:Waypoint gml:id="M.0002">
+			<routeService gml:id="a.0002" xlink:href="#M.0001" xlink:role="usedby"/>
+			<routeLine gml:id="a.0003" xlink:href="#M.0003" xlink:role="consistsOf"/>
+			<waypointNo>0</waypointNo>
+			<nextWpDtg>1.200000</nextWpDtg>
+			<nextWpTtg>011200</nextWpTtg>
+			<wpCategory>Start</wpCategory>
+			<geometry>
+				<S100:pointProperty>
+					<S100:Point gml:id="PT.0001">
+						<gml:pos>34.912550 127.686667</gml:pos>
+					</S100:Point>
+				</S100:pointProperty>
+			</geometry>
+		</SV30_Route:Waypoint>
+	</member>
+	<member>
+		<SV30_Route:Leg gml:id="M.0003">
+			<routeLine gml:id="a.0004" xlink:href="#M.0002" xlink:role="consists"/>
+			<plannedCourse>109</plannedCourse>
+			<plannedSpeed>4.000000</plannedSpeed>
+			<geometry>
+				<S100:curveProperty>
+					<S100:Curve gml:id="C.0001">
+						<gml:segments>
+							<gml:LineStringSegment>
+								<gml:posList>34.912550 127.686667 34.944830 127.716050</gml:posList>
+							</gml:LineStringSegment>
+						</gml:segments>
+					</S100:Curve>
+				</S100:curveProperty>
+			</geometry>
+		</SV30_Route:Leg>
+	</member>
+	<member>
+		<SV30_Route:Waypoint gml:id="M.0004">
+			<routeService gml:id="a.0006" xlink:href="#M.0001" xlink:role="usedby"/>
+			<routeLine gml:id="a.0007" xlink:href="#M.0005" xlink:role="consistsOf"/>
+			<waypointNo>1</waypointNo>
+			<nextWpDtg>2.300000</nextWpDtg>
+			<nextWpTtg>021800</nextWpTtg>
+			<wpCategory>Waypoint</wpCategory>
+			<geometry>
+				<S100:pointProperty>
+					<S100:Point gml:id="PT.0002">
+						<gml:pos>34.944830 127.716050</gml:pos>
+					</S100:Point>
+				</S100:pointProperty>
+			</geometry>
+		</SV30_Route:Waypoint>
+	</member>
+	<member>
+		<SV30_Route:Leg gml:id="M.0005">
+			<routeLine gml:id="a.0008" xlink:href="#M.0004" xlink:role="consists"/>
+			<plannedCourse>103</plannedCourse>
+			<plannedSpeed>5.000000</plannedSpeed>
+			<geometry>
+				<S100:curveProperty>
+					<S100:Curve gml:id="C.0002">
+						<gml:segments>
+							<gml:LineStringSegment>
+								<gml:posList>34.944830 127.716050 34.898467 127.742533</gml:posList>
+							</gml:LineStringSegment>
+						</gml:segments>
+					</S100:Curve>
+				</S100:curveProperty>
+			</geometry>
+		</SV30_Route:Leg>
+	</member>
+	<member>
+		<SV30_Route:Waypoint gml:id="M.0006">
+			<routeService gml:id="a.0010" xlink:href="#M.0001" xlink:role="usedby"/>
+			<routeLine gml:id="a.0011" xlink:href="#M.0007" xlink:role="consistsOf"/>
+			<waypointNo>2</waypointNo>
+			<nextWpDtg>3.400000</nextWpDtg>
+			<nextWpTtg>032400</nextWpTtg>
+			<wpCategory>Waypoint</wpCategory>
+			<geometry>
+				<S100:pointProperty>
+					<S100:Point gml:id="PT.0003">
+						<gml:pos>34.898467 127.742533</gml:pos>
+					</S100:Point>
+				</S100:pointProperty>
+			</geometry>
+		</SV30_Route:Waypoint>
+	</member>
+	<member>
+		<SV30_Route:Leg gml:id="M.0007">
+			<routeLine gml:id="a.0012" xlink:href="#M.0006" xlink:role="consists"/>
+			<plannedCourse>139</plannedCourse>
+			<plannedSpeed>4.000000</plannedSpeed>
+			<geometry>
+				<S100:curveProperty>
+					<S100:Curve gml:id="C.0003">
+						<gml:segments>
+							<gml:LineStringSegment>
+								<gml:posList>34.898467 127.742533 34.889083 127.753525</gml:posList>
+							</gml:LineStringSegment>
+						</gml:segments>
+					</S100:Curve>
+				</S100:curveProperty>
+			</geometry>
+		</SV30_Route:Leg>
+	</member>
+	<member>
+		<SV30_Route:Waypoint gml:id="M.0008">
+			<routeService gml:id="a.0014" xlink:href="#M.0001" xlink:role="usedby"/>
+			<routeLine gml:id="a.0015" xlink:href="#M.0009" xlink:role="consistsOf"/>
+			<waypointNo>3</waypointNo>
+			<nextWpDtg>4.500000</nextWpDtg>
+			<nextWpTtg>043000</nextWpTtg>
+			<wpCategory>Waypoint</wpCategory>
+			<geometry>
+				<S100:pointProperty>
+					<S100:Point gml:id="PT.0004">
+						<gml:pos>34.889083 127.753525</gml:pos>
+					</S100:Point>
+				</S100:pointProperty>
+			</geometry>
+		</SV30_Route:Waypoint>
+	</member>
+	<member>
+		<SV30_Route:Leg gml:id="M.0009">
+			<routeLine gml:id="a.0016" xlink:href="#M.0008" xlink:role="consists"/>
+			<plannedCourse>163</plannedCourse>
+			<plannedSpeed>5.000000</plannedSpeed>
+			<geometry>
+				<S100:curveProperty>
+					<S100:Curve gml:id="C.0004">
+						<gml:segments>
+							<gml:LineStringSegment>
+								<gml:posList>34.889083 127.753525 34.877983 127.757833</gml:posList>
+							</gml:LineStringSegment>
+						</gml:segments>
+					</S100:Curve>
+				</S100:curveProperty>
+			</geometry>
+		</SV30_Route:Leg>
+	</member>
+	<member>
+		<SV30_Route:Waypoint gml:id="M.0010">
+			<routeService gml:id="a.0018" xlink:href="#M.0001" xlink:role="usedby"/>
+			<routeLine gml:id="a.0019" xlink:href="#M.0011" xlink:role="consistsOf"/>
+			<waypointNo>4</waypointNo>
+			<nextWpDtg>5.600000</nextWpDtg>
+			<nextWpTtg>053600</nextWpTtg>
+			<wpCategory>Waypoint</wpCategory>
+			<geometry>
+				<S100:pointProperty>
+					<S100:Point gml:id="PT.0005">
+						<gml:pos>34.877983 127.757833</gml:pos>
+					</S100:Point>
+				</S100:pointProperty>
+			</geometry>
+		</SV30_Route:Waypoint>
+	</member>
+	<member>
+		<SV30_Route:Leg gml:id="M.0011">
+			<routeLine gml:id="a.0020" xlink:href="#M.0010" xlink:role="consists"/>
+			<plannedCourse>129</plannedCourse>
+			<plannedSpeed>4.000000</plannedSpeed>
+			<geometry>
+				<S100:curveProperty>
+					<S100:Curve gml:id="C.0005">
+						<gml:segments>
+							<gml:LineStringSegment>
+								<gml:posList>34.877983 127.757833 34.871900 127.765900</gml:posList>
+							</gml:LineStringSegment>
+						</gml:segments>
+					</S100:Curve>
+				</S100:curveProperty>
+			</geometry>
+		</SV30_Route:Leg>
+	</member>
+	<member>
+		<SV30_Route:Waypoint gml:id="M.0012">
+			<routeService gml:id="a.0022" xlink:href="#M.0001" xlink:role="usedby"/>
+			<waypointNo>0</waypointNo>
+			<nextWpDtg>0.000000</nextWpDtg>
+			<nextWpTtg>000000</nextWpTtg>
+			<wpCategory>End</wpCategory>
+			<geometry>
+				<S100:pointProperty>
+					<S100:Point gml:id="PT.0006">
+						<gml:pos>34.871900 127.765900</gml:pos>
+					</S100:Point>
+				</S100:pointProperty>
+			</geometry>
+		</SV30_Route:Waypoint>
+	</member>
+</SV30_Route:DataSet>

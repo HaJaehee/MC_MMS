@@ -1,10 +1,4 @@
 package kr.ac.kaist.mns_interaction;
-
-import java.text.ParseException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /* -------------------------------------------------------- */
 /** 
 File name : MNSInteractionHandler.java
@@ -27,8 +21,42 @@ Rev. history : 2017-09-26
 Version : 0.6.0
 	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-27
+Version : 0.7.2
+	Added geocasting features which cast message to circle or polygon area.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-10-15
+Version : 0.8.0
+	Resolved MAVEN dependency problems with library "net.etri.pkilib".
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
+
+
+import java.text.ParseException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.MMSLog;
+import kr.ac.kaist.mms_server.MMSLogForDebug;
+
 
 public class MNSInteractionHandler {
 	
@@ -37,6 +65,8 @@ public class MNSInteractionHandler {
 	private LocatorUpdater locatorUpdater = null;
 	private MRNInformationQuerier MRNInfoQuerier = null;
 	private MIH_MessageOutputChannel messageOutput = null;
+	private MMSLog mmsLog = null;
+	private MMSLogForDebug mmsLogForDebug = null;
 	
 	public MNSInteractionHandler(String sessionId) {
 		this.SESSION_ID = sessionId;
@@ -48,6 +78,8 @@ public class MNSInteractionHandler {
 		MRNInfoQuerier = new MRNInformationQuerier();
 		locatorUpdater = new LocatorUpdater(this.SESSION_ID);
 		messageOutput = new MIH_MessageOutputChannel(this.SESSION_ID);
+		mmsLog = MMSLog.getInstance();
+		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 	
 	public String requestIPtoMRN(String ipAddress){
@@ -58,23 +90,32 @@ public class MNSInteractionHandler {
 	}
 	
 
-	public String requestDstInfo(String srcMRN, float geoLat, float geoLong, float geoRadius) {
-		String msg = MRNInfoQuerier.buildQuery("geocasting", srcMRN, geoLat, geoLong, geoRadius);
+
+	public String requestDstInfo(String srcMRN, String dstMRN, float geoLat, float geoLong, float geoRadius) {
+		String msg = MRNInfoQuerier.buildQuery("geocasting_circle", srcMRN, dstMRN, geoLat, geoLong, geoRadius);
 		return messageOutput.sendToMNS(msg);
 	}
+	
+	public String requestDstInfo(String srcMRN, String dstMRN, float[] geoLat, float[] geoLong) {
+		String msg = MRNInfoQuerier.buildQuery("geocasting_polygon", srcMRN, dstMRN, geoLat, geoLong);
+		return messageOutput.sendToMNS(msg);
+	}
+	
 	public String requestDstInfo(String srcMRN, String dstMRN, String srcIP){
 		String msg = MRNInfoQuerier.buildQuery("unicasting", srcMRN, dstMRN, srcIP);
 		return messageOutput.sendToMNS(msg);
 	}
 	
 	@Deprecated
-	public String updateClientInfo(String srcMRN, String srcIP, int srcPort, String srcModel){
-		String msg = locatorUpdater.buildUpdate(srcMRN, srcIP, srcPort, srcModel);
+
+	public String updateClientInfo(String srcMRN, String srcIP){
+		String msg = locatorUpdater.buildUpdate(srcMRN, srcIP);
+		mmsLog.debug(logger, this.SESSION_ID, "Update client information.");
 		return messageOutput.sendToMNS(msg);
 	}
 
 	@Deprecated
-	public String registerClientInfo (String srcMRN, String srcIP, int srcPort, String srcModel){
-		return updateClientInfo(srcMRN, srcIP, srcPort, srcModel);
+	public String registerClientInfo (String srcMRN, String srcIP){
+		return updateClientInfo(srcMRN, srcIP);
 	}
 }

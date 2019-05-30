@@ -48,10 +48,37 @@ Rev. history : 2018-06-26
 Version : 0.7.1
 	Moved jobs, related to the casting feature, from MessageRelayingHandler to MessageCastingHandler.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+
+Rev. history : 2018-07-03
+Version : 0.7.2
+	Added handling input messages by FIFO scheduling.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-07-27
+Version : 0.7.2
+	Added geocasting features which cast message to circle or polygon area.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.
+	Removed locator registering function.
+	Duplicated polling request is not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-04-18
+Version : 0.8.2
+	Add asynchronous version of unicast.
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
+
+import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel.ConnectionThread;
+
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
@@ -93,8 +120,14 @@ public class MessageCastingHandler {
 		return processDstInfo (mih.requestDstInfo (srcMRN, dstMRN, srcIP));
 	}
 	
-	public String queryMNSForDstInfo (String srcMRN, float geoLat, float geoLong, float geoRadius) throws ParseException{
-		return processDstInfo (mih.requestDstInfo (srcMRN, geoLat, geoLong, geoRadius));
+
+	public String queryMNSForDstInfo (String srcMRN, String dstMRN, float geoLat, float geoLong, float geoRadius) throws ParseException{
+		return processDstInfo (mih.requestDstInfo (srcMRN, dstMRN, geoLat, geoLong, geoRadius));
+	}
+	
+	public String queryMNSForDstInfo (String srcMRN, String dstMRN, float[] geoLat, float[] geoLong) throws ParseException{
+		return processDstInfo (mih.requestDstInfo (srcMRN, dstMRN, geoLat, geoLong));
+
 	}
 	
 	public String processDstInfo (String dstInfo) throws ParseException{
@@ -115,6 +148,7 @@ public class MessageCastingHandler {
 		}
 		return dstInfo;
 		
+
 	}
 	
 	public byte[] castMsgsToMultipleCS (String srcMRN, String[] dstMRNs, String content) {
@@ -123,30 +157,62 @@ public class MessageCastingHandler {
 			srh.putSCMessage(srcMRN, dstMRNs[i], content);
 		}
 		return "OK".getBytes(Charset.forName("UTF-8"));
+
 	}
-	
-	public byte[] unicast (MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String dstIP, int dstPort, String protocol, HttpMethod httpMethod) {
+	public byte[] unicast (MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String dstIP, int dstPort, String protocol, HttpMethod httpMethod, String srcMRN, String dstMRN) {
 		
 		byte[] message = null;
 		try {
     		if (protocol.equals("http")) {
-			    message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod);
-			    logger.info("SessionID="+this.SESSION_ID+" HTTP.");
+    			message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+			    logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTP.");
     		} 
     		else if (protocol.equals("https")) { 
-    			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod);
-    			logger.info("SessionID="+this.SESSION_ID+" HTTPS.");
+    			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTPS.");
     		} 
     		else {
     			logger.info("SessionID="+this.SESSION_ID+" No protocol.");
     		}
 		} 
     	catch (IOException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+    		logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
 		}
 		
 		return message;
 	}
+	
+	public ConnectionThread asynchronizedUnicast(MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String dstIP, int dstPort, String protocol, HttpMethod httpMethod, String srcMRN, String dstMRN) {
+		ConnectionThread thread = null;
+		try {
+    		if (protocol.equals("http")) {
+    			thread = outputChannel.asynchronizeSendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    			thread.start();
+    			
+    			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTP.");
+    		} 
+    		else if (protocol.equals("https")) { 
+    			thread = outputChannel.asynchronizeSendSecureMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    			thread.start();
+    			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTPS.");
+    		} 
+    		else {
+    			logger.info("SessionID="+this.SESSION_ID+" No protocol.");
+    		}
+    		
+		} 
+    	catch (IOException e) {
+    		logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
+			}
+		}
+		return thread;
+	}
+	
 	
 	public byte[] geocast (MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String srcMRN, JSONArray geoDstInfo, String protocol, HttpMethod httpMethod) {
 		
@@ -155,27 +221,36 @@ public class MessageCastingHandler {
 			while (iter.hasNext()) {
 				JSONObject obj = (JSONObject) iter.next(); 
 				String connType = (String) obj.get("connType");
-				if (connType.equals("polling")) {
-					//TODO: implement here
+				//TODO: MUST implement exception handling. 
+				if (connType == null) {
+					String exc = (String) obj.get("exception");
+					if (exc != null) {
+						logger.warn("SessionID="+this.SESSION_ID+" "+"MNS query exception occured=\""+exc+"\".");
+						return null;
+					}
+				}
+				
+				else if (connType.equals("polling")) {
+					
 					String dstMRNInGeoDstInfo = (String) obj.get("dstMRN");
 					String netTypeInGeoDstInfo = (String) obj.get("netType");
 					srh.putSCMessage(srcMRN, dstMRNInGeoDstInfo, req.content().toString(Charset.forName("UTF-8")).trim());
 		    		
 				}
 				else if (connType.equals("push")) {
-					//TODO: implement here
+					
 		        	try {
 		        		String dstMRNInGeoDstInfo = (String) obj.get("dstMRN");
 		        		String dstIPInGeoDstInfo = (String) obj.get("IPAddr");
 		        		int dstPortInGeoDstInfo = Integer.parseInt((String) obj.get("portNum"));
 		        		
 		        		if (protocol.equals("http")) {
-						    outputChannel.sendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod);
-						    logger.info("SessionID="+this.SESSION_ID+" HTTP.");
+						    outputChannel.sendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
+						    logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTP.");
 		        		} 
 		        		else if (protocol.equals("https")) { 
-		        			outputChannel.secureSendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod);
-		        			logger.info("SessionID="+this.SESSION_ID+" HTTPS.");
+		        			outputChannel.secureSendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
+		        			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTPS.");
 		        		} 
 		        		else {
 		        			
@@ -183,17 +258,19 @@ public class MessageCastingHandler {
 		        		}
 					} 
 		        	catch (IOException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+		        		logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
+		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
+		    			}
 					}
 				}
+				
+				
 			}
 			return "OK".getBytes(Charset.forName("UTF-8"));
 		}
 		return null;
 	}
 	
-	@Deprecated
-	public String registerClientInfo (String srcMRN, String srcIP, int srcPort, String srcModel){
-		return mih.registerClientInfo (srcMRN, srcIP, srcPort, srcModel);
-	}
+	
 }

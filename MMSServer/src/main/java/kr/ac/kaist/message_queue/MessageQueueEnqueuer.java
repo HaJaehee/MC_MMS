@@ -58,7 +58,29 @@ Rev. history : 2017-10-25
 Version : 0.6.0
 	Added MMSLogForDebug features.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-08-05
+Version : 0.8.0
+	Change ip address of rabbitmq from "localhost" to "rabbitmq-db".
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
+
+Rev. history : 2018-10-05
+Version : 0.8.0
+	Change the host of rabbit mq from "rabbitmq-db" to "MMSConfiguration.getRabbitMqHost()".
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-06
+Version : 0.9.0
+	Added Rabbit MQ port number, username and password into ConnectionFactory.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
+
 /* -------------------------------------------------------- */
 
 class MessageQueueEnqueuer {
@@ -81,21 +103,20 @@ class MessageQueueEnqueuer {
 		String queueName = dstMRN+"::"+srcMRN;
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 		 
-		 if(MMSConfiguration.WEB_LOG_PROVIDING) {
-			 String log = "SessionID="+SESSION_ID+" Enqueue="+queueName+".";
-			 mmsLog.addBriefLogForStatus(log);
-			 mmsLogForDebug.addLog(this.SESSION_ID, log);
-		 }
-		 if(!logger.isTraceEnabled()) {
-			 logger.debug("SessionID="+this.SESSION_ID+" Enqueue="+queueName+".");
+		
+		 if(logger.isTraceEnabled()) {
+			mmsLog.trace(logger, this.SESSION_ID, "Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(message));
 		 }
 		 else {
-			 logger.trace("SessionID="+this.SESSION_ID+" Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(message));
+			 mmsLog.debug(logger, this.SESSION_ID, "Enqueue="+queueName+".");
 		 }
 		
 		try {
 			ConnectionFactory factory = new ConnectionFactory();
-			factory.setHost("localhost");
+			factory.setHost(MMSConfiguration.getRabbitMqHost());
+			factory.setPort(MMSConfiguration.getRabbitMqPort());
+			factory.setUsername(MMSConfiguration.getRabbitMqUser());
+			factory.setPassword(MMSConfiguration.getRabbitMqPasswd());
 			Connection connection = factory.newConnection();
 			Channel channel;
 			
@@ -105,10 +126,13 @@ class MessageQueueEnqueuer {
 			channel.basicPublish("", queueName, null, message.getBytes());
 			channel.close();
 			connection.close();
-		} catch (IOException e) {
-			logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-		} catch (TimeoutException e) {
-			logger.error("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+		} 
+		catch (IOException e) {
+			mmsLog.errorException(logger, SESSION_ID, "", e, 5);
+			
+		} 
+		catch (TimeoutException e) {
+			mmsLog.errorException(logger, SESSION_ID, "", e, 5);
 		}
 	}
 }

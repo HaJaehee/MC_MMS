@@ -60,11 +60,62 @@ Version : 0.7.1
 	Updated AMQP client to version 5.3.0.
 	Revised long polling mechanism.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+
+Rev. history : 2018-06-25
+Version : 0.7.2
+	Fixed closing channel connection problem.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2018-08-05
+Version : 0.8.0
+	Change ip address of rabbitmq from "localhost" to "rabbitmq-db.
+Modifier : Jaehyun Park (jae519@kaist.ac.kr)
+
+Rev. history : 2018-10-05
+Version : 0.8.0
+	Change the host of rabbit mq from "rabbitmq-db" to "MMSConfiguration.getRabbitMqHost()".
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+
+Rev. history : 2019-05-06
+Version : 0.9.0
+	Added Rabbit MQ port number, username and password into ConnectionFactory.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-10
+Version : 0.9.0
+	Duplicated polling requests are not allowed.
+Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
+
+Rev. history : 2019-05-10
+Version : 0.9.1
+	Added function which drops duplicate polling request for normal polling.
+Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
+
+Rev. history : 2019-05-23
+Version : 0.9.1
+	Fixed a problem where rabbitmq connection was not terminated even when client disconnected by using context-channel attribute.
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.LinkedList;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -81,13 +132,15 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.GetResponse;
 import io.netty.channel.ChannelHandlerContext;
+import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.mms_server.Base64Coder;
+import kr.ac.kaist.mms_server.ChannelTerminateListener;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
-import kr.ac.kaist.seamless_roaming.PollingMethodRegDummy;
+import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 
 
@@ -95,14 +148,16 @@ class MessageQueueDequeuer extends Thread{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueDequeuer.class);
 	private String SESSION_ID = "";
-	
+	private String DUPLICATE_ID="";
 	private String queueName = null;
 	private String srcMRN = null;
 	private String svcMRN = null;
+	private String pollingMethod = "normal";
 	private MRH_MessageOutputChannel outputChannel = null;
 	private ChannelHandlerContext ctx = null;
 	private Channel channel = null;
 	private Connection connection = null;
+	
 	
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
@@ -113,14 +168,17 @@ class MessageQueueDequeuer extends Thread{
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 	
-	void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN) {
+	void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN, String pollingMethod) {
 		
 		this.queueName = srcMRN+"::"+svcMRN;
 		this.srcMRN = srcMRN;
 		this.svcMRN = svcMRN;
 		this.outputChannel = outputChannel;
 		this.ctx = ctx;
-		
+
+		this.pollingMethod = pollingMethod;
+		this.DUPLICATE_ID = srcMRN+svcMRN;		
+
 		this.start();
 
 	
@@ -131,14 +189,36 @@ class MessageQueueDequeuer extends Thread{
 	
 	@Override
 	public void run() {
-		
+
+		// TODO: Youngjin Kim must inspect this following code.
+
 		super.run();
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 	    try {
 			ConnectionFactory factory = new ConnectionFactory();
-			factory.setHost("localhost");
+			factory.setHost(MMSConfiguration.getRabbitMqHost());
+			factory.setPort(MMSConfiguration.getRabbitMqPort());
+			factory.setUsername(MMSConfiguration.getRabbitMqUser());
+			factory.setPassword(MMSConfiguration.getRabbitMqPasswd());
 			connection = factory.newConnection();
 			channel = connection.createChannel();
+			ctx.channel().attr(MRH_MessageInputChannel.TERMINATOR).get().add(new ChannelTerminateListener() {
+				
+				@Override
+				public void terminate(ChannelHandlerContext ctx) {
+					// TODO Auto-generated method stub
+					try {
+						
+						if(channel != null && channel.isOpen()) {
+							channel.close();
+						}
+					} catch (IOException | TimeoutException e) {
+						mmsLog.warnException(logger, SESSION_ID, "Channel closing is failed.", e, 5);
+				    	
+					} 
+				}
+			});
+			
 			channel.queueDeclare(queueName, true, false, false, null);
 			
 			GetResponse res = null;
@@ -162,36 +242,91 @@ class MessageQueueDequeuer extends Thread{
 			if (msgCount > 0) { //If the queue has a message
 				message.append("]");
 				
-				if(MMSConfiguration.WEB_LOG_PROVIDING) {
-					String log = "SessionID="+this.SESSION_ID+" Dequeue="+queueName+".";
-					mmsLog.addBriefLogForStatus(log);
-					mmsLogForDebug.addLog(this.SESSION_ID, log);
-				}
-				logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
+				mmsLog.debug(logger, this.SESSION_ID, "Dequeue="+queueName+".");
 		  
-		    	if (SessionManager.sessionInfo.get(this.SESSION_ID) != null) {
-		    		SessionManager.sessionInfo.remove(this.SESSION_ID);
+		    	if (SessionManager.getSessionInfo().get(this.SESSION_ID) != null) {
+		    		SessionManager.getSessionInfo().remove(this.SESSION_ID);
 		    	}
-
+		    	if(SeamlessRoamingHandler.getDuplicateInfo().get(DUPLICATE_ID)!=null) {
+		    		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
+		    	}
 			    outputChannel.replyToSender(ctx, message.toString().getBytes());
 			} 
 			else { //If the queue does not have any message, message count == 0
 				message.setLength(0);
-				if (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null
-						 || PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING) {
-					if(MMSConfiguration.WEB_LOG_PROVIDING) {
-						String log = "SessionID="+this.SESSION_ID+" Empty queue="+queueName+".";
-						mmsLog.addBriefLogForStatus(log);
-						mmsLogForDebug.addLog(this.SESSION_ID, log);
-					}
-					logger.debug("SessionID="+this.SESSION_ID+" Empty queue="+queueName+".");
-			    	if (SessionManager.sessionInfo.get(this.SESSION_ID) != null) {
-			    		SessionManager.sessionInfo.remove(this.SESSION_ID);
+				if (pollingMethod.equals("normal") ) {//If polling method is normal polling
+					mmsLog.debug(logger, this.SESSION_ID, "Empty queue="+queueName+".");
+
+			    	if (SessionManager.getSessionInfo().get(this.SESSION_ID) != null) {
+			    		SessionManager.getSessionInfo().remove(this.SESSION_ID);
 			    	}
 
+			    	if(SeamlessRoamingHandler.getDuplicateInfo().get(DUPLICATE_ID)!=null) {
+			    		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
+			    	}
 				    outputChannel.replyToSender(ctx, message.toString().getBytes());
 				}
-				else { //If polling method of service having svcMRN is long polling
+				
+				else if (pollingMethod.equals("long")){ //If polling method is long polling
+					//Enroll a delivery listener to the queue channel in order to get a message from the queue.
+					mmsLog.debug(logger, this.SESSION_ID, "Client is waiting the message queue="+queueName+".");
+					
+					//TODO: Even though a polling client disconnects long polling session, this DefaultConsumer holds a channel.
+					//When a polling client disconnects long polling session, this DefaultConsumer have to free the channel. 
+					Consumer consumer = new DefaultConsumer(channel) {
+						 @Override
+						  public void handleDelivery(String consumerTag, Envelope envelope,
+						                             AMQP.BasicProperties properties, byte[] body)
+						      throws IOException {
+						    String dqMessage = new String(body, "UTF-8");
+						    if(!ctx.isRemoved()){
+								message.append("[\""+URLEncoder.encode(dqMessage,"UTF-8")+"\"]");
+								
+								mmsLog.debug(logger, SESSION_ID, "Dequeue="+queueName+".");
+
+						    	if (SessionManager.getSessionInfo().get(SESSION_ID) != null) {
+						    		SessionManager.getSessionInfo().remove(SESSION_ID);
+						    	}
+						    	
+						    	if(SeamlessRoamingHandler.getDuplicateInfo().get(DUPLICATE_ID)!=null) {
+						    		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
+						    	}
+						    	
+							    outputChannel.replyToSender(ctx, message.toString().getBytes());
+								channel.basicAck(envelope.getDeliveryTag(), false);
+							} else {
+								mmsLog.debug(logger, SESSION_ID, "Dequeue="+queueName+".");
+								mmsLog.warn(logger, SESSION_ID, srcMRN+" is disconnected. Re-enqueue the messages.");
+
+								channel.basicNack(envelope.getDeliveryTag(), false, true);
+							}
+						    
+						    this.getChannel().basicCancel(this.getConsumerTag());
+						    try {
+						    	if (this.getChannel() != null) {
+						    		this.getChannel().close();
+						    	}
+						    	if (connection != null) {
+						    		connection.close();
+						    	}
+							} catch (TimeoutException e) {
+								mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+							}
+
+						  }
+					};
+					channel.basicConsume(queueName, false, consumer);
+	
+					
+					//Enroll a  to the queue channel in order to get a message from the queue.
+					//However, it does not block exactly this thread.
+				}
+				
+				
+				//QueueingConsumer is deprecated from amqp-client-5.3.0.jar.
+				/*
+				 else { //If polling method of service having svcMRN is long polling
+				 
 					//Enroll a delivery listener to the queue channel in order to get a message from the queue.
 					if(MMSConfiguration.WEB_LOG_PROVIDING) {
 						String log = "SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".";
@@ -344,35 +479,31 @@ class MessageQueueDequeuer extends Thread{
 			//It do not block this thread.
 			
 		} 
-	    catch (IOException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+
+	    catch (IOException | TimeoutException | ConsumerCancelledException e) {
+	    	mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+
 		} 
-	    catch (TimeoutException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-		} 
-//	    catch (ShutdownSignalException e) {
-//			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-//		} 
-	    catch (ConsumerCancelledException e) {
-			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-		} 
-//	    catch (InterruptedException e) {
-//			logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
-//		} 
+
 	    finally {
-	    	if ((PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == null) || (PollingMethodRegDummy.pollingMethodReg.get(svcMRN) != null && PollingMethodRegDummy.pollingMethodReg.get(svcMRN) == PollingMethodRegDummy.NORMAL_POLLING)) { // Default polling method: normal polling
+	    	if (pollingMethod.equals("normal")) { // Polling method: normal polling
+
 	    		if (channel != null) {
 		    		try {
 						channel.close();
 					} catch (IOException | TimeoutException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+
+						mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+
 					}
 		    	}
 				if (connection != null) {
 					try {
 						connection.close();
 					} catch (IOException e) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+e.getMessage()+".");
+
+						mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+
 					}
 				}
 	    	}
