@@ -54,7 +54,7 @@ Before building MMS Server, specify configuration files in [MMSServer/MMS-config
 <code>sudo sh deploy-mms.sh [domain name]</code><br/>
 It will automatically build and run MMS Server, MMS Monitoring Module and related services.<br/>
 
-<b>ONLY BUILD AND START MMS:</b> run the scripts at the directory [MMSServer/Linux/].<br/>
+<b>ONLY BUILD AND START MMS SERVER:</b> run the scripts at the directory [MMSServer/Linux/].<br/>
 <code>cd MMSServer/Linux </code><br/>
 <code>sudo sh build_mms.sh </code><br/>
 <code>sudo sh start_mms.sh </code><br/>
