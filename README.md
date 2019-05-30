@@ -63,7 +63,7 @@ It will automatically build and run MMS Server, MMS Monitoring Module and relate
 ### After accomplishment
 In order to use email service, please reconfigure the WP Mail SMTP Plugin of WordPress admin panel.<br/>
 We recommend to use Google SSMTP service.<br/>
-Default admin account of MMS Monitoring Module (WordPress wp-login.php) is Administrator/wins2-champion.<br/>
+Default admin account of MMS Monitoring Module (WordPress wp-login.php) is Administrator/Administrator.<br/>
 
 <b>TLS SUPPORT:</b> check web sites below:</br>
 [RabbitMQ TLS Support](https://www.rabbitmq.com/ssl.html)  <br/>
