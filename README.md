@@ -1,7 +1,3 @@
-## Caution!
-## This branch is currently under development.
-## Can be corrected without notice.
-
 # MC_MMS
 Beta Version 0.9.1 <br/>
 2019.05.29 <br/>
