@@ -15,7 +15,7 @@ fi
 newdomain=$1
 
 while true; do
-	read -p "Do you wish to install this program? Please read it carefully. Port number 3306 will be mapped to mariadb container's port number and port numbers 80, 443, 25, 465 and 587 will be mapped to mms monitoring container's port numbers. If you want to remap port numbers, please modify 'docker-compose.yml' before executing this setup script. In addition, existing WordPress files and database will be overwritten after this setup. If you want not to overwrite WordPress files and database, just execute docker-compose with docker-compose.yml. Do you agree with it? [y/n]" yn
+	read -p "Do you wish to install this program? Please read it carefully. Port number 3306 will be mapped to mariadb container's port number and port numbers 80 and 443 will be mapped to mms monitoring container's port numbers. If you want to remap port numbers, please modify 'docker-compose.yml' before executing this setup script. In addition, existing WordPress files and database will be overwritten after this setup. If you want not to overwrite WordPress files and database, just execute docker-compose with docker-compose.yml. Do you agree with it? [y/n]" yn
 	echo ""
 	case $yn in
 		[Yy]* )
@@ -63,12 +63,13 @@ while true; do
 		sudo echo $MY_WEB
 		echo "Replace database contents."
 		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '192.168.0.104' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
-		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace 'mms.smartnav.org' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
-		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '192.168.202.193' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
-		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '143.248.55.83' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
-		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '143.248.57.144' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
-		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace 'mms-kaist.com' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
 		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '123vlqkr@gmail.com' 'postmaster@$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
+		#sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace 'mms.smartnav.org' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
+		#sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '192.168.202.193' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
+		#sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '143.248.55.83' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
+		#sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '143.248.57.144' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
+		#sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace 'mms-kaist.com' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
+		
 		sleep 3
 		
 		echo "Install rabbitmq-server."
