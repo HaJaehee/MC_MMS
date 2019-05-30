@@ -78,7 +78,8 @@ while true; do
 		systemctl start rabbitmq-server
 		systemctl enable rabbitmq-server
 
-		read -p "It will build MMS server. Before building MMS server, specify configuration files in [MMSServer/MMS-configuration] directory."
+		read -p "It will build MMS server. Before building MMS server, specify configuration files in [MMSServer/MMS-configuration] directory. [y]" y
+		echo ""
 
 		echo "Build MMS server."
 		cd ../MMSServer/Linux
