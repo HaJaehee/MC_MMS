@@ -358,7 +358,7 @@ public class MessageRelayingHandler  {
 				mmsLogForDebug.addMrn(dstMRN);
 				mmsLogForDebug.addSessionId(dstMRN, this.SESSION_ID);
 			}
-			
+			//This code MUST be 'if' statement not 'else if'. 
 			if (type != MessageTypeDecider.msgType.REALTIME_LOG) {
 				if (seqNum != -1) {
 					String log = "In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+", seqNum="+seqNum+".";
@@ -374,7 +374,7 @@ public class MessageRelayingHandler  {
 				}
 			}
 			
-			//Below code MUST be 'if' statement not 'else if'. 
+			//This code MUST be 'if' statement not 'else if'. 
 			if (type == MessageTypeDecider.msgType.REST_API) {
 				
 				QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
@@ -384,7 +384,7 @@ public class MessageRelayingHandler  {
 	    		mmsLog.info(logger, this.SESSION_ID, "Respond to a REST API request.");
 			}
 			
-			
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 				
 				//System.out.println("SessionID="+this.SESSION_ID+" RELAYING_TO_SERVER_SEQUENTIALLY INIT");
@@ -474,13 +474,16 @@ public class MessageRelayingHandler  {
 			else if (type == MessageTypeDecider.msgType.NULL_MRN) {
 				message = ErrorCode.NULL_MRN.getUTF8Bytes();
 			}
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.NULL_SRC_MRN) {
 				message = ErrorCode.NULL_SRC_MRN.getUTF8Bytes();
 			}
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.NULL_DST_MRN) {
 				message = ErrorCode.NULL_DST_MRN.getUTF8Bytes();
 			}
 			// TODO: Youngjin Kim must inspect this following code.
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) {
 				//parser.parseSvcMRNAndHexSign(req);
 				
@@ -572,10 +575,12 @@ public class MessageRelayingHandler  {
 				
 				return;
 			} 
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC) {
 				srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
 	    		message = "OK".getBytes(Charset.forName("UTF-8"));
 			} 
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_MULTIPLE_SC){
 				String [] dstMRNs = parser.getMultiDstMRN();
 				
@@ -653,15 +658,18 @@ public class MessageRelayingHandler  {
 				// TODO 이 위치에 진입하면 message가 null로 설정됩니다. 적당한 할당 필요 by using Error Code 
 				// 위에 꺼를 방지하기 위해 이 위치에서 thread도 널이고, message도 널이면 message에 적당한 에러 코드를 삽입하면 좋을듯
 			}
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
 				thread = mch.asynchronizedUnicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN);
 			}
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.GEOCASTING_CIRCLE || type == MessageTypeDecider.msgType.GEOCASTING_POLYGON) {
 				
 				JSONArray geoDstInfo = parser.getGeoDstInfo();
 				message = mch.geocast(outputChannel, req, srcMRN, geoDstInfo, protocol, httpMethod);
 				
 			}
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.STATUS){
 	    		String status;
 	    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
@@ -702,6 +710,7 @@ public class MessageRelayingHandler  {
 					}
 	    		}
 			}
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.REALTIME_LOG){
 	    		String realtimeLog = "";
 	    		String callback = "";
@@ -719,6 +728,7 @@ public class MessageRelayingHandler  {
 	    		// TODO : 위에 wrong_parameter 에 관련된 코드가 있는데 message를 한번 덮어씌워버리네요?
 				message = (callback+"("+realtimeLog+")").getBytes(Charset.forName("UTF-8"));
 			}
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.ADD_ID_IN_REALTIME_LOG_IDS) {
 				
 	    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
@@ -733,6 +743,7 @@ public class MessageRelayingHandler  {
 					message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 	    		}
 			}
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.REMOVE_ID_IN_REALTIME_LOG_IDS) {
 	    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 	    		Map<String,List<String>> params = qsd.parameters();
@@ -746,6 +757,7 @@ public class MessageRelayingHandler  {
 	    			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 	    		}
 			}
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.ADD_MRN_BEING_DEBUGGED) {
 	    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 	    		Map<String,List<String>> params = qsd.parameters();
@@ -760,6 +772,7 @@ public class MessageRelayingHandler  {
 	    			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 	    		}
 			}
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.REMOVE_MRN_BEING_DEBUGGED) {
 	    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 	    		Map<String,List<String>> params = qsd.parameters();
@@ -775,6 +788,7 @@ public class MessageRelayingHandler  {
 	    		}
 			}
 			// TODO this condition has to be deprecated.
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.REMOVE_MNS_ENTRY) {
 	    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 	    		Map<String,List<String>> params = qsd.parameters();
@@ -801,6 +815,7 @@ public class MessageRelayingHandler  {
 				}
 			} 
 			// TODO this condition has to be deprecated.
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.ADD_MNS_ENTRY) {
 				QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 				Map<String,List<String>> params = qsd.parameters();
@@ -827,13 +842,15 @@ public class MessageRelayingHandler  {
 				}
 			}
 
-			
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.DST_MRN_IS_THIS_MMS_MRN) {
 				message = "Hello, MMS!".getBytes();
 			}
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.SRC_MRN_IS_THIS_MMS_MRN) {
 				message = "You are not me.".getBytes();
 			}
+			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.UNKNOWN_MRN) {
 				message = ErrorCode.UNKNOWN_MRN.getBytes();
 				//logger.info("test "+message);
@@ -856,7 +873,7 @@ public class MessageRelayingHandler  {
 					outputChannel.replyToSender(ctx, message, isRealtimeLog);
 				}
 			}
-			
+			//This code MUST be 'if' statement not 'else if'. 
 			if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 				String srcMRN = parser.getSrcMRN();
 				String dstMRN = parser.getDstMRN();
@@ -878,6 +895,7 @@ public class MessageRelayingHandler  {
 			
 			//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
 			//In this version 0.8.0, polling client verification is optional. 
+			//This code MUST be 'if' statement not 'else if'. 
 			if ((type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) && parser.getHexSignedData() != null && !isClientVerified) {
 				byte[] msg = null;
 				if (parser.getSvcMRN() == null) {
