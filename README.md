@@ -70,7 +70,7 @@ Default admin account of MMS Monitoring Module (WordPress wp-login.php) is Admin
 [Docker Tutorial](https://www.tutorialspoint.com/docker/)<br/>
 [Apache Install SSL Certificate](https://www.digicert.com/csr-ssl-installation/apache-openssl.htm)<br/>
 [HTTPS for WordPress](https://make.wordpress.org/support/user-manual/web-publishing/https-for-wordpress/) <br/>
-<b>MMS Server TLS SUPPORT:</b> check instructions below:<br/>
+<b>MMS SERVER TLS SUPPORT:</b> check instructions below:<br/>
 [Import Individual Certificates into your Keystore](https://www.attachmate.com/documentation/gateway-1-1/gateway-admin-guide/data/fxg_keytool_importcert.htm)<br/>
 In order to get Base64 endcoded keystore for SSL enabled MMS Server from the jks, use [MMSKeystoreCoder] <br/>
 and get Base64 encoded string that is printed out to the console. <br/>
