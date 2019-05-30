@@ -3,8 +3,8 @@
 ## Can be corrected without notice.
 
 # MC_MMS
-Beta Version 0.9.1 <br/>
-2019.05.29 <br/>
+Beta Version 0.9.2 <br/>
+2019.05.30 <br/>
 
 # Web Site
 https://www.mms-kaist.com <br/>
