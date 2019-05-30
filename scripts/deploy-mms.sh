@@ -68,6 +68,7 @@ while true; do
 		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '143.248.55.83' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
 		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '143.248.57.144' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
 		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace 'mms-kaist.com' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
+		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '123vlqkr@gmail.com' 'postmaster@$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
 		sleep 3
 		
 		echo "Install rabbitmq-server."
@@ -78,7 +79,7 @@ while true; do
 		systemctl start rabbitmq-server
 		systemctl enable rabbitmq-server
 
-		read -p "It will build MMS server. Before building MMS server, specify configuration files in [MMSServer/MMS-configuration] directory. [y]" y
+		read -p "It will build MMS server. Before building MMS server, specify configuration files in [MMSServer/MMS-configuration] directory. [ok]" enter
 		echo ""
 
 		echo "Build MMS server."
