@@ -40,8 +40,8 @@ while true; do
 		echo "Docker pull."
 		export MY_WEB=$1
 		sudo echo $MY_WEB
-		sudo docker pull lovesm135/mcp_mms_monitoring_mariadb:0.8.2
-		sudo docker pull lovesm135/mcp_mms_monitoring:0.8.2
+		sudo docker pull lovesm135/mcp_mms_monitoring_mariadb:0.9.1
+		sudo docker pull lovesm135/mcp_mms_monitoring:0.9.1
 		#sudo docker pull lovesm135/mcp_mms_monitoring_rabbitmq:0.7
 
 		sleep 2
@@ -63,12 +63,6 @@ while true; do
 		sudo echo $MY_WEB
 		echo "Replace database contents."
 		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '192.168.0.104' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
-		sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '123vlqkr@gmail.com' 'postmaster@$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
-		#sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace 'mms.smartnav.org' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
-		#sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '192.168.202.193' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
-		#sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '143.248.55.83' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
-		#sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace '143.248.57.144' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
-		#sudo docker exec -it mcp_mms_monitoring bash -c "php /etc/wp-cli/wp-cli.phar search-replace 'mms-kaist.com' '$MY_WEB' --skip-columns=guid --allow-root --path=/var/www/html/"
 		
 		sleep 3
 		
@@ -79,6 +73,7 @@ while true; do
 		echo "Start rabbitmq-server."
 		systemctl start rabbitmq-server
 		systemctl enable rabbitmq-server
+		rabbitmq-plugins enable rabbitmq_management		
 
 		read -p "It will build MMS server. Before building MMS server, specify configuration files in [MMSServer/MMS-configuration] directory. [ok]" enter
 		echo ""
