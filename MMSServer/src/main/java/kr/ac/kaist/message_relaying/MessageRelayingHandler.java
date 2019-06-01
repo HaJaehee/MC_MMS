@@ -208,6 +208,11 @@ Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-01
+Version : 0.9.2
+	Revised log levels.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -1024,10 +1029,10 @@ public class MessageRelayingHandler  {
 
 
 	  } catch (UnknownHostException e) {
-		  mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+		  mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 		  
 	  } catch (IOException e) {
-		  mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+		  mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 		  
 	  } finally {
 		  if (pw != null) {
@@ -1037,21 +1042,21 @@ public class MessageRelayingHandler  {
 			  try {
 				  isr.close();
 			  } catch (IOException e) {
-				  mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+				  mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 			  }
 		  }
 		  if (br != null) {
 			  try {
 				  br.close();
 			  } catch (IOException e) {
-				  mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+				  mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 			  }
 		  }
 		  if (MNSSocket != null) {
 			  try {
 				  MNSSocket.close();
 			  } catch (IOException e) {
-				  mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+				  mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 			  }
 		  }
 	  }
@@ -1097,10 +1102,10 @@ public class MessageRelayingHandler  {
 		  mmsLog.trace(logger, this.SESSION_ID, "From server=" + queryReply+".");
 
 	  } catch (UnknownHostException e) {
-		  mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+		  mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 		 
 	  } catch (IOException e) {
-		  mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+		  mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 		  
 	  } finally {
 		  if (pw != null) {
@@ -1110,21 +1115,21 @@ public class MessageRelayingHandler  {
 			  try {
 				  isr.close();
 			  } catch (IOException e) {
-				  mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+				  mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 			  }
 		  }
 		  if (br != null) {
 			  try {
 				  br.close();
 			  } catch (IOException e) {
-				  mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+				  mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 			  }
 		  }
 		  if (MNSSocket != null) {
 			  try {
 				  MNSSocket.close();
 			  } catch (IOException e) {
-				  mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+				  mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 			  }
 		  }
 	  }

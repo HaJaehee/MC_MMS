@@ -108,6 +108,11 @@ Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-01
+Version : 0.9.2
+	Let Rabbit MQ Channels share the one Rabbit MQ Connection.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -154,7 +159,7 @@ class MessageQueueDequeuer extends Thread{
 	private MRH_MessageOutputChannel outputChannel = null;
 	private ChannelHandlerContext ctx = null;
 	private Channel channel = null;
-	private Connection connection = null;
+	private static Connection connection = null;
 	
 	
 	private MMSLog mmsLog = null;
@@ -190,12 +195,14 @@ class MessageQueueDequeuer extends Thread{
 		super.run();
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 	    try {
-			ConnectionFactory factory = new ConnectionFactory();
-			factory.setHost(MMSConfiguration.getRabbitMqHost());
-			factory.setPort(MMSConfiguration.getRabbitMqPort());
-			factory.setUsername(MMSConfiguration.getRabbitMqUser());
-			factory.setPassword(MMSConfiguration.getRabbitMqPasswd());
-			connection = factory.newConnection();
+	    	if (connection == null || !connection.isOpen()) {
+				ConnectionFactory factory = new ConnectionFactory();
+				factory.setHost(MMSConfiguration.getRabbitMqHost());
+				factory.setPort(MMSConfiguration.getRabbitMqPort());
+				factory.setUsername(MMSConfiguration.getRabbitMqUser());
+				factory.setPassword(MMSConfiguration.getRabbitMqPasswd());
+				connection = factory.newConnection();
+			}
 			channel = connection.createChannel();
 			ctx.channel().attr(MRH_MessageInputChannel.TERMINATOR).get().add(new ChannelTerminateListener() {
 				
@@ -301,9 +308,9 @@ class MessageQueueDequeuer extends Thread{
 						    	if (this.getChannel() != null) {
 						    		this.getChannel().close();
 						    	}
-						    	if (connection != null) {
+						    	/*if (connection != null) {
 						    		connection.close();
-						    	}
+						    	}*/
 							} catch (TimeoutException e) {
 								mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 							}
@@ -418,13 +425,13 @@ class MessageQueueDequeuer extends Thread{
 						mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 					}
 		    	}
-				if (connection != null) {
+				/*if (connection != null) {
 					try {
 						connection.close();
 					} catch (IOException e) {
 						mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 					}
-				}
+				}*/
 	    	}
 		}
 		

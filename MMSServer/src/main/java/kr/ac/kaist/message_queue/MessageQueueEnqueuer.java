@@ -79,6 +79,11 @@ Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-01
+Version : 0.9.2
+	Let Rabbit MQ Channels share the one Rabbit MQ Connection.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 
 /* -------------------------------------------------------- */
@@ -90,11 +95,14 @@ class MessageQueueEnqueuer {
 	
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
+	private static Connection connection = null;
+	private Channel channel = null;
 	
 	MessageQueueEnqueuer (String sessionId) {
 		this.SESSION_ID = sessionId;
 		mmsLog = MMSLog.getInstance();
 		mmsLogForDebug = MMSLogForDebug.getInstance();
+		
 	}
 	
 	
@@ -112,27 +120,38 @@ class MessageQueueEnqueuer {
 		 }
 		
 		try {
-			ConnectionFactory factory = new ConnectionFactory();
-			factory.setHost(MMSConfiguration.getRabbitMqHost());
-			factory.setPort(MMSConfiguration.getRabbitMqPort());
-			factory.setUsername(MMSConfiguration.getRabbitMqUser());
-			factory.setPassword(MMSConfiguration.getRabbitMqPasswd());
-			Connection connection = factory.newConnection();
-			Channel channel;
+			if (connection == null || !connection.isOpen()) {
+				ConnectionFactory factory = new ConnectionFactory();
+				factory.setHost(MMSConfiguration.getRabbitMqHost());
+				factory.setPort(MMSConfiguration.getRabbitMqPort());
+				factory.setUsername(MMSConfiguration.getRabbitMqUser());
+				factory.setPassword(MMSConfiguration.getRabbitMqPasswd());
+				connection = factory.newConnection();
+			}
 			
 			channel = connection.createChannel();
 			channel.queueDeclare(queueName, true, false, false, null);
 			
 			channel.basicPublish("", queueName, null, message.getBytes());
 			channel.close();
-			connection.close();
+			//connection.close();
+			
 		} 
 		catch (IOException e) {
-			mmsLog.errorException(logger, SESSION_ID, "", e, 5);
+			mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 			
 		} 
 		catch (TimeoutException e) {
-			mmsLog.errorException(logger, SESSION_ID, "", e, 5);
+			mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+		}
+		finally {
+    		if (channel != null) {
+	    		try {
+					channel.close();
+				} catch (IOException | TimeoutException e) {
+					mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+				}
+	    	}
 		}
 	}
 }
