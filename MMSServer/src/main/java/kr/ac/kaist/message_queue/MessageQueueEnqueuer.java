@@ -2,6 +2,7 @@ package kr.ac.kaist.message_queue;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -84,6 +85,11 @@ Rev. history : 2019-06-01
 Version : 0.9.2
 	Let Rabbit MQ Channels share the one Rabbit MQ Connection.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-03
+Version : 0.9.2
+	Created Rabbit MQ Connection pool.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 
 /* -------------------------------------------------------- */
@@ -95,7 +101,8 @@ class MessageQueueEnqueuer {
 	
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
-	private static Connection connection = null;
+	private static  ArrayList<Connection> connectionPool = null;
+	private static ConnectionFactory connFac = null;
 	private Channel channel = null;
 	
 	MessageQueueEnqueuer (String sessionId) {
@@ -120,16 +127,26 @@ class MessageQueueEnqueuer {
 		 }
 		
 		try {
-			if (connection == null || !connection.isOpen()) {
-				ConnectionFactory factory = new ConnectionFactory();
-				factory.setHost(MMSConfiguration.getRabbitMqHost());
-				factory.setPort(MMSConfiguration.getRabbitMqPort());
-				factory.setUsername(MMSConfiguration.getRabbitMqUser());
-				factory.setPassword(MMSConfiguration.getRabbitMqPasswd());
-				connection = factory.newConnection();
+			if (connFac == null) {
+				connFac = new ConnectionFactory();
+				connFac.setHost(MMSConfiguration.getRabbitMqHost());
+				connFac.setPort(MMSConfiguration.getRabbitMqPort());
+				connFac.setUsername(MMSConfiguration.getRabbitMqUser());
+				connFac.setPassword(MMSConfiguration.getRabbitMqPasswd());
+			}
+			if (connectionPool == null) {
+				connectionPool = new ArrayList<Connection>();
+				for (int i = 0 ; i < 10000 ; i++) {
+					connectionPool.add(null);
+				}
 			}
 			
-			channel = connection.createChannel();
+			int connId = (int) (Long.decode("0x"+this.SESSION_ID) % 10000);
+			if (connectionPool.get(connId) == null || !connectionPool.get(connId).isOpen()) {
+				connectionPool.set(connId, connFac.newConnection());
+			}
+			
+			channel = connectionPool.get(connId).createChannel();
 			channel.queueDeclare(queueName, true, false, false, null);
 			
 			channel.basicPublish("", queueName, null, message.getBytes());
