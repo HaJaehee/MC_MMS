@@ -111,6 +111,11 @@ Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-07
+Version : 0.9.2
+	Made logs neat.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -183,7 +188,25 @@ public class MMSLog {
 			if (MMSConfiguration.getMnsHost().equals("localhost") || MMSConfiguration.getMnsHost().equals("127.0.0.1")) {
 				status.append("<strong>Maritime Name System Dummy:</strong><br/>");
 				status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
+				status.append("<style>" + 
+						"  table {" + 
+						"    width: 100%;" + 
+						"    border: 1px solid #444444;" + 
+						"    border-collapse: collapse;" + 
+						"  }" + 
+						"  th, td {" + 
+						"    border: 1px solid #444444;" + 
+						"  }" + 
+						"</style>");
+				status.append("<table>");
+				status.append("<tr>"
+						+ "<td ><b>MRN</b></td>"
+						+ "<td style='width:160px'><b>IP address</b></td>"
+						+ "<td style='width:120px'><b>Port number</b></td>"
+						+ "<td style='width:60px'><b>Model</b></td>"
+						+ "</tr>");
 				status.append(dumpMNS());
+				status.append("</table>");
 			}
 			else {
 				status.append("<strong>Maritime Name System:</strong><br/>");
@@ -242,16 +265,37 @@ public class MMSLog {
 			status.append("<br/>");
 			
 			status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.getMaxBriefLogListSize()+"):</strong><br/>");
+			status.append("<style>" + 
+					"  table {" + 
+					"    width: 100%;" + 
+					"    border: 1px solid #444444;" + 
+					"    border-collapse: collapse;" + 
+					"  }" + 
+					"  th, td {" + 
+					"    border: 1px solid #444444;" + 
+					"  }" + 
+					"</style>");
+			status.append("<table>");
+			status.append("<tr>"
+					+ "<td style='width:40px'><b>Date&nbsp;</b></td>"
+					+ "<td style='width:80px'><b>HH:mm:ss&nbsp;</b></td>"
+					+ "<td style='width:60px'><b>Level</b></td>"
+					+ "<td style='width:80px'><b>Session ID</b></td>"
+					+ "<td><b>Log</b></td>"
+					+ "</tr>");
 			for (String log : briefLogForStatus) {
-				status.append(log+"<br/>");
+				status.append("<tr>"+log+"</tr>");
 			}
+			status.append("</table>");
 		} 
 		else {
 			
 			status.append("<strong>MMS Brief Log for MRN="+mrn+"<br/>(Maximum session count:"+mmsLogForDebug.getMaxSessionCount()+"):</strong><br/>");
 			String log = mmsLogForDebug.getLog(mrn);
 			if (log != null) {
+				status.append("<table>");
 				status.append(log);
+				status.append("</table>");
 			}
 			else {
 				status.append("Invalid MRN being debugged.<br/>");
@@ -409,12 +453,25 @@ public class MMSLog {
 		
 		if (MMSConfiguration.isWebLogProviding()) {
 			StringBuilder sb = new StringBuilder();
-			SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm:ss");
+			sb.append("<td>");
+			SimpleDateFormat sdf = new SimpleDateFormat("M/dd");
 			sb.append(sdf.format(new Date()));
-			sb.append(" ");
+			sb.append("</td><td>");
+			sdf = new SimpleDateFormat("HH:mm:ss");
+			sb.append(sdf.format(new Date()));
+			sb.append("</td><td>");
 			sb.append(logLevel);
-			sb.append(" ");
+			sb.append("</td><td>");
+			sb.append(SessionId);
+			sb.append("</td><td>");
+			if (!Character.isWhitespace(log.charAt(0))) {
+				sb.append(" ");
+			}
 			sb.append(log);
+			if (!log.endsWith(".")) {
+				sb.append(".");
+			}
+			sb.append("</td>");
 			String newLog = sb.toString();
 			
 			addBriefLogForStatus(newLog);
@@ -425,35 +482,35 @@ public class MMSLog {
 	public void trace (Logger logger, String SessionId, String log) {
 		if (logger.isTraceEnabled()) {
 			String newLog = makeLog(SessionId, log);
-			addWebLog(SessionId, newLog, "TRACE");
+			addWebLog(SessionId, log, "TRACE");
 			logger.trace(newLog);
 		}
 	}
 	public void debug (Logger logger, String SessionId, String log) {
 		if (logger.isDebugEnabled()) {
 			String newLog = makeLog(SessionId, log);
-			addWebLog(SessionId, newLog, "DEBUG");
+			addWebLog(SessionId, log, "DEBUG");
 			logger.debug(newLog);
 		}
 	}
 	public void info (Logger logger, String SessionId, String log) {
 		if (logger.isInfoEnabled()) {
 			String newLog = makeLog(SessionId, log);
-			addWebLog(SessionId, newLog, "INFO");
+			addWebLog(SessionId, log, "INFO");
 			logger.info(newLog);
 		}
 	}
 	public void warn (Logger logger, String SessionId, String log) {
 		if (logger.isWarnEnabled()) {
 			String newLog = makeLog(SessionId, log);
-			addWebLog(SessionId, newLog, "WARN");
+			addWebLog(SessionId, log, "WARN");
 			logger.warn(newLog);
 		}
 	}
 	public void error (Logger logger, String SessionId, String log) {
 		if (logger.isErrorEnabled()) {
 			String newLog = makeLog(SessionId, log);
-			addWebLog(SessionId, newLog, "ERROR");
+			addWebLog(SessionId, log, "ERROR");
 			logger.error(newLog);
 		}
 	}

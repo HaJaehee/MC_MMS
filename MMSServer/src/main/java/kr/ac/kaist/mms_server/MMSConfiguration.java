@@ -104,6 +104,11 @@ Rev. history: 2019-05-29
 Version : 0.9.1
 	Added MMS configuration querying api.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-07
+Version : 0.9.2
+	Made logs neat.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 import java.io.File;
@@ -734,7 +739,7 @@ public class MMSConfiguration {
 			alertAndSetMmsConf("MAX_CONTENT_SIZE",MAX_CONTENT_SIZE+"bytes");
 			alertAndSetMmsConf("WAITING_MESSAGE_TIMEOUT",WAITING_MESSAGE_TIMEOUT+"ms");
 			if (HTTPS_ENABLED[1]) {
-				alertAndSetMmsConf("KEYSTORE",KEYSTORE.substring(0, 100)+"......");
+				alertAndSetMmsConf("KEYSTORE",KEYSTORE.substring(0, 50)+"......");
 			}
 			
 		}
