@@ -34,14 +34,14 @@ while true; do
 
 
 		echo "Web server pre-setting."
-		sudo tar -xf mcp_mms_monitoring_html.tar
+		sudo tar -xzf mcp_mms_monitoring_html.tar
 		sudo sed -i 's/mms\.smartnav\.org/'$newdomain'/g' ./var/www/mcp_mms_monitoring/html/wp-config.php 
 
 		echo "Docker pull."
 		export MY_WEB=$1
 		sudo echo $MY_WEB
-		sudo docker pull lovesm135/mcp_mms_monitoring_mariadb:0.9.1
-		sudo docker pull lovesm135/mcp_mms_monitoring:0.9.1
+		sudo docker pull lovesm135/mcp_mms_monitoring_mariadb:0.9.2
+		sudo docker pull lovesm135/mcp_mms_monitoring:0.9.2
 		#sudo docker pull lovesm135/mcp_mms_monitoring_rabbitmq:0.7
 
 		sleep 2
