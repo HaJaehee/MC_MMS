@@ -398,7 +398,7 @@ public class MMSLog {
 				if (briefRealtimeLogEachIDs.get(key).size() > MMSConfiguration.getMaxBriefLogListSize()) {
 					briefRealtimeLogEachIDs.get(key).remove(0);
 				}
-				briefRealtimeLogEachIDs.get(key).add("<tr>"+arg+"</tr>");
+				briefRealtimeLogEachIDs.get(key).add(arg);
 			}
 		}
 	}
