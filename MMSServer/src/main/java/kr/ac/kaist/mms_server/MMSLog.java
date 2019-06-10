@@ -308,12 +308,10 @@ public class MMSLog {
 		if (briefRealtimeLogEachIDs.get(id)!=null) {
 			ArrayList<String> logs = (ArrayList<String>) briefRealtimeLogEachIDs.get(id);
 			try {
-				realtimeLog.append(URLEncoder.encode(briefLogTableStyle+"<table>"+briefLogTableMeta,"UTF-8"));
 				while (!logs.isEmpty()) {
 					realtimeLog.append(URLEncoder.encode(logs.get(0),"UTF-8"));
 					logs.remove(0);
 				}
-				realtimeLog.append(URLEncoder.encode("</table>","UTF-8"));
 			}
 			catch (UnsupportedEncodingException e) {
 				this.warnException(logger, sessionId, "URL encoding is failed.", e, 5);
