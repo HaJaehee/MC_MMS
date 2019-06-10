@@ -308,7 +308,7 @@ public class MMSLog {
 		if (briefRealtimeLogEachIDs.get(id)!=null) {
 			ArrayList<String> logs = (ArrayList<String>) briefRealtimeLogEachIDs.get(id);
 			try {
-				realtimeLog.append("\""+URLEncoder.encode(briefLogTableStyle+"<table>"+briefLogTableMeta,"UTF-8")+"\"");
+				realtimeLog.append("\""+URLEncoder.encode(briefLogTableStyle+"<table>"+briefLogTableMeta,"UTF-8")+"\",");
 				while (!logs.isEmpty()) {
 					realtimeLog.append("\""+URLEncoder.encode(logs.get(0),"UTF-8")+"\",");
 					logs.remove(0);
