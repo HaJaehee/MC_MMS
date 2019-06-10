@@ -202,7 +202,7 @@ public class MessageParser {
 		
 		String o = req.headers().get("seqNum");
 		if (o != null) {
-			//seqNum must be positive and lower than MAXIMUM VALUE of double. seqNum must be checked.
+			//seqNum must be positive and lower than MAXIMUM VALUE of long. seqNum must be checked.
 			seqNum = Long.parseLong(o);
 			new BigInteger(o);
 			if (seqNum < 0) {

@@ -116,6 +116,11 @@ Rev. history : 2019-06-07
 Version : 0.9.2
 	Made logs neat.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-10
+Version : 0.9.2
+	Made logs neat (cont'd).
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -160,7 +165,24 @@ public class MMSLog {
 	private ArrayList<String> briefLogForStatus = new ArrayList<String>();
 	private Map<String,List<String>> briefRealtimeLogEachIDs = new HashMap<String,List<String>>();
 	private MMSLogForDebug mmsLogForDebug = null;
-
+	
+	public static final String briefLogTableStyle = "<style>" + 
+			"  table {" + 
+			"    width: 100%;" + 
+			"    border: 1px solid #444444;" + 
+			"    border-collapse: collapse;" + 
+			"  }" + 
+			"  th, td {" + 
+			"    border: 1px solid #444444;" + 
+			"  }" + 
+			"</style>";
+	public static final String briefLogTableMeta = "<tr>" + 
+			"<td style='width:40px'><b>Date&nbsp;</b></td>" +
+			"<td style='width:80px'><b>HH:mm:ss&nbsp;</b></td>" +
+			"<td style='width:60px'><b>Level</b></td>" +
+			"<td style='width:80px'><b>Session ID</b></td>" +
+			"<td><b>Log</b></td>" +
+			"</tr>";
 
 	
 	private MMSLog() {
@@ -188,16 +210,7 @@ public class MMSLog {
 			if (MMSConfiguration.getMnsHost().equals("localhost") || MMSConfiguration.getMnsHost().equals("127.0.0.1")) {
 				status.append("<strong>Maritime Name System Dummy:</strong><br/>");
 				status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
-				status.append("<style>" + 
-						"  table {" + 
-						"    width: 100%;" + 
-						"    border: 1px solid #444444;" + 
-						"    border-collapse: collapse;" + 
-						"  }" + 
-						"  th, td {" + 
-						"    border: 1px solid #444444;" + 
-						"  }" + 
-						"</style>");
+				status.append(briefLogTableStyle);
 				status.append("<table>");
 				status.append("<tr>"
 						+ "<td ><b>MRN</b></td>"
@@ -265,24 +278,9 @@ public class MMSLog {
 			status.append("<br/>");
 			
 			status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.getMaxBriefLogListSize()+"):</strong><br/>");
-			status.append("<style>" + 
-					"  table {" + 
-					"    width: 100%;" + 
-					"    border: 1px solid #444444;" + 
-					"    border-collapse: collapse;" + 
-					"  }" + 
-					"  th, td {" + 
-					"    border: 1px solid #444444;" + 
-					"  }" + 
-					"</style>");
+			status.append(briefLogTableStyle);
 			status.append("<table>");
-			status.append("<tr>"
-					+ "<td style='width:40px'><b>Date&nbsp;</b></td>"
-					+ "<td style='width:80px'><b>HH:mm:ss&nbsp;</b></td>"
-					+ "<td style='width:60px'><b>Level</b></td>"
-					+ "<td style='width:80px'><b>Session ID</b></td>"
-					+ "<td><b>Log</b></td>"
-					+ "</tr>");
+			status.append(briefLogTableMeta);
 			for (String log : briefLogForStatus) {
 				status.append("<tr>"+log+"</tr>");
 			}
@@ -399,7 +397,7 @@ public class MMSLog {
 				if (briefRealtimeLogEachIDs.get(key).size() > MMSConfiguration.getMaxBriefLogListSize()) {
 					briefRealtimeLogEachIDs.get(key).remove(0);
 				}
-				briefRealtimeLogEachIDs.get(key).add(arg);
+				briefRealtimeLogEachIDs.get(key).add("<tr>"+arg+"</tr>");
 			}
 		}
 	}

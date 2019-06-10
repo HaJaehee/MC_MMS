@@ -208,6 +208,11 @@ Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-10
+Version : 0.9.2
+	Made logs neat (cont'd).
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -718,7 +723,10 @@ public class MessageRelayingHandler  {
 	    		Map<String,List<String>> params = qsd.parameters();
 	    		if (params.get("id") != null & params.get("callback") != null) {
 	    			callback = params.get("callback").get(0);
-	    			realtimeLog = mmsLog.getRealtimeLog(params.get("id").get(0));
+	    			realtimeLog = mmsLog.briefLogTableStyle + 
+	    					"<table>" + mmsLog.briefLogTableMeta +
+	    					mmsLog.getRealtimeLog(params.get("id").get(0)) +
+	    					"</table>";
 	    			isRealtimeLog = true;
 	    		}
 	    		else {
