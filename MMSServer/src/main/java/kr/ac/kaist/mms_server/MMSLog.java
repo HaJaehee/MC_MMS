@@ -176,7 +176,7 @@ public class MMSLog {
 			"    border: 1px solid #444444;" + 
 			"  }" + 
 			"</style>";
-	private static final String briefLogTableMeta = "<tr>" + 
+	private static final String briefLogTableHead = "<tr>" + 
 			"<td style='width:40px'><b>Date&nbsp;</b></td>" +
 			"<td style='width:80px'><b>HH:mm:ss&nbsp;</b></td>" +
 			"<td style='width:60px'><b>Level</b></td>" +
@@ -280,7 +280,7 @@ public class MMSLog {
 			status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.getMaxBriefLogListSize()+"):</strong><br/>");
 			status.append(briefLogTableStyle);
 			status.append("<table>");
-			status.append(briefLogTableMeta);
+			status.append(briefLogTableHead);
 			for (String log : briefLogForStatus) {
 				status.append("<tr>"+log+"</tr>");
 			}
