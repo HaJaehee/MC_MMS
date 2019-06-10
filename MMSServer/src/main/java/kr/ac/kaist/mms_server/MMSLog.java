@@ -310,20 +310,21 @@ public class MMSLog {
 	public String getRealtimeLog (String id, String sessionId) {
 		StringBuffer realtimeLog = new StringBuffer();
 		realtimeLog.append("{\"message\":[\"");
-		if (briefRealtimeLogEachIDs.get(id)!=null) {
-			ArrayList<String> logs = (ArrayList<String>) briefRealtimeLogEachIDs.get(id);
-			try {
-				while (!logs.isEmpty()) {
-					realtimeLog.append(URLEncoder.encode(logs.get(0),"UTF-8"));
-					logs.remove(0);
-				}
+		try {
+			if (briefRealtimeLogEachIDs.get(id)!=null) {
+				ArrayList<String> logs = (ArrayList<String>) briefRealtimeLogEachIDs.get(id);
+				
+					while (!logs.isEmpty()) {
+						realtimeLog.append(URLEncoder.encode(logs.get(0),"UTF-8"));
+						logs.remove(0);
+					}
 			}
-			catch (UnsupportedEncodingException e) {
-				this.warnException(logger, sessionId, "URL encoding is failed.", e, 5);
+			else {
+				realtimeLog.append(URLEncoder.encode("<tr><td>"+ErrorCode.NOT_EXIST_REALTIME_LOG_CONSUMER.toString()+"</td></tr>","UTF-8"));
 			}
 		}
-		else {
-			realtimeLog.append(ErrorCode.NOT_EXIST_REALTIME_LOG_CONSUMER.toString());
+		catch (UnsupportedEncodingException e) {
+			this.warnException(logger, sessionId, "URL encoding is failed.", e, 5);
 		}
 	
 		realtimeLog.append("\"]}");
