@@ -166,7 +166,7 @@ public class MMSLog {
 	private Map<String,List<String>> briefRealtimeLogEachIDs = new HashMap<String,List<String>>();
 	private MMSLogForDebug mmsLogForDebug = null;
 	
-	public static final String briefLogTableStyle = "<style>" + 
+	private static final String briefLogTableStyle = "<style>" + 
 			"  table {" + 
 			"    width: 100%;" + 
 			"    border: 1px solid #444444;" + 
@@ -176,7 +176,7 @@ public class MMSLog {
 			"    border: 1px solid #444444;" + 
 			"  }" + 
 			"</style>";
-	public static final String briefLogTableMeta = "<tr>" + 
+	private static final String briefLogTableMeta = "<tr>" + 
 			"<td style='width:40px'><b>Date&nbsp;</b></td>" +
 			"<td style='width:80px'><b>HH:mm:ss&nbsp;</b></td>" +
 			"<td style='width:60px'><b>Level</b></td>" +
@@ -302,26 +302,25 @@ public class MMSLog {
   	
   	return status.toString();
   }
-	public String getRealtimeLog (String id) {
+	public String getRealtimeLog (String id, String sessionId) {
 		StringBuffer realtimeLog = new StringBuffer();
-
 		realtimeLog.append("{\"message\":[");
 		if (briefRealtimeLogEachIDs.get(id)!=null) {
 			ArrayList<String> logs = (ArrayList<String>) briefRealtimeLogEachIDs.get(id);
-			while (!logs.isEmpty()) {
-				try {
+			try {
+				realtimeLog.append("\""+URLEncoder.encode(briefLogTableStyle+"<table>"+briefLogTableMeta,"UTF-8")+"\"");
+				while (!logs.isEmpty()) {
 					realtimeLog.append("\""+URLEncoder.encode(logs.get(0),"UTF-8")+"\",");
-				} catch (UnsupportedEncodingException e) {
-					logger.info(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-	    				logger.info(e.getStackTrace()[i]+".");
-	    			}
+					logs.remove(0);
 				}
-				logs.remove(0);
+				realtimeLog.append("\""+URLEncoder.encode("</table>","UTF-8")+"\"");
+			}
+			catch (UnsupportedEncodingException e) {
+				this.warnException(logger, sessionId, "URL encoding is failed.", e, 5);
 			}
 		}
 		else {
-			realtimeLog.append("\"The ID does not exist in Realtime log service consumer IDs\"");
+			realtimeLog.append("\""+ErrorCode.NOT_EXIST_REALTIME_LOG_CONSUMER.toString()+"\"");
 		}
 	
 		realtimeLog.append("]}");

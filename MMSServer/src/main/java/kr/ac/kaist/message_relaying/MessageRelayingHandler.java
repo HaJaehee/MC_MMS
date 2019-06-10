@@ -717,16 +717,16 @@ public class MessageRelayingHandler  {
 			}
 			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.REALTIME_LOG){
-	    		String realtimeLog = "";
+	    		
+				
+				
+				String realtimeLog = "";
 	    		String callback = "";
 	    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 	    		Map<String,List<String>> params = qsd.parameters();
 	    		if (params.get("id") != null & params.get("callback") != null) {
 	    			callback = params.get("callback").get(0);
-	    			realtimeLog = mmsLog.briefLogTableStyle + 
-	    					"<table>" + mmsLog.briefLogTableMeta +
-	    					mmsLog.getRealtimeLog(params.get("id").get(0)) +
-	    					"</table>";
+	    			realtimeLog = mmsLog.getRealtimeLog(params.get("id").get(0), this.SESSION_ID);
 	    			isRealtimeLog = true;
 	    		}
 	    		else {
