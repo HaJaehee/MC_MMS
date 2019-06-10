@@ -166,23 +166,26 @@ public class MMSLog {
 	private Map<String,List<String>> briefRealtimeLogEachIDs = new HashMap<String,List<String>>();
 	private MMSLogForDebug mmsLogForDebug = null;
 	
-	private static final String briefLogTableStyle = "<style>" + 
-			"  table {" + 
-			"    width: 100%;" + 
-			"    border: 1px solid #444444;" + 
-			"    border-collapse: collapse;" + 
-			"  }" + 
-			"  th, td {" + 
-			"    border: 1px solid #444444;" + 
-			"  }" + 
-			"</style>";
-	private static final String briefLogTableHead = "<tr>" + 
-			"<td style='width:40px'><b>Date&nbsp;</b></td>" +
-			"<td style='width:80px'><b>HH:mm:ss&nbsp;</b></td>" +
-			"<td style='width:60px'><b>Level</b></td>" +
-			"<td style='width:80px'><b>Session ID</b></td>" +
-			"<td><b>Log</b></td>" +
-			"</tr>";
+	private static final String briefLogTableStyle = "<script type='text/javascript' src='https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.js'></script>" +
+	"<script src='https://code.jquery.com/jquery-3.3.1.js'></script>" +
+	"<script src='https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js'></script>" +
+	"<script src='https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js'></script>" +
+	"<script> $(document).ready(function() {" + 
+	"    $('#mns-dummy').DataTable();" + 
+	"    $('#brief-logs').DataTable( {" + 
+	"		\"order\": [[ 1, \"desc\" ]]" + 
+	"    } );" +
+	"} );" +
+	"</script>" +
+	"<link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css'/>" + 
+	"<link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css'/>";
+	private static final String briefLogTableHead = "<thead><tr>" + 
+			"<th><b>Date&nbsp;</b></th>" +
+			"<th><b>HH:mm:ss&nbsp;</b></th>" +
+			"<th><b>Level</b></th>" +
+			"<th><b>Session ID</b></th>" +
+			"<th><b>Log</b></th>" +
+			"</tr></thead>";
 
 	
 	private MMSLog() {
@@ -203,23 +206,24 @@ public class MMSLog {
 		  	
 		
 		StringBuffer status = new StringBuffer();
-		
+		status.append(briefLogTableStyle);
 		if (mrn.equals("")) {
 			
 			
 			if (MMSConfiguration.getMnsHost().equals("localhost") || MMSConfiguration.getMnsHost().equals("127.0.0.1")) {
 				status.append("<strong>Maritime Name System Dummy:</strong><br/>");
-				status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
-				status.append(briefLogTableStyle);
-				status.append("<table>");
-				status.append("<tr>"
-						+ "<td ><b>MRN</b></td>"
-						+ "<td style='width:160px'><b>IP address</b></td>"
-						+ "<td style='width:120px'><b>Port number</b></td>"
-						+ "<td style='width:60px'><b>Model</b></td>"
-						+ "</tr>");
+				status.append("<div style='max-height: 650px; overflow-y: scroll;'>");
+				
+				status.append("<table id='mns-dummy' class='table table-striped table-bordered' style='width:100%'>");
+				status.append("<thead><tr>"
+						+ "<th><b>MRN</b></th>"
+						+ "<th><b>IP address</b></th>"
+						+ "<th><b>Port number</b></th>"
+						+ "<th><b>Model</b></th>"
+						+ "</tr></thead>"
+						+ "<tbody>");
 				status.append(dumpMNS());
-				status.append("</table>");
+				status.append("</tbody></table>");
 			}
 			else {
 				status.append("<strong>Maritime Name System:</strong><br/>");
@@ -278,11 +282,10 @@ public class MMSLog {
 			status.append("<br/>");
 			
 			status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.getMaxBriefLogListSize()+"):</strong><br/>");
-			status.append(briefLogTableStyle);
-			status.append("<table>");
+			status.append("<table id='brief-logs' class='table table-striped table-bordered' style='width:100%'>");
 			status.append(briefLogTableHead);
 			for (String log : briefLogForStatus) {
-				status.append("<tr>"+log+"</tr>");
+				status.append(log);
 			}
 			status.append("</table>");
 		} 
@@ -291,7 +294,8 @@ public class MMSLog {
 			status.append("<strong>MMS Brief Log for MRN="+mrn+"<br/>(Maximum session count:"+mmsLogForDebug.getMaxSessionCount()+"):</strong><br/>");
 			String log = mmsLogForDebug.getLog(mrn);
 			if (log != null) {
-				status.append("<table>");
+				status.append("<table id='brief-logs' class='table table-striped table-bordered' style='width:100%'>");
+				status.append(briefLogTableHead);
 				status.append(log);
 				status.append("</table>");
 			}
@@ -448,7 +452,7 @@ public class MMSLog {
 		
 		if (MMSConfiguration.isWebLogProviding()) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("<td>");
+			sb.append("<tr><td>");
 			SimpleDateFormat sdf = new SimpleDateFormat("M/dd");
 			sb.append(sdf.format(new Date()));
 			sb.append("</td><td>");
@@ -466,7 +470,7 @@ public class MMSLog {
 			if (!log.endsWith(".")) {
 				sb.append(".");
 			}
-			sb.append("</td>");
+			sb.append("</td></tr>");
 			String newLog = sb.toString();
 			
 			addBriefLogForStatus(newLog);
