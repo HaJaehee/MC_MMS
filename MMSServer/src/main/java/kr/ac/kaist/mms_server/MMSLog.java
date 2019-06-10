@@ -320,7 +320,7 @@ public class MMSLog {
 					}
 			}
 			else {
-				realtimeLog.append(URLEncoder.encode("<tr><td>"+ErrorCode.NOT_EXIST_REALTIME_LOG_CONSUMER.toString()+"</td></tr>","UTF-8"));
+				realtimeLog.append(URLEncoder.encode("<tr><td colspan='100%'>"+ErrorCode.NOT_EXIST_REALTIME_LOG_CONSUMER.toString()+"</td></tr>","UTF-8"));
 			}
 		}
 		catch (UnsupportedEncodingException e) {
