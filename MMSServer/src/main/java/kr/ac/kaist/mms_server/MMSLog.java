@@ -173,7 +173,8 @@ public class MMSLog {
 	"<script> $(document).ready(function() {" + 
 	"    $('#mns-dummy').DataTable();" + 
 	"    $('#brief-logs').DataTable( {" + 
-	"		\"order\": [[ 1, \"desc\" ]]" + 
+	"		\"order\": [[ 1, \"desc\" ]]," +
+	"		\"pageLength\":50 " +
 	"    } );" +
 	"} );" +
 	"</script>" +
