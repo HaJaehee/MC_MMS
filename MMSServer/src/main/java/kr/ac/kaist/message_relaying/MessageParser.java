@@ -273,11 +273,11 @@ public class MessageParser {
 			if (keyStr.equals("svcMRN")) {
 				svcMRN = (String) pollingRequestContents.get("svcMRN");
 //				System.out.println("[Parser] serviceMRN: " + svcMRN);
-				logger.debug("SessionID="+this.SESSION_ID+" [Parser] serviceMRN: " + svcMRN + ".");
+				mmsLog.debug(logger, this.SESSION_ID, "Service MRN: " + svcMRN + ".");
 			}
 			else if (keyStr.equals("certificate")) {
 				hexSignedData = (String) pollingRequestContents.get("certificate");
-				logger.debug("SessionID="+this.SESSION_ID+" [Parser] client's certificate is included.");
+				mmsLog.debug(logger, this.SESSION_ID, "Client's certificate is included.");
 			}
 		}
 	}

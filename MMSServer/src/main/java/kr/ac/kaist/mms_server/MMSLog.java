@@ -181,8 +181,8 @@ public class MMSLog {
 	"<link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css'/>" + 
 	"<link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css'/>";
 	private static final String briefLogTableHead = "<thead><tr>" + 
-			"<th><b>Date&nbsp;</b></th>" +
-			"<th><b>HH:mm:ss&nbsp;</b></th>" +
+			"<th><b>Date</b></th>" +
+			"<th><b>Time</b></th>" +
 			"<th><b>Level</b></th>" +
 			"<th><b>Session ID</b></th>" +
 			"<th><b>Log</b></th>" +
@@ -213,7 +213,7 @@ public class MMSLog {
 			
 			if (MMSConfiguration.getMnsHost().equals("localhost") || MMSConfiguration.getMnsHost().equals("127.0.0.1")) {
 				status.append("<strong>Maritime Name System Dummy:</strong><br/>");
-				status.append("<div style='max-height: 650px; overflow-y: scroll;'>");
+				status.append("<div>");
 				
 				status.append("<table id='mns-dummy' class='table table-striped table-bordered' style='width:100%'>");
 				status.append("<thead><tr>"

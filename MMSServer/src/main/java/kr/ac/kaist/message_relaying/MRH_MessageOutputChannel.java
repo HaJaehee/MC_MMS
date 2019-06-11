@@ -234,8 +234,7 @@ public class MRH_MessageOutputChannel{
     	
         SessionManager.getSessionInfo().remove(SESSION_ID);
 
-        
-        logger.trace("SessionID=" + this.SESSION_ID + " Message is sent completely.");
+        mmsLog.trace(logger, this.SESSION_ID, "Message has been sent completely.");
     }
 
 	public HttpURLConnection requestMessage(String IPAddress, int port, HttpMethod httpMethod, String uri, String username, String password) throws IOException {  
@@ -259,7 +258,7 @@ public class MRH_MessageOutputChannel{
 		con.setRequestProperty("Authorization","Basic "+new String(encodedBytes));
 
 		// get request doesn't have http body
-		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+		mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (httpMethod==httpMethod.POST?"POST":"GET")+"\n");
 		return con;
 	}
@@ -303,7 +302,7 @@ public class MRH_MessageOutputChannel{
 		} 
 		
 		// get request doesn't have http body
-		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+		mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters=" + urlParameters+"\n");
 		return con;
 	}
@@ -354,8 +353,7 @@ public class MRH_MessageOutputChannel{
 			wr.flush();
 			wr.close();
 		} 
-
-		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+		mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters=" + urlParameters+"\n");
 		
 		return con;
@@ -384,7 +382,7 @@ public class MRH_MessageOutputChannel{
 		con.setRequestProperty("Authorization","Basic "+new String(encodedBytes));
 
 		// get request doesn't have http body
-		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+		mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (httpMethod==httpMethod.POST?"POST":"GET")+"\n");
 		return con;
 	}
