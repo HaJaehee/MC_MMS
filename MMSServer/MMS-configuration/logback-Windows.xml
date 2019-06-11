@@ -1,22 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds">
-    <appender name="FILE" class="kr.ac.kaist.mms_server.RollingFileAppenderWithHeader">
-        <file>./logs/mms-server.log</file>
-        <header>&lt;table&gt;
-				&lt;thead&gt;
-				&lt;tr&gt;
-				&lt;th&gt;&lt;b&gt;HH:mm:ss.SSS&lt;/b&gt;&lt;/th&gt;
-				&lt;th&gt;&lt;b&gt;Thread&lt;/b&gt;&lt;/th&gt;
-				&lt;th&gt;&lt;b&gt;Level&lt;/b&gt;&lt;/th&gt;
-				&lt;th&gt;&lt;b&gt;Class&lt;/b&gt;&lt;/th&gt;
-				&lt;th&gt;&lt;b&gt;Message&lt;/b&gt;&lt;/th&gt;
-				&lt;/tr&gt;
-				&lt;/thead&gt;
-				&lt;tbody&gt;
-		</header>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>./logs/mms-server.html</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- rollover daily -->
-            <fileNamePattern>./logs/mms-server.log.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+            <fileNamePattern>./logs/mms-server.log.%d{yyyy-MM-dd}.%i.html.zip</fileNamePattern>
  
  			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
             	<maxFileSize>3MB</maxFileSize>
@@ -24,8 +12,10 @@
             <maxHistory>30</maxHistory>  <!-- keep 30 days history -->
         </rollingPolicy>
  
-        <encoder>
-	        <pattern>&lt;tr&gt;&lt;td&gt;%d{HH:mm:ss.SSS}&lt;/td&gt;&lt;td&gt;[%thread]&lt;/td&gt;&lt;td&gt;%-5level&lt;/td&gt;&lt;td&gt;%logger{35}&lt;/td&gt;&lt;td&gt;%msg&lt;/td&gt;&lt;/tr&gt;%n</pattern>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+     		<layout class="ch.qos.logback.classic.html.HTMLLayout">
+            	<pattern>%d{HH:mm:ss.SSS}%thread%-5level%logger{35}%msg</pattern>
+            </layout>
         </encoder>
     </appender>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
