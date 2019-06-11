@@ -35,7 +35,7 @@ while true; do
 
 		echo "Web server pre-setting."
 		sudo tar -xzf mcp_mms_monitoring_html.tar
-		sudo sed -i 's/mms\.smartnav\.org/'$newdomain'/g' ./var/www/mcp_mms_monitoring/html/wp-config.php 
+		sudo sed -i 's/192\.168\.0\.104/'$newdomain'/g' ./var/www/mcp_mms_monitoring/html/wp-config.php
 
 		echo "Docker pull."
 		export MY_WEB=$1
