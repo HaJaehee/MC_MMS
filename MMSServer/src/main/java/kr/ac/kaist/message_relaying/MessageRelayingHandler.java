@@ -290,10 +290,7 @@ public class MessageRelayingHandler  {
 			type = typeDecider.decideType(parser, mch);
 		} 
 		catch (ParseException e) {
-			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+			mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 		}
 		try {
 			processRelaying(type, ctx, req);
@@ -800,7 +797,7 @@ public class MessageRelayingHandler  {
 			else if (type == MessageTypeDecider.msgType.REMOVE_MNS_ENTRY) {
 	    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 	    		Map<String,List<String>> params = qsd.parameters();
-	    		logger.warn("SessionID="+this.SESSION_ID+" Remove MRN=" + params.get("mrn").get(0)+".");
+	    		mmsLog.warn(logger, this.SESSION_ID, "Remove MRN=" + params.get("mrn").get(0)+".");
 	    		if (params.get("mrn")!=null && !params.get("mrn").get(0).equals(MMSConfiguration.getMmsMrn())) {
 	    			try {
 						removeEntryMNS(params.get("mrn").get(0));

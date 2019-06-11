@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds">
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+     <appender name="FILE" class="kr.ac.kaist.mms_server.RollingFileAppenderWithHeader">
         <file>/var/mms/logs/mms-server.log</file>
+        <header>&lt;table&gt;
+				&lt;thead&gt;
+				&lt;tr&gt;
+				&lt;th&gt;&lt;b&gt;HH:mm:ss.SSS&lt;/b&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;b&gt;Thread&lt;/b&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;b&gt;Level&lt;/b&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;b&gt;Class&lt;/b&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;b&gt;Message&lt;/b&gt;&lt;/th&gt;
+				&lt;/tr&gt;
+				&lt;/thead&gt;
+				&lt;tbody&gt;
+		</header>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- rollover daily -->
             <fileNamePattern>/var/mms/logs/mms-server.log.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
