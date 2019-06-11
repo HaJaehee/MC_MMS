@@ -4,7 +4,7 @@
         <file>/var/mms/logs/mms-server.html</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- rollover daily -->
-            <fileNamePattern>/var/mms/logs/mms-server.log.%d{yyyy-MM-dd}.%i.html.zip</fileNamePattern>
+            <fileNamePattern>/var/mms/logs/mms-server.html.%d{yyyy-MM-dd}.%i.zip</fileNamePattern>
  
  			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
             	<maxFileSize>3MB</maxFileSize>
