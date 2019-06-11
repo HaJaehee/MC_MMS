@@ -213,7 +213,7 @@ public class MMSLog {
 			
 			if (MMSConfiguration.getMnsHost().equals("localhost") || MMSConfiguration.getMnsHost().equals("127.0.0.1")) {
 				status.append("<strong>Maritime Name System Dummy:</strong><br/>");
-				status.append("<div style='max-height: 650px; overflow-y: scroll;'>");
+				status.append("<div>");
 				
 				status.append("<table id='mns-dummy' class='table table-striped table-bordered' style='width:100%'>");
 				status.append("<thead><tr>"
