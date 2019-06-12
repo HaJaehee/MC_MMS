@@ -104,6 +104,11 @@ Rev. history: 2019-05-29
 Version : 0.9.1
 	Added MMS configuration querying api.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-07
+Version : 0.9.2
+	Made logs neat.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 import java.io.File;
@@ -117,7 +122,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 import org.apache.commons.cli.*;
-
+import org.apache.commons.lang3.SystemUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -179,8 +184,13 @@ public class MMSConfiguration {
 	}
 	
 	private void ConfigureMMSSettings (String[] args) {
-		
-		System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, "./MMS-configuration/logback.xml");
+
+		if (SystemUtils.IS_OS_WINDOWS) {
+			System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, "./MMS-configuration/logback-Windows.xml");
+		}
+		else if (SystemUtils.IS_OS_LINUX) {
+			System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, "./MMS-configuration/logback-Linux.xml");
+		}
 		this.logger = LoggerFactory.getLogger(MMSConfiguration.class);
 		logger.error("Now setting MMS configuration.");
 		MMS_CONFIGURATION = new HashMap<String, String>();
@@ -734,7 +744,7 @@ public class MMSConfiguration {
 			alertAndSetMmsConf("MAX_CONTENT_SIZE",MAX_CONTENT_SIZE+"bytes");
 			alertAndSetMmsConf("WAITING_MESSAGE_TIMEOUT",WAITING_MESSAGE_TIMEOUT+"ms");
 			if (HTTPS_ENABLED[1]) {
-				alertAndSetMmsConf("KEYSTORE",KEYSTORE.substring(0, 100)+"......");
+				alertAndSetMmsConf("KEYSTORE",KEYSTORE.substring(0, 50)+"......");
 			}
 			
 		}

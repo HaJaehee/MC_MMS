@@ -75,10 +75,12 @@ Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel.ConnectionThread;
+import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.Iterator;
@@ -101,6 +103,8 @@ public class MessageCastingHandler {
 	private MNSInteractionHandler mih = null;
 	private SeamlessRoamingHandler srh = null;
 	
+	private MMSLog mmsLog = null; 
+	
 	public MessageCastingHandler(String sessionId) {
 		this.SESSION_ID = sessionId;
 	
@@ -110,6 +114,7 @@ public class MessageCastingHandler {
 	private void initializeModule() {
 		mih = new MNSInteractionHandler(this.SESSION_ID);
 		srh = new SeamlessRoamingHandler(this.SESSION_ID);
+		mmsLog = MMSLog.getInstance();
 	}
 	
 	public String queryMNSForDstInfo(String srcMRN, String dstMRN, String srcIP) throws ParseException{
@@ -128,7 +133,7 @@ public class MessageCastingHandler {
 					
 	
 		if (dstInfo != null && dstInfo.regionMatches(2, "poll", 0, 4)){ // if the returned dstInfo contains json format do parsing.
-			logger.debug("SessionID="+this.SESSION_ID+" Multicasting occured.");
+			mmsLog.debug(logger, this.SESSION_ID, "Multicasting occured.");
 			JSONObject jo = (JSONObject)JSONValue.parse(dstInfo);
 			JSONArray jl = (JSONArray)jo.get("poll");
 			String ret = "MULTIPLE_MRN,";
@@ -145,7 +150,7 @@ public class MessageCastingHandler {
 	}
 	
 	public byte[] castMsgsToMultipleCS (String srcMRN, String[] dstMRNs, String content) {
-		logger.debug("SessionID="+this.SESSION_ID+" multicast.");
+		mmsLog.debug(logger, this.SESSION_ID, "multicast.");
 		for (int i = 0; i < dstMRNs.length;i++){
 			srh.putSCMessage(srcMRN, dstMRNs[i], content);
 		}
@@ -157,21 +162,18 @@ public class MessageCastingHandler {
 		try {
     		if (protocol.equals("http")) {
     			message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
-			    logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTP.");
+    			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTP.");
     		} 
     		else if (protocol.equals("https")) { 
     			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
-    			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTPS.");
+    			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTPS.");
     		} 
     		else {
-    			logger.info("SessionID="+this.SESSION_ID+" No protocol.");
+    			mmsLog.info(logger, this.SESSION_ID, "No protocol.");
     		}
 		} 
     	catch (IOException e) {
-    		logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+    		mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 		}
 		
 		return message;
@@ -184,23 +186,20 @@ public class MessageCastingHandler {
     			thread = outputChannel.asynchronizeSendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
     			thread.start();
     			
-    			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTP.");
+    			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTP.");
     		} 
     		else if (protocol.equals("https")) { 
     			thread = outputChannel.asynchronizeSendSecureMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
     			thread.start();
-    			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTPS.");
+    			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTPS.");
     		} 
     		else {
-    			logger.info("SessionID="+this.SESSION_ID+" No protocol.");
+    			mmsLog.info(logger, this.SESSION_ID, "No protocol.");
     		}
     		
 		} 
     	catch (IOException e) {
-    		logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+    		mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 		}
 		return thread;
 	}
@@ -217,7 +216,7 @@ public class MessageCastingHandler {
 				if (connType == null) {
 					String exc = (String) obj.get("exception");
 					if (exc != null) {
-						logger.warn("SessionID="+this.SESSION_ID+" "+"MNS query exception occured=\""+exc+"\".");
+						mmsLog.warnException(logger, this.SESSION_ID, "MNS query exception occured=\""+exc+"\".", new ConnectException(), 5);
 						return null;
 					}
 				}
@@ -238,22 +237,18 @@ public class MessageCastingHandler {
 		        		
 		        		if (protocol.equals("http")) {
 						    outputChannel.sendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
-						    logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTP.");
+						    mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTP.");
 		        		} 
 		        		else if (protocol.equals("https")) { 
 		        			outputChannel.secureSendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
-		        			logger.info("SessionID="+this.SESSION_ID+" Protocol=HTTPS.");
+		        			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTPS.");
 		        		} 
 		        		else {
-		        			
-		        			logger.info("SessionID="+this.SESSION_ID+" No protocol.");
+		        			mmsLog.info(logger, this.SESSION_ID, "No protocol.");
 		        		}
 					} 
 		        	catch (IOException e) {
-		        		logger.warn("SessionID="+this.SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-		    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-		    				logger.warn("SessionID="+this.SESSION_ID+" "+e.getStackTrace()[i]+".");
-		    			}
+		        		mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 					}
 				}
 				

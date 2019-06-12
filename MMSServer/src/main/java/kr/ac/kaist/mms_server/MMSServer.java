@@ -69,21 +69,27 @@ public class MMSServer {
 	
 	public static void main(String[] args){
 		
+		File f = new File("./logs");
+		if (SystemUtils.IS_OS_WINDOWS) {
+			f.mkdirs();
+		}
+		else if (SystemUtils.IS_OS_LINUX) {
+			f = new File("/var/mms/logs");
+			f.mkdirs();
+		}
+		f = new File("./MMS-configuration");
+		f.mkdirs();
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e1) {
+			
+		}
+		
 		new MMSConfiguration(args);
 		logger = LoggerFactory.getLogger(MMSServer.class);
 		
 		
 		try {
-			File f = new File("./logs");
-			f.mkdirs();
-			if (SystemUtils.IS_OS_LINUX) {
-				f = new File("/var/mms/logs");
-				f.mkdirs();
-			}
-			f = new File("./MMS-configuration");
-			f.mkdirs();
-			Thread.sleep(2000);
-			
 			
 			logger.error("MUST check that MNS server is online="+MMSConfiguration.getMnsHost()+":"+MMSConfiguration.getMnsPort()+".");
 			logger.error("MUST check that Rabbit MQ server is online="+MMSConfiguration.getRabbitMqHost()+":"+MMSConfiguration.getRabbitMqPort()+".");

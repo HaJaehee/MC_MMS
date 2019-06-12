@@ -60,6 +60,11 @@ Rev. history : 2018-07-27
 Version : 0.7.2
 	Added geocasting features which cast message to circle or polygon area.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-07
+Version : 0.9.2
+	Made logs neat.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */
 
@@ -525,7 +530,13 @@ public class MNSDummy {
 						SortedSet<String> keys = new TreeSet<String>(MRNtoIP.keySet());
 						for (String key : keys) {
 							String value = MRNtoIP.get(key);
-							dataToReply = dataToReply + key + "," + value + "<br/>";
+							String values[] = value.split(":");
+							dataToReply = dataToReply + "<tr>"
+										+ "<td>" + key + "</td>"
+										+ "<td>" + values[0] + "</td>"
+										+ "<td>" + values[1] + "</td>"
+										+ "<td>" + values[2] + "</td>"
+										+ "</tr>";
 						}
 					}
 					else{

@@ -108,7 +108,7 @@ public class MMSLogForDebug {
 					ArrayList<String> logList = sessionIdLogMapper.get(sessionId);
 					if (logList!=null) {
 						for (String log : logList) {
-							logs.append(log+"<br/>");
+							logs.append(log);
 						}
 					} 
 					else { // sessionIdLogMapper.get(sessionId)==null

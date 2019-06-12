@@ -53,15 +53,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.MMSLog;
 
 class MIH_MessageOutputChannel {
 
 	private static final Logger logger = LoggerFactory.getLogger(MIH_MessageOutputChannel.class);
 	private String SESSION_ID = "";
 	
+	private MMSLog mmsLog = null;
+	
 	MIH_MessageOutputChannel(String sessionId) {
 		this.SESSION_ID = sessionId;
-
+		mmsLog = MMSLog.getInstance();
 	}
 	
 
@@ -83,8 +86,7 @@ class MIH_MessageOutputChannel {
 	    	String inputLine = null;
 			StringBuffer response = new StringBuffer();
 			
-	    	
-		    logger.trace("SessionID="+this.SESSION_ID+" "+request+".");
+	    	mmsLog.trace(logger, this.SESSION_ID, request+".");
 		
 		    pw.println(request);
 		    pw.flush();
@@ -99,18 +101,13 @@ class MIH_MessageOutputChannel {
 		    
 	    	
 	    	queryReply = response.toString();
-	    	logger.trace("SessionID="+this.SESSION_ID+" From MNS server=" + queryReply+".");
+	    	mmsLog.trace(logger, this.SESSION_ID, "From MNS server=" + queryReply+".");
 
     	} catch (UnknownHostException e) {
-    		logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.error("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+    		mmsLog.errorException(logger, SESSION_ID, "", e, 5);
+
 		} catch (IOException e) {
-			logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.error("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+			mmsLog.errorException(logger, SESSION_ID, "", e, 5);
 		} finally {
     		if (pw != null) {
     			pw.close();
@@ -119,30 +116,21 @@ class MIH_MessageOutputChannel {
 				try {
 					isr.close();
 				} catch (IOException e) {
-					logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-	    			}
+					mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 				}
 			}
 			if (br != null) {
 				try {
 					br.close();
 				} catch (IOException e) {
-					logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-	    			}
+					mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 				}
 			}
     		if (MNSSocket != null) {
     			try {
 					MNSSocket.close();
 				} catch (IOException e) {
-					logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-	    			}
+					mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 				}
     		}
 		}

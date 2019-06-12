@@ -36,7 +36,8 @@ public enum ErrorCode {
 	NULL_SRC_MRN("10002", "Null source MRN."),
 	NULL_DST_MRN("10003", "Null destination MRN."),
 	NULL_MRN("10004", "Null MRNs."),
-	WRONG_PARAM("10005", "Wrong parameter"),
+	WRONG_PARAM("10005", "Wrong parameter."),
+	NOT_EXIST_REALTIME_LOG_CONSUMER("10006", "The ID does not exist in realtime log service consumer IDs."),
 
 	NULL_CERTIFICATE("10006", "The certificate is not included."),
 	NULL_SVC_MRN("10007", "The service MRN is not included."),

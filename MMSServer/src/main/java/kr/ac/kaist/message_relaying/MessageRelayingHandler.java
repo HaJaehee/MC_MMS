@@ -208,6 +208,11 @@ Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-10
+Version : 0.9.2
+	Made logs neat (cont'd).
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -285,10 +290,7 @@ public class MessageRelayingHandler  {
 			type = typeDecider.decideType(parser, mch);
 		} 
 		catch (ParseException e) {
-			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+			mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 		}
 		try {
 			processRelaying(type, ctx, req);
@@ -712,13 +714,16 @@ public class MessageRelayingHandler  {
 			}
 			//This code MUST be 'else if' statement not 'if'. 
 			else if (type == MessageTypeDecider.msgType.REALTIME_LOG){
-	    		String realtimeLog = "";
+	    		
+				
+				
+				String realtimeLog = "";
 	    		String callback = "";
 	    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 	    		Map<String,List<String>> params = qsd.parameters();
 	    		if (params.get("id") != null & params.get("callback") != null) {
 	    			callback = params.get("callback").get(0);
-	    			realtimeLog = mmsLog.getRealtimeLog(params.get("id").get(0));
+	    			realtimeLog = mmsLog.getRealtimeLog(params.get("id").get(0), this.SESSION_ID);
 	    			isRealtimeLog = true;
 	    		}
 	    		else {
@@ -792,7 +797,7 @@ public class MessageRelayingHandler  {
 			else if (type == MessageTypeDecider.msgType.REMOVE_MNS_ENTRY) {
 	    		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 	    		Map<String,List<String>> params = qsd.parameters();
-	    		logger.warn("SessionID="+this.SESSION_ID+" Remove MRN=" + params.get("mrn").get(0)+".");
+	    		mmsLog.warn(logger, this.SESSION_ID, "Remove MRN=" + params.get("mrn").get(0)+".");
 	    		if (params.get("mrn")!=null && !params.get("mrn").get(0).equals(MMSConfiguration.getMmsMrn())) {
 	    			try {
 						removeEntryMNS(params.get("mrn").get(0));
