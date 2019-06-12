@@ -108,11 +108,22 @@ Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-01
+Version : 0.9.2
+	Let Rabbit MQ Channels share the one Rabbit MQ Connection.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-03
+Version : 0.9.2
+	Created Rabbit MQ Connection pool.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.TimeoutException;
 
@@ -154,7 +165,8 @@ class MessageQueueDequeuer extends Thread{
 	private MRH_MessageOutputChannel outputChannel = null;
 	private ChannelHandlerContext ctx = null;
 	private Channel channel = null;
-	private Connection connection = null;
+	private static ArrayList<Connection> connectionPool = null;
+	private static ConnectionFactory connFac = null;
 	
 	
 	private MMSLog mmsLog = null;
@@ -190,13 +202,26 @@ class MessageQueueDequeuer extends Thread{
 		super.run();
 		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 	    try {
-			ConnectionFactory factory = new ConnectionFactory();
-			factory.setHost(MMSConfiguration.getRabbitMqHost());
-			factory.setPort(MMSConfiguration.getRabbitMqPort());
-			factory.setUsername(MMSConfiguration.getRabbitMqUser());
-			factory.setPassword(MMSConfiguration.getRabbitMqPasswd());
-			connection = factory.newConnection();
-			channel = connection.createChannel();
+	    	if (connFac == null) {
+				connFac = new ConnectionFactory();
+				connFac.setHost(MMSConfiguration.getRabbitMqHost());
+				connFac.setPort(MMSConfiguration.getRabbitMqPort());
+				connFac.setUsername(MMSConfiguration.getRabbitMqUser());
+				connFac.setPassword(MMSConfiguration.getRabbitMqPasswd());
+			}
+			if (connectionPool == null) {
+				connectionPool = new ArrayList<Connection>();
+				for (int i = 0 ; i < 10000 ; i++) {
+					connectionPool.add(null);
+				}
+			}
+			
+			int connId = (int) (Long.decode("0x"+this.SESSION_ID) % 10000);
+			if (connectionPool.get(connId) == null || !connectionPool.get(connId).isOpen()) {
+				connectionPool.set(connId, connFac.newConnection());
+			}
+			
+			channel = connectionPool.get(connId).createChannel();
 			ctx.channel().attr(MRH_MessageInputChannel.TERMINATOR).get().add(new ChannelTerminateListener() {
 				
 				@Override
@@ -301,9 +326,9 @@ class MessageQueueDequeuer extends Thread{
 						    	if (this.getChannel() != null) {
 						    		this.getChannel().close();
 						    	}
-						    	if (connection != null) {
+						    	/*if (connection != null) {
 						    		connection.close();
-						    	}
+						    	}*/
 							} catch (TimeoutException e) {
 								mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 							}
@@ -418,13 +443,13 @@ class MessageQueueDequeuer extends Thread{
 						mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 					}
 		    	}
-				if (connection != null) {
+				/*if (connection != null) {
 					try {
 						connection.close();
 					} catch (IOException e) {
 						mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 					}
-				}
+				}*/
 	    	}
 		}
 		
