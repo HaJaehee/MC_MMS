@@ -114,7 +114,7 @@ public class SeamlessRoamingHandler {
 		String DUPLICATE_ID = srcMRN + svcMRN;
 		//System.out.println("Duplicate ID : "+DUPLICATE_ID);
 
-		if (duplicateInfo.containsKey(DUPLICATE_ID)) {
+		if (duplicateInfo.containsKey(DUPLICATE_ID) && false) {
 			
 //			System.out.println("duplicate long polling request");
 			
