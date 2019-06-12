@@ -126,7 +126,7 @@ public class MMSServer {
 			Thread.sleep(1000);
 			
 			logger.error("Now setting message queue connection pool.");
-			MessageQueueDequeuer.setConnectionPool(10000);
+			MessageQueueDequeuer.setConnectionPool(3000);
 			Thread.sleep(1500);
 			
 			if (MMSConfiguration.isHttpsEnabled()) {

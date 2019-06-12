@@ -58,15 +58,14 @@ public class ClientVerifier {
 	
 	public boolean verifyClient (String srcMRN, String hexSignedData) {	
 		
-		return true;
-		/*
+		
 		authenticateUsingMIRAPI(srcMRN, hexSignedData);
 		
 		if(isVerified && isMatching) {
 			return true;
 		} else {
 			return false;
-		}*/
+		}
 		
 //		if (!MMSConfiguration.isPollingSessionOn()) {
 //			// Authentication Session sets off
