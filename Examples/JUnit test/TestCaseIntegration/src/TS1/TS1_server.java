@@ -33,10 +33,10 @@ public class TS1_server {
 		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
 		//MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		MMSConfiguration.DEBUG = false;
-		MMSClientHandler server = new MMSClientHandler(myMRN);
+		myHandler = new MMSClientHandler(myMRN);
 		int port = 8907;
 		
-		server.setServerPort(port, new MMSClientHandler.RequestCallback() {
+		myHandler.setServerPort(port, new MMSClientHandler.RequestCallback() {
 			
 			@Override
 			public Map<String, List<String>> setResponseHeader() {
@@ -74,5 +74,8 @@ public class TS1_server {
 	public static int getContentLength() {
 		return content_length;
 	}
-	
+
+	public void terminateServer() {
+		myHandler.terminateServer();
+	}
 }

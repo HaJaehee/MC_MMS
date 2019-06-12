@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -32,6 +33,12 @@ public class TS1_Test {
 		server = new TS1_server();
 		
 	}
+
+	@AfterClass
+	public static void afterClass() {
+		server.terminateServer();
+	}
+	
 	public int sendContentLength(String FileName, int actual_content_length) throws IOException {
 		
 		client.sendContentLength(FileName,actual_content_length);
