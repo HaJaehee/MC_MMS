@@ -118,6 +118,11 @@ Rev. history : 2019-06-03
 Version : 0.9.2
 	Created Rabbit MQ Connection pool.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-12
+Version : 0.9.2
+	Fixed bugs related to connection pool.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -153,7 +158,7 @@ import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 
 
-class MessageQueueDequeuer extends Thread{
+public class MessageQueueDequeuer extends Thread{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueDequeuer.class);
 	private String SESSION_ID = "";
@@ -167,15 +172,13 @@ class MessageQueueDequeuer extends Thread{
 	private Channel channel = null;
 	private static ArrayList<Connection> connectionPool = null;
 	private static ConnectionFactory connFac = null;
+	private static int connectionPoolSize = 0;
 	
 	
 	private MMSLog mmsLog = null;
-	private MMSLogForDebug mmsLogForDebug = null;
-	
 	MessageQueueDequeuer (String sessionId) {
 		this.SESSION_ID = sessionId;
 		mmsLog = MMSLog.getInstance();
-		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 	
 	void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN, String pollingMethod) {
@@ -194,29 +197,31 @@ class MessageQueueDequeuer extends Thread{
 		return;
 	}
 	
-
+	public static void setConnectionPool (int poolSize) {
+		connectionPoolSize = poolSize;
+    	if (connFac == null) {
+			connFac = new ConnectionFactory();
+			connFac.setHost(MMSConfiguration.getRabbitMqHost());
+			connFac.setPort(MMSConfiguration.getRabbitMqPort());
+			connFac.setUsername(MMSConfiguration.getRabbitMqUser());
+			connFac.setPassword(MMSConfiguration.getRabbitMqPasswd());
+		}
+		if (connectionPool == null) {
+			connectionPool = new ArrayList<Connection>();
+			for (int i = 0 ; i < connectionPoolSize ; i++) {
+				connectionPool.add(null);
+			}
+		}
+	}
 	
 	@Override
 	public void run() {
 		// TODO: Youngjin Kim must inspect this following code.
 		super.run();
-		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-	    try {
-	    	if (connFac == null) {
-				connFac = new ConnectionFactory();
-				connFac.setHost(MMSConfiguration.getRabbitMqHost());
-				connFac.setPort(MMSConfiguration.getRabbitMqPort());
-				connFac.setUsername(MMSConfiguration.getRabbitMqUser());
-				connFac.setPassword(MMSConfiguration.getRabbitMqPasswd());
-			}
-			if (connectionPool == null) {
-				connectionPool = new ArrayList<Connection>();
-				for (int i = 0 ; i < 10000 ; i++) {
-					connectionPool.add(null);
-				}
-			}
+		try {
+
 			
-			int connId = (int) (Long.decode("0x"+this.SESSION_ID) % 10000);
+			int connId = (int) (Long.decode("0x"+this.SESSION_ID) % connectionPoolSize);
 			if (connectionPool.get(connId) == null || !connectionPool.get(connId).isOpen()) {
 				connectionPool.set(connId, connFac.newConnection());
 			}

@@ -45,11 +45,17 @@ Version : 0.9.1
 	Simplified logger.
 	Modified for requiring MMS keystore in MMS.conf.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-12
+Version : 0.9.2
+	Fixed bugs related to connection pool.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import kr.ac.kaist.message_queue.MessageQueueDequeuer;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.SessionManager;
 
@@ -118,6 +124,10 @@ public class MMSServer {
 			MMSLog.getInstance(); //initialize MMSLog.
 			MMSLogForDebug.getInstance(); //initialize MMSLogsForDebug.
 			Thread.sleep(1000);
+			
+			logger.error("Now setting message queue connection pool.");
+			MessageQueueDequeuer.setConnectionPool(10000);
+			Thread.sleep(1500);
 			
 			if (MMSConfiguration.isHttpsEnabled()) {
 				logger.error("Now starting MMS HTTPS server.");

@@ -90,6 +90,11 @@ Rev. history : 2019-06-03
 Version : 0.9.2
 	Created Rabbit MQ Connection pool.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-12
+Version : 0.9.2
+	Fixed bugs related to connection pool.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 
 /* -------------------------------------------------------- */
@@ -100,15 +105,13 @@ class MessageQueueEnqueuer {
 	private String SESSION_ID = "";
 	
 	private MMSLog mmsLog = null;
-	private MMSLogForDebug mmsLogForDebug = null;
-	private static  ArrayList<Connection> connectionPool = null;
+	private static  Connection connection = null;
 	private static ConnectionFactory connFac = null;
 	private Channel channel = null;
 	
-	MessageQueueEnqueuer (String sessionId) {
+	public MessageQueueEnqueuer (String sessionId) {
 		this.SESSION_ID = sessionId;
 		mmsLog = MMSLog.getInstance();
-		mmsLogForDebug = MMSLogForDebug.getInstance();
 		
 	}
 	
@@ -116,10 +119,7 @@ class MessageQueueEnqueuer {
 	void enqueueMessage(String srcMRN, String dstMRN, String message) {
 		
 		String queueName = dstMRN+"::"+srcMRN;
-		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-		 
-		
-		 if(logger.isTraceEnabled()) {
+		if(logger.isTraceEnabled()) {
 			mmsLog.trace(logger, this.SESSION_ID, "Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(message));
 		 }
 		 else {
@@ -134,24 +134,14 @@ class MessageQueueEnqueuer {
 				connFac.setUsername(MMSConfiguration.getRabbitMqUser());
 				connFac.setPassword(MMSConfiguration.getRabbitMqPasswd());
 			}
-			if (connectionPool == null) {
-				connectionPool = new ArrayList<Connection>();
-				for (int i = 0 ; i < 10000 ; i++) {
-					connectionPool.add(null);
-				}
-			}
+			connection = connFac.newConnection();
 			
-			int connId = (int) (Long.decode("0x"+this.SESSION_ID) % 10000);
-			if (connectionPool.get(connId) == null || !connectionPool.get(connId).isOpen()) {
-				connectionPool.set(connId, connFac.newConnection());
-			}
-			
-			channel = connectionPool.get(connId).createChannel();
+			channel = connection.createChannel();
 			channel.queueDeclare(queueName, true, false, false, null);
 			
 			channel.basicPublish("", queueName, null, message.getBytes());
 			channel.close();
-			//connection.close();
+			connection.close();
 			
 		} 
 		catch (IOException e) {
