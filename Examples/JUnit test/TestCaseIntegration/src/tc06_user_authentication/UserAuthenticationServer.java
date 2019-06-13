@@ -1,4 +1,4 @@
-package TS6;
+package tc06_user_authentication;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -17,19 +17,24 @@ Creation Date : 2019-04-16
 Rev. history : 2019-04-22
 	Add server which is MMSClientHandler.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS6_Server to UserAuthenticationServer
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
-public class TS6_Server {
+public class UserAuthenticationServer {
 	private String myMRN = null;
 	private String dstMRN = null;
 	private int port = 8902;
 	private MMSClientHandler server = null;
 	private MMSClientHandler sender = null;
 	
-	public TS6_Server() {
-		this.myMRN = TS6_Test.serverMRN;
-		this.dstMRN = TS6_Test.clientMRN;
-		MMSConfiguration.MMS_URL = TS6_Test.MMS_URL;
+	public UserAuthenticationServer() {
+		this.myMRN = UserAuthenticationTest.serverMRN;
+		this.dstMRN = UserAuthenticationTest.clientMRN;
+		MMSConfiguration.MMS_URL = UserAuthenticationTest.MMS_URL;
 		
 		try {
 			sender = new MMSClientHandler(myMRN);

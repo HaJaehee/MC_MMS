@@ -1,4 +1,4 @@
-package TS2;
+package tc02_relaying_variable_header;
 import static org.junit.Assert.*;
 
 import java.awt.List;
@@ -20,18 +20,23 @@ Version : 0.9.1
 	Change output because MMS return string is refined.
 	Running this test case with version 0.9.1 and the test is succeeded.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS2_Test to MMSMessagewithVariableHeaderTest
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
-public class TS2_test {
+public class MMSMessagewithVariableHeaderTest {
 
-	static TS2_server server;
-	static TS2_client client;
+	static MMSMessagewithVariableHeaderServer server;
+	static MMSMessagewithVariableHeaderClient client;
 
 	@BeforeClass
 	public static void main() {
 		try {
-			server = new TS2_server();
-			client = new TS2_client();
+			server = new MMSMessagewithVariableHeaderServer();
+			client = new MMSMessagewithVariableHeaderClient();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

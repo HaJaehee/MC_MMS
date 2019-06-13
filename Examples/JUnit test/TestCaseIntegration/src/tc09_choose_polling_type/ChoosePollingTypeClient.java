@@ -1,4 +1,4 @@
-package TS9;
+package tc09_choose_polling_type;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -17,8 +17,12 @@ import net.etri.pkilib.tool.ByteConverter;
  * of testing MMS Author : Youngjin Kim (jcdad3000@kaist.ac.kr) Creation Date :
  * 2019-05-20
  
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS9_Client to ChoosePollingTypeClient
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
  */
-public class TS9_client {
+public class ChoosePollingTypeClient {
 
 	private static int length = -1;
 
@@ -36,7 +40,7 @@ public class TS9_client {
 	private static boolean clientNormalChecker= false;
 	private static boolean clientLongChecker =false;
 
-	public TS9_client() {
+	public ChoosePollingTypeClient() {
 
 		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
 		MMSConfiguration.DEBUG = true;
@@ -74,7 +78,7 @@ public class TS9_client {
 		myHandler = new MMSClientHandler(myMRN);
 
 		try {
-			myHandler.startPolling(dstMRN, svcMRN, TS9_client.hexSignedData_active, 1000,
+			myHandler.startPolling(dstMRN, svcMRN, ChoosePollingTypeClient.hexSignedData_active, 1000,
 					new MMSClientHandler.PollingResponseCallback() {
 
 						@Override
@@ -82,7 +86,7 @@ public class TS9_client {
 							// TODO Auto-generated method stub
 
 							for (String s : messages) {
-								TS9_test.response.add(s);
+								ChoosePollingTypeTest.response.add(s);
 								// System.out.println("message : " + s);
 							}
 							clientNormalChecker = myHandler.getNormalchecker();
@@ -100,7 +104,7 @@ public class TS9_client {
 		myHandler = new MMSClientHandler(myMRN);
 
 		try {
-			myHandler.startPolling(dstMRN, svcMRN, TS9_client.hexSignedData_active, 0,
+			myHandler.startPolling(dstMRN, svcMRN, ChoosePollingTypeClient.hexSignedData_active, 0,
 					new MMSClientHandler.PollingResponseCallback() {
 
 						@Override
@@ -108,7 +112,7 @@ public class TS9_client {
 							// TODO Auto-generated method stub
 
 							for (String s : messages) {
-								TS9_test.response.add(s);
+								ChoosePollingTypeTest.response.add(s);
 								// System.out.println("message : " + s);
 							}
 							clientNormalChecker = myHandler.getNormalchecker();

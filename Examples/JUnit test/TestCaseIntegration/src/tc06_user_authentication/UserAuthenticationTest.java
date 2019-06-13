@@ -1,4 +1,4 @@
-package TS6;
+package tc06_user_authentication;
 
 import static org.junit.Assert.assertTrue;
 
@@ -42,17 +42,22 @@ Rev. history : 2019-05-17
 Version : 0.9.1
 	Modify output of the test cases because of adding error code.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS6_Test to UserAuthenticationTest
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
-public class TS6_Test {
+public class UserAuthenticationTest {
 	public final static String MMS_URL = "143.248.55.83:8088";
 //	public final static String MMS_URL = "mms.smartnav.org:8088";
 //	public final static String MMS_URL = "127.0.0.1:8088";
 	public final static String serverMRN = "urn:mrn:imo:imo-no:ts-mms-06-server";
 	public final static String clientMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 	public final static String server_message = "Hello, polling client!";
-	private static TS6_Server server;
-	private static TS6_Client client;
+	private static UserAuthenticationServer server;
+	private static UserAuthenticationClient client;
 	private static PollingRequestContents contentsBuilder;
 	
 	public String getSignedData(boolean isActive) {
@@ -89,8 +94,8 @@ public class TS6_Test {
 	@BeforeClass
 	public static void initializeClass() {
 		MMSConfiguration.DEBUG = true;
-		server = new TS6_Server();
-		client = new TS6_Client();
+		server = new UserAuthenticationServer();
+		client = new UserAuthenticationClient();
 //		client = new TS6_Client(true);
 		contentsBuilder = new PollingRequestContents(null, null);
 		contentsBuilder.setServiceMRN(server.getMyMRN());
@@ -103,7 +108,7 @@ public class TS6_Test {
 	
 	@Test
 	public void test01() throws IOException, InterruptedException { 
-		TS6_Client.sentMessage = null;
+		UserAuthenticationClient.sentMessage = null;
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
 		
@@ -114,13 +119,13 @@ public class TS6_Test {
 		contentsBuilder.setCertificate(signedData);
 		client.sendPollingMessage(contentsBuilder.toString());
 
-		System.out.println(TS6_Client.sentMessage);
-		assertTrue(TS6_Client.sentMessage.equals(server_message));
+		System.out.println(UserAuthenticationClient.sentMessage);
+		assertTrue(UserAuthenticationClient.sentMessage.equals(server_message));
 	}
 	
 	@Test
 	public void test02() throws IOException, InterruptedException {	
-		TS6_Client.sentMessage = null;
+		UserAuthenticationClient.sentMessage = null;
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
 		
@@ -135,7 +140,7 @@ public class TS6_Test {
 		System.out.println(message);
 		
 //		assertTrue(TS6_Client.sentMessage.equals(server_message));	
-		assertTrue(TS6_Client.sentMessage.equals("[10009] The message is not formatted by JSON."));
+		assertTrue(UserAuthenticationClient.sentMessage.equals("[10009] The message is not formatted by JSON."));
 	}
 	
 	/**
@@ -145,7 +150,7 @@ public class TS6_Test {
 	 */
 	@Test
 	public void test03() throws IOException, InterruptedException {		
-		TS6_Client.sentMessage = null;
+		UserAuthenticationClient.sentMessage = null;
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
 		
@@ -155,12 +160,12 @@ public class TS6_Test {
 		client.sendPollingMessage(contentsBuilder.toString());
 
 //		assertTrue(TS6_Client.sentMessage.equals(server_message));	
-		assertTrue(TS6_Client.sentMessage.equals("[10006] The certificate is not included."));
+		assertTrue(UserAuthenticationClient.sentMessage.equals("[10006] The certificate is not included."));
 	}
 	
 	@Test
 	public void test04() throws IOException, InterruptedException {		
-		TS6_Client.sentMessage = null;
+		UserAuthenticationClient.sentMessage = null;
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
 		
@@ -169,18 +174,18 @@ public class TS6_Test {
 		String signedData = getSignedData(true);
 		contentsBuilder.setCertificate(signedData);
 		client.sendPollingMessage(contentsBuilder.toString());
-		assertTrue(TS6_Client.sentMessage.equals("[10007] The service MRN is not included."));	
+		assertTrue(UserAuthenticationClient.sentMessage.equals("[10007] The service MRN is not included."));	
 	}
 	
 	@Test
 	public void test05() throws IOException, InterruptedException {		
-		TS6_Client.sentMessage = null;
+		UserAuthenticationClient.sentMessage = null;
 		contentsBuilder.setCertificate(null);
 		contentsBuilder.setServiceMRN(null);
 		
 		server.sendMessage(server_message);
 
-		TS6_Client theClient = new TS6_Client(TS6_Test.clientMRN + "-attacker");
+		UserAuthenticationClient theClient = new UserAuthenticationClient(UserAuthenticationTest.clientMRN + "-attacker");
 		String signedData = getSignedData(true);
 		contentsBuilder.setServiceMRN(serverMRN);
 		contentsBuilder.setCertificate(signedData);
@@ -188,6 +193,6 @@ public class TS6_Test {
 		theClient.sendPollingMessage(contentsBuilder.toString());
 
 //		System.out.println(TS6_Client.sentMessage);
-		assertTrue(TS6_Client.sentMessage.equals("[10012] Authentication is failed."));
+		assertTrue(UserAuthenticationClient.sentMessage.equals("[10012] Authentication is failed."));
 	}
 }

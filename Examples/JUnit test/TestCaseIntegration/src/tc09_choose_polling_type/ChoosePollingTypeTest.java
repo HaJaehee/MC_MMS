@@ -1,4 +1,4 @@
-package TS9;
+package tc09_choose_polling_type;
 
 
 /** 
@@ -8,6 +8,10 @@ File name : TS9_test.java
  * of testing MMS Author : Youngjin Kim (jcdad3000@kaist.ac.kr) Creation Date :
  * 2019-05-20
 
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS9_Test to ChoosePollingTypeTest
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
 import static org.junit.Assert.assertTrue;
@@ -19,17 +23,17 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class TS9_test {
-	static TS9_client client;
-	static TS9_server server;
+public class ChoosePollingTypeTest {
+	static ChoosePollingTypeClient client;
+	static ChoosePollingTypeServer server;
 	static int offset;
 	
 	static List<String> response = null;
 	
 	@BeforeClass 
 	public static void setupForClass() throws Exception {
-		client = new TS9_client();
-		server = new TS9_server();
+		client = new ChoosePollingTypeClient();
+		server = new ChoosePollingTypeServer();
 		offset = 4;
 	}
 	

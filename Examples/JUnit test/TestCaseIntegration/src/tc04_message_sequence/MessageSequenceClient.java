@@ -1,4 +1,4 @@
-package TS4;
+package tc04_message_sequence;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,8 +21,13 @@ File name : TS4_client.java
 	message sequence test
 Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
 Creation Date : 2018-10-13
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS4_Test to MessageSequenceClient
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
-public class TS4_client {
+public class MessageSequenceClient {
 	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-04-client";
 	//private String svcMRN = "urn:mrn:imo:imo-no:ts-mms-04-server";
 	//private String dstMRN = "urn:mrn:smart-navi:device:mms1";
@@ -32,7 +37,7 @@ public class TS4_client {
 	String message = " SC2 ¾È³ç hi \"hello\"";
 	Map<String, List<String>> headerfield = new HashMap<String, List<String>>();
 
-	public TS4_client() throws Exception {
+	public MessageSequenceClient() throws Exception {
 		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
 
 		sender.setSender(new MMSClientHandler.ResponseCallback() {

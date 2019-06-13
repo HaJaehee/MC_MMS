@@ -1,4 +1,4 @@
-package TS3;
+package tc03_polling_variable_payload;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,16 +22,20 @@ Rev.history :2018-10-13
 Version : 0.8.0
 Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
 
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS3_Test to MMSPollingReturnedwithVariablePayloadServer
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
  */
 
-public class TS3_server {
+public class MMSPollingReturnedwithVariablePayloadServer {
 	private int response = 0;
 	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-03-server";
 //	private String dstMRN = "urn:mrn:imo:imo-no:ts-mms-03-client";
 	private String dstMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 	private MMSClientHandler myHandler = null;
 
-	public TS3_server() {
+	public MMSPollingReturnedwithVariablePayloadServer() {
 		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
 
 		MMSConfiguration.DEBUG = false;

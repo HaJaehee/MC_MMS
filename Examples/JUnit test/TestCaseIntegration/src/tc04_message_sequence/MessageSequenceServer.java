@@ -1,4 +1,4 @@
-package TS4;
+package tc04_message_sequence;
 
 import kr.ac.kaist.mms_client.MMSConfiguration;
 
@@ -15,15 +15,20 @@ File name : TS4_server.java
 	message sequence test
 Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
 Creation Date : 2018-10-13
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS4_Test to MessageSequenceServer
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
-public class TS4_server {
+public class MessageSequenceServer {
 	String myMRN = "urn:mrn:imo:imo-no:ts-mms-04-server";
 	String dstMRN = "urn:mrn:imo:imo-no:ts-mms-04-client";
 	private MMSClientHandler myHandler = null;
 	ArrayList<Integer> seqNum = new ArrayList();
 
-	public TS4_server() throws NullPointerException, IOException {
+	public MessageSequenceServer() throws NullPointerException, IOException {
 		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
 
 		myHandler = new MMSClientHandler(myMRN);

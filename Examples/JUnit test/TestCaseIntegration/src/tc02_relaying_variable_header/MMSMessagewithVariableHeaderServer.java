@@ -1,4 +1,4 @@
-package TS2;
+package tc02_relaying_variable_header;
 /** 
 File name : TS2_server.java
 	Relaying message function for the purpose of testing MMS
@@ -9,6 +9,11 @@ Rev. history : 2019-05-17
 Version : 0.9.1
 	Running this test case with version 0.9.1 and 
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS2_Test to MMSMessagewithVariableHeaderServer
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
 import java.io.IOException;
@@ -21,7 +26,7 @@ import java.util.Map;
 import kr.ac.kaist.mms_client.MMSClientHandler;
 import kr.ac.kaist.mms_client.MMSConfiguration;
 
-public class TS2_server {
+public class MMSMessagewithVariableHeaderServer {
 	private int response = 0;
 	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-02-server";
 	private String dstMRN = "urn:mrn:imo:imo-no:ts-mms-02-client";
@@ -40,7 +45,7 @@ public class TS2_server {
 	String Msg=null;
 	String Realm=null;
 	
-	public TS2_server() throws Exception {
+	public MMSMessagewithVariableHeaderServer() throws Exception {
 		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
 		//MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		myHandler = new MMSClientHandler(myMRN);

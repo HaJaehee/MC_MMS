@@ -1,4 +1,4 @@
-package TS8;
+package tc08_long_polling_duplicate;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -21,8 +21,13 @@ import net.etri.pkilib.tool.ByteConverter;
  * Version : 0.9.1
  *		Added assert statements.
  * Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+ * 
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS8_Client to LongPollingDuplicateClient
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
  */
-public class TS8_client {
+public class LongPollingDuplicateClient {
 
 	private static int length = -1;
 	
@@ -34,7 +39,7 @@ public class TS8_client {
 		return checker;
 	}
 
-	public TS8_client() {
+	public LongPollingDuplicateClient() {
 
 
 		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
@@ -104,7 +109,7 @@ class ThreadEX implements Runnable {
 		try {
 			myHandler = new MMSClientHandler(myMRN);
 
-			myHandler.startPolling(dstMRN, svcMRN, TS8_client.hexSignedData_active, 0,
+			myHandler.startPolling(dstMRN, svcMRN, LongPollingDuplicateClient.hexSignedData_active, 0,
 					new MMSClientHandler.PollingResponseCallback() {
 
 						@Override
@@ -112,7 +117,7 @@ class ThreadEX implements Runnable {
 							// TODO Auto-generated method stub
 
 							for (String s : messages) {
-								TS8_test.response.add(s);
+								LongPollingDuplicateTest.response.add(s);
 								//System.out.println("message : " + s);
 							}
 							myHandler.stopPolling();

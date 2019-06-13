@@ -1,9 +1,14 @@
-package TS2;
+package tc02_relaying_variable_header;
 /** 
 File name : TS2_client.java
 	Relaying message function for the purpose of testing MMS.
 Author : YoungJin Kim (jcdad3000@kaist.ac.kr)
 Creation Date : 2018-09-13
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS2_Test to MMSMessagewithVariableHeaderClient
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
 import java.io.IOException;
@@ -16,7 +21,7 @@ import java.util.Map;
 import kr.ac.kaist.mms_client.MMSClientHandler;
 import kr.ac.kaist.mms_client.MMSConfiguration;
 
-public class TS2_client {
+public class MMSMessagewithVariableHeaderClient {
 	String response = null;
 	private int content_length = 0;
 	private static int length = -1;
@@ -26,7 +31,7 @@ public class TS2_client {
 
 	private MMSClientHandler sender = new MMSClientHandler(myMRN);
 	private MMSClientHandler empty_sender = new MMSClientHandler("");
-	public TS2_client() throws Exception {
+	public MMSMessagewithVariableHeaderClient() throws Exception {
 		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
 		//MMSConfiguration.MMS_URL="127.0.0.1:8088";
 

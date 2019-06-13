@@ -1,4 +1,4 @@
-package TS4;
+package tc04_message_sequence;
 
 import static org.junit.Assert.*;
 
@@ -18,16 +18,21 @@ Rev. history : 2019-05-17
 Version : 0.9.1
 	Running this test case with version 0.9.1 and the test case is succeeded.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS4_Test to MessageSequenceTest
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
-public class TS4_test {
-	static TS4_client client;
-	static TS4_server server;
+public class MessageSequenceTest {
+	static MessageSequenceClient client;
+	static MessageSequenceServer server;
 
 	@BeforeClass
 	public static void testmain() throws Exception {
-		client = new TS4_client();
-		server = new TS4_server();
+		client = new MessageSequenceClient();
+		server = new MessageSequenceServer();
 
 	}
 

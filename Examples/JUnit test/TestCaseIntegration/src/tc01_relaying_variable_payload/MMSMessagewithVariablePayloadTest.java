@@ -1,4 +1,4 @@
-package TS1;
+package tc01_relaying_variable_payload;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -21,16 +21,21 @@ Version : 0.9.1
 	Change the version from JUnit3 to JUnit4.
 	Running this test case with version 0.9.1 and the test case is succeeded.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS1_Test to MMSMessagewithVariablePayloadTest
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 @FixMethodOrder(MethodSorters.DEFAULT)
-public class TS1_Test {
-	static TS1_client client;
-	static TS1_server server;	
+public class MMSMessagewithVariablePayloadTest {
+	static MMSMessagewithVariablePayloadClient client;
+	static MMSMessagewithVariablePayloadServer server;	
 	
 	@BeforeClass
 	public static void testmain() throws Exception {	
-		client = new TS1_client();
-		server = new TS1_server();
+		client = new MMSMessagewithVariablePayloadClient();
+		server = new MMSMessagewithVariablePayloadServer();
 		
 	}
 
@@ -42,7 +47,7 @@ public class TS1_Test {
 	public int sendContentLength(String FileName, int actual_content_length) throws IOException {
 		
 		client.sendContentLength(FileName,actual_content_length);
-		int expected_content_length = TS1_server.getContentLength();
+		int expected_content_length = MMSMessagewithVariablePayloadServer.getContentLength();
 		return expected_content_length;
 	}
 	

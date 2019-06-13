@@ -1,16 +1,17 @@
-package TS8;
+package tc09_choose_polling_type;
+
 
 /** 
-File name : TS8_server.java
-	Dropping duplicate long polling request test 
-Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
-Creation Date : 2019-05-10
+File name : TS9_server.java
+ * Client Type decide junit test 
+ * of testing MMS Author : Youngjin Kim (jcdad3000@kaist.ac.kr) Creation Date :
+ * 2019-05-20
 
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS9_Server to ChoosePollingTypeServer
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 
- * Rev. history : 2019-05-17
- * Version : 0.9.1
- *		Added assert statements.
- * Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 
 import java.io.IOException;
@@ -23,15 +24,12 @@ import kr.ac.kaist.mms_client.MMSConfiguration;
 
 
 
-public class TS8_server {
-	private int response = 0;
-	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-08-server";
+public class ChoosePollingTypeServer {	
+	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-09-server";
 	private String dstMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 	private MMSClientHandler myHandler = null;
 
-	public TS8_server() {
-		//MMSConfiguration.MMS_URL = "143.248.55.83:8088";
-		//MMSConfiguration.MMS_URL="mms.smartnav.org:8088";
+	public ChoosePollingTypeServer() {
 
 		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
 		MMSConfiguration.DEBUG = false;
@@ -43,7 +41,7 @@ public class TS8_server {
 
 				@Override
 				public void callbackMethod(Map<String, List<String>> headerField, String message) {
-					// TODO Auto-generated method stub				
+					// TODO Auto-generated method stub					
 				}
 
 			});
@@ -53,11 +51,7 @@ public class TS8_server {
 		}
 
 	}
-
-	public int getResponse() {
-		return response;
-	}
-
+	
 	public void sendContent(int content) throws IOException {
 		
 
@@ -67,15 +61,7 @@ public class TS8_server {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-
-		/*String data = createDataSize(content);
-		try {
-			myHandler.sendPostMsg(dstMRN, data);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+		}		
 	}
 
 

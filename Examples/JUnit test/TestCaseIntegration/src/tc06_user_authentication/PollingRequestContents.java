@@ -1,4 +1,4 @@
-package TS6;
+package tc06_user_authentication;
 
 import org.json.simple.JSONObject;
 

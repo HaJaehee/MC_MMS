@@ -1,4 +1,4 @@
-package TS3;
+package tc03_polling_variable_payload;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -26,9 +26,14 @@ Version : 0.9.1
 	Add JSON library and MIR API.
 	Add certificate for version compatability.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS3_Test to MMSPollingReturnedwithVariablePayloadClient
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
-public class TS3_client {
+public class MMSPollingReturnedwithVariablePayloadClient {
 	private int content_length = 0;
 	
 //	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-03-client";
@@ -39,7 +44,7 @@ public class TS3_client {
 	private MMSClientHandler.PollingResponseCallback callback = null;
 	private static int length = -1;
 	
-	public TS3_client(){
+	public MMSPollingReturnedwithVariablePayloadClient(){
 
 		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
 

@@ -1,4 +1,4 @@
-package TS4;
+package tc04_message_sequence;
 
 import java.io.IOException;
 import java.util.ArrayList;

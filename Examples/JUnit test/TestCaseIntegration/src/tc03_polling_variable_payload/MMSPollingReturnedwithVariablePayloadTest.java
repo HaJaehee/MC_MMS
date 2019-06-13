@@ -1,4 +1,4 @@
-package TS3;
+package tc03_polling_variable_payload;
 import static org.junit.Assert.*;
 
 
@@ -25,18 +25,23 @@ Version : 0.9.1
 	
 	** And this test is succeeded
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS3_Test to MMSPollingReturnedwithVariablePayloadTest
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
 @FixMethodOrder(MethodSorters.DEFAULT)
-public class TS3_Test {
-	static TS3_client client;
-	static TS3_server server;
+public class MMSPollingReturnedwithVariablePayloadTest {
+	static MMSPollingReturnedwithVariablePayloadClient client;
+	static MMSPollingReturnedwithVariablePayloadServer server;
 	static int offset;
 	
 	@BeforeClass 
 	public static void setupForClass() throws Exception {
-		client = new TS3_client();
-		server = new TS3_server();
+		client = new MMSPollingReturnedwithVariablePayloadClient();
+		server = new MMSPollingReturnedwithVariablePayloadServer();
 		offset = 4;
 	}
 

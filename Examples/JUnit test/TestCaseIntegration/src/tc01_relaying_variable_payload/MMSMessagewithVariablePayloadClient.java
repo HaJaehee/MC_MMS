@@ -1,4 +1,4 @@
-package TS1;
+package tc01_relaying_variable_payload;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,9 +23,13 @@ Rev.history :2018-10-13
 Version : 0.8.0
 Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
 
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS1_Test to MMSMessagewithVariablePayloadClient
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
-public class TS1_client {
+public class MMSMessagewithVariablePayloadClient {
 	//public static void main(String[] args) throws Exception{	
 	
 	private int response = 0;
@@ -36,7 +40,7 @@ public class TS1_client {
 	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-01-client";
 	private MMSClientHandler sender = new MMSClientHandler(myMRN);
 	
-	public TS1_client() throws Exception {		
+	public MMSMessagewithVariablePayloadClient() throws Exception {		
 
 		MMSConfiguration.MMS_URL="mms-kaist.com:8088";			
 		//MMSConfiguration.MMS_URL="127.0.0.1:8088";

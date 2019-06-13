@@ -1,4 +1,4 @@
-package TS8;
+package tc08_long_polling_duplicate;
 
 /** 
 package TS8;
@@ -12,6 +12,13 @@ Creation Date : 2019-05-10
  * Version : 0.9.1
  *		Added assert statements.
  * Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+ * 
+ * 
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS8_Test to LongPollingDuplicateTest
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
 import static org.junit.Assert.assertTrue;
@@ -23,17 +30,17 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class TS8_test {
-	static TS8_client client;
-	static TS8_server server;
+public class LongPollingDuplicateTest {
+	static LongPollingDuplicateClient client;
+	static LongPollingDuplicateServer server;
 	static int offset;
 	
 	static List<String> response = null;
 	
 	@BeforeClass 
 	public static void setupForClass() throws Exception {
-		client = new TS8_client();
-		server = new TS8_server();
+		client = new LongPollingDuplicateClient();
+		server = new LongPollingDuplicateServer();
 		offset = 4;
 	}
 	

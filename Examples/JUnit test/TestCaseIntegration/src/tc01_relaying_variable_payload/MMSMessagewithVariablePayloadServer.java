@@ -1,4 +1,4 @@
-package TS1;
+package tc01_relaying_variable_payload;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,9 +18,14 @@ Creation Date : 2017-07-23
 Rev.history :2018-10-13
 Version : 0.8.0
 Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS1_Test to MMSMessagewithVariablePayloadServer
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
-public class TS1_server {
+public class MMSMessagewithVariablePayloadServer {
 	private int response = 0;
 	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-01-server";
 	private String dstMRN = "urn:mrn:imo:imo-no:ts-mms-01-client";
@@ -29,7 +34,7 @@ public class TS1_server {
 	private static int length = -1;
 	
 	
-	public TS1_server() throws Exception {
+	public MMSMessagewithVariablePayloadServer() throws Exception {
 		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
 		//MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		MMSConfiguration.DEBUG = false;

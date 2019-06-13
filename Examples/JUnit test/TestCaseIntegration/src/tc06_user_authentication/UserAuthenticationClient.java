@@ -1,4 +1,4 @@
-package TS6;
+package tc06_user_authentication;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -24,9 +24,14 @@ Creation Date : 2019-04-16
 Rev. history : 2019-04-23
 	Add server which is MMSClientHandler.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	Change the class name from TS6_Client to UserAuthenticationClient
+	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
-public class TS6_Client {
+public class UserAuthenticationClient {
 	private String myMRN;
 	private String dstMRN;
 	private String svcMRN;
@@ -35,19 +40,19 @@ public class TS6_Client {
 	public static String sentMessage = null;
 	private static int length = -1;
 	
-	public TS6_Client() {
-		this(false, TS6_Test.clientMRN);
+	public UserAuthenticationClient() {
+		this(false, UserAuthenticationTest.clientMRN);
 	}
 	
-	public TS6_Client(String myMRN) {
+	public UserAuthenticationClient(String myMRN) {
 		this(false, myMRN);
 	}
 	
-	public TS6_Client(boolean isPolling, String myMRN) {
+	public UserAuthenticationClient(boolean isPolling, String myMRN) {
 		this.myMRN = myMRN;
 		this.dstMRN = "urn:mrn:smart-navi:device:mms1";
-		this.svcMRN = TS6_Test.serverMRN;
-		MMSConfiguration.MMS_URL = TS6_Test.MMS_URL;
+		this.svcMRN = UserAuthenticationTest.serverMRN;
+		MMSConfiguration.MMS_URL = UserAuthenticationTest.MMS_URL;
 
 		try {
 			if (isPolling) {
