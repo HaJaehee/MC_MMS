@@ -27,7 +27,7 @@ Version : 0.9.2
 public class UserAuthenticationServer {
 	private String myMRN = null;
 	private String dstMRN = null;
-	private int port = 8902;
+	private int port = 8907;
 	private MMSClientHandler server = null;
 	private MMSClientHandler sender = null;
 	

@@ -32,7 +32,7 @@ public class MessageSequenceServer {
 		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
 
 		myHandler = new MMSClientHandler(myMRN);
-		int port = 8902;
+		int port = 8907;
 
 		myHandler.setServerPort(port, new MMSClientHandler.RequestCallback() {
 
