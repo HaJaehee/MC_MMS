@@ -46,7 +46,7 @@ public class MMSMessagewithVariablePayloadTest {
 	
 	public int sendContentLength(String FileName, int actual_content_length) throws IOException {
 		
-		client.sendContentLength(FileName,actual_content_length);
+		client.sendContentLength("files/"+FileName,actual_content_length);
 		int expected_content_length = MMSMessagewithVariablePayloadServer.getContentLength();
 		return expected_content_length;
 	}
