@@ -99,6 +99,11 @@ Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-14
+Version : 0.9.2
+	Refactoring.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -233,8 +238,9 @@ public class MRH_MessageOutputChannel{
         });
     	
         SessionManager.getSessionInfo().remove(SESSION_ID);
-
-        mmsLog.trace(logger, this.SESSION_ID, "Message has been sent completely.");
+        if (logger.isTraceEnabled()) {
+        	mmsLog.trace(logger, this.SESSION_ID, "Message has been sent completely.");
+        }
     }
 
 	public HttpURLConnection requestMessage(String IPAddress, int port, HttpMethod httpMethod, String uri, String username, String password) throws IOException {  
@@ -258,8 +264,10 @@ public class MRH_MessageOutputChannel{
 		con.setRequestProperty("Authorization","Basic "+new String(encodedBytes));
 
 		// get request doesn't have http body
-		mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+		 if (logger.isTraceEnabled()) {
+			 mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (httpMethod==httpMethod.POST?"POST":"GET")+"\n");
+		 }
 		return con;
 	}
 	
@@ -302,8 +310,10 @@ public class MRH_MessageOutputChannel{
 		} 
 		
 		// get request doesn't have http body
-		mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+		 if (logger.isTraceEnabled()) {
+			 mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters=" + urlParameters+"\n");
+		 }
 		return con;
 	}
 
@@ -353,8 +363,10 @@ public class MRH_MessageOutputChannel{
 			wr.flush();
 			wr.close();
 		} 
-		mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+		 if (logger.isTraceEnabled()) {
+			 mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters=" + urlParameters+"\n");
+		 }
 		
 		return con;
 	}
@@ -382,8 +394,10 @@ public class MRH_MessageOutputChannel{
 		con.setRequestProperty("Authorization","Basic "+new String(encodedBytes));
 
 		// get request doesn't have http body
-		mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+		 if (logger.isTraceEnabled()) {
+			 mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (httpMethod==httpMethod.POST?"POST":"GET")+"\n");
+		 }
 		return con;
 	}
 	

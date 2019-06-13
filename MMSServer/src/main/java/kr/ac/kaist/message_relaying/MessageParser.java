@@ -94,6 +94,11 @@ Rev. history : 2019-05-29
 Version : 0.9.1
 	Resolved a bug related to realtime log function.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-14
+Version : 0.9.2
+	Refactoring.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -382,7 +387,7 @@ public class MessageParser {
 	// Destination Information //
 	String getDstIP() { return dstIP; }
 	int getDstPort() { return dstPort; }
-	String getDstMRN() { return dstMRN; }
+	public String getDstMRN() { return dstMRN; }
 	String getDstModel() { return dstModel; }
 	long getSeqNum() { return seqNum;	}
 	
@@ -395,11 +400,11 @@ public class MessageParser {
 	}
 	
 	// Source Information //
-	String getSrcIP(){ return srcIP; }
-	String getSrcMRN() { return srcMRN; }
+	public String getSrcIP(){ return srcIP; }
+	public String getSrcMRN() { return srcMRN; }
 	
 	// Service Information //
-	String getSvcMRN (){ return svcMRN; }
+	public String getSvcMRN (){ return svcMRN; }
 	
 	// Geolocation Information // 
 	public boolean isGeocastingMsg (){

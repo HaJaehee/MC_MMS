@@ -23,6 +23,11 @@ Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-14
+Version : 0.9.2
+	Added error cases for sequential relaying message.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -60,7 +65,12 @@ public enum ErrorCode {
 
 	// Number 18XXX is related to the relaying functions.
 	SEQUENTIAL_RELAYING_EXCEPTION_ERR("18001", "Exception error occured in sequentailly relaying function."),
-	SEQUENTIAL_RELAYING_INITIALIZATION_ERR("18002", "Initialization problem occured in sequentailly relaying function.");
+	SEQUENTIAL_RELAYING_INITIALIZATION_ERR("18002", "Initialization problem occured in sequentailly relaying function."),
+	SEQUENCE_NUMBER_IS_DUPLICATED("18003","Sequence number of message is duplicated."),
+	SEQUENCE_NUMBER_IS_OUT_OF_ORDERED("18004","Sequence number of message is out of ordered."),
+	SEQUENTIAL_RELAYING_NULL_POINTER_EXCEPTION("18005", "Null pointer exception error occured in sequentailly relaying function."),
+	SEQUENTIAL_RELAYING_LIST_EMTPY("18006", "Empty message list error occured in sequentailly relaying function.")
+	;
 	
 	
 	private String code;
