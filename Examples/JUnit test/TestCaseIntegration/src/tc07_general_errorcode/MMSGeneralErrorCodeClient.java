@@ -1,4 +1,4 @@
-package TS7;
+package tc07_general_errorcode;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,13 +27,20 @@ import java.util.Set;
 import kr.ac.kaist.mms_client.MMSClientHandler;
 import kr.ac.kaist.mms_client.MMSConfiguration;
 /** 
-File name : TS7_client.java
+File name : MMSGeneralErrorCodeClient.java
 	This test client is for testing whether MMS give a error message properly or not.
 Author : Yunho Choi (choiking10@kaist.ac.kr)
 Creation Date : 2019-05-02
+
+Rev.history :2019-06-13
+Version : 0.9.2
+	Change the class name TS7_Client -> MMSGeneralErrorCodeClient
+	
+	** And this test is succeeded
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 */
 
-public class TS7_client {
+public class MMSGeneralErrorCodeClient {
 	//public static void main(String[] args) throws Exception{	
 	private String TAG = "[MMSSndHandler] ";
 	private final String USER_AGENT = MMSConfiguration.USER_AGENT;
@@ -41,7 +48,7 @@ public class TS7_client {
 	private boolean isRgstLoc = false;
 	private MMSClientHandler.ResponseCallback myCallback;
 	
-	public TS7_client(String myMRN) throws Exception {		
+	public MMSGeneralErrorCodeClient(String myMRN) throws Exception {		
 		clientMRN = myMRN;
 	}
 	public void sendMessage(String dstMRN, String loc, String data, MMSClientHandler.ResponseCallback callback) {

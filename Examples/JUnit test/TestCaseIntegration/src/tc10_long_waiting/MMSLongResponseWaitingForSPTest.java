@@ -1,4 +1,4 @@
-package TS10;
+package tc10_long_waiting;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -17,14 +17,21 @@ import kr.ac.kaist.mms_client.MMSClientHandler;
 import kr.ac.kaist.mms_client.MMSConfiguration;
 
 /** 
-File name : TS10_Test.java
+File name : MMSLongResponseWaitingForSPTest.java
 	This test is for testing long response waiting when SP does not response. 
 Author : Yunho Choi (choiking10@kaist.ac.kr)
 Creation Date : 2019-05-22
+
+Rev.history :2019-06-13
+Version : 0.9.2
+	Change the class name TS10_Test -> MMSLongResponseWaitingForSPTest
+	
+	** And this test is succeeded
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 */
 
 @FixMethodOrder(MethodSorters.DEFAULT)
-public class TS10_Test {
+public class MMSLongResponseWaitingForSPTest {
 	static MMSClientHandler server;	
 	
 	// WARN: you have to change your dstMRN(mms-10-server) at MNS. At the website,

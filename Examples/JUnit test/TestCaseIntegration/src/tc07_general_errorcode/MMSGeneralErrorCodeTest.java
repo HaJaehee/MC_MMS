@@ -1,4 +1,4 @@
-package TS7;
+package tc07_general_errorcode;
 
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -22,14 +22,21 @@ import kr.ac.kaist.mms_client.MMSClientHandler;
 import kr.ac.kaist.mms_client.MMSConfiguration;
 
 /** 
-File name : TS7_Test.java
+File name : MMSGeneralErrorCodeTest.java
 	This test is for testing whether MMS give a error message properly or not.
 Author : Yunho Choi (choiking10@kaist.ac.kr)
 Creation Date : 2019-05-02
+
+Rev.history :2019-06-13
+Version : 0.9.2
+	Change the class name TS7_Test -> MMSGeneralErrorCodeTest
+	
+	** And this test is succeeded
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 */
 @FixMethodOrder(MethodSorters.DEFAULT)
-public class TS7_Test {
-	static TS7_server server;	
+public class MMSGeneralErrorCodeTest {
+	static MMSGeneralErrorCodeServer server;	
 
 	// WARN: you have to change your dstMRN(mms-07-server) at MNS. At the website,
 	// Add MNS entry having MRN=[urn:mrn:imo:imo-no:ts-mms-07-server], IP=[your-ip], PortNumber=[8907], Model=[2] and ADD!
@@ -57,7 +64,7 @@ public class TS7_Test {
 		return s.substring(1, 6);
 	}
 	public void sendMessage(String src, String dst, String loc, String message, String expectedMessage) throws Exception {
-		TS7_client client = new TS7_client(src);
+		MMSGeneralErrorCodeClient client = new MMSGeneralErrorCodeClient(src);
 		client.sendMessage(dst, message, loc, new MMSClientHandler.ResponseCallback() {		
 			@Override
 			public void callbackMethod(Map<String, List<String>> headerField, String message) {
@@ -68,7 +75,7 @@ public class TS7_Test {
 	}
 	public static void runServer(String mrn, int port) {
 		try {
-			server = new TS7_server(mrn, port);
+			server = new MMSGeneralErrorCodeServer(mrn, port);
 		} catch(Exception e) {
 			assertTrue("run Server make Exception", false);
 		}
@@ -76,7 +83,7 @@ public class TS7_Test {
 	}
 	public void sendMessageForError(String src, String dst, String loc, String message, String expectedCode) throws Exception {
 		
-		TS7_client client = new TS7_client(src);
+		MMSGeneralErrorCodeClient client = new MMSGeneralErrorCodeClient(src);
 		client.sendMessage(dst, loc, message, new MMSClientHandler.ResponseCallback() {		
 			@Override
 			public void callbackMethod(Map<String, List<String>> headerField, String message) {
