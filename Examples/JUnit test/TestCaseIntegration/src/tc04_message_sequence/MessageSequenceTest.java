@@ -8,6 +8,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import kr.ac.kaist.mms_client.MMSConfiguration;
+
 /** 
 File name : TS4_Test.java
 	message sequence test
@@ -33,7 +35,7 @@ public class MessageSequenceTest {
 	public static void testmain() throws Exception {
 		client = new MessageSequenceClient();
 		server = new MessageSequenceServer();
-
+		MMSConfiguration.DEBUG = true;
 	}
 
 	@AfterClass
@@ -56,14 +58,17 @@ public class MessageSequenceTest {
 		seqArray = server.getSeqnum();
 		
 		System.out.println("size : " +size);
+		assertFalse(size == 0);
 		for (int i = 0; i < size; i++) {
 
 			seqNum = seqArray.get(i);			
-			assertTrue(seqNum>=checker);
+			assertTrue(seqNum>=checker && size > 0);
 			checker= seqNum;
 			System.out.println("seqNum : " + seqNum);
 			System.out.println("checker : " +checker);
 		}
+		
+		
 		server.ArrayReset();
 	}
 
@@ -81,10 +86,11 @@ public class MessageSequenceTest {
 		seqArray = server.getSeqnum();
 		
 		System.out.println("size : " +size);
+		assertFalse(size == 0);
 		for (int i = 0; i < size; i++) {
 
 			seqNum = seqArray.get(i);			
-			assertTrue(seqNum>=checker);
+			assertTrue(seqNum>=checker && size > 0);
 			checker= seqNum;
 			System.out.println("seqNum : " + seqNum);
 			System.out.println("checker : " +checker);
@@ -106,10 +112,11 @@ public class MessageSequenceTest {
 		seqArray = server.getSeqnum();
 		
 		System.out.println("size : " +size);
+		assertFalse(size == 0);
 		for (int i = 0; i < size; i++) {
 
 			seqNum = seqArray.get(i);			
-			assertTrue(seqNum>=checker);
+			assertTrue(seqNum>=checker && size > 0);
 			checker= seqNum;
 			System.out.println("seqNum : " + seqNum);
 			System.out.println("checker : " +checker);
@@ -130,10 +137,11 @@ public class MessageSequenceTest {
 		seqArray = server.getSeqnum();
 		
 		System.out.println("size : " +size);
+		assertFalse(size == 0);
 		for (int i = 0; i < size; i++) {
 
 			seqNum = seqArray.get(i);			
-			assertTrue(seqNum>=checker);
+			assertTrue(seqNum>=checker && size > 0);
 			checker= seqNum;
 			System.out.println("seqNum : " + seqNum);
 			System.out.println("checker : " +checker);
@@ -154,10 +162,11 @@ public class MessageSequenceTest {
 		seqArray = server.getSeqnum();
 		
 		System.out.println("size : " +size);
+		assertFalse(size == 0);
 		for (int i = 0; i < size; i++) {
 
 			seqNum = seqArray.get(i);			
-			assertTrue(seqNum>=checker);
+			assertTrue(seqNum>=checker && size > 0);
 			checker= seqNum;
 			System.out.println("seqNum : " + seqNum);
 			System.out.println("checker : " +checker);
@@ -178,10 +187,11 @@ public class MessageSequenceTest {
 		seqArray = server.getSeqnum();
 		
 		System.out.println("size : " +size);
+		assertFalse(size == 0);
 		for (int i = 0; i < size; i++) {
 
 			seqNum = seqArray.get(i);			
-			assertTrue(seqNum>=checker);
+			assertTrue(seqNum>=checker && size > 0);
 			checker= seqNum;
 			System.out.println("seqNum : " + seqNum);
 			System.out.println("checker : " +checker);
