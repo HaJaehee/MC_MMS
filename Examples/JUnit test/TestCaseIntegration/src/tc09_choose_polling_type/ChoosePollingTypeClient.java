@@ -51,8 +51,8 @@ public class ChoosePollingTypeClient {
 		byte[] content = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
 
 		// ===== active certificate =====
-		String privateKeyPath_active = "PrivateKey_POUL_LOWENORN_active.pem";
-		String certPath_active = "Certificate_POUL_LOWENORN_active.pem";
+		String privateKeyPath_active = "certs/PrivateKey_POUL_LOWENORN_active.pem";
+		String certPath_active = "certs/Certificate_POUL_LOWENORN_active.pem";
 
 		byte[] signedData_active = clientPKILib.generateSignedData(content, privateKeyPath_active, certPath_active);
 		hexSignedData_active = byteConverter.byteArrToHexString(signedData_active);

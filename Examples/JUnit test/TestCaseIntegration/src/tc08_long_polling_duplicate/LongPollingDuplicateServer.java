@@ -36,7 +36,7 @@ public class LongPollingDuplicateServer {
 	private MMSClientHandler myHandler = null;
 
 	public LongPollingDuplicateServer() {
-		//MMSConfiguration.MMS_URL = "143.248.55.83:8088";
+		//MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
 		//MMSConfiguration.MMS_URL="mms.smartnav.org:8088";
 
 		MMSConfiguration.MMS_URL="mms-kaist.com:8088";

@@ -10,6 +10,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import kr.ac.kaist.mms_client.MMSConfiguration;
+
 /** 
 File name : TS1_Test.java
 	Relaying message function for the purpose of testing MMS
@@ -36,7 +38,7 @@ public class MMSMessagewithVariablePayloadTest {
 	public static void testmain() throws Exception {	
 		client = new MMSMessagewithVariablePayloadClient();
 		server = new MMSMessagewithVariablePayloadServer();
-		
+
 	}
 
 	@AfterClass
