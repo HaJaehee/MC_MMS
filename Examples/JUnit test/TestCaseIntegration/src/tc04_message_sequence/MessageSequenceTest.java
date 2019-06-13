@@ -11,7 +11,7 @@ import org.junit.Test;
 import kr.ac.kaist.mms_client.MMSConfiguration;
 
 /** 
-File name : TS4_Test.java
+File name : MessageSequenceTest.java
 	message sequence test
 Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
 Creation Date : 2018-10-13
@@ -35,7 +35,7 @@ public class MessageSequenceTest {
 	public static void testmain() throws Exception {
 		client = new MessageSequenceClient();
 		server = new MessageSequenceServer();
-		MMSConfiguration.DEBUG = true;
+		MMSConfiguration.DEBUG = false;
 	}
 
 	@AfterClass

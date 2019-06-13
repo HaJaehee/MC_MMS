@@ -17,7 +17,7 @@ import kr.ac.kaist.mms_client.MMSClientHandler;
 import kr.ac.kaist.mms_client.MMSConfiguration;
 
 /** 
-File name : TS4_client.java
+File name : MessageSequenceClient.java
 	message sequence test
 Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
 Creation Date : 2018-10-13
@@ -38,7 +38,7 @@ public class MessageSequenceClient {
 	Map<String, List<String>> headerfield = new HashMap<String, List<String>>();
 
 	public MessageSequenceClient() throws Exception {
-		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
+		MMSConfiguration.MMS_URL = "localhost:8088";
 
 		sender.setSender(new MMSClientHandler.ResponseCallback() {
 
@@ -62,7 +62,7 @@ public class MessageSequenceClient {
 		}
 		thrList.get(0).start();
 		Thread.sleep(delay);
-		thrList.get(2).start();
+		/*thrList.get(2).start();
 		Thread.sleep(delay);
 		thrList.get(1).start();
 		Thread.sleep(delay);
@@ -79,7 +79,7 @@ public class MessageSequenceClient {
 		thrList.get(7).start();
 		Thread.sleep(delay);
 		thrList.get(9).start();
-		thrList.get(9).join();
+		thrList.get(9).join();*/
 
 	}
 	public void SendSortedSequence(int delay) throws Exception {
@@ -89,7 +89,7 @@ public class MessageSequenceClient {
 		}
 		thrList.get(0).start();
 		Thread.sleep(delay);
-		thrList.get(1).start();
+		/*thrList.get(1).start();
 		Thread.sleep(delay);
 		thrList.get(2).start();
 		Thread.sleep(delay);
@@ -106,7 +106,7 @@ public class MessageSequenceClient {
 		thrList.get(8).start();
 		Thread.sleep(delay);
 		thrList.get(9).start();
-		thrList.get(9).join();
+		thrList.get(9).join();*/
 
 	}
 }

@@ -11,7 +11,7 @@ import java.util.Map;
 import kr.ac.kaist.mms_client.MMSClientHandler;
 
 /** 
-File name : TS4_server.java
+File name : MessageSequenceServer.java
 	message sequence test
 Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
 Creation Date : 2018-10-13
@@ -29,7 +29,7 @@ public class MessageSequenceServer {
 	ArrayList<Integer> seqNum = new ArrayList();
 
 	public MessageSequenceServer() throws NullPointerException, IOException {
-		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
+		MMSConfiguration.MMS_URL = "localhost:8088";
 
 		myHandler = new MMSClientHandler(myMRN);
 		int port = 8907;
@@ -54,6 +54,7 @@ public class MessageSequenceServer {
 				Iterator<String> iter = headerField.keySet().iterator();
 				while (iter.hasNext()) {
 					String key = iter.next();
+
 					if (key.equals("Seqnum")) {
 						// System.out.println(key+":"+headerField.get(key).toString());
 						String tmp = headerField.get(key).toString();
@@ -69,6 +70,7 @@ public class MessageSequenceServer {
 		});
 
 	}
+	
 	public void terminateServer() {
 		myHandler.terminateServer();
 	}
