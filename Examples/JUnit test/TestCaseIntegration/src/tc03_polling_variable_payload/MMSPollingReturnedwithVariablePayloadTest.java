@@ -55,7 +55,7 @@ public class MMSPollingReturnedwithVariablePayloadTest {
 		int expected = 0;
 		int actual = 0;				
 				
-		server.sendContent("file0B.txt",actual);	
+		server.sendContent("files/file0B.txt",actual);	
 		//Thread.sleep(1000);
 		
 		System.out.println("response : " +server.getResponse());
@@ -69,7 +69,7 @@ public class MMSPollingReturnedwithVariablePayloadTest {
 		int expected = 0;
 		int actual = 170;				
 				
-		server.sendContent("file170B.txt",actual);	
+		server.sendContent("files/file170B.txt",actual);	
 		expected = client.pollingReqeust();		
 		System.out.println("expected : " +expected);
 		assertTrue(server.getResponse() == 200);		
@@ -80,7 +80,7 @@ public class MMSPollingReturnedwithVariablePayloadTest {
 		int expected = 0;
 		int actual = 3*1024;				
 				
-		server.sendContent("file3KB.txt",actual);	
+		server.sendContent("files/file3KB.txt",actual);	
 		expected = client.pollingReqeust();		
 		assertTrue(server.getResponse() == 200);		
 		assertTrue(expected==(actual)+offset);			
@@ -90,7 +90,7 @@ public class MMSPollingReturnedwithVariablePayloadTest {
 		int expected = 0;
 		int actual = 200*1024;				
 				
-		server.sendContent("file200KB.txt",actual);	
+		server.sendContent("files/file200KB.txt",actual);	
 		expected = client.pollingReqeust();		
 		assertTrue(server.getResponse() == 200);		
 		assertTrue(expected==(actual)+offset);				
@@ -100,7 +100,7 @@ public class MMSPollingReturnedwithVariablePayloadTest {
 		int expected = 0;
 		int actual = 500*1024;				
 				
-		server.sendContent("file500KB.txt",actual);	
+		server.sendContent("files/file500KB.txt",actual);	
 		expected = client.pollingReqeust();		
 		assertTrue(server.getResponse() == 200);		
 		assertTrue(expected==(actual)+offset);		
@@ -110,7 +110,7 @@ public class MMSPollingReturnedwithVariablePayloadTest {
 		int expected = 0;
 		int actual = 2*1024*1024;				
 				
-		server.sendContent("file2MB.txt",actual);	
+		server.sendContent("files/file2MB.txt",actual);	
 		expected = client.pollingReqeust();		
 		assertTrue(server.getResponse() == 200);		
 		assertTrue(expected==(actual)+offset);		
@@ -120,7 +120,7 @@ public class MMSPollingReturnedwithVariablePayloadTest {
 		int expected = 0;
 		int actual = 7*1024*1024;				
 				
-		server.sendContent("file7MB.txt",actual);	
+		server.sendContent("files/file7MB.txt",actual);	
 		expected = client.pollingReqeust();		
 		assertTrue(server.getResponse() == 200);		
 		assertTrue(expected==(actual)+offset);		
@@ -130,7 +130,7 @@ public class MMSPollingReturnedwithVariablePayloadTest {
 		int expected = 0;
 		int actual = 10*1024*1024;				
 				
-		server.sendContent("file10MB.txt",actual);	
+		server.sendContent("files/file10MB.txt",actual);	
 		expected = client.pollingReqeust();		
 		assertTrue(server.getResponse() == 200);		
 		assertTrue(expected==(actual)+offset);	
@@ -140,7 +140,7 @@ public class MMSPollingReturnedwithVariablePayloadTest {
 		int expected = 0;
 		int actual = 20*1024*1024;				
 				
-		server.sendContent("file20MB.txt",actual);	
+		server.sendContent("files/file20MB.txt",actual);	
 		expected = client.pollingReqeust();		
 		assertTrue(server.getResponse() == 200);		
 		assertTrue(expected==(actual)+offset);		
@@ -150,7 +150,7 @@ public class MMSPollingReturnedwithVariablePayloadTest {
 		int expected = 0;
 		int actual = 30*1024*1024;				
 				
-		server.sendContent("file30MB.txt",actual);	
+		server.sendContent("files/file30MB.txt",actual);	
 		expected = client.pollingReqeust();		
 		assertTrue(server.getResponse() == 200);		
 		assertTrue(expected==(actual)+offset);		
@@ -160,7 +160,7 @@ public class MMSPollingReturnedwithVariablePayloadTest {
 		int expected = 0;
 		int actual = 40*1024*1024;				
 				
-		server.sendContent("file40MB.txt",actual);	
+		server.sendContent("files/file40MB.txt",actual);	
 		expected = client.pollingReqeust();		
 		assertTrue(server.getResponse() == 200);		
 		assertTrue(expected==(actual)+offset);	
@@ -170,7 +170,7 @@ public class MMSPollingReturnedwithVariablePayloadTest {
 		int expected = 0;
 		int actual = 50*1024*1024;				
 				
-		server.sendContent("file50MB.txt",actual);			
+		server.sendContent("files/file50MB.txt",actual);			
 		
 		assertTrue(server.getResponse() == 413);
 		

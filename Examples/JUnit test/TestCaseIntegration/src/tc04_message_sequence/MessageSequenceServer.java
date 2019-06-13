@@ -29,7 +29,7 @@ public class MessageSequenceServer {
 	ArrayList<Integer> seqNum = new ArrayList();
 
 	public MessageSequenceServer() throws NullPointerException, IOException {
-		MMSConfiguration.MMS_URL = "localhost:8088";
+		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
 
 		myHandler = new MMSClientHandler(myMRN);
 		int port = 8907;

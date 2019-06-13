@@ -116,8 +116,8 @@ public class MMSPollingReturnedwithVariablePayloadClient {
 		
 		if (isActive) {
 			//===== active certificate =====
-			String privateKeyPath_active = "PrivateKey_POUL_LOWENORN_active.pem";
-			String certPath_active = "Certificate_POUL_LOWENORN_active.pem";
+			String privateKeyPath_active = "certs/PrivateKey_POUL_LOWENORN_active.pem";
+			String certPath_active = "certs/Certificate_POUL_LOWENORN_active.pem";
 			
 			byte[] signedData_active = clientPKILib.generateSignedData(content, privateKeyPath_active, certPath_active);
 			String hexSignedData_active = byteConverter.byteArrToHexString(signedData_active);
@@ -125,8 +125,8 @@ public class MMSPollingReturnedwithVariablePayloadClient {
 		}
 		else {
 			//===== revoked certificate =====
-			String privateKeyPath_revoked = "PrivateKey_POUL_LOWENORN_revoked.pem";
-			String certPath_revoked = "Certificate_POUL_LOWENORN_revoked.pem";
+			String privateKeyPath_revoked = "certs/PrivateKey_POUL_LOWENORN_revoked.pem";
+			String certPath_revoked = "certs/Certificate_POUL_LOWENORN_revoked.pem";
 			
 			byte[] signedData_revoked = clientPKILib.generateSignedData(content, privateKeyPath_revoked, certPath_revoked);
 			String hexSignedData_revoked = byteConverter.byteArrToHexString(signedData_revoked);
