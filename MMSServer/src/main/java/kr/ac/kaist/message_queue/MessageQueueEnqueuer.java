@@ -105,9 +105,9 @@ class MessageQueueEnqueuer {
 	private String SESSION_ID = "";
 	
 	private MMSLog mmsLog = null;
-	private static  Connection connection = null;
+	
 	private static ConnectionFactory connFac = null;
-	private Channel channel = null;
+	
 	
 	public MessageQueueEnqueuer (String sessionId) {
 		this.SESSION_ID = sessionId;
@@ -117,7 +117,8 @@ class MessageQueueEnqueuer {
 	
 	
 	void enqueueMessage(String srcMRN, String dstMRN, String message) {
-		
+		Connection connection = null;
+		Channel channel = null;
 		String queueName = dstMRN+"::"+srcMRN;
 		if(logger.isTraceEnabled()) {
 			mmsLog.trace(logger, this.SESSION_ID, "Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(message));
@@ -152,10 +153,17 @@ class MessageQueueEnqueuer {
 			mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 		}
 		finally {
-    		if (channel != null) {
+    		if (channel != null && channel.isOpen()) {
 	    		try {
 					channel.close();
 				} catch (IOException | TimeoutException e) {
+					mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+				}
+	    	}
+    		if (connection != null && channel.isOpen()) {
+	    		try {
+	    			connection.close();
+				} catch (IOException e) {
 					mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 				}
 	    	}

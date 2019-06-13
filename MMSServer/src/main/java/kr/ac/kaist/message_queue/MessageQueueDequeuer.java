@@ -328,7 +328,7 @@ public class MessageQueueDequeuer extends Thread{
 						    
 						    this.getChannel().basicCancel(this.getConsumerTag());
 						    try {
-						    	if (this.getChannel() != null) {
+						    	if (this.getChannel() != null && this.getChannel().isOpen()) {
 						    		this.getChannel().close();
 						    	}
 						    	/*if (connection != null) {
@@ -441,7 +441,7 @@ public class MessageQueueDequeuer extends Thread{
 
 	    finally {
 	    	if (pollingMethod.equals("normal")) { // Polling method: normal polling
-	    		if (channel != null) {
+	    		if (channel != null && channel.isOpen()) {
 		    		try {
 						channel.close();
 					} catch (IOException | TimeoutException e) {

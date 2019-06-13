@@ -47,6 +47,8 @@ class MessageOrderingHandler {
 		byte[] message = null;
 		this.srcMRN = parser.getSrcMRN();
 		this.dstMRN = parser.getDstMRN();
+		this.dstIP = parser.getDstIP();
+		this.dstPort = parser.getDstPort();
 		this.httpMethod = parser.getHttpMethod();
 		this.uri = parser.getUri();
 		this.seqNum = parser.getSeqNum();
@@ -117,11 +119,8 @@ class MessageOrderingHandler {
 							//System.out.println("index="+index+", seqNum="+seqNum+", seqNum in List="+itemList.get(0).getSeqNum());
 							//System.out.println("Sequence number of message is duplicated.");
 							message = ErrorCode.SEQUENCE_NUMBER_IS_DUPLICATED.getUTF8Bytes();
-							try {
-								throw new MessageOrderingException("Sequence number of message is duplicated.");
-							} catch (MessageOrderingException e) {
-								mmsLog.info(logger, this.SESSION_ID, "Sequence number of message is duplicated.");
-							}
+							mmsLog.info(logger, this.SESSION_ID, "Sequence number of message is duplicated.");
+							return message;
 						}
 					}
 					catch (NullPointerException e) {
@@ -135,11 +134,8 @@ class MessageOrderingHandler {
 			}
 			else { //Drop message.
 				message = ErrorCode.SEQUENCE_NUMBER_IS_OUT_OF_ORDERED.getUTF8Bytes();
-				try {
-					throw new MessageOrderingException("Sequence number of message is out of ordered.");
-				} catch (MessageOrderingException e) {
-					mmsLog.info(logger, this.SESSION_ID, "Sequence number of message is out of ordered.");
-				}
+				mmsLog.info(logger, this.SESSION_ID, "Sequence number of message is out of ordered.");
+				return message;
 			}
 			//System.out.println("index="+index+", seqNum="+seqNum+", seqNum in List="+itemList.get(0).getSeqNum());
 		}

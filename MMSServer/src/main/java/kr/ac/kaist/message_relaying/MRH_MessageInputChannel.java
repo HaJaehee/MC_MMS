@@ -185,7 +185,6 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
             }
         }
     }
-	
     
 //	when coming http message
 	@Override
@@ -232,11 +231,14 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 
         super.channelInactive(ctx);
         
-        ConnectionThread thread = relayingHandler.getConnectionThread();
-        if (thread != null) {
-        	mmsLog.info(logger, SESSION_ID, "Client disconnected.");
-            thread.terminate();
+        if (relayingHandler != null) {
+        	ConnectionThread thread = relayingHandler.getConnectionThread();
+        	if (thread != null) {
+            	mmsLog.info(logger, SESSION_ID, "Client disconnected.");
+                thread.terminate();
+            }
         }
+        
         LinkedList<ChannelTerminateListener> listeners = ctx.channel().attr(TERMINATOR).get();
         for(ChannelTerminateListener listener: listeners) {
         	listener.terminate(ctx);
@@ -302,7 +304,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 //    	ctx.pipeline().get(HttpHeaderValues.class);
 //    	channels.
     	
-    	if (cause instanceof IOException){
+    	if (cause instanceof IOException && parser != null){
     		int srcPort = 0;
         	String srcIP = null;
         	String[] reqInfo;

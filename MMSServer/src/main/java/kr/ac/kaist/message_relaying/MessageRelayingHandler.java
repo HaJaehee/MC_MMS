@@ -335,6 +335,7 @@ public class MessageRelayingHandler  {
 		String dstIP = parser.getDstIP();
 		int dstPort = parser.getDstPort();
 		long seqNum = parser.getSeqNum();
+		String srcDstPair = srcMRN+"::"+dstMRN;
 		
 		try {
 			mmsLogForDebug.addSessionId(srcMRN, this.SESSION_ID);
@@ -422,8 +423,11 @@ public class MessageRelayingHandler  {
 		} 
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC) {
+			srh = new SeamlessRoamingHandler(this.SESSION_ID);
 			srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
     		message = "OK".getBytes(Charset.forName("UTF-8"));
+    		outputChannel.replyToSender(ctx, message, isRealtimeLog);
+    		return;
 		} 
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (type == MessageTypeDecider.msgType.RELAYING_TO_MULTIPLE_SC){
@@ -519,7 +523,7 @@ public class MessageRelayingHandler  {
 		//This code MUST be 'if' statement not 'else if'.
 		if (type != MessageTypeDecider.msgType.POLLING && type != MessageTypeDecider.msgType.LONG_POLLING) {
 
-			if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY && thread == null) {
+			if ((type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) && thread == null) {
 				if (message == null) {
 					message = ErrorCode.UNKNOWN_ERR.getBytes();
 					mmsLog.info(logger, this.SESSION_ID, "INVALID MESSAGE.");
@@ -535,7 +539,7 @@ public class MessageRelayingHandler  {
 				outputChannel.replyToSender(ctx, message, isRealtimeLog);
 				return;
 			}
-			else if (!isErrorOccured && message == null) {
+			else if (!isErrorOccured && message == null && !(type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SERVER)) {
 				message = ErrorCode.UNKNOWN_ERR.getBytes();
 				mmsLog.info(logger, this.SESSION_ID, "INVALID MESSAGE.");
 				outputChannel.replyToSender(ctx, message, isRealtimeLog); //TODO: MUST HAVE MORE DEFINED EXCEPTION MESSAGES.
@@ -549,6 +553,8 @@ public class MessageRelayingHandler  {
 		//This code MUST be 'if' statement not 'else if'. 
 		if ((type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) && parser.getHexSignedData() != null && !isClientVerified) {
 			byte[] msg = null;
+			
+			System.out.println(parser.getSvcMRN());
 			if (parser.getSvcMRN() == null) {
 				msg = ErrorCode.NULL_SVC_MRN.getJSONFormattedUTF8Bytes();
 			} 

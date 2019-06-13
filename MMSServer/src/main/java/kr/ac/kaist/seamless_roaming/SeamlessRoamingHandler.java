@@ -117,11 +117,13 @@ public class SeamlessRoamingHandler {
 		
 		if (parser.isJSONOfPollingMsg() == false){
 			message = ErrorCode.JSON_FORMAT_ERR.getJSONFormattedUTF8Bytes();
+			return message;
 		}
 		
 
 		if(parser.getSvcMRN() == null) {
 			message = ErrorCode.NULL_SVC_MRN.getJSONFormattedUTF8Bytes();
+			return message;
 		}
 		
 		mmsLog.debug(logger, this.SESSION_ID, "This is a polling request and the service MRN is " + parser.getSvcMRN());
@@ -149,10 +151,12 @@ public class SeamlessRoamingHandler {
 				if (cltVerifier.isMatching() == false) {
 					// message = ErrorCode.AUTHENTICATION_FAIL_NOTMATCHING.getJSONFormattedUTF8Bytes();
 					message = ErrorCode.AUTHENTICATE_FAIL.getJSONFormattedUTF8Bytes();
+					return message;
 				}
 				else if (cltVerifier.isVerified() == false) {
 					//message = ErrorCode.AUTHENTICATION_FAIL_REVOKED.getJSONFormattedUTF8Bytes();
 					message = ErrorCode.AUTHENTICATE_FAIL.getJSONFormattedUTF8Bytes();
+					return message;
 				}
 			}
 		}
@@ -169,6 +173,7 @@ public class SeamlessRoamingHandler {
 //						logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
 //					}
 //				}
+			return message;
 		}
 
 		String svcMRN = parser.getSvcMRN();
