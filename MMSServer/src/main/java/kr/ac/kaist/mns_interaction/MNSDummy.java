@@ -198,8 +198,8 @@ public class MNSDummy {
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-02-server","143.248.57.72:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-03-server","143.248.57.72:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-client","143.248.57.72:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-server","143.248.57.72:8902:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-06-server","143.248.57.72:8902:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-server","143.248.57.72:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-06-server","143.248.57.72:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-07-client","1.1.1.1:0:1");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-07-server","143.248.57.72:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-10-client","1.1.1.1:0:1");

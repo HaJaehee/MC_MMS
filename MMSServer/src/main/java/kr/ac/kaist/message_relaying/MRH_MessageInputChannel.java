@@ -91,6 +91,12 @@ Rev. history : 2019-05-29
 Version : 0.9.1
 	Resolved a bug related to realtime log function.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	HOTFIX: Resolved a bug related to message ordering.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr),
+		Yunho Choi (choiking10@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -113,6 +119,7 @@ import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.AttributeKey;
+import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.GlobalEventExecutor;
@@ -137,7 +144,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	private String protocol = "";
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
-    private MessageRelayingHandler relayingHandler;   
+    private MessageRelayingHandler relayingHandler;
+    private FullHttpRequest imsg;
 	
     private String DUPLICATE_ID="";
 
@@ -147,7 +155,38 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		
 		
 	}
+	public boolean isRemainJob(ChannelHandlerContext ctx) {
+		ConnectionThread thread = relayingHandler.getConnectionThread();
+        if (thread != null) {
+        	return true;
+        }
+        LinkedList<ChannelTerminateListener> listeners = ctx.channel().attr(TERMINATOR).get();
+        for(ChannelTerminateListener listener: listeners) {
+        	return true;
+        }
+        return false;
+	}
 	
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        boolean release = true;
+        try {
+            if (acceptInboundMessage(msg)) {
+                imsg = (FullHttpRequest) msg;
+                channelRead0(ctx, imsg);
+            } else {
+                release = false;
+                ctx.fireChannelRead(msg);
+            }
+        } finally {
+        	// TODO Carefully inspect this code. There is a risk of memory leak.
+            if (!isRemainJob(ctx) && release) {
+                ReferenceCountUtil.release(msg);
+            }
+        }
+    }
+	
+    
 //	when coming http message
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
@@ -179,8 +218,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     		ctx.channel().attr(TERMINATOR).set(new LinkedList<ChannelTerminateListener>());
             relayingHandler = new MessageRelayingHandler(ctx, req, protocol, parser, SESSION_ID);
 		} 	finally {
-			// TODO 이 코드는 무슨의미가 있는가?
-			req.release();
+			// TODO Why this part is needed?
+			//req.release();
 		}
 	}
 	
@@ -190,7 +229,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        // TODO Auto-generated method stub
+
         super.channelInactive(ctx);
         
         ConnectionThread thread = relayingHandler.getConnectionThread();
@@ -201,6 +240,9 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         LinkedList<ChannelTerminateListener> listeners = ctx.channel().attr(TERMINATOR).get();
         for(ChannelTerminateListener listener: listeners) {
         	listener.terminate(ctx);
+        }
+        if (isRemainJob(ctx)) {
+            ReferenceCountUtil.release(imsg);
         }
         ctx.close();
     }

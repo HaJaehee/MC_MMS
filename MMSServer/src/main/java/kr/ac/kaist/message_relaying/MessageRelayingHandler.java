@@ -218,6 +218,12 @@ Rev. history : 2019-06-10
 Version : 0.9.2
 	Made logs neat (cont'd).
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	HOTFIX: Resolved a bug related to message ordering.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr),
+		Yunho Choi (choiking10@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -890,8 +896,9 @@ public class MessageRelayingHandler  {
 				String srcDstPair = srcMRN+"::"+dstMRN;
 				List<SessionIdAndThr> itemList = SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair);
 
-				// TODO 이 위치 진입시에 응답 없이 종료 시켜버릴 가능성이 있지 않나요?
-				if (itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
+				// TODO Is there any risk for shutting down the process before replying to sender?
+				// HOTFIX: Resolved a bug related to message ordering.
+				if (itemList.size()>0 && itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
 					if ((itemList.get(0).getPreSeqNum() == SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) && 
 							!itemList.get(0).isExceptionOccured()) || itemList.get(0).getWaitingCount() > 0){
 						try {
@@ -904,7 +911,7 @@ public class MessageRelayingHandler  {
 			}
 			
 			//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
-			//In this version 0.8.0, polling client verification is optional. 
+			//In version 0.8.0, polling client verification is optional. 
 			//This code MUST be 'if' statement not 'else if'. 
 			if ((type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) && parser.getHexSignedData() != null && !isClientVerified) {
 				byte[] msg = null;
