@@ -109,6 +109,11 @@ Rev. history : 2019-06-07
 Version : 0.9.2
 	Made logs neat.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-14
+Version : 0.9.2
+	Added RABBIT_MQ_CONN_POOL.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 import java.io.File;
@@ -163,6 +168,7 @@ public class MMSConfiguration {
 	private static String RABBIT_MQ_MANAGING_PROTOCOL = null;
 	private static String RABBIT_MQ_USER = null;
 	private static String RABBIT_MQ_PASSWD = null;
+	private static int RABBIT_MQ_CONN_POOL = 0;
 	
 	private static String KEYSTORE = null;
 	
@@ -273,6 +279,9 @@ public class MMSConfiguration {
 		rabbit_mq_passwd.setRequired(false);
 		options.addOption(rabbit_mq_passwd);
 		
+		Option rabbit_mq_conn_pool = new Option ("mqconnpool", "rabbit_mq_conn_pool", true, "Set the size of Rabbit MQ connection pool.");
+		rabbit_mq_conn_pool.setRequired(false);
+		options.addOption(rabbit_mq_conn_pool);
 		
 		
 		CommandLineParser clParser = new DefaultParser();
@@ -297,6 +306,7 @@ public class MMSConfiguration {
 					+ " [-mqmngproto rabbit_mq_managing_protocol]"
 					+ " [-mquser rabbit_mq_user]"
 					+ " [-mqpasswd rabbit_mq_passwd]"
+					+ " [-mqconnpool rabbit_mq_conn_pool]"
 					+ " [-p http_port]"
 					+ " [-sp https_port]"
 					+ " [-t waiting_message_timeout]"
@@ -362,6 +372,10 @@ public class MMSConfiguration {
 			
 			if (RABBIT_MQ_PASSWD == null) {
 				RABBIT_MQ_PASSWD = cmd.getOptionValue("rabbit_mq_passwd");
+			}
+			
+			if (RABBIT_MQ_CONN_POOL == 0) {
+				RABBIT_MQ_CONN_POOL = getOptionValueInteger(cmd, "rabbit_mq_conn_pool");
 			}
 			
 			if (MMS_MRN == null) {
@@ -483,6 +497,13 @@ public class MMSConfiguration {
 				RABBIT_MQ_PASSWD = s;
 			}
 		}
+		
+		if (RABBIT_MQ_CONN_POOL == 0) {
+			String s = System.getenv("ENV_RABBIT_MQ_CONN_POOL");
+			if (s != null) {
+				RABBIT_MQ_CONN_POOL = Integer.parseInt(s);
+			}
+		}
 			
 		if (MMS_MRN == null) {
 			String s = System.getenv("ENV_MMS_MRN");
@@ -599,6 +620,12 @@ public class MMSConfiguration {
 						RABBIT_MQ_PASSWD = (String) jobj.get("RABBIT_MQ_PASSWD");
 					}
 				}
+				if (RABBIT_MQ_CONN_POOL == 0) {
+					if (jobj.get("RABBIT_MQ_CONN_POOL") != null) {
+						RABBIT_MQ_CONN_POOL = getConfValueInteger(jobj, "RABBIT_MQ_CONN_POOL");
+					}
+				}
+				
 				if (MNS_PORT == 0) {
 					MNS_PORT = getConfValueInteger(jobj, "MNS_PORT");
 				}
@@ -703,6 +730,10 @@ public class MMSConfiguration {
 				RABBIT_MQ_PASSWD = "guest"; //Default is String "guest".
 			}
 			
+			if (RABBIT_MQ_CONN_POOL == 0) {
+				RABBIT_MQ_CONN_POOL = 3000; //Default is 3000.
+			}
+			
 			if (MMS_MRN == null) {
 				MMS_MRN = "urn:mrn:smart-navi:device:mms1"; //Default is String "urn:mrn:smart-navi:device:mms1".
 			}
@@ -738,6 +769,7 @@ public class MMSConfiguration {
 			alertAndSetMmsConf("RABBIT_MQ_MANAGING_PROTOCOL",RABBIT_MQ_MANAGING_PROTOCOL);
 			alertAndSetMmsConf("RABBIT_MQ_USER",RABBIT_MQ_USER);
 			alertAndSetMmsConf("RABBIT_MQ_PASSWD",RABBIT_MQ_PASSWD);
+			alertAndSetMmsConf("RABBIT_MQ_CONN_POOL", RABBIT_MQ_CONN_POOL);
 			alertAndSetMmsConf("WEB_LOG_PROVIDING",WEB_LOG_PROVIDING[1]);
 			alertAndSetMmsConf("WEB_MANAGING",WEB_MANAGING[1]);
 			alertAndSetMmsConf("MAX_BRIEF_LOG_LIST_SIZE",MAX_BRIEF_LOG_LIST_SIZE);
@@ -852,6 +884,10 @@ public class MMSConfiguration {
 	
 	public static Map<String, String> getMmsConfiguration() {
 		return MMS_CONFIGURATION;
+	}
+	
+	public static int getRabbitMqConnPool() {
+		return RABBIT_MQ_CONN_POOL;
 	}
 	
 	private int getOptionValueInteger (CommandLine cmd, String opt) throws IOException {

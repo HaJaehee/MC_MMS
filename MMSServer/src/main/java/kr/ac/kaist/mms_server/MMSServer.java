@@ -50,6 +50,11 @@ Rev. history : 2019-06-12
 Version : 0.9.2
 	Fixed bugs related to connection pool.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-14
+Version : 0.9.2
+	Added RABBIT_MQ_CONN_POOL.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -125,8 +130,8 @@ public class MMSServer {
 			MMSLogForDebug.getInstance(); //initialize MMSLogsForDebug.
 			Thread.sleep(1000);
 			
-			logger.error("Now setting message queue connection pool.");
-			MessageQueueDequeuer.setConnectionPool(3000);
+			logger.error("Now setting message queue connection pool size.");
+			MessageQueueDequeuer.setConnectionPool(MMSConfiguration.getRabbitMqConnPool());
 			Thread.sleep(1500);
 			
 			if (MMSConfiguration.isHttpsEnabled()) {
