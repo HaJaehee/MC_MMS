@@ -1,6 +1,6 @@
 # IMPORTANT
 
-In order to do maven install on Eclipse, "External Jars/pkilib-1.4.jar" must be copied to "C:\Users\\<user_name>\\.m2\repository\net\etri\net.etri.pkilib\1.4\net.etri.pkilib-1.4.jar" and then 'maven update' is done, before to do 'maven install'.
+In order to do 'maven install' on Eclipse on Windows, "External Jars/pkilib-1.4.jar" has to be copied to "C:\Users\\<user_name>\\.m2\repository\net\etri\net.etri.pkilib\1.4\net.etri.pkilib-1.4.jar" and then 'maven update' has to be done. And then do 'maven install'.
 
 # Usage
 <pre>usage: java -cp MC_MMS.jar kr.ac.kaist.mms_server.MMSServer [-h help] [-https https] [-mc max_content_size] [-mls <br/>
