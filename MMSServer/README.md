@@ -3,7 +3,7 @@
 In order to do maven install, "External Jars/pkilib-1.4.jar" must be copied to "C:\Users\\<user_name>\\.m2\repository\net\etri\net.etri.pkilib\1.4\net.etri.pkilib-1.4.jar" and then 'maven update' is done, before to do 'maven install'.
 
 # Usage
-usage: java -cp MC_MMS.jar kr.ac.kaist.mms_server.MMSServer [-h help] [-https https] [-mc max_content_size] [-mls <br/>
+<pre>usage: java -cp MC_MMS.jar kr.ac.kaist.mms_server.MMSServer [-h help] [-https https] [-mc max_content_size] [-mls <br/>
             max_brief_log_list_size] [-mns mns_host] [-mnsp mns_port] [-mrn mms_mrn] [-mqhost rabbit_mq_host] [-mqport <br/>
             rabbit_mq_port] [-mqmnghost rabbit_mq_managing_host] [-mqmngport rabbit_mq_managing_port] [-mqmngproto <br/>
             rabbit_mq_managing_protocol] [-mquser rabbit_mq_user] [-mqpasswd rabbit_mq_passwd] [-mqconnpool <br/>
@@ -33,3 +33,4 @@ usage: java -cp MC_MMS.jar kr.ac.kaist.mms_server.MMSServer [-h help] [-https ht
                                                    otherwise disable if [false]. Default is [true]. <br/>
  -wm,--web_managing <arg>                          Enable this MMS provide web management if the argument is [true], <br/>
                                                    otherwise disable if [false]. Default is [true]. <br/>
+</pre>
