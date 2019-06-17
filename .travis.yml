@@ -13,6 +13,7 @@ install:
     # Build the spring boot app and copy the result to the docker folder
     - mvn clean install && cp MMSServer/target/MC_MMS-0.9.2-SNAPSHOT.jar docker/MMSServer/MMSServer.jar && cp MMSServer/target/MC_MMS-0.9.2-SNAPSHOT.jar docker/MNSDummy/MMSServer.jar
     - cp -r MMSServer/target/lib docker/MMSServer/ && cp -r MMSServer/target/lib docker/MNSDummy/
+    - cp -r MMSServer/MMS-configuration docker/MMSServer/
 
 before_script:  
     - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
