@@ -30,7 +30,9 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class LongPollingDuplicateTest {
+import tc_base.MMSTestBase;
+
+public class LongPollingDuplicateTest extends MMSTestBase {
 	static LongPollingDuplicateClient client;
 	static LongPollingDuplicateServer server;
 	static int offset;

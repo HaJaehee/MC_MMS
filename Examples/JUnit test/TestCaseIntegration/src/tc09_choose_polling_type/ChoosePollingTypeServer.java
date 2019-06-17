@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
-import kr.ac.kaist.mms_client.MMSConfiguration;
 
 
 
@@ -30,10 +29,6 @@ public class ChoosePollingTypeServer {
 	private MMSClientHandler myHandler = null;
 
 	public ChoosePollingTypeServer() {
-
-		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
-		MMSConfiguration.DEBUG = false;
-
 		try {
 			myHandler = new MMSClientHandler(myMRN);
 

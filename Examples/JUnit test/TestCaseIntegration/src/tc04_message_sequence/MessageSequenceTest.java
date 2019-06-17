@@ -8,7 +8,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import kr.ac.kaist.mms_client.MMSConfiguration;
+import tc_base.MMSTestBase;
 
 /** 
 File name : MessageSequenceTest.java
@@ -27,7 +27,7 @@ Version : 0.9.2
 	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
-public class MessageSequenceTest {
+public class MessageSequenceTest extends MMSTestBase {
 	static MessageSequenceClient client;
 	static MessageSequenceServer server;
 
@@ -35,7 +35,6 @@ public class MessageSequenceTest {
 	public static void testmain() throws Exception {
 		client = new MessageSequenceClient();
 		server = new MessageSequenceServer();
-		MMSConfiguration.DEBUG = false;
 	}
 
 	@AfterClass

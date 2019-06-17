@@ -9,9 +9,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import kr.ac.kaist.mms_client.MMSConfiguration;
 import net.etri.pkilib.client.ClientPKILibrary;
 import net.etri.pkilib.tool.ByteConverter;
+import tc_base.MMSTestBase;
 
 /** 
 File name : TS6_Test.java
@@ -49,10 +49,7 @@ Version : 0.9.2
 	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
-public class UserAuthenticationTest {
-	public final static String MMS_URL = "mms-kaist.com:8088";
-//	public final static String MMS_URL = "mms.smartnav.org:8088";
-//	public final static String MMS_URL = "127.0.0.1:8088";
+public class UserAuthenticationTest extends MMSTestBase {
 	public final static String serverMRN = "urn:mrn:imo:imo-no:ts-mms-06-server";
 	public final static String clientMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 	public final static String server_message = "Hello, polling client!";
@@ -93,7 +90,6 @@ public class UserAuthenticationTest {
 	
 	@BeforeClass
 	public static void initializeClass() {
-		MMSConfiguration.DEBUG = true;
 		server = new UserAuthenticationServer();
 		client = new UserAuthenticationClient();
 //		client = new TS6_Client(true);

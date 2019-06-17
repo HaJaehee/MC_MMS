@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
-import kr.ac.kaist.mms_client.MMSConfiguration;
+import tc_base.MMSTestBase;
 
 /** 
 File name : MMSLongResponseWaitingForSPTest.java
@@ -31,7 +31,7 @@ Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 */
 
 @FixMethodOrder(MethodSorters.DEFAULT)
-public class MMSLongResponseWaitingForSPTest {
+public class MMSLongResponseWaitingForSPTest extends MMSTestBase {
 	static MMSClientHandler server;	
 	
 	// WARN: you have to change your dstMRN(mms-10-server) at MNS. At the website,
@@ -39,11 +39,6 @@ public class MMSLongResponseWaitingForSPTest {
 	public static final String srcMRN = "urn:mrn:imo:imo-no:ts-mms-10-client";
 	public static final String dstMRN = "urn:mrn:imo:imo-no:ts-mms-10-server";
 	public static final int PORT = 8907;
-	
-	@BeforeClass
-	public static void beforeClass() {
-		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
-	}
 	
 	@After
 	public void after() {

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
-import kr.ac.kaist.mms_client.MMSConfiguration;
 
 /**
  * File name : TS3_server.java Polling request message function for the purpose
@@ -36,9 +35,6 @@ public class MMSPollingReturnedwithVariablePayloadServer {
 	private MMSClientHandler myHandler = null;
 
 	public MMSPollingReturnedwithVariablePayloadServer() {
-		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
-
-		MMSConfiguration.DEBUG = false;
 
 		try {
 			myHandler = new MMSClientHandler(myMRN);

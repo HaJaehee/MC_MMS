@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
-import kr.ac.kaist.mms_client.MMSConfiguration;
 
 
 
@@ -36,11 +35,6 @@ public class LongPollingDuplicateServer {
 	private MMSClientHandler myHandler = null;
 
 	public LongPollingDuplicateServer() {
-		//MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
-		//MMSConfiguration.MMS_URL="mms.smartnav.org:8088";
-
-		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
-		MMSConfiguration.DEBUG = false;
 
 		try {
 			myHandler = new MMSClientHandler(myMRN);

@@ -23,7 +23,9 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class ChoosePollingTypeTest {
+import tc_base.MMSTestBase;
+
+public class ChoosePollingTypeTest extends MMSTestBase {
 	static ChoosePollingTypeClient client;
 	static ChoosePollingTypeServer server;
 	static int offset;

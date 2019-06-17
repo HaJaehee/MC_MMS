@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
-import kr.ac.kaist.mms_client.MMSConfiguration;
 //import kr.ac.kaist.mms_client.PollHandler;
 import net.etri.pkilib.client.ClientPKILibrary;
 import net.etri.pkilib.tool.ByteConverter;
@@ -45,10 +44,6 @@ public class MMSPollingReturnedwithVariablePayloadClient {
 	private static int length = -1;
 	
 	public MMSPollingReturnedwithVariablePayloadClient(){
-
-		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
-
-		MMSConfiguration.DEBUG = true;
 		
 		try {
 			myHandler = new MMSClientHandler(myMRN);
