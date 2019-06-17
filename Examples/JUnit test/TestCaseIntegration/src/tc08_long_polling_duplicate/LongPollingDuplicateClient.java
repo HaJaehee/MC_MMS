@@ -1,13 +1,10 @@
 package tc08_long_polling_duplicate;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
-import kr.ac.kaist.mms_client.MMSConfiguration;
-
 import net.etri.pkilib.client.ClientPKILibrary;
 import net.etri.pkilib.tool.ByteConverter;
 
@@ -40,10 +37,6 @@ public class LongPollingDuplicateClient {
 	}
 
 	public LongPollingDuplicateClient() {
-
-
-		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
-		MMSConfiguration.DEBUG = true;
 		ClientPKILibrary clientPKILib = ClientPKILibrary.getInstance();
 		ByteConverter byteConverter = ByteConverter.getInstance();
 

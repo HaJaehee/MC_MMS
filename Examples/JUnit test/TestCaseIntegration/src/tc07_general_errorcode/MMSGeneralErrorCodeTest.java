@@ -1,25 +1,19 @@
 package tc07_general_errorcode;
 
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
-import kr.ac.kaist.mms_client.MMSConfiguration;
+import tc_base.MMSTestBase;
 
 /** 
 File name : MMSGeneralErrorCodeTest.java
@@ -35,7 +29,7 @@ Version : 0.9.2
 Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 */
 @FixMethodOrder(MethodSorters.DEFAULT)
-public class MMSGeneralErrorCodeTest {
+public class MMSGeneralErrorCodeTest extends MMSTestBase {
 	static MMSGeneralErrorCodeServer server;	
 
 	// WARN: you have to change your dstMRN(mms-07-server) at MNS. At the website,
@@ -46,7 +40,6 @@ public class MMSGeneralErrorCodeTest {
 	
 	@Before
 	public void before() {
-		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
 		runServer(dstMRN, PORT);
 	}
 	

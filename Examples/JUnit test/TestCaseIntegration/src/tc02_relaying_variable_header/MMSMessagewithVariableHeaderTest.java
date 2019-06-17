@@ -8,6 +8,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import tc_base.MMSTestBase;
+
 /** 
 File name : TS2_server.java
 	Relaying message function for the purpose of testing MMS
@@ -27,7 +29,7 @@ Version : 0.9.2
 	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
-public class MMSMessagewithVariableHeaderTest {
+public class MMSMessagewithVariableHeaderTest extends MMSTestBase {
 
 	static MMSMessagewithVariableHeaderServer server;
 	static MMSMessagewithVariableHeaderClient client;

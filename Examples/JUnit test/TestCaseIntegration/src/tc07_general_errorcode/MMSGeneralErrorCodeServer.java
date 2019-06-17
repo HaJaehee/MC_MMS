@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
-import kr.ac.kaist.mms_client.MMSConfiguration;
 
 /** 
 File name : MMSGeneralErrorCodeServer.java

@@ -10,7 +10,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import kr.ac.kaist.mms_client.MMSConfiguration;
+import tc_base.MMSTestBase;
+
 
 /** 
 File name : TS1_Test.java
@@ -30,7 +31,7 @@ Version : 0.9.2
 	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 @FixMethodOrder(MethodSorters.DEFAULT)
-public class MMSMessagewithVariablePayloadTest {
+public class MMSMessagewithVariablePayloadTest extends MMSTestBase {
 	static MMSMessagewithVariablePayloadClient client;
 	static MMSMessagewithVariablePayloadServer server;	
 	

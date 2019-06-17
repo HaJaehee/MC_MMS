@@ -17,8 +17,6 @@ import org.json.simple.parser.ParseException;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
 import kr.ac.kaist.mms_client.MMSClientHandler.ResponseCallback;
-import kr.ac.kaist.mms_client.MMSConfiguration;
-
 
 public class RestApiClient {
 
@@ -26,11 +24,6 @@ public class RestApiClient {
 	public static JSONObject jobj = null;
 	
 	public RestApiClient() {
-
-		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
-		MMSConfiguration.DEBUG = true;
-
-
 		// threadStart();
 	}
 

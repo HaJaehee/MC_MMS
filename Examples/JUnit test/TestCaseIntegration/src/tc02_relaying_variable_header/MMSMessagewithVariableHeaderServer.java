@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
-import kr.ac.kaist.mms_client.MMSConfiguration;
 
 public class MMSMessagewithVariableHeaderServer {
 	private int response = 0;
@@ -46,8 +45,6 @@ public class MMSMessagewithVariableHeaderServer {
 	String Realm=null;
 	
 	public MMSMessagewithVariableHeaderServer() throws Exception {
-		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
-		//MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		myHandler = new MMSClientHandler(myMRN);
 		int port = 8907;
 		

@@ -52,7 +52,6 @@ public class UserAuthenticationClient {
 		this.myMRN = myMRN;
 		this.dstMRN = "urn:mrn:smart-navi:device:mms1";
 		this.svcMRN = UserAuthenticationTest.serverMRN;
-		MMSConfiguration.MMS_URL = UserAuthenticationTest.MMS_URL;
 
 		try {
 			if (isPolling) {

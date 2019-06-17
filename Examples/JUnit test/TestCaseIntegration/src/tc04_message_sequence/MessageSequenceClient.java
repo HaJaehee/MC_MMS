@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.HashMap;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
-import kr.ac.kaist.mms_client.MMSConfiguration;
 
 /** 
 File name : MessageSequenceClient.java
@@ -38,7 +37,6 @@ public class MessageSequenceClient {
 	Map<String, List<String>> headerfield = new HashMap<String, List<String>>();
 
 	public MessageSequenceClient() throws Exception {
-		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
 
 		sender.setSender(new MMSClientHandler.ResponseCallback() {
 

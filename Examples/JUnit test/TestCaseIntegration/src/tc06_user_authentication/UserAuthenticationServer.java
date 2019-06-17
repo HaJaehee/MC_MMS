@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import kr.ac.kaist.mms_client.MMSClientHandler;
-import kr.ac.kaist.mms_client.MMSConfiguration;
 
 /** 
 File name : Server.java
@@ -34,7 +33,6 @@ public class UserAuthenticationServer {
 	public UserAuthenticationServer() {
 		this.myMRN = UserAuthenticationTest.serverMRN;
 		this.dstMRN = UserAuthenticationTest.clientMRN;
-		MMSConfiguration.MMS_URL = UserAuthenticationTest.MMS_URL;
 		
 		try {
 			sender = new MMSClientHandler(myMRN);

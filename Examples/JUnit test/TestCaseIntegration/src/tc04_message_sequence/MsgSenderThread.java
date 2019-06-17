@@ -56,7 +56,7 @@ public class MsgSenderThread extends Thread{
 
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("Out of order messages is droped.");
 		}
 	}
 	
