@@ -1,11 +1,7 @@
-## Caution!
-## This branch is currently under development.
-## Can be corrected without notice.
-
 # MC_MMS
 [![Build Status](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS.svg?branch=master)](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS)<br/>
 Beta Version 0.9.2 <br/>
-2019.05.30 <br/>
+2019.06.17 <br/>
 
 # Web Site
 https://www.mms-kaist.com <br/>
