@@ -1,4 +1,4 @@
-anguage: java
+language: java
 
 jdk:
   - openjdk8
@@ -11,17 +11,29 @@ services:
 
 install:
     # Build the spring boot app and copy the result to the docker folder
-    - mvn clean install && cp MMSServer/target/MC_MMS-0.8.0-SNAPSHOT.jar docker/MMSServer/MMSServer.jar && cp MMSServer/target/MC_MMS-0.8.0-SNAPSHOT.jar docker/MNSDummy/MMSServer.jar
+    - mvn clean install && cp MMSServer/target/MC_MMS-0.9.1-SNAPSHOT.jar docker/MMSServer/MMSServer.jar && cp MMSServer/target/MC_MMS-0.9.1-SNAPSHOT.jar docker/MNSDummy/MMSServer.jar
     - cp -r MMSServer/target/lib docker/MMSServer/ && cp -r MMSServer/target/lib docker/MNSDummy/
 
 before_script:  
     - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 
 script:
-    - docker build --no-cache -t kaistmms/mmsserver docker/MMSServer
-    - docker push kaistmms/mmsserver 
-    - docker build --no-cache -t kaistmms/mnsdummy docker/MNSDummy
-    - docker push kaistmms/mnsdummy
+    - docker build --no-cache -t lovesm135/mmsserver docker/MMSServer
+    - docker commit lovesm135/mmsserver lovesm135/mmsserver:0.9.1
+    - docker push lovesm135/mmsserver:0.9.1 
+    - docker build --no-cache -t lovesm135/mnsdummy docker/MNSDummy
+    - docker commit lovesm135/mnsdummy lovesm135/mnsdummy:0.9.1
+    - docker push lovesm135/mnsdummy:0.9.1
+ 
+
+branches:
+  only:
+    - master
+    - stable
+    - beta-0.9.1-closed
+  except:
+    - legacy
+    - experimental
 #--------------------------------------------
 #Autho deployment script is now in development stage.
 #deploy:
