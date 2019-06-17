@@ -19,10 +19,10 @@ before_script:
 
 script:
     - docker build --no-cache -t lovesm135/mmsserver docker/MMSServer
-    - docker commit lovesm135/mmsserver lovesm135/mmsserver:0.9.1
+    - docker tag lovesm135/mmsserver lovesm135/mmsserver:0.9.1
     - docker push lovesm135/mmsserver:0.9.1 
     - docker build --no-cache -t lovesm135/mnsdummy docker/MNSDummy
-    - docker commit lovesm135/mnsdummy lovesm135/mnsdummy:0.9.1
+    - docker tag lovesm135/mnsdummy lovesm135/mnsdummy:0.9.1
     - docker push lovesm135/mnsdummy:0.9.1
  
 
