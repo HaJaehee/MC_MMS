@@ -19,9 +19,9 @@ before_script:
 
 script:
     - docker build --no-cache -t lovesm135/mmsserver docker/MMSServer
-#    - docker push lovesm135/mmsserver 
+    - docker push lovesm135/mmsserver 
     - docker build --no-cache -t lovesm135/mnsdummy docker/MNSDummy
-#    - docker push lovesm135/mnsdummy
+    - docker push lovesm135/mnsdummy
  
 
 branches:
