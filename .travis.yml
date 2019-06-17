@@ -1,4 +1,4 @@
-anguage: java
+language: java
 
 jdk:
   - openjdk8
@@ -18,10 +18,10 @@ before_script:
     - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 
 script:
-    - docker build --no-cache -t kaistmms/mmsserver docker/MMSServer
-    - docker push kaistmms/mmsserver 
-    - docker build --no-cache -t kaistmms/mnsdummy docker/MNSDummy
-    - docker push kaistmms/mnsdummy
+    - docker build --no-cache -t lovesm135/mmsserver docker/MMSServer
+    - docker push lovesm135/mmsserver 
+    - docker build --no-cache -t lovesm135/mnsdummy docker/MNSDummy
+    - docker push lovesm135/mnsdummy
 #--------------------------------------------
 #Autho deployment script is now in development stage.
 #deploy:
