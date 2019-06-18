@@ -39,6 +39,11 @@ Rev. history : 2019-06-14
 Version : 0.9.2
 	Refactoring.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 
@@ -386,12 +391,12 @@ public class MMSRestAPIHandler {
 				message = status.getBytes(Charset.forName("UTF-8"));
 			} 
 			catch (UnknownHostException e) {
-				message = ErrorCode.MONITORING_CONNECTION_ERR.getUTF8Bytes();
-				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.MONITORING_CONNECTION_ERR.toString(), e, 5);
+				message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
+				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
 			} 
 			catch (IOException e) {
-				message = ErrorCode.DUMPMNS_LOGGING_ERR.getUTF8Bytes();
-				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.DUMPMNS_LOGGING_ERR.toString(), e, 5);
+				message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
+				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
 			}
 		}
 		else {
@@ -401,12 +406,12 @@ public class MMSRestAPIHandler {
 				message = status.getBytes(Charset.forName("UTF-8"));
 			} 
 			catch (UnknownHostException e) {
-				message = ErrorCode.MONITORING_CONNECTION_ERR.getUTF8Bytes();
-				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.MONITORING_CONNECTION_ERR.toString(), e, 5);
+				message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
+				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
 			} 
 			catch (IOException e) {
-				message = ErrorCode.DUMPMNS_LOGGING_ERR.getUTF8Bytes();
-				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.DUMPMNS_LOGGING_ERR.toString(), e, 5);
+				message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
+				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
 			}
 		}
 		
@@ -504,7 +509,7 @@ public class MMSRestAPIHandler {
 				mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 			} 
     		catch (IOException e) {
-    			ErrorCode.DUMPMNS_LOGGING_ERR.getUTF8Bytes();
+    			ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
     			
     			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 			} 
@@ -533,7 +538,7 @@ public class MMSRestAPIHandler {
     			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 			} 
     		catch (IOException e) {
-    			message = ErrorCode.DUMPMNS_LOGGING_ERR.getUTF8Bytes();
+    			message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
     			
     			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
 			} 

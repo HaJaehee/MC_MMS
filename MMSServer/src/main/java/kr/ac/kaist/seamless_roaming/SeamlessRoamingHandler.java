@@ -234,7 +234,7 @@ public class SeamlessRoamingHandler {
 //			System.out.println("duplicate long polling request");
 			
 			// TODO: To define error message.
-			byte[] message = ErrorCode.DUPLICATE_LONG_POLLING.getJSONFormattedUTF8Bytes();
+			byte[] message = ErrorCode.DUPLICATE_POLLING.getJSONFormattedUTF8Bytes();
 			
 			outputChannel.replyToSender(ctx, message);
 			

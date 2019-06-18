@@ -123,6 +123,11 @@ Rev. history : 2019-06-12
 Version : 0.9.2
 	Fixed bugs related to connection pool.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -151,6 +156,7 @@ import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.mms_server.Base64Coder;
 import kr.ac.kaist.mms_server.ChannelTerminateListener;
+import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -238,7 +244,7 @@ public class MessageQueueDequeuer extends Thread{
 							channel.close();
 						}
 					} catch (IOException | TimeoutException e) {
-						mmsLog.warnException(logger, SESSION_ID, "Channel closing is failed.", e, 5);
+						mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
 				    	
 					} 
 				}
@@ -435,7 +441,7 @@ public class MessageQueueDequeuer extends Thread{
 			
 		} 
 	    catch (IOException | TimeoutException | ConsumerCancelledException e) {
-	    	mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+	    	mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
 
 		} 
 
@@ -445,7 +451,7 @@ public class MessageQueueDequeuer extends Thread{
 		    		try {
 						channel.close();
 					} catch (IOException | TimeoutException e) {
-						mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+						mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
 					}
 		    	}
 				/*if (connection != null) {

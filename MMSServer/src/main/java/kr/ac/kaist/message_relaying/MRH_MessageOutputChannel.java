@@ -104,6 +104,11 @@ Rev. history : 2019-06-14
 Version : 0.9.2
 	Refactoring.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -147,6 +152,7 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
+import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -622,7 +628,7 @@ public class MRH_MessageOutputChannel{
 				con.getInputStream().close();
 			} 
 	       	catch (IOException e) {
-	       		mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+	       		mmsLog.warnException(logger, SESSION_ID, ErrorCode.MESSAGE_RELAYING_FAIL_DISCONNECT.toString(), e, 5);
 			}
 	    }
 		public byte[] getData() {
@@ -633,12 +639,11 @@ public class MRH_MessageOutputChannel{
 				data = getResponseMessage(con);
 			} 
 			catch (IOException e) {
-	    		mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+	    		mmsLog.warnException(logger, SESSION_ID, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString(), e, 5);
 			} 
 			finally {
 				if (data == null) {
-					data = "INVALID MESSAGE.".getBytes();
-					mmsLog.info(logger, SESSION_ID, "INVALID MESSAGE.");
+					data = ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.getUTF8Bytes();
 				}
 				replyToSender(ctx, data);
 			}

@@ -1,4 +1,18 @@
 package kr.ac.kaist.message_relaying;
+/* -------------------------------------------------------- */
+/** 
+File name : MessageOrderingHandler.java
+	It relays messages from external components to destination in header field of the messages with keeping sequence.
+Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2018-06-13
+Version : 0.9.2
+
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+**/
+/* -------------------------------------------------------- */
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -133,8 +147,8 @@ class MessageOrderingHandler {
 				}
 			}
 			else { //Drop message.
-				message = ErrorCode.SEQUENCE_NUMBER_IS_OUT_OF_ORDERED.getUTF8Bytes();
-				mmsLog.info(logger, this.SESSION_ID, "Sequence number of message is out of ordered.");
+				message = ErrorCode.SEQUENCE_NUMBER_IS_OUT_OF_ORDER.getUTF8Bytes();
+				mmsLog.info(logger, this.SESSION_ID, "Sequence number of message is out of order.");
 				return message;
 			}
 			//System.out.println("index="+index+", seqNum="+seqNum+", seqNum in List="+itemList.get(0).getSeqNum());

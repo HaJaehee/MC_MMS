@@ -97,6 +97,11 @@ Version : 0.9.2
 	HOTFIX: Resolved a bug related to message ordering.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr),
 		Yunho Choi (choiking10@kaist.ac.kr)
+		
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -125,6 +130,7 @@ import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel.ConnectionThread;
 import kr.ac.kaist.mms_server.ChannelTerminateListener;
+import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -234,7 +240,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         if (relayingHandler != null) {
         	ConnectionThread thread = relayingHandler.getConnectionThread();
         	if (thread != null) {
-            	mmsLog.info(logger, SESSION_ID, "Client disconnected.");
+            	mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
                 thread.terminate();
             }
         }
@@ -281,13 +287,13 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     		
     		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
     		if (clientType.equals("p")) {
-    			mmsLog.warn(logger, this.SESSION_ID, "The polling client is disconnected.");
+    			mmsLog.info(logger, this.SESSION_ID, ErrorCode.POLLING_CLIENT_DISCONNECTED.toString());
     		} 
     		else if (clientType.equals("lp")) {
-    			mmsLog.warn(logger, this.SESSION_ID, "The long polling client is disconnected.");
+    			mmsLog.info(logger, this.SESSION_ID, ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
     		}
     		else {
-    			mmsLog.warn(logger, this.SESSION_ID, "The client is disconnected.");
+    			mmsLog.info(logger, this.SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
     		}
     	}
     	if (!ctx.isRemoved()){
@@ -395,7 +401,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
       }
   //  System.out.println("/*****************************************/");
 	
-      mmsLog.warn(logger, this.SESSION_ID, "The client is disconnected, " + errorlog + ".");
+      mmsLog.info(logger, this.SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString() + " " + errorlog + ".");
      
     }
 }
