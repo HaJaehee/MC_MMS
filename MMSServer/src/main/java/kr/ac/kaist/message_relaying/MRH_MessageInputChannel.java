@@ -209,7 +209,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			try {
 				parser.parseMessage(ctx, req);
 			} catch (NumberFormatException | NullPointerException  e) {
-				mmsLog.warnException(logger, SESSION_ID, "Exception occured while parsing the message.", e, 5);
+				mmsLog.info(logger, SESSION_ID, ErrorCode.MESSAGE_PARSING_ERROR.toString());
 				
 			}
 			if (!parser.isRealtimeLogReq()) {

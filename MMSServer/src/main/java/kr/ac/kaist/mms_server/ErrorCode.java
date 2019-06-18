@@ -53,11 +53,12 @@ public enum ErrorCode {
 	NULL_SVC_MRN("10008", "The service MRN is not included."),
 	@Deprecated
 	AUTHENTICATION_FAIL_REVOKED("10008", "It is failed to verify the client. The certificate has been revoked."),
-	JSON_FORMAT_ERR("10009", "The message is not formatted by JSON."),
+	JSON_FORMAT_ERROR("10009", "The message is not formatted by JSON."),
 	@Deprecated
 	AUTHENTICATION_FAIL_NOTMATCHING("10010", "It is failed to verify the client. The source MRN is not equal to the certificate's."),
 	DUPLICATE_POLLING("10011", "The polling request is already received. Duplicate request is not accepted."),
 	AUTHENTICATE_FAIL("10012", "Authentication is failed."),
+	MESSAGE_PARSING_ERROR("10013", "Message parsing error."),
 	
 	// Numbers greater than 10000 and lower than 20000 are internal error codes.
 	// Number 11XXX is related to configuration of MMS.
@@ -75,6 +76,8 @@ public enum ErrorCode {
 	CLIENT_DISCONNECTED("18009","MMS Client is disconnected."),
 	POLLING_CLIENT_DISCONNECTED("18010","MMS Polling Client is disconnected."),
 	LONG_POLLING_CLIENT_DISCONNECTED("18011","MMS Long Polling Client is disconnected."),
+	SEQUENCE_NUMBER_IS_NEGATIVE("18012","Sequence number of message is negative."),
+	WRONG_GEOCASTING_INFO("18013","Failed to parse geolocation info."),
 	
 	
 	// Numbers greater than 20000 and lower than 30000 are external error codes.
@@ -83,12 +86,14 @@ public enum ErrorCode {
 	RABBITMQ_CHANNEL_OPEN_ERROR("20002","Rabbit MQ channel open error."),
 	RABBITMQ_CONNECTION_CLOSE_ERROR("20003","Rabbit MQ connection close error."),
 	RABBITMQ_CONNECTION_OPEN_ERROR("20004","Rabbit MQ connection open error."),
+	RABBITMQ_MANAGEMENT_CONNECTION_OPEN_ERROR("20005","Rabbit MQ management plugin connection open error."),
 	
 	// Number 21XXX is related to interface between MMS Server and MNS.
 	MNS_CONNECTION_CLOSE_ERROR("21001","MNS connection close error."),
 	MNS_CONNECTION_OPEN_ERROR("21002","MNS connection open error."),
+	MNS_WRONG_FORMAT_ERROR("21003","MNS response message is wrong."),
 	@Deprecated
-	DUMPMNS_LOGGING_ERROR("21003", "Failed to dump MNS."),
+	DUMPMNS_LOGGING_ERROR("21004", "Failed to dump MNS."),
 	
 	// Number 22XXX is related to the MMS monitoring service including dump MNS.
 	MONITORING_CONNECTION_ERR("22001", "Connection to MMS monitoring service error."),

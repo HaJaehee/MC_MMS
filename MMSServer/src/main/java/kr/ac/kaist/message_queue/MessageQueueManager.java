@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpMethod;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
+import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 
@@ -122,12 +123,12 @@ public class MessageQueueManager {
 		} 
 		catch (IOException e) {
 			MMSLog mmsLog = MMSLog.getInstance();
-			mmsLog.warnException(logger, SESSION_ID, "MessageQueueManager has a problem when connecting to RabbitMQ management module.", e, 5);
+			mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_MANAGEMENT_CONNECTION_OPEN_ERROR.toString(), e, 5);
 
 		} 
 		catch (ParseException e) {
 			MMSLog mmsLog = MMSLog.getInstance();
-			mmsLog.warnException(logger, SESSION_ID, "MessageQueueManager has a problem when connecting to RabbitMQ management module.", e, 5);
+			mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_MANAGEMENT_CONNECTION_OPEN_ERROR.toString(), e, 5);
 
 		}
 		

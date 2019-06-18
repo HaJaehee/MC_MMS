@@ -324,7 +324,7 @@ public class MMSLog {
 			}
 		}
 		catch (UnsupportedEncodingException e) {
-			this.warnException(logger, sessionId, "URL encoding is failed.", e, 5);
+			this.info(logger, sessionId, "URL encoding is failed.");
 		}
 	
 		realtimeLog.append("\"]}");

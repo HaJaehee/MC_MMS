@@ -99,6 +99,11 @@ Rev. history : 2019-06-14
 Version : 0.9.2
 	Refactoring.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -123,6 +128,7 @@ import io.netty.handler.codec.http.HttpMethod;
 import kr.ac.kaist.message_casting.GeolocationCircleInfo;
 import kr.ac.kaist.message_casting.GeolocationPolygonInfo;
 import kr.ac.kaist.message_relaying.MessageTypeDecider.msgType;
+import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -211,7 +217,7 @@ public class MessageParser {
 			seqNum = Long.parseLong(o);
 			new BigInteger(o);
 			if (seqNum < 0) {
-				logger.warn("SessionID="+SESSION_ID+" In header, seqNum must be positive integer.");
+				mmsLog.info(logger, SESSION_ID, ErrorCode.SEQUENCE_NUMBER_IS_NEGATIVE.toString());
 				throw new NumberFormatException();
 			}
 		}
@@ -253,7 +259,7 @@ public class MessageParser {
 					}
 				} 
 				catch (ParseException e) {
-					logger.warn("SessionID="+this.SESSION_ID+" Failed to parse geolocation info.");
+					mmsLog.info(logger, this.SESSION_ID, ErrorCode.WRONG_GEOCASTING_INFO.toString());
 				}
 			} 
 			else {
@@ -324,13 +330,13 @@ public class MessageParser {
 //			System.out.println("[Test Message] the certificate is " + hexSignedData.substring(6));
 			isJSONOfPollingFormat = true;
 			if (this.svcMRN == null) {
-				mmsLog.warn(logger, this.SESSION_ID, "The service MRN is not included.");
+				mmsLog.info(logger, this.SESSION_ID, "The service MRN is not included.");
 			}
 			
 			return ;
 		} 
 		catch (org.json.simple.parser.ParseException e) {
-			mmsLog.warnException(logger, this.SESSION_ID, "Failed to parse polling request content whose type is a JSON format.", e, 5);
+			mmsLog.info(logger, this.SESSION_ID, ErrorCode.JSON_FORMAT_ERROR.toString());
 			
 			isJSONOfPollingFormat = false;
 		}
@@ -359,7 +365,7 @@ public class MessageParser {
     	
 		}
 		catch (org.json.simple.parser.ParseException e) {
-			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+			mmsLog.info(logger, this.SESSION_ID, ErrorCode.MNS_WRONG_FORMAT_ERROR.toString());
 		}
 	}
 	
@@ -370,7 +376,7 @@ public class MessageParser {
 			geoDstInfo = (JSONArray) parser.parse(geocastInfo);
 			
 		} catch (org.json.simple.parser.ParseException e) {
-			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+			mmsLog.info(logger, this.SESSION_ID, ErrorCode.WRONG_GEOCASTING_INFO.toString());
 		}
 	}
 	
@@ -443,7 +449,7 @@ public class MessageParser {
 		float[] geoLatList = parseToFloatList(req.headers().get("lat"));
 		float[] geoLongList = parseToFloatList(req.headers().get("long"));
 		if (geoLatList.length < 3 || geoLongList.length < 3 || geoLatList.length != geoLongList.length) {
-			throw new ParseException(ParseException.ERROR_UNEXPECTED_EXCEPTION);
+			mmsLog.info(logger, SESSION_ID, ErrorCode.WRONG_GEOCASTING_INFO.toString());
 		}
 		geoPolygonInfo.setGeoLatList(geoLatList);
 		geoPolygonInfo.setGeoLongList(geoLongList);

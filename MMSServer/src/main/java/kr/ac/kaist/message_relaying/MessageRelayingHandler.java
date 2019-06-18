@@ -229,6 +229,11 @@ Rev. history : 2019-06-14
 Version : 0.9.2
 	Refactoring.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -292,7 +297,7 @@ public class MessageRelayingHandler  {
 			type = typeDecider.decideType(parser, mch);
 		} 
 		catch (ParseException e) {
-			mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+			mmsLog.info(logger, SESSION_ID, ErrorCode.MESSAGE_PARSING_ERROR.toString());
 		}
 		try {
 			processRelaying(type, ctx, req);
@@ -515,7 +520,7 @@ public class MessageRelayingHandler  {
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (type == MessageTypeDecider.msgType.UNKNOWN_MRN) {
 			isErrorOccured = true;
-			mmsLog.debug(logger, this.SESSION_ID, ErrorCode.UNKNOWN_MRN.toString());
+			mmsLog.info(logger, this.SESSION_ID, ErrorCode.UNKNOWN_MRN.toString());
 			message = ErrorCode.UNKNOWN_MRN.getUTF8Bytes();
 			//logger.info("test "+message);
 		} 

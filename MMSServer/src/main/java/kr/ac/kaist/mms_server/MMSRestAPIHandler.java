@@ -429,7 +429,7 @@ public class MMSRestAPIHandler {
 			message = "OK".getBytes(Charset.forName("UTF-8"));
 		}
 		else {
-			mmsLog.warn(logger, this.SESSION_ID, "Wrong parameter.");
+			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
 			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 		}
 		
@@ -447,7 +447,7 @@ public class MMSRestAPIHandler {
 			message = "OK".getBytes(Charset.forName("UTF-8"));
 		}
 		else {
-			mmsLog.warn(logger, this.SESSION_ID, "Wrong parameter.");
+			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
 			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 		}
 		
@@ -466,7 +466,7 @@ public class MMSRestAPIHandler {
 			message = "OK".getBytes(Charset.forName("UTF-8"));
 		}
 		else {
-			mmsLog.warn(logger, this.SESSION_ID, "Wrong parameter.");
+			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
 			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 		}
 		
@@ -485,13 +485,15 @@ public class MMSRestAPIHandler {
 			message = "OK".getBytes(Charset.forName("UTF-8"));
 		}
 		else {
-			mmsLog.warn(logger, this.SESSION_ID, "Wrong parameter.");
+			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
 			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 		}
 		
 		return message;
 	}
 	
+	//This method will be
+	  @Deprecated
 	public byte[] addMnsEntry (FullHttpRequest req) {
 		byte[] message = null;
 		
@@ -506,21 +508,22 @@ public class MMSRestAPIHandler {
 			catch (UnknownHostException e) {
 				// This code block will be deprecated, so there is no definition of error code.
 				
-				mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+				mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 			} 
     		catch (IOException e) {
     			ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
     			
-    			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+    			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 			} 
 		}
 		else {
-			mmsLog.warn(logger, this.SESSION_ID, "Wrong parameter.");
+			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
 			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 		}
 		return message;
 	}
-	
+	//This method will be
+	  @Deprecated
 	public byte[] removeMnsEntry (FullHttpRequest req) {
 		byte[] message = null;
 		
@@ -535,16 +538,16 @@ public class MMSRestAPIHandler {
     		catch (UnknownHostException e) {
 				// This code block will be deprecated, so there is no definition of error code.
     			
-    			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+    			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 			} 
     		catch (IOException e) {
     			message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
     			
-    			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+    			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 			} 
 		}
 		else {
-			mmsLog.warn(logger, this.SESSION_ID, "Wrong parameter.");
+			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
 			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 		}
 		
@@ -591,10 +594,10 @@ public class MMSRestAPIHandler {
 	
 	
 		} catch (UnknownHostException e) {
-			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 			
 		} catch (IOException e) {
-			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 			
 		} finally {
 			if (pw != null) {
@@ -604,21 +607,21 @@ public class MMSRestAPIHandler {
 				try {
 					isr.close();
 				} catch (IOException e) {
-					mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 				}
 			}
 			if (br != null) {
 				try {
 					br.close();
 				} catch (IOException e) {
-					mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 				}
 			}
 			if (MNSSocket != null) {
 				try {
 					MNSSocket.close();
 				} catch (IOException e) {
-					mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 				}
 			}
 		}
@@ -664,10 +667,10 @@ public class MMSRestAPIHandler {
 			mmsLog.trace(logger, this.SESSION_ID, "From server=" + queryReply+".");
 
 		} catch (UnknownHostException e) {
-			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 			 
 		} catch (IOException e) {
-			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 			
 		} finally {
 			if (pw != null) {
@@ -677,21 +680,21 @@ public class MMSRestAPIHandler {
 				try {
 					isr.close();
 				} catch (IOException e) {
-					mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 				}
 			}
 			if (br != null) {
 				try {
 					br.close();
 				} catch (IOException e) {
-					mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 				}
 			}
 			if (MNSSocket != null) {
 				try {
 					MNSSocket.close();
 				} catch (IOException e) {
-					mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
 				}
 			}
 		}

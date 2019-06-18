@@ -122,21 +122,21 @@ class MIH_MessageOutputChannel {
 				try {
 					isr.close();
 				} catch (IOException e) {
-					mmsLog.warnException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_CLOSE_ERROR.toString(), e, 5);
+					mmsLog.errorException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_CLOSE_ERROR.toString(), e, 5);
 				}
 			}
 			if (br != null) {
 				try {
 					br.close();
 				} catch (IOException e) {
-					mmsLog.warnException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_CLOSE_ERROR.toString(), e, 5);
+					mmsLog.errorException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_CLOSE_ERROR.toString(), e, 5);
 				}
 			}
     		if (MNSSocket != null) {
     			try {
 					MNSSocket.close();
 				} catch (IOException e) {
-					mmsLog.warnException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_CLOSE_ERROR.toString(), e, 5);
+					mmsLog.errorException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_CLOSE_ERROR.toString(), e, 5);
 				}
     		}
 		}

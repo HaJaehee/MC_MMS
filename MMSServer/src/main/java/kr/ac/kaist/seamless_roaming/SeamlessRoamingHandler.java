@@ -116,7 +116,7 @@ public class SeamlessRoamingHandler {
 		boolean isClientVerified = false;
 		
 		if (parser.isJSONOfPollingMsg() == false){
-			message = ErrorCode.JSON_FORMAT_ERR.getJSONFormattedUTF8Bytes();
+			message = ErrorCode.JSON_FORMAT_ERROR.getJSONFormattedUTF8Bytes();
 			return message;
 		}
 		
