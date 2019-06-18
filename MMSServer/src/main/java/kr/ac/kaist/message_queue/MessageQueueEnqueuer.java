@@ -13,6 +13,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
+import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -95,6 +96,11 @@ Rev. history : 2019-06-12
 Version : 0.9.2
 	Fixed bugs related to connection pool.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 
 /* -------------------------------------------------------- */
@@ -146,25 +152,25 @@ class MessageQueueEnqueuer {
 			
 		} 
 		catch (IOException e) {
-			mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+			mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
 			
 		} 
 		catch (TimeoutException e) {
-			mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+			mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
 		}
 		finally {
     		if (channel != null && channel.isOpen()) {
 	    		try {
 					channel.close();
 				} catch (IOException | TimeoutException e) {
-					mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+					mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
 				}
 	    	}
     		if (connection != null && channel.isOpen()) {
 	    		try {
 	    			connection.close();
 				} catch (IOException e) {
-					mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+					mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CONNECTION_CLOSE_ERROR.toString(), e, 5);
 				}
 	    	}
 		}

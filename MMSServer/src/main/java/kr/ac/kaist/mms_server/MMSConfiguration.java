@@ -114,6 +114,11 @@ Rev. history : 2019-06-14
 Version : 0.9.2
 	Added RABBIT_MQ_CONN_POOL.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 import java.io.File;
@@ -402,7 +407,7 @@ public class MMSConfiguration {
 
 		}
 		catch (org.apache.commons.cli.ParseException | IOException e){
-			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
+			logger.error(TAG+e.getClass()+ErrorCode.CONFIGURATION_ERROR.toString()+e.getLocalizedMessage());
 			formatter.printHelp("MMS options", options);
 			Scanner sc = new Scanner(System.in);
 			sc.nextLine();
@@ -510,11 +515,11 @@ public class MMSConfiguration {
 			if (s != null) {
 				MMS_MRN = s;
 				if (!MMS_MRN.startsWith("urn:mrn:")) {
-					logger.error(TAG+"Invalid MRN for MMS.");
+					logger.error(TAG+ErrorCode.CONFIGURATION_ERROR.toString()+"Invalid MRN for MMS.");
 					try {
 						throw new IOException();
 					} catch (IOException e) {
-						logger.warn(e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".");
+						logger.warn(e.getClass().getName()+ErrorCode.CONFIGURATION_ERROR.toString()+"Invalid MRN for MMS."+e.getMessage()+" "+e.getStackTrace()[0]+".");
 						for (int i = 1 ; i < e.getStackTrace().length && i < 5 ; i++) {
 							logger.warn(e.getStackTrace()[i]+".");
 						}
@@ -658,7 +663,7 @@ public class MMSConfiguration {
 			}
 		}
 		catch (IOException | org.json.simple.parser.ParseException e) {
-			logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
+			logger.error(TAG+e.getClass()+ErrorCode.CONFIGURATION_ERROR.toString()+e.getLocalizedMessage());
 			Scanner sc = new Scanner(System.in);
 			sc.nextLine();
 			sc.close();
@@ -670,7 +675,7 @@ public class MMSConfiguration {
 					fr.close();
 				}
 			} catch (IOException e) {
-				logger.warn(TAG+e.getClass()+" "+e.getLocalizedMessage());
+				logger.warn(TAG+e.getClass()+ErrorCode.CONFIGURATION_ERROR.toString()+e.getLocalizedMessage());
 			}
 			
 			if (isError) {
@@ -898,7 +903,7 @@ public class MMSConfiguration {
 				return i;
 			}
 			catch (NumberFormatException e) {
-				logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
+				logger.error(TAG+e.getClass()+ErrorCode.CONFIGURATION_ERROR.toString()+e.getLocalizedMessage());
 				throw new IOException();
 			}
 		}
@@ -947,7 +952,7 @@ public class MMSConfiguration {
 				return i;
 			}
 			catch (NumberFormatException e) {
-				logger.error(TAG+e.getClass()+" "+e.getLocalizedMessage());
+				logger.error(TAG+e.getClass()+ErrorCode.CONFIGURATION_ERROR.toString()+e.getLocalizedMessage());
 				throw new IOException();
 			}
 		}

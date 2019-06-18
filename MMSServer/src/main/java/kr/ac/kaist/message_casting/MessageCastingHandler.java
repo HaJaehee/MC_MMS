@@ -70,11 +70,17 @@ Rev. history : 2019-04-18
 Version : 0.8.2
 	Add asynchronous version of unicast.
 Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel.ConnectionThread;
+import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
@@ -173,7 +179,7 @@ public class MessageCastingHandler {
     		}
 		} 
     	catch (IOException e) {
-    		mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+    		mmsLog.info(logger, this.SESSION_ID, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString());
 		}
 		
 		return message;
