@@ -628,7 +628,7 @@ public class MRH_MessageOutputChannel{
 				con.getInputStream().close();
 			} 
 	       	catch (IOException e) {
-	       		mmsLog.warnException(logger, SESSION_ID, ErrorCode.MESSAGE_RELAYING_FAIL_DISCONNECT.toString(), e, 5);
+	       		mmsLog.info(logger, SESSION_ID, ErrorCode.MESSAGE_RELAYING_FAIL_DISCONNECT.toString());
 			}
 	    }
 		public byte[] getData() {
@@ -639,7 +639,7 @@ public class MRH_MessageOutputChannel{
 				data = getResponseMessage(con);
 			} 
 			catch (IOException e) {
-	    		mmsLog.warnException(logger, SESSION_ID, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString(), e, 5);
+	    		mmsLog.info(logger, SESSION_ID, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString());
 			} 
 			finally {
 				if (data == null) {

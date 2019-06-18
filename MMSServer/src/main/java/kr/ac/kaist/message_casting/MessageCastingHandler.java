@@ -179,7 +179,7 @@ public class MessageCastingHandler {
     		}
 		} 
     	catch (IOException e) {
-    		mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString(), e, 5);
+    		mmsLog.info(logger, this.SESSION_ID, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString());
 		}
 		
 		return message;
