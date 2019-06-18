@@ -458,7 +458,7 @@ public class MMSLog {
 			SimpleDateFormat sdf = new SimpleDateFormat("M/dd");
 			sb.append(sdf.format(new Date()));
 			sb.append("</td><td>");
-			sdf = new SimpleDateFormat("HH:mm:ss");
+			sdf = new SimpleDateFormat("HH:mm:ss.SSS");
 			sb.append(sdf.format(new Date()));
 			sb.append("</td><td>");
 			sb.append(logLevel);
