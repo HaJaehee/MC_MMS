@@ -59,6 +59,7 @@ public enum ErrorCode {
 	DUPLICATE_POLLING("10011", "The polling request is already received. Duplicate request is not accepted."),
 	AUTHENTICATE_FAIL("10012", "Authentication is failed."),
 	MESSAGE_PARSING_ERROR("10013", "Message parsing error."),
+	MIR_API_ERROR("10014","MIR API error."),
 	
 	// Numbers greater than 10000 and lower than 20000 are internal error codes.
 	// Number 11XXX is related to configuration of MMS.

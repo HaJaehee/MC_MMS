@@ -234,6 +234,11 @@ Rev. history : 2019-06-18
 Version : 0.9.2
 	Added ErrorCode.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-20
+Version : 0.9.2
+	HOTFIX: polling authentication bug.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -276,7 +281,6 @@ public class MessageRelayingHandler  {
 
 	private String protocol = "";
 	
-	private boolean isClientVerified = false;
     private ConnectionThread thread = null;
     
     private boolean isErrorOccured = false;
@@ -340,7 +344,6 @@ public class MessageRelayingHandler  {
 		String dstIP = parser.getDstIP();
 		int dstPort = parser.getDstPort();
 		long seqNum = parser.getSeqNum();
-		String srcDstPair = srcMRN+"::"+dstMRN;
 		
 		try {
 			mmsLogForDebug.addSessionId(srcMRN, this.SESSION_ID);
@@ -424,6 +427,7 @@ public class MessageRelayingHandler  {
 			if (message != null) {
 				outputChannel.replyToSender(ctx, message, isRealtimeLog);
 			}
+
 			return;
 		} 
 		//This code MUST be 'else if' statement not 'if'. 
@@ -552,23 +556,5 @@ public class MessageRelayingHandler  {
 			}
 		}
 
-		
-		//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
-		//In version 0.8.0, polling client verification is optional. 
-		//This code MUST be 'if' statement not 'else if'. 
-		if ((type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) && parser.getHexSignedData() != null && !isClientVerified) {
-			byte[] msg = null;
-			
-			System.out.println(parser.getSvcMRN());
-			if (parser.getSvcMRN() == null) {
-				msg = ErrorCode.NULL_SVC_MRN.getJSONFormattedUTF8Bytes();
-			} 
-			else {
-				//msg = ErrorCode.AUTHENTICATION_FAIL_REVOKED.getJSONFormattedUTF8Bytes();
-				msg = ErrorCode.AUTHENTICATE_FAIL.getJSONFormattedUTF8Bytes();
-			}
-			outputChannel.replyToSender(ctx, msg, isRealtimeLog);
-			return;
-		}
 	}
 }

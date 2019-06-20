@@ -102,6 +102,11 @@ Rev. history : 2019-06-18
 Version : 0.9.2
 	Added ErrorCode.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-20
+Version : 0.9.2
+	HOTFIX: polling authentication bug.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -161,6 +166,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		
 		
 	}
+	
+	/*
 	public boolean isRemainJob(ChannelHandlerContext ctx) {
 		ConnectionThread thread = relayingHandler.getConnectionThread();
         if (thread != null) {
@@ -171,9 +178,9 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         	return true;
         }
         return false;
-	}
+	}*/
 	
-    @Override
+    /*@Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         boolean release = true;
         try {
@@ -190,7 +197,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
                 ReferenceCountUtil.release(msg);
             }
         }
-    }
+    }*/
     
 //	when coming http message
 	@Override
@@ -249,9 +256,9 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         for(ChannelTerminateListener listener: listeners) {
         	listener.terminate(ctx);
         }
-        if (isRemainJob(ctx)) {
-            ReferenceCountUtil.release(imsg);
-        }
+        //if (isRemainJob(ctx)) {
+        //    ReferenceCountUtil.release(imsg);
+        //}
         ctx.close();
     }
 

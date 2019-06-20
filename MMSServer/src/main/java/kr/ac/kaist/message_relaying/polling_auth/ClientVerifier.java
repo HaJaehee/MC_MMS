@@ -26,12 +26,20 @@ Rev. history : 2019-05-26
 Version : 0.9.1
 	Session management of polling message authentication is deprecated.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-06-20
+Version : 0.9.2
+	HOTFIX: polling authentication bug.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
+
+import java.net.UnknownHostException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import net.etri.pkilib.server.ServerPKILibrary;
@@ -44,15 +52,17 @@ public class ClientVerifier {
 	private ServerPKILibrary serverPKILib;
 	private boolean isMatching;
 	private boolean isVerified;
+	private String SESSION_ID;
 	private PollingSessionManager pManager;
 	private final MMSLog mmsLog = MMSLog.getInstance();
 	
-	public ClientVerifier() {
+	public ClientVerifier(String sessionId) {
 		byteConverter = null;
 		signedData = null;
 		serverPKILib = null;
 		isMatching = false;
 		isVerified = false;
+		this.SESSION_ID = sessionId;
 		pManager = new PollingSessionManager();
 	}
 	
@@ -108,12 +118,18 @@ public class ClientVerifier {
 	}
 	
 	private void authenticateUsingMIRAPI(String srcMRN, String hexSignedData) {
-		serverPKILib = ServerPKILibrary.getInstance();
 		
-		byteConverter = ByteConverter.getInstance();
-		signedData = byteConverter.hexToByteArray(hexSignedData);
-		isVerified = serverPKILib.verifySignedData(signedData);
-		isMatching = serverPKILib.getSubjectMRN(signedData).equals(srcMRN);
+		try {
+			serverPKILib = ServerPKILibrary.getInstance();
+			
+			byteConverter = ByteConverter.getInstance();
+			signedData = byteConverter.hexToByteArray(hexSignedData);
+			isVerified = serverPKILib.verifySignedData(signedData);
+			isMatching = serverPKILib.getSubjectMRN(signedData).equals(srcMRN);
+		}
+		catch (Exception e) {
+			mmsLog.info(logger, this.SESSION_ID, ErrorCode.MIR_API_ERROR.toString());
+		}
 	}
 	
 	public boolean isMatching () {

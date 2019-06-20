@@ -433,11 +433,11 @@ public class MMSLog {
 		return briefRealtimeLogEachIDs.keySet();
 	}
 	
-	private String makeLog (String SessionId, String log) {
+	private String makeLog (String sessionId, String log) {
 		StringBuilder sb = new StringBuilder();
 		
 		sb.append("SessionID=");
-		sb.append(SessionId);
+		sb.append(sessionId);
 		if (!Character.isWhitespace(log.charAt(0))) {
 			sb.append(" ");
 		}
@@ -450,7 +450,7 @@ public class MMSLog {
 	}
 
 	
-	private void addWebLog (String SessionId, String log, String logLevel) {
+	private void addWebLog (String sessionId, String log, String logLevel) {
 		
 		if (MMSConfiguration.isWebLogProviding()) {
 			StringBuilder sb = new StringBuilder();
@@ -463,7 +463,7 @@ public class MMSLog {
 			sb.append("</td><td>");
 			sb.append(logLevel);
 			sb.append("</td><td>");
-			sb.append(SessionId);
+			sb.append(sessionId);
 			sb.append("</td><td>");
 			if (!Character.isWhitespace(log.charAt(0))) {
 				sb.append(" ");
@@ -476,60 +476,60 @@ public class MMSLog {
 			String newLog = sb.toString();
 			
 			addBriefLogForStatus(newLog);
-			mmsLogForDebug.addLog(SessionId, newLog);
+			mmsLogForDebug.addLog(sessionId, newLog);
 		}
 	}
 	
-	public void trace (Logger logger, String SessionId, String log) {
+	public void trace (Logger logger, String sessionId, String log) {
 		if (logger.isTraceEnabled()) {
-			String newLog = makeLog(SessionId, log);
-			addWebLog(SessionId, log, "TRACE");
+			String newLog = makeLog(sessionId, log);
+			addWebLog(sessionId, log, "TRACE");
 			logger.trace(newLog);
 		}
 	}
-	public void debug (Logger logger, String SessionId, String log) {
+	public void debug (Logger logger, String sessionId, String log) {
 		if (logger.isDebugEnabled()) {
-			String newLog = makeLog(SessionId, log);
-			addWebLog(SessionId, log, "DEBUG");
+			String newLog = makeLog(sessionId, log);
+			addWebLog(sessionId, log, "DEBUG");
 			logger.debug(newLog);
 		}
 	}
-	public void info (Logger logger, String SessionId, String log) {
+	public void info (Logger logger, String sessionId, String log) {
 		if (logger.isInfoEnabled()) {
-			String newLog = makeLog(SessionId, log);
-			addWebLog(SessionId, log, "INFO");
+			String newLog = makeLog(sessionId, log);
+			addWebLog(sessionId, log, "INFO");
 			logger.info(newLog);
 		}
 	}
-	public void warn (Logger logger, String SessionId, String log) {
+	public void warn (Logger logger, String sessionId, String log) {
 		if (logger.isWarnEnabled()) {
-			String newLog = makeLog(SessionId, log);
-			addWebLog(SessionId, log, "WARN");
+			String newLog = makeLog(sessionId, log);
+			addWebLog(sessionId, log, "WARN");
 			logger.warn(newLog);
 		}
 	}
-	public void error (Logger logger, String SessionId, String log) {
+	public void error (Logger logger, String sessionId, String log) {
 		if (logger.isErrorEnabled()) {
-			String newLog = makeLog(SessionId, log);
-			addWebLog(SessionId, log, "ERROR");
+			String newLog = makeLog(sessionId, log);
+			addWebLog(sessionId, log, "ERROR");
 			logger.error(newLog);
 		}
 	}
 	
-	public void warnException (Logger logger, String SessionId, String log, Exception e, int traceDepth) {
+	public void warnException (Logger logger, String sessionId, String log, Exception e, int traceDepth) {
 		if (logger.isWarnEnabled()) {
-			warn(logger, SessionId, makeExceptionLog(log, e));
+			warn(logger, sessionId, makeExceptionLog(log, e));
 			for (int i = 1 ; i < e.getStackTrace().length && i < traceDepth ; i++) {
-				logger.warn(makeLog(SessionId, e.getStackTrace()[i]+"."));
+				logger.warn(makeLog(sessionId, e.getStackTrace()[i]+"."));
 			}
 		}
 	}
 	
-	public void errorException (Logger logger, String SessionId, String log, Exception e, int traceDepth) {
+	public void errorException (Logger logger, String sessionId, String log, Exception e, int traceDepth) {
 		if (logger.isErrorEnabled()) {
-			error(logger, SessionId, makeExceptionLog(log, e));
+			error(logger, sessionId, makeExceptionLog(log, e));
 			for (int i = 1 ; i < e.getStackTrace().length && i < traceDepth ; i++) {
-				logger.error(makeLog(SessionId, e.getStackTrace()[i]+"."));
+				logger.error(makeLog(sessionId, e.getStackTrace()[i]+"."));
 			}
 		}
 	}

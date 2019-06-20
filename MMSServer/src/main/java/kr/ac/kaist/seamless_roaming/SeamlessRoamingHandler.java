@@ -45,6 +45,11 @@ Rev. history : 2019-06-14
 Version : 0.9.2
 	Refactoring.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-20
+Version : 0.9.2
+	HOTFIX: polling authentication bug.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -95,7 +100,7 @@ public class SeamlessRoamingHandler {
 	
 	private void initializeModule() {
 		mih = new MNSInteractionHandler(this.SESSION_ID);
-		cltVerifier = new ClientVerifier();
+		cltVerifier = new ClientVerifier(this.SESSION_ID);
 
 	}
 
@@ -146,7 +151,7 @@ public class SeamlessRoamingHandler {
 
 			} else {
 				//Fail to verify the client.
-				mmsLog.debug(logger, this.SESSION_ID, "Client verification is failed.");
+				mmsLog.debug(logger, this.SESSION_ID, ErrorCode.AUTHENTICATE_FAIL.toString());
 				
 				if (cltVerifier.isMatching() == false) {
 					// message = ErrorCode.AUTHENTICATION_FAIL_NOTMATCHING.getJSONFormattedUTF8Bytes();
@@ -161,7 +166,7 @@ public class SeamlessRoamingHandler {
 			}
 		}
 		else {
-			mmsLog.debug(logger, this.SESSION_ID, "Client's certificate is not included.");
+			mmsLog.debug(logger, this.SESSION_ID, ErrorCode.NULL_CERTIFICATE.toString());
 			
 			message = ErrorCode.NULL_CERTIFICATE.getJSONFormattedUTF8Bytes();		
 //				String msg = "The certificate is not inlcuded.";
