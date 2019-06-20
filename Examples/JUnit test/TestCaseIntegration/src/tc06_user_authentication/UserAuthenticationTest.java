@@ -156,7 +156,7 @@ public class UserAuthenticationTest extends MMSTestBase {
 		client.sendPollingMessage(contentsBuilder.toString());
 
 //		assertTrue(TS6_Client.sentMessage.equals(server_message));	
-		assertTrue(UserAuthenticationClient.sentMessage.equals("[10006] The certificate is not included."));
+		assertTrue(UserAuthenticationClient.sentMessage.equals("[10007] The certificate is not included."));
 	}
 	
 	@Test
@@ -170,7 +170,7 @@ public class UserAuthenticationTest extends MMSTestBase {
 		String signedData = getSignedData(true);
 		contentsBuilder.setCertificate(signedData);
 		client.sendPollingMessage(contentsBuilder.toString());
-		assertTrue(UserAuthenticationClient.sentMessage.equals("[10007] The service MRN is not included."));	
+		assertTrue(UserAuthenticationClient.sentMessage.equals("[10008] The service MRN is not included."));	
 	}
 	
 	@Test
