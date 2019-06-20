@@ -1,24 +1,27 @@
 package tc08_long_polling_duplicate;
 
 /** 
-package TS8;
+package tc08_long_polling_duplicate;
 
-File name : TS8_test.java
+File name : LongPollingDuplicateTest.java
 	Dropping duplicate long polling request test 
 Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
 Creation Date : 2019-05-10
 
- * Rev. history : 2019-05-17
- * Version : 0.9.1
- *		Added assert statements.
- * Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
- * 
- * 
+Rev. history : 2019-05-17
+Version : 0.9.1
+	Added assert statements.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2019-06-13
 Version : 0.9.2
 	Change the class name from TS8_Test to LongPollingDuplicateTest
-	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+	
+Rev. history : 2019-06-20
+Version : 0.9.2
+	Revised test cases and fixed bugs.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 
 import static org.junit.Assert.assertTrue;
@@ -43,6 +46,8 @@ public class LongPollingDuplicateTest extends MMSTestBase {
 	public static void setupForClass() throws Exception {
 		client = new LongPollingDuplicateClient();
 		server = new LongPollingDuplicateServer();
+		client.emptyTheQueue();
+		Thread.sleep(2000);
 		offset = 4;
 	}
 	
@@ -52,15 +57,15 @@ public class LongPollingDuplicateTest extends MMSTestBase {
 		int actual = 0;		
 		boolean testPass = false;
 		response = new ArrayList<String>();
-				
-		server.sendContent(actual);	
-		
+
 		client.singleThreadStart(); /// Do not 
-		Thread.sleep(10000);	
+		Thread.sleep(5000);	
+		
+		server.sendContent(actual);	
+		Thread.sleep(1000);
 		
 		for (String s : response) {
 			expected = response.size();
-			System.out.println("Message : "+ s);
 			if (s.equals("aa")) {
 				testPass = true;
 				actual++;
@@ -78,24 +83,23 @@ public class LongPollingDuplicateTest extends MMSTestBase {
 		int actualError = 0;
 		boolean testPass = false;
 		response = new ArrayList<String>();
-				
-		server.sendContent(actual);	
-		
+			
 		client.multipleThreadStart();
-		Thread.sleep(10000);
+		Thread.sleep(5000);
+		
+		server.sendContent(actual);	
+		Thread.sleep(1000);
 		
 		for (String s : response) {
 			expectedError = response.size()-1;
-			System.out.println("Message : "+ s);
 			if (s.equals("aa")) {
 				testPass = true;
 				actual++;
 			}
-			else if (s.equals("[10011] The long polling request is already received. Duplicate request is not accepted.")) {
+			else if (s.equals("[10011] The polling request is already received. Duplicated request is not accepted.")) {
 				actualError++;
 			}
 		}
-		
 		assertTrue(testPass && expected == actual && expectedError == actualError);			
 	}
 }

@@ -327,13 +327,15 @@ public class MessageQueueDequeuer extends Thread{
 								channel.basicAck(envelope.getDeliveryTag(), false);
 							} else {
 								mmsLog.debug(logger, SESSION_ID, "Dequeue="+queueName+".");
-								mmsLog.warn(logger, SESSION_ID, srcMRN+" is disconnected. Re-enqueue the messages.");
+								mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString()+" srcMRN="+ srcMRN+". Re-enqueue the messages.");
 
 								channel.basicNack(envelope.getDeliveryTag(), false, true);
 							}
-						    
-						    this.getChannel().basicCancel(this.getConsumerTag());
+	
 						    try {
+						    	if (this.getChannel() != null && this.getChannel().isOpen()) {
+						    		this.getChannel().basicCancel(this.getConsumerTag());
+						    	}
 						    	if (this.getChannel() != null && this.getChannel().isOpen()) {
 						    		this.getChannel().close();
 						    	}
@@ -341,7 +343,7 @@ public class MessageQueueDequeuer extends Thread{
 						    		connection.close();
 						    	}*/
 							} catch (TimeoutException e) {
-								mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+								mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
 							}
 
 						  }

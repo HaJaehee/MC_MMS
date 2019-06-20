@@ -9,7 +9,7 @@ import net.etri.pkilib.client.ClientPKILibrary;
 import net.etri.pkilib.tool.ByteConverter;
 
 /**
- * File name : TS6_client.java Polling request message function for the purpose
+ * File name : LongPollingDuplicateClient.java Polling request message function for the purpose
  * of testing MMS Author : Youngjin Kim (jcdad3000@kaist.ac.kr) Creation Date :
  * 2019-05-02
  * 
@@ -23,6 +23,11 @@ Rev. history : 2019-06-13
 Version : 0.9.2
 	Change the class name from TS8_Client to LongPollingDuplicateClient
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-06-20
+Version : 0.9.2
+	Revised test cases and fixed bugs.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
  */
 public class LongPollingDuplicateClient {
 
@@ -60,12 +65,21 @@ public class LongPollingDuplicateClient {
 
 	public static void singleThreadStart() {
 		ThreadEX threadex = new ThreadEX();	
+		threadex.interval = 0;
+		Thread thread1 = new Thread(threadex, "A");
+		thread1.start();	
+	}
+	
+	public static void emptyTheQueue() {
+		ThreadEX threadex = new ThreadEX();	
+		threadex.interval = 100;
 		Thread thread1 = new Thread(threadex, "A");
 		thread1.start();	
 	}
 	
 	public static void multipleThreadStart() {
 		ThreadEX threadex = new ThreadEX();
+		threadex.interval = 0;
 		ThreadEX threadex2 = new ThreadEX();
 		ThreadEX threadex3 = new ThreadEX();
 		ThreadEX threadex4 = new ThreadEX();
@@ -75,10 +89,18 @@ public class LongPollingDuplicateClient {
 		Thread thread3 = new Thread(threadex3, "C");
 		Thread thread4 = new Thread(threadex4, "D");
 
-		thread1.start();
-		thread2.start();
-		thread3.start();
-		thread4.start();	
+		try {
+			thread1.start();
+			Thread.sleep(100);
+			thread2.start();
+			Thread.sleep(100);
+			thread3.start();
+			Thread.sleep(100);
+			thread4.start();	
+		} 
+		catch (InterruptedException e) {
+			
+		}
 		
 	}
 
@@ -91,6 +113,7 @@ class ThreadEX implements Runnable {
 	private static String myMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 	private static String dstMRN = "urn:mrn:smart-navi:device:mms1";
 	private static String svcMRN = "urn:mrn:imo:imo-no:ts-mms-08-server";
+	public static int interval = 0;
 	private MMSClientHandler myHandler = null;
 	
 	@Override
@@ -102,7 +125,7 @@ class ThreadEX implements Runnable {
 		try {
 			myHandler = new MMSClientHandler(myMRN);
 
-			myHandler.startPolling(dstMRN, svcMRN, LongPollingDuplicateClient.hexSignedData_active, 0,
+			myHandler.startPolling(dstMRN, svcMRN, LongPollingDuplicateClient.hexSignedData_active, interval,
 					new MMSClientHandler.PollingResponseCallback() {
 
 						@Override

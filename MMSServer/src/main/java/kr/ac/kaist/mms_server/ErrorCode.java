@@ -56,7 +56,7 @@ public enum ErrorCode {
 	JSON_FORMAT_ERROR("10009", "The message is not formatted by JSON."),
 	@Deprecated
 	AUTHENTICATION_FAIL_NOTMATCHING("10010", "It is failed to verify the client. The source MRN is not equal to the certificate's."),
-	DUPLICATE_POLLING("10011", "The polling request is already received. Duplicate request is not accepted."),
+	DUPLICATE_POLLING("10011", "The polling request is already received. Duplicated request is not accepted."),
 	AUTHENTICATE_FAIL("10012", "Authentication is failed."),
 	MESSAGE_PARSING_ERROR("10013", "Message parsing error."),
 	MIR_API_ERROR("10014","MIR API error."),
