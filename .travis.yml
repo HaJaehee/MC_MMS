@@ -14,10 +14,11 @@ install:
     - mvn clean install && cp MMSServer/target/MC_MMS-0.9.2-SNAPSHOT.jar docker/MMSServer/MMSServer.jar && cp MMSServer/target/MC_MMS-0.9.2-SNAPSHOT.jar docker/MNSDummy/MMSServer.jar
     - cp -r MMSServer/target/lib docker/MMSServer/ && cp -r MMSServer/target/lib docker/MNSDummy/
     - cp -r MMSServer/MMS-configuration docker/MMSServer/
-    - cp External\ Jars/pkilib-1.4.jar $HOME/.m2/repository/net/etri/net.etri.pkilib/1.4/net.etri.pkilib-1.4.jar
+
 
 before_script:  
     - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+    - cp External\ Jars/pkilib-1.4.jar $HOME/.m2/repository/net/etri/net.etri.pkilib/1.4/net.etri.pkilib-1.4.jar
 
 script:
     - docker build --no-cache -t lovesm135/mmsserver docker/MMSServer
