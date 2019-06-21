@@ -115,8 +115,6 @@
 			<groupId>net.etri</groupId>
 			<artifactId>net.etri.pkilib</artifactId>
 			<version>1.4</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/External Jars/pkilib-1.4.jar</systemPath>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
