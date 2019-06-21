@@ -11,6 +11,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import tc_base.MMSTestBase;
+
 /** 
 File name : TS3_Test.java
 	Polling request message function for the purpose of testing MMS
@@ -33,7 +35,7 @@ Version : 0.9.2
 */
 
 @FixMethodOrder(MethodSorters.DEFAULT)
-public class MMSPollingReturnedwithVariablePayloadTest {
+public class MMSPollingReturnedwithVariablePayloadTest extends MMSTestBase {
 	static MMSPollingReturnedwithVariablePayloadClient client;
 	static MMSPollingReturnedwithVariablePayloadServer server;
 	static int offset;
