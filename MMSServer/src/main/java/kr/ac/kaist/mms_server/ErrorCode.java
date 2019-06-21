@@ -79,6 +79,7 @@ public enum ErrorCode {
 	LONG_POLLING_CLIENT_DISCONNECTED("18011","MMS Long Polling Client is disconnected."),
 	SEQUENCE_NUMBER_IS_NEGATIVE("18012","Sequence number of message is negative."),
 	WRONG_GEOCASTING_INFO("18013","Failed to parse geolocation info."),
+	MESSAGE_ENCODING_ERROR("18014", "Failed to encode a message."),
 	
 	
 	// Numbers greater than 20000 and lower than 30000 are external error codes.
