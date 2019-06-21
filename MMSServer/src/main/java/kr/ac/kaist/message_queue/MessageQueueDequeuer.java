@@ -248,22 +248,28 @@ public class MessageQueueDequeuer extends Thread{
 			mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString(), e1, 5);
 			return;
 		}
-		ctx.channel().attr(MRH_MessageInputChannel.TERMINATOR).get().add(new ChannelTerminateListener() {
-			
-			@Override
-			public void terminate(ChannelHandlerContext ctx) {
-				// TODO Auto-generated method stub
-				try {
+		try {
+			ctx.channel().attr(MRH_MessageInputChannel.TERMINATOR).get().add(new ChannelTerminateListener() {
+				
+				@Override
+				public void terminate(ChannelHandlerContext ctx) {
 					
-					if(channel != null && channel.isOpen()) {
-						channel.close();
-					}
-				} catch (IOException | TimeoutException e) {
-					mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
-			    	
-				} 
-			}
-		});
+					mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
+					try {
+						
+						if(channel != null && channel.isOpen()) {
+							channel.close();
+						}
+					} catch (IOException | TimeoutException e) {
+						mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
+				    	
+					} 
+				}
+			});
+		}
+		catch (Exception e) {
+			mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
+		}
 		
 		try {
 			channel.queueDeclare(queueName, true, false, false, null);
