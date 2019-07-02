@@ -72,7 +72,7 @@ public enum ErrorCode {
 	SEQUENCE_NUMBER_IS_OUT_OF_ORDER("18004","Sequence number of message is out of order."),
 	SEQUENTIAL_RELAYING_NULL_POINTER_EXCEPTION("18005", "Null pointer exception error occured in sequentailly relaying function."),
 	SEQUENTIAL_RELAYING_LIST_EMTPY("18006", "Empty message list error occured in sequentailly relaying function."),
-	MESSAGE_RELAYING_FAIL_UNREACHABLE("18007","Destination host is unrecheable."),
+	MESSAGE_RELAYING_FAIL_UNREACHABLE("18007","Destination host is unreachable."),
 	MESSAGE_RELAYING_FAIL_DISCONNECT("18008","Destination host is disconnected."),
 	CLIENT_DISCONNECTED("18009","MMS Client is disconnected."),
 	POLLING_CLIENT_DISCONNECTED("18010","MMS Polling Client is disconnected."),
