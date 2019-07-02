@@ -216,39 +216,35 @@ public class SeamlessRoamingHandler {
 
 		if (pollingMethod.equals("normal"))	{
 			SessionManager.getSessionInfo().put(SESSION_ID, "p");
+			SessionManager.getSessionCountList().get(0).incPollingSessionCount();
+			pmh.dequeueSCMessage(outputChannel, ctx, srcMRN, svcMRN, pollingMethod);
 		}
 		else if (pollingMethod.equals("long")) {
 			SessionManager.getSessionInfo().put(SESSION_ID, "lp");
+			SessionManager.getSessionCountList().get(0).incPollingSessionCount();
+			
+			// Youngjin code
+			// Duplicated polling request is not allowed.
+			String DUPLICATE_ID = srcMRN + svcMRN;
+			if (duplicateInfo.containsKey(DUPLICATE_ID)) {
+				
+//				System.out.println("duplicate long polling request");
+				
+				// TODO: To define error message.
+				byte[] message = ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes();
+				
+				outputChannel.replyToSender(ctx, message);
+				
+			} else {
+				duplicateInfo.put(DUPLICATE_ID, "y");
+				pmh.dequeueSCMessage(outputChannel, ctx, srcMRN, svcMRN, pollingMethod);
+			}
 		}
-		SessionManager.getSessionCountList().get(0).incPollingSessionCount();
-
 		
 		//Removed at version 0.8.2.
 		/*if (MMSConfiguration.getMnsHost().equals("localhost")||MMSConfiguration.getMnsHost().equals("127.0.0.1")) {
 			pmh.updateClientInfo(mih, srcMRN, srcIP);
 		}*/
-
-		// Youngjin code
-		// Duplicated polling request is not allowed.
-		
-		String DUPLICATE_ID = srcMRN + svcMRN;
-		//System.out.println("Duplicate ID : "+DUPLICATE_ID);
-
-		if (duplicateInfo.containsKey(DUPLICATE_ID)) {
-			
-//			System.out.println("duplicate long polling request");
-			
-			// TODO: To define error message.
-			byte[] message = ErrorCode.DUPLICATE_POLLING.getJSONFormattedUTF8Bytes();
-			
-			outputChannel.replyToSender(ctx, message);
-			
-		} else {
-			duplicateInfo.put(DUPLICATE_ID, "y");
-			pmh.dequeueSCMessage(outputChannel, ctx, srcMRN, svcMRN, pollingMethod);
-		}
-
-
 	}
 
 //	save SC message into queue
