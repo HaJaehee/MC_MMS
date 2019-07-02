@@ -50,6 +50,11 @@ Rev. history : 2019-06-20
 Version : 0.9.2
 	HOTFIX: polling authentication bug.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-02
+Version : 0.9.2
+	HOTFIX: duplicated long polling is not accepted.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
