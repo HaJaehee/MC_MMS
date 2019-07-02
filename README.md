@@ -1,5 +1,5 @@
 # MC_MMS
-[![Build Status](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS.svg?branch=beta-0.9.2-closed+HOTFIX)](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS)<br/>
+[![Build Status](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS.svg?branch=beta-0.9.2-closed%2BHOTFIX)](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS)<br/>
 Beta Version 0.9.2 <br/>
 2019.06.17 <br/>
 
