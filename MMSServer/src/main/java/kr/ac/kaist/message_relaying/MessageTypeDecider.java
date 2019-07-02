@@ -232,14 +232,18 @@ class MessageTypeDecider {
 		}
 		
 		else if (dstMRN.equals(MMSConfiguration.getMmsMrn())) {
+			
+
 			// TODO: Youngjin Kim must inspect this following code.
 			//When polling
 			if (httpMethod == HttpMethod.POST && uri.equals("/polling")) {
+				SessionManager.getSessionCountList().get(0).incSessionCount();
 	    		return msgType.POLLING; 
 	    	}
 			
 			//When long polling
 			if (httpMethod == HttpMethod.POST && uri.equals("/long-polling")) {
+				SessionManager.getSessionCountList().get(0).incSessionCount();
 	    		return msgType.LONG_POLLING; 
 	    	}
 	    	
@@ -250,6 +254,8 @@ class MessageTypeDecider {
 		
 		// When geocasting
 		else if (parser.isGeocastingMsg()) {
+			SessionManager.getSessionCountList().get(0).incSessionCount();
+			
 			if (parser.getGeoCircleInfo() != null) {
 				GeolocationCircleInfo geo = parser.getGeoCircleInfo();
 				String geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geo.getGeoLat(), geo.getGeoLong(), geo.getGeoRadius());
