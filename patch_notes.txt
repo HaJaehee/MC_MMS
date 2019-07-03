@@ -1,9 +1,77 @@
 Patch Notes
 ***********
+14-June 2019
+MC_MMS 0.9.1-2 new features/enhancements & bug-fixes:
+1. Added RabbitMQ connection pool functions.
+2. Updated one-time running JUnit test cases.
+3. REFACTORING MessageRelayingHandler.
+4. Fixed several bugs.
+5. Updated manuals.
+
+29-May 2019
+MC_MMS 0.9.1-1 new features/enhancements & bug-fixes:
+1. Updated MMS one-time installation script.
+2. Fixed several bugs.
+
+10-May 2019
+MC_MMS 0.9.1 new features/enhancements & bug-fixes:
+1. Added restful API functions.
+2. Added exception handling functions.
+3. Added test cases for exception handling functions.
+4. Added functions for dropping duplicated polling request.
+5. Added test cases for dropping duplicated polling request.
+6. Updated MMS configuration.
+
+30-April 2019
+MC_MMS 0.9.0 new features/enhancements & bug-fixes:
+1. Updated deploying scripts for docker container.
+2. Added polling authentication test cases.
+3. Updated .gitignore.
+4. Bug fixed related to polling.
+5. Bug fixed related to relaying when a service provider does not respond.
+
+12-April 2019
+MC_MMS 0.8.2-1 new features/enhancements & bug-fixes:
+1. Modified for coding rule conformity.
+2. Updated version of docker containers of MMS monitoring module from 0.7 to 0.8.2.
+
+26-March 2019
+MC_MMS 0.8.2 new features/enhancements & bug-fixes:
+1. Function and API update: Polling client now uses a payload using json format. 
+
+12-March 2019
+MC_MMS 0.8.1-2 new features/enhancements & bug-fixes:
+1. Function update: Auto-deplying MMS monitoring module using docker containers.
+
+8-March 2019
+MC_MMS 0.8.1-1 new features/enhancements & bug-fixes:
+1.Previously:
+	MMS server had a Map structure that has service MRN strings as keys and long polling booleans as values.
+  Now:
+	MMS client is able to choose its polling method.
+	In a message header;
+		if the url is "/polling", then normal polling method is used.
+		else if the url is "/long-polling", then long polling method is used.
+			
+2. Removed locator registering function.
+3. Duplicated polling requests are not allowed.
+
+3-Jan 2019
+MC_MMS 0.8.1 new features/enhancements & bug-fixes:
+1. Supporting message ordering functions are developed.
+
+21-Oct 2018
+MC_MMS 0.8.0-3 new features/enhancements & bug-fixes:
+1. MMS geocasting circle, geocasting polygon functions are developed.
+
+13-Oct 2018
+MC_MMS 0.8.0-2 new features/enhancements & bug-fixes:
+1. MMS Configuration functions are developed.
+
 29-Sep 2018
-MC_MMS 0.8.0 new features/enhancements & bug-fixes:
+MC_MMS 0.8.0-1 new features/enhancements & bug-fixes:
 1. Dockerize MMS Monitoring Module for the first time.
-2. FOr #1, MMSMonitor Module is uploaded at the "MMSMonitor" folder, and various improvement of scripts.
+2. For #1, MMSMonitor Module is uploaded at the "MMSMonitor" folder, and various improvement of scripts.
 
 18-Sep 2018
 MC_MMS 0.8.0 new features/enhancements & bug-fixes:
@@ -19,7 +87,7 @@ MC_MMS 0.7.3 new features/enhancemants & bug-fixes:
 5. Added MMS configuration functions for CLI arguments and arguments from MMS.conf file.
 
 28-June 2018
-MC_MMS 0.7.1 new features/enhancemants & bug-fixes:
+MC_MMS 0.7.1-1 new features/enhancemants & bug-fixes:
 1. Updated interfaces between MMS and MNS.
 2. Fixed large response issues.
 3. Updated API of RabbitMQ Client from version 4.0 to version 5.3.

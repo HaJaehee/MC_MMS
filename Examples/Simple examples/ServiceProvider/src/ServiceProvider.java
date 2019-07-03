@@ -45,7 +45,7 @@ public class ServiceProvider {
 		String myMRN = "urn:mrn:smart-navi:device:tm-server";
 		int port = 8902;
 
-		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.MMS_URL="143.248.55.83:8088";
 		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 		
 		MMSClientHandler server = new MMSClientHandler(myMRN);

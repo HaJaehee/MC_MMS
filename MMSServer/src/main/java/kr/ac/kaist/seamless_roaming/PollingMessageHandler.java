@@ -26,6 +26,13 @@ Rev. history : 2018-06-06
 Version : 0.7.1
 	Deprecated updateClientInfo
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -53,12 +60,13 @@ class PollingMessageHandler {
 	}
 	
 	@Deprecated
-	void updateClientInfo(MNSInteractionHandler mih, String srcMRN, String srcIP, int srcPort, String srcModel) {
-		mih.updateClientInfo(srcMRN, srcIP, srcPort, srcModel);
+	void updateClientInfo(MNSInteractionHandler mih, String srcMRN, String srcIP) {
+		mih.updateClientInfo(srcMRN, srcIP);
 	}
 	
-	void dequeueSCMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN){
-		mqm.dequeueMessage(outputChannel, ctx, srcMRN, svcMRN);
+	// TODO: Youngjin Kim must inspect this following code.
+	void dequeueSCMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN, String pollingMethod){
+		mqm.dequeueMessage(outputChannel, ctx, srcMRN, svcMRN, pollingMethod);
 	}
 	
 }

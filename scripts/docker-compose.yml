@@ -23,18 +23,24 @@ services:
   #  stdin_open: true
   #  tty: true
 
-  rabbitmq-db:
-    build:
-      context: .
-      dockerfile: ./Dockerfile-rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+  #rabbitmq-db:
+  #  build:
+  #    context: .
+  #    dockerfile: ./Dockerfile-rabbitmq
+  #  image: lovesm135/mcp_mms_monitoring_rabbitmq:0.8
+      
+  #  ports:
+  #    - "5672:5672"
+  #    - "15672:15672"
+  #  container_name: mcp_mms_monitoring_rabbitmq
+  #  restart: unless-stopped
 
   mms_monitor:
-    build:
-      context: .
-      dockerfile: ./Dockerfile-monitor
+  # build:
+  #   context: .
+  #   dockerfile: ./Dockerfile-monitor
+    image: lovesm135/mcp_mms_monitoring:0.9.2
+      
     ports:
       - 80:80
       - 443:443
@@ -44,7 +50,8 @@ services:
       WORDPRESS_DB_PASSWORD: root
       WORDPRESS_DB_HOST: db:3306
     volumes:
-      - ../MMSServer/target/logs:/var/mms/logs/ 
+      - /var/mms/logs/:/var/mms/logs/
+      - /var/www/mcp_mms_monitoring/html/:/var/www/html/
     depends_on:
       - db
     links:
@@ -52,13 +59,16 @@ services:
     restart: unless-stopped
     stdin_open: true
     tty: true
-    container_name: mms-monitor
+    container_name: mcp_mms_monitoring
 
   db:
-    image: mariadb
+    image: lovesm135/mcp_mms_monitoring_mariadb:0.9.2
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: mydb
     ports:
       - 3306:3306
     restart: unless-stopped
+    container_name: mcp_mms_monitoring_mariadb
+    volumes:
+      - /var/lib/mcp_mms_monitoring_mariadb:/var/lib/mysql

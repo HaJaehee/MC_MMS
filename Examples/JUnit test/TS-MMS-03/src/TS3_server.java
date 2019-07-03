@@ -26,14 +26,13 @@ Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
 public class TS3_server {
 	private int response = 0;
 	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-03-server";
-	private String dstMRN = "urn:mrn:imo:imo-no:ts-mms-03-client";
+//	private String dstMRN = "urn:mrn:imo:imo-no:ts-mms-03-client";
+	private String dstMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 	private MMSClientHandler myHandler = null;
 
 	public TS3_server() {
-		//MMSConfiguration.MMS_URL = "143.248.55.83:8088";
-		MMSConfiguration.MMS_URL="143.248.57.144:8088";
+		MMSConfiguration.MMS_URL = "mms-kaist.com:8088";
 
-//		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		MMSConfiguration.DEBUG = false;
 
 		try {

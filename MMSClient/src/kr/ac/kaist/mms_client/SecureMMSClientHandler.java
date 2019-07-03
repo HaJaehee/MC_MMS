@@ -87,6 +87,18 @@ Rev. history : 2018-10-11
 Version : 0.8.0
 	Modified polling client verification.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.
+	Removed locator registration function.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-05-22
+Version : 0.9.1
+	Revised for testing restful API.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -94,23 +106,24 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import kr.ac.kaist.mms_client.MMSClientHandler.ResponseCallback;
+
 
 
 /**
  * This handler helps client communicate to MMS over HTTPS. Client uses it to send or receive messages.
- * @version 0.8.0
+ * @version 0.8.1
  * @see MMSClientHandler
  */
 public class SecureMMSClientHandler {
 	
 	private String TAG = "[SecureMMSClientHandler] ";
 	private RcvHandler rcvHandler = null;
-	private PollHandler pollHandler = null;
+	private SecureMMSPollHandler pollHandler = null;
 	private SendHandler sendHandler = null;
 	private String clientMRN = "";
 	private int clientPort = 0;
 	private Map<String,List<String>> headerField = null;
-	private GeoReporter geoReporter = null;
 	
 	
 	/**
@@ -119,10 +132,7 @@ public class SecureMMSClientHandler {
 	 * @throws	IOException 	if exception occurs
 	 */	
 	public SecureMMSClientHandler(String clientMRN) throws IOException, NullPointerException{
-		if (clientMRN == null) {
-			System.out.println(TAG+"Failed! Client MRN must not be null.");
-			throw new NullPointerException();
-		}
+	
 		this.clientMRN = clientMRN;
 		rcvHandler = null;
 		pollHandler = null;
@@ -190,52 +200,47 @@ public class SecureMMSClientHandler {
 		void callbackMethod(Map<String,List<String>> headerField, String message);
 	}
 
+	
+	// TODO: Youngjin Kim must inspect this following code.
 	/**
-	 * This method helps client to request polling. If setting this method, send polling request
-	 * per interval (ms). In the MMS that received the polling request, if there is a message toward the client, 
-	 * the message is sent to the MMS client, which requests polling, and in the MMS client,
-	 * the callbackMethod is executed. Depending on whether it is the way of normal polling or long polling,
+	 * This method helps MMS client to request polling to a MMS. When using this method, MMS client sends polling request
+	 * per interval (ms). When the MMS receives the polling request, if there are messages toward the client, 
+	 * the messages are sent to the MMS client, who has requested polling, from the MMS. And then the MMS client executes
+	 * a callbackMethod. Depending on whether it is the way of normal polling or long polling,
 	 * the way of response is different.
 	 * @param	dstMRN			the MRN of MMS to request polling
 	 * @param	svcMRN			the MRN of service, which may send to client
-	 * @param	interval		the frequency of polling (unit of time: ms)
+	 * @param	interval		the frequency of polling (unit of time: ms). If the interval is 0, the client does long polling.
 	 * @param	callback		the callback interface of {@link PollingResponseCallback}
 	 * @throws	IOException 	if exception occurs
 	 * @see 	PollingResponseCallback
 	 */	
+	@Deprecated
 	public void startPolling (String dstMRN, String svcMRN, int interval, PollingResponseCallback callback) throws IOException{
-		if (this.sendHandler != null) {
-			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
-		} else if (this.rcvHandler != null) {
-			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
-		} else {
-			if (interval == 0) {
-				System.out.println(TAG+"Long-polling mode"); //TODO: Long-polling could have trouble when session disconnect.
-			} else if (interval < 0){
-				System.out.println(TAG+"Failed! Polling interval must be 0 or positive integer");
-				return;
-			}
-			this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, interval, headerField);
-			this.pollHandler.ph.setPollingResponseCallback(callback);
-			this.pollHandler.ph.start();
-		}
+		startPolling (dstMRN, svcMRN, null, interval, callback);
 	}
 	
+	
+	// TODO: Youngjin Kim must inspect this following code.
 	/**
-	 * This method helps client to request polling. If setting this method, send polling request
-	 * per interval (ms). In the MMS that received the polling request, if there is a message toward the client, 
-	 * the message is sent to the MMS client, which requests polling, and in the MMS client,
-	 * the callbackMethod is executed. Depending on whether it is the way of normal polling or long polling,
+	 * This method helps MMS client to request polling to a MMS. When using this method, MMS client sends polling request
+	 * per interval (ms). When the MMS receives the polling request, if there are messages toward the client, 
+	 * the messages are sent to the MMS client, who has requested polling, from the MMS. And then the MMS client executes
+	 * a callbackMethod. Depending on whether it is the way of normal polling or long polling,
 	 * the way of response is different.
 	 * @param	dstMRN			the MRN of MMS to request polling
 	 * @param	svcMRN			the MRN of service, which may send to client
 	 * @param	hexSignedData	the hex signed data for client verification
-	 * @param	interval		the frequency of polling (unit of time: ms)
+	 * @param	interval		the frequency of polling (unit of time: ms). If the interval is 0, the client does long polling.
 	 * @param	callback		the callback interface of {@link PollingResponseCallback}
 	 * @throws	IOException 	if exception occurs
 	 * @see 	PollingResponseCallback
 	 */	
 	public void startPolling (String dstMRN, String svcMRN, String hexSignedData, int interval, PollingResponseCallback callback) throws IOException{
+		if (clientMRN == null) {
+			System.out.println(TAG+"Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler != null) {
 			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
 		} else if (this.rcvHandler != null) {
@@ -243,11 +248,13 @@ public class SecureMMSClientHandler {
 		} else {
 			if (interval == 0) {
 				System.out.println(TAG+"Long-polling mode"); //TODO: Long-polling could have trouble when session disconnect.
+				this.pollHandler = new LongPollHandler(clientMRN, dstMRN, svcMRN, hexSignedData, interval, headerField);
 			} else if (interval < 0){
 				System.out.println(TAG+"Failed! Polling interval must be 0 or positive integer");
 				return;
+			} else {
+				this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, hexSignedData, interval, headerField);
 			}
-			this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, hexSignedData, interval, headerField);
 			this.pollHandler.ph.setPollingResponseCallback(callback);
 			this.pollHandler.ph.start();
 		}
@@ -259,26 +266,7 @@ public class SecureMMSClientHandler {
 		this.pollHandler.ph.markInterrupted();
 		this.pollHandler.ph.interrupt();
 	}
-	/**
-	 * This method is developing now, so do not use this method.
-	 * @param svcMRN
-	 * @param interval
-	 * @throws IOException
-	 */
-	public void startGeoReporting (String svcMRN, int interval) throws IOException{
-		if (this.sendHandler != null) {
-			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setSender()");
-		} else if (this.rcvHandler != null) {
-			System.out.println(TAG+"Failed! MMSClientHandler must have exactly one function! It already has done setServerPort() or setFileServerPort()");
-		} else {
-			if (interval > 0) {
-				this.geoReporter = new GeoReporter(clientMRN, svcMRN, interval);
-				this.geoReporter.gr.start();
-			} else {
-				System.out.println(TAG+"Failed! The interval must be larger than 0");
-			}
-		}
-	}
+
 	
 	private boolean isErrorForSettingServerPort (){
 		if (this.sendHandler != null) {
@@ -409,21 +397,8 @@ public class SecureMMSClientHandler {
 	private void setPortAndCallback (int port, RequestCallback callback) {
 		this.clientPort = port;
 		this.rcvHandler.hrh.setRequestCallback(callback);
-		registerLocator(port);	
 	}
 	
-	@Deprecated
-	private void registerLocator(int port){
-		try {
-			new SecureMMSSndHandler(clientMRN).registerLocator(port);
-			return;
-		} catch (IOException e) {
-			System.out.print(TAG);
-			//e.printStackTrace();
-
-			return;
-		}
-	}
 	
 	//HJH
 	/**
@@ -445,6 +420,10 @@ public class SecureMMSClientHandler {
 	 * @see		#setSender(ResponseCallback)
 	 */
 	public void sendPostMsg(String dstMRN, String loc, String data) throws Exception{
+		if (clientMRN == null) {
+			System.out.println(TAG+"Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
 		} else {
@@ -461,6 +440,10 @@ public class SecureMMSClientHandler {
 	 * @see		#setSender(ResponseCallback)
 	 */
 	public void sendPostMsg(String dstMRN, String data) throws Exception{
+		if (clientMRN == null) {
+			System.out.println(TAG+"Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
 		} else {
@@ -477,6 +460,10 @@ public class SecureMMSClientHandler {
 	 * @see		#setSender(ResponseCallback)
 	 */
 	public void sendGetMsg(String dstMRN) throws Exception{
+		if (clientMRN == null) {
+			System.out.println(TAG+"Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
 		} else {
@@ -496,12 +483,35 @@ public class SecureMMSClientHandler {
 	 * @see		#setSender(ResponseCallback)
 	 */
 	public void sendGetMsg(String dstMRN, String loc, String params) throws Exception{
+		if (clientMRN == null) {
+			System.out.println(TAG+"Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
 		} else {
 			this.sendHandler.sendHttpsGet(dstMRN, loc, params, headerField);
 		}
 	}
+	
+	// HJH
+	/**
+	 * Send a restful API request message to MMS corresponding to the location and the URL parameter.
+	 * 
+	 * @param loc    url location
+	 * @param params parameter
+	 * @throws Exception if exception occurs
+	 * @see #sendGetMsg(String)
+	 * @see #setSender(ResponseCallback)
+	 */
+	public void sendApiReq(String loc, String params) throws Exception {
+		if (this.sendHandler == null) {
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
+		} else {
+			this.sendHandler.sendHttpsGet(null, loc, params, headerField);
+		}
+	}
+	
 	/*-----------------------------------------------------------------------------------
 	 * Message sender supporting message sequence.
 	 -----------------------------------------------------------------------------------*/
@@ -518,6 +528,10 @@ public class SecureMMSClientHandler {
 	 * @see		#setSender(ResponseCallback)
 	 */
 	public void sendPostMsg(String dstMRN, String loc, String data, int seqNum) throws Exception{
+		if (clientMRN == null) {
+			System.out.println(TAG+"Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
 		} 
@@ -540,6 +554,10 @@ public class SecureMMSClientHandler {
 	 * @see		#setSender(ResponseCallback)
 	 */
 	public void sendPostMsg(String dstMRN, String data, int seqNum) throws Exception{
+		if (clientMRN == null) {
+			System.out.println(TAG+"Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
 		} 
@@ -562,6 +580,10 @@ public class SecureMMSClientHandler {
 	 * @see		#setSender(ResponseCallback)
 	 */
 	public void sendGetMsg(String dstMRN, int seqNum) throws Exception{
+		if (clientMRN == null) {
+			System.out.println(TAG+"Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
 		} 
@@ -587,6 +609,10 @@ public class SecureMMSClientHandler {
 	 * @see		#setSender(ResponseCallback)
 	 */
 	public void sendGetMsg(String dstMRN, String loc, String params, int seqNum) throws Exception{
+		if (clientMRN == null) {
+			System.out.println(TAG+"Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
 		} 
@@ -614,6 +640,10 @@ public class SecureMMSClientHandler {
 	 * @throws 	Exception		Exception while requesting a file
 	 */
 	public String requestFile(String dstMRN, String fileName) throws Exception{
+		if (clientMRN == null) {
+			System.out.println(TAG+"Failed! Client MRN must not be null.");
+			throw new NullPointerException();
+		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
 			return null;
@@ -643,20 +673,17 @@ public class SecureMMSClientHandler {
 	
 	private class PollHandler extends SecureMMSPollHandler{
 		
-		
-		PollHandler(String clientMRN, String dstMRN, String svcMRN, int interval, Map<String, List<String>> headerField) throws IOException {
-			super(clientMRN, dstMRN, svcMRN, interval, clientPort, 1, headerField);
-		}
 		PollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, Map<String, List<String>> headerField) throws IOException {
-			super(clientMRN, dstMRN, svcMRN, hexSignedData, interval, clientPort, 1, headerField);
+			super(clientMRN, dstMRN, svcMRN, hexSignedData, interval, "normal", headerField);
 		}
 	}
 	
-	private class GeoReporter extends MMSGeoInfoReporter{
-		GeoReporter(String clientMRN, String svcMRN, int interval) throws IOException {
-			super(clientMRN, svcMRN, interval, clientPort, 1);
+	private class LongPollHandler extends SecureMMSPollHandler{
+		
+		LongPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, Map<String, List<String>> headerField) throws IOException {
+			super(clientMRN, dstMRN, svcMRN, hexSignedData, interval, "long", headerField);
 		}
 	}
-
+	
 }
 

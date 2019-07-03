@@ -53,7 +53,8 @@ public class ServiceProviderUni {
 		int port = 8902;
 
 
-		MMSConfiguration.MMS_URL="211.43.202.193:8088";
+		MMSConfiguration.MMS_URL="localhost:8088";
+//		MMSConfiguration.MMS_URL="211.43.202.193:8088";
 		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 		
 		server = new MMSClientHandler(myMRN);

@@ -34,7 +34,8 @@ public class SCPoulLowenorn {
 		String myMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 		//myMRN = args[0];
 		
-		MMSConfiguration.MMS_URL="143.248.57.144:8088";
+		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+//		MMSConfiguration.MMS_URL="143.248.55.83:8088";
 		//MMSConfiguration.MMS_URL = "211.43.202.193:8088";
 		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 		
@@ -77,7 +78,7 @@ public class SCPoulLowenorn {
 		//String hexSignedData_revoked = byteConverter.byteArrToHexString(signedData_revoked);
 
 		
-		int pollInterval = 1000; // The unit is millisecond. 
+		int pollInterval = 3000; // The unit is millisecond. 
 		String dstMRNMMS = "urn:mrn:smart-navi:device:mms1";
 		String svcMRN = "urn:mrn:mcp:service:instance:sp-uni";
 

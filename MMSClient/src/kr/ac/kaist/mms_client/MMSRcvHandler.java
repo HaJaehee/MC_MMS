@@ -42,6 +42,16 @@ Rev. history : 2018-07-27
 Version : 0.7.2
 	Revised setting header field function.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-04-29
+Version : 0.8.2
+	Revised Base64 Encoder/Decoder.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-22
+Version : 0.9.1
+	Add server stop function.
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -57,14 +67,18 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
-import sun.misc.BASE64Encoder;
 
 class MMSRcvHandler {
 	HttpServer server = null;
@@ -74,6 +88,8 @@ class MMSRcvHandler {
 	FileReqHandler frh = null;
 	//OONI
 	private static final String USER_AGENT = MMSConfiguration.USER_AGENT;
+	private static final int NO_OF_THREADPOOL = 1;
+	private ExecutorService serverExecutor;
 	private String TAG = "[MMSRcvHandler";
 	private String clientMRN = null;
 	
@@ -82,7 +98,9 @@ class MMSRcvHandler {
 		hrh = new HttpReqHandler();
         server.createContext("/", hrh);
         if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \"/\" is created");}
-        server.setExecutor(null); // creates a default executor
+
+        serverExecutor = Executors.newFixedThreadPool(NO_OF_THREADPOOL);
+        server.setExecutor(serverExecutor); 
         server.start();
 	}
 
@@ -95,7 +113,9 @@ class MMSRcvHandler {
 		
         server.createContext(context, hrh);
         if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \""+context+"\" is created");}
-        server.setExecutor(null); // creates a default executor
+
+        serverExecutor = Executors.newFixedThreadPool(NO_OF_THREADPOOL);
+        server.setExecutor(serverExecutor); 
         server.start();
 	}
 	
@@ -115,7 +135,9 @@ class MMSRcvHandler {
         server.createContext(fileDirectory+fileName, frh);
         if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is created");}
         //OONI
-        server.setExecutor(null); // creates a default executor
+
+        serverExecutor = Executors.newFixedThreadPool(NO_OF_THREADPOOL);
+        server.setExecutor(serverExecutor); 
         server.start();
 	}
 	
@@ -155,6 +177,14 @@ class MMSRcvHandler {
         if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is added");}
 	}
 	
+	public void stopRcv(int arg0) {
+		if (server == null) {
+			System.out.println(TAG+"Server is not created!");
+			return;
+		}
+		server.stop(0); 
+		serverExecutor.shutdownNow();
+	}
 	class HttpReqHandler implements HttpHandler {
     	
     	MMSClientHandler.RequestCallback myReqCallback;
@@ -245,7 +275,7 @@ class MMSRcvHandler {
 	        	
 	            fileName = System.getProperty("user.dir")+fileName.trim();
 	            File file = new File (fileName);
-	            BASE64Encoder base64Encoder = new BASE64Encoder();
+	            Base64.Encoder base64Encoder = Base64.getEncoder();
 	            in = new FileInputStream(file);
 	
 	            byteOutStream=new ByteArrayOutputStream();
@@ -259,7 +289,7 @@ class MMSRcvHandler {
 	            }
 	
 	            byte fileArray[]=byteOutStream.toByteArray();
-	            encodeBytes=base64Encoder.encodeBuffer(fileArray).getBytes(); 
+	            encodeBytes=base64Encoder.encode(fileArray); 
         	} finally {
         		if (in != null) {
         			in.close();

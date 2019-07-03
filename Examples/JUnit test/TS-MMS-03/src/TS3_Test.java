@@ -14,6 +14,15 @@ File name : TS3_Test.java
 	Polling request message function for the purpose of testing MMS
 Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
 Creation Date : 2018-10-13
+
+Rev. history : 2019-05-17
+Version : 0.9.1
+	Change the version from JUnit3 to JUnit4.
+	Add JSON library and MIR API.
+	Add certificate for version compatability.
+	
+	** And this test is succeeded
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
 @FixMethodOrder(MethodSorters.DEFAULT)

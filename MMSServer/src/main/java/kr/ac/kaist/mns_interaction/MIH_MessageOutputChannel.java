@@ -40,6 +40,11 @@ Rev. history : 2018-07-27
 Version : 0.7.2
 	Added geocasting features which cast message to circle or polygon area.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -52,16 +57,20 @@ import java.net.UnknownHostException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.MMSLog;
 
 class MIH_MessageOutputChannel {
 
 	private static final Logger logger = LoggerFactory.getLogger(MIH_MessageOutputChannel.class);
 	private String SESSION_ID = "";
 	
+	private MMSLog mmsLog = null;
+	
 	MIH_MessageOutputChannel(String sessionId) {
 		this.SESSION_ID = sessionId;
-
+		mmsLog = MMSLog.getInstance();
 	}
 	
 
@@ -75,7 +84,7 @@ class MIH_MessageOutputChannel {
     	try{
 	    	//String modifiedSentence;
 
-	    	MNSSocket = new Socket(MMSConfiguration.MNS_HOST(), MMSConfiguration.MNS_PORT());
+	    	MNSSocket = new Socket(MMSConfiguration.getMnsHost(), MMSConfiguration.getMnsPort());
 	    	MNSSocket.setSoTimeout(5000);
 	    	pw = new PrintWriter(MNSSocket.getOutputStream());
 	    	isr = new InputStreamReader(MNSSocket.getInputStream());
@@ -83,8 +92,7 @@ class MIH_MessageOutputChannel {
 	    	String inputLine = null;
 			StringBuffer response = new StringBuffer();
 			
-	    	
-		    logger.trace("SessionID="+this.SESSION_ID+" "+request+".");
+	    	mmsLog.trace(logger, this.SESSION_ID, request+".");
 		
 		    pw.println(request);
 		    pw.flush();
@@ -99,18 +107,13 @@ class MIH_MessageOutputChannel {
 		    
 	    	
 	    	queryReply = response.toString();
-	    	logger.trace("SessionID="+this.SESSION_ID+" From MNS server=" + queryReply+".");
+	    	mmsLog.trace(logger, this.SESSION_ID, "From MNS server=" + queryReply+".");
 
     	} catch (UnknownHostException e) {
-    		logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.error("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+    		mmsLog.errorException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_OPEN_ERROR.toString(), e, 5);
+
 		} catch (IOException e) {
-			logger.error("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.error("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-			}
+			mmsLog.errorException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_OPEN_ERROR.toString(), e, 5);
 		} finally {
     		if (pw != null) {
     			pw.close();
@@ -119,30 +122,21 @@ class MIH_MessageOutputChannel {
 				try {
 					isr.close();
 				} catch (IOException e) {
-					logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-	    			}
+					mmsLog.errorException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_CLOSE_ERROR.toString(), e, 5);
 				}
 			}
 			if (br != null) {
 				try {
 					br.close();
 				} catch (IOException e) {
-					logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-	    			}
+					mmsLog.errorException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_CLOSE_ERROR.toString(), e, 5);
 				}
 			}
     		if (MNSSocket != null) {
     			try {
 					MNSSocket.close();
 				} catch (IOException e) {
-					logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-	    				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
-	    			}
+					mmsLog.errorException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_CLOSE_ERROR.toString(), e, 5);
 				}
     		}
 		}

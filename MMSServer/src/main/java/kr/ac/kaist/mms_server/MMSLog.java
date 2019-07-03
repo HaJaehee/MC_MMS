@@ -94,6 +94,33 @@ Rev. history : 2018-07-10
 Version : 0.7.2
 	Fixed insecure codes.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-05-05
+Version : 0.9.0
+	Added rest API functions.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-07
+Version : 0.9.2
+	Made logs neat.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-10
+Version : 0.9.2
+	Made logs neat (cont'd).
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -129,21 +156,42 @@ import org.slf4j.LoggerFactory;
 
 import kr.ac.kaist.message_relaying.MessageRelayingHandler;
 import kr.ac.kaist.message_relaying.SessionManager;
-import kr.ac.kaist.seamless_roaming.PollingMethodRegDummy;
 
 
 public class MMSLog {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MMSLog.class);
-	//public static String MNSLog = "";
-	//public static StringBuffer queueLogForClient = new StringBuffer();
 	
 	private ArrayList<String> briefLogForStatus = new ArrayList<String>();
 	private Map<String,List<String>> briefRealtimeLogEachIDs = new HashMap<String,List<String>>();
-	private MMSLogForDebug logForDebug = null;
+	private MMSLogForDebug mmsLogForDebug = null;
+	
+	private static final String briefLogTableStyle = "<script type='text/javascript' src='https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.js'></script>" +
+	"<script src='https://code.jquery.com/jquery-3.3.1.js'></script>" +
+	"<script src='https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js'></script>" +
+	"<script src='https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js'></script>" +
+	"<script> $(document).ready(function() {" + 
+	"    $('#mns-dummy').DataTable();" + 
+	"    $('#brief-logs').DataTable( {" + 
+	"		\"order\": [[ 0, \"desc\" ],[ 1, \"desc\" ]]," +
+	"		\"pageLength\":50 " +
+	"    } );" +
+	"} );" +
+	"</script>" +
+	"<link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css'/>" + 
+	"<link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css'/>";
+	private static final String briefLogTableHead = "<thead><tr>" + 
+			"<th><b>Date</b></th>" +
+			"<th><b>Time</b></th>" +
+			"<th><b>Level</b></th>" +
+			"<th><b>Session ID</b></th>" +
+			"<th><b>Log</b></th>" +
+			"</tr></thead>";
+
 	
 	private MMSLog() {
-		logForDebug = MMSLogForDebug.getInstance();
+		mmsLogForDebug = MMSLogForDebug.getInstance();
+		//addIdToBriefRealtimeLogEachIDs("JaeheeHa"); // For testing.
 	}
 	
 	public static MMSLog getInstance() { //double check synchronization.
@@ -159,46 +207,40 @@ public class MMSLog {
 		  	
 		
 		StringBuffer status = new StringBuffer();
-		
+		status.append(briefLogTableStyle);
 		if (mrn.equals("")) {
 			
 			
-			if (MMSConfiguration.MNS_HOST().equals("localhost") || MMSConfiguration.MNS_HOST().equals("127.0.0.1")) {
+			if (MMSConfiguration.getMnsHost().equals("localhost") || MMSConfiguration.getMnsHost().equals("127.0.0.1")) {
 				status.append("<strong>Maritime Name System Dummy:</strong><br/>");
-				status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
+				status.append("<div>");
+				
+				status.append("<table id='mns-dummy' class='table table-striped table-bordered' style='width:100%'>");
+				status.append("<thead><tr>"
+						+ "<th><b>MRN</b></th>"
+						+ "<th><b>IP address</b></th>"
+						+ "<th><b>Port number</b></th>"
+						+ "<th><b>Model</b></th>"
+						+ "</tr></thead>"
+						+ "<tbody>");
 				status.append(dumpMNS());
+				status.append("</tbody></table>");
 			}
 			else {
 				status.append("<strong>Maritime Name System:</strong><br/>");
-				status.append("MNS host="+MMSConfiguration.MNS_HOST()+":"+MMSConfiguration.MNS_PORT()+"<br/>");
+				status.append("MNS host="+MMSConfiguration.getMnsHost()+":"+MMSConfiguration.getMnsPort()+"<br/>");
 			}
 			status.append("</div>");
 			status.append("<br/>");
-			
-			
-			status.append("<strong>Polling method:</strong><br/>");
-			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
-			if (!PollingMethodRegDummy.pollingMethodReg.isEmpty()){
-				SortedSet<String> keys = new TreeSet<String>(PollingMethodRegDummy.pollingMethodReg.keySet());
-				for (String key : keys){
-					int value = PollingMethodRegDummy.pollingMethodReg.get(key);
-					status.append(key+", "+((value==PollingMethodRegDummy.NORMAL_POLLING)?"normal":"long")+" polling<br/>");
-				}
-				status.append("Other services, normal polling<br/>");
-			} else {
-				status.append("All services, normal polling<br/>");
-			}
-			status.append("</div>");
-			status.append("<br/>");
-			
+
 			
 			status.append("<strong>Sessions waiting for a message:</strong><br/>");
 			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
 			int nPollingSessions = 0;
-			if (!SessionManager.sessionInfo.isEmpty()){
-				SortedSet<String> keys = new TreeSet<String>(SessionManager.sessionInfo.keySet());
+			if (!SessionManager.getSessionInfo().isEmpty()){
+				SortedSet<String> keys = new TreeSet<String>(SessionManager.getSessionInfo().keySet());
 				for (String key : keys){
-					if (SessionManager.sessionInfo.get(key).equals("p")) {
+					if (SessionManager.getSessionInfo().get(key).equals("p")) {
 						status.append("SessionID="+key+"<br/>");
 						nPollingSessions++;
 					}
@@ -213,8 +255,8 @@ public class MMSLog {
 			
 			status.append("<strong>MRNs being debugged:</strong><br/>");
 			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
-			if (!logForDebug.getMrnSet().isEmpty()) {
-				SortedSet<String> keys = new TreeSet<String>(logForDebug.getMrnSet());
+			if (!mmsLogForDebug.getMrnSet().isEmpty()) {
+				SortedSet<String> keys = new TreeSet<String>(mmsLogForDebug.getMrnSet());
 				for (String key : keys) {
 					status.append(key+"<br/>");
 				}
@@ -240,17 +282,23 @@ public class MMSLog {
 			status.append("</div>");
 			status.append("<br/>");
 			
-			status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE()+"):</strong><br/>");
+			status.append("<strong>MMS Brief Log(Maximum list size:"+MMSConfiguration.getMaxBriefLogListSize()+"):</strong><br/>");
+			status.append("<table id='brief-logs' class='table table-striped table-bordered' style='width:100%'>");
+			status.append(briefLogTableHead);
 			for (String log : briefLogForStatus) {
-				status.append(log+"<br/>");
+				status.append(log);
 			}
+			status.append("</table>");
 		} 
 		else {
 			
-			status.append("<strong>MMS Brief Log for MRN="+mrn+"<br/>(Maximum session count:"+logForDebug.getMaxSessionCount()+"):</strong><br/>");
-			String log = logForDebug.getLog(mrn);
+			status.append("<strong>MMS Brief Log for MRN="+mrn+"<br/>(Maximum session count:"+mmsLogForDebug.getMaxSessionCount()+"):</strong><br/>");
+			String log = mmsLogForDebug.getLog(mrn);
 			if (log != null) {
+				status.append("<table id='brief-logs' class='table table-striped table-bordered' style='width:100%'>");
+				status.append(briefLogTableHead);
 				status.append(log);
+				status.append("</table>");
 			}
 			else {
 				status.append("Invalid MRN being debugged.<br/>");
@@ -259,29 +307,27 @@ public class MMSLog {
   	
   	return status.toString();
   }
-	public String getRealtimeLog (String id) {
+	public String getRealtimeLog (String id, String sessionId) {
 		StringBuffer realtimeLog = new StringBuffer();
-
-		realtimeLog.append("{\"message\":[");
-		if (briefRealtimeLogEachIDs.get(id)!=null) {
-			ArrayList<String> logs = (ArrayList<String>) briefRealtimeLogEachIDs.get(id);
-			while (!logs.isEmpty()) {
-				try {
-					realtimeLog.append("\""+URLEncoder.encode(logs.get(0),"UTF-8")+"\",");
-				} catch (UnsupportedEncodingException e) {
-					logger.info(e.getClass().getName()+" "+e.getStackTrace()[0]+".");
-	    			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-	    				logger.info(e.getStackTrace()[i]+".");
-	    			}
-				}
-				logs.remove(0);
+		realtimeLog.append("{\"message\":[\"");
+		try {
+			if (briefRealtimeLogEachIDs.get(id)!=null) {
+				ArrayList<String> logs = (ArrayList<String>) briefRealtimeLogEachIDs.get(id);
+				
+					while (!logs.isEmpty()) {
+						realtimeLog.append(URLEncoder.encode(logs.get(0),"UTF-8"));
+						logs.remove(0);
+					}
+			}
+			else {
+				realtimeLog.append(URLEncoder.encode("<tr><td colspan='100%'>"+ErrorCode.NOT_EXIST_REALTIME_LOG_CONSUMER.toString()+"</td></tr>","UTF-8"));
 			}
 		}
-		else {
-			realtimeLog.append("\"The ID does not exist in Realtime log service consumer IDs\"");
+		catch (UnsupportedEncodingException e) {
+			this.info(logger, sessionId, "URL encoding is failed.");
 		}
 	
-		realtimeLog.append("]}");
+		realtimeLog.append("\"]}");
 		return realtimeLog.toString();
 	}
 	
@@ -292,7 +338,7 @@ public class MMSLog {
 	  	//String modifiedSentence;
 	  	String dumpedMNS = "";
 	  	
-	  	Socket MNSSocket = new Socket(MMSConfiguration.MNS_HOST(), MMSConfiguration.MNS_PORT());
+	  	Socket MNSSocket = new Socket(MMSConfiguration.getMnsHost(), MMSConfiguration.getMnsPort());
 	  	PrintWriter pw = new PrintWriter(MNSSocket.getOutputStream());
 	  	InputStreamReader isr = new InputStreamReader(MNSSocket.getInputStream());
 	  	BufferedReader br = new BufferedReader(isr);
@@ -340,11 +386,10 @@ public class MMSLog {
 	
 	
 	
-	public void addBriefLogForStatus (String arg) {
-		SimpleDateFormat sdf = new SimpleDateFormat("M/dd HH:mm:ss");
-		arg = sdf.format(new Date()) + " " + arg;
+	private void addBriefLogForStatus (String arg) {
+		
 
-		if (briefLogForStatus.size() > MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE()) {
+		if (briefLogForStatus.size() > MMSConfiguration.getMaxBriefLogListSize()) {
 			briefLogForStatus.remove(0);
 		}
 		briefLogForStatus.add(arg);
@@ -352,7 +397,7 @@ public class MMSLog {
 		if (!briefRealtimeLogEachIDs.isEmpty()) {
 			Set<String> keys = briefRealtimeLogEachIDs.keySet();
 			for (String key : keys) {
-				if (briefRealtimeLogEachIDs.get(key).size() > MMSConfiguration.MAX_BRIEF_LOG_LIST_SIZE()) {
+				if (briefRealtimeLogEachIDs.get(key).size() > MMSConfiguration.getMaxBriefLogListSize()) {
 					briefRealtimeLogEachIDs.get(key).remove(0);
 				}
 				briefRealtimeLogEachIDs.get(key).add(arg);
@@ -383,5 +428,122 @@ public class MMSLog {
 			briefRealtimeLogEachIDs.remove(id);
 		}
 	}
+	
+	public Set<String> getRealtimeLogUsersSet (){
+		return briefRealtimeLogEachIDs.keySet();
+	}
+	
+	private String makeLog (String sessionId, String log) {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("SessionID=");
+		sb.append(sessionId);
+		if (!Character.isWhitespace(log.charAt(0))) {
+			sb.append(" ");
+		}
+		sb.append(log);
+		if (!log.endsWith(".")) {
+			sb.append(".");
+		}
+		
+		return sb.toString(); 
+	}
 
+	
+	private void addWebLog (String sessionId, String log, String logLevel) {
+		
+		if (MMSConfiguration.isWebLogProviding()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("<tr><td>");
+			SimpleDateFormat sdf = new SimpleDateFormat("M/dd");
+			sb.append(sdf.format(new Date()));
+			sb.append("</td><td>");
+			sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+			sb.append(sdf.format(new Date()));
+			sb.append("</td><td>");
+			sb.append(logLevel);
+			sb.append("</td><td>");
+			sb.append(sessionId);
+			sb.append("</td><td>");
+			if (!Character.isWhitespace(log.charAt(0))) {
+				sb.append(" ");
+			}
+			sb.append(log);
+			if (!log.endsWith(".")) {
+				sb.append(".");
+			}
+			sb.append("</td></tr>");
+			String newLog = sb.toString();
+			
+			addBriefLogForStatus(newLog);
+			mmsLogForDebug.addLog(sessionId, newLog);
+		}
+	}
+	
+	public void trace (Logger logger, String sessionId, String log) {
+		if (logger.isTraceEnabled()) {
+			String newLog = makeLog(sessionId, log);
+			addWebLog(sessionId, log, "TRACE");
+			logger.trace(newLog);
+		}
+	}
+	public void debug (Logger logger, String sessionId, String log) {
+		if (logger.isDebugEnabled()) {
+			String newLog = makeLog(sessionId, log);
+			addWebLog(sessionId, log, "DEBUG");
+			logger.debug(newLog);
+		}
+	}
+	public void info (Logger logger, String sessionId, String log) {
+		if (logger.isInfoEnabled()) {
+			String newLog = makeLog(sessionId, log);
+			addWebLog(sessionId, log, "INFO");
+			logger.info(newLog);
+		}
+	}
+	public void warn (Logger logger, String sessionId, String log) {
+		if (logger.isWarnEnabled()) {
+			String newLog = makeLog(sessionId, log);
+			addWebLog(sessionId, log, "WARN");
+			logger.warn(newLog);
+		}
+	}
+	public void error (Logger logger, String sessionId, String log) {
+		if (logger.isErrorEnabled()) {
+			String newLog = makeLog(sessionId, log);
+			addWebLog(sessionId, log, "ERROR");
+			logger.error(newLog);
+		}
+	}
+	
+	public void warnException (Logger logger, String sessionId, String log, Exception e, int traceDepth) {
+		if (logger.isWarnEnabled()) {
+			warn(logger, sessionId, makeExceptionLog(log, e));
+			for (int i = 1 ; i < e.getStackTrace().length && i < traceDepth ; i++) {
+				logger.warn(makeLog(sessionId, e.getStackTrace()[i]+"."));
+			}
+		}
+	}
+	
+	public void errorException (Logger logger, String sessionId, String log, Exception e, int traceDepth) {
+		if (logger.isErrorEnabled()) {
+			error(logger, sessionId, makeExceptionLog(log, e));
+			for (int i = 1 ; i < e.getStackTrace().length && i < traceDepth ; i++) {
+				logger.error(makeLog(sessionId, e.getStackTrace()[i]+"."));
+			}
+		}
+	}
+
+	private String makeExceptionLog (String log, Exception e){
+		StringBuilder sb = new StringBuilder();
+		sb.append(log);
+		sb.append(" ");
+		sb.append(e.getMessage());
+		sb.append(" ");
+		sb.append(e.getClass().getName());
+		sb.append(" ");
+		sb.append(e.getStackTrace()[0]);
+		sb.append(".");
+		return sb.toString();
+	}
 }

@@ -7,7 +7,7 @@
 
 	<groupId>kr.ac.kaist.MMSServer</groupId>
 
-	<version>0.8.0-SNAPSHOT</version>
+	<version>0.9.2-SNAPSHOT</version>
 	<artifactId>MC_MMS</artifactId>
 	<packaging>jar</packaging>
 	<properties>
@@ -114,8 +114,16 @@
 		<dependency>
 			<groupId>net.etri</groupId>
 			<artifactId>net.etri.pkilib</artifactId>
-
+			<version>1.4</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+		<dependency>
+		    <groupId>redis.clients</groupId>
+		    <artifactId>jedis</artifactId>
+		    <version>3.1.0-m1</version>
+		</dependency>
+
 
 	</dependencies>
 	<build>
@@ -178,17 +186,8 @@
 		</plugins>
 	</build>
 
-	<url>https://mms-kaist.com/</url>
+	<url>https://mms.smartnav.org/</url>
 	<name>MMS</name>
 	<description>MMS is abbreviation of Maritime Messaging Service. 
 The MMS is a proposed messaging service intended to offer transparent seamless information transfer across different communication links in a carrier agnostic and geolocation context sensitive manner.</description>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>net.etri</groupId>
-				<artifactId>net.etri.pkilib</artifactId>
-				<version>1.4</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 </project>

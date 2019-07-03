@@ -29,7 +29,9 @@ public class TS1_server {
 	
 	
 	public TS1_server() throws Exception {
-		MMSConfiguration.MMS_URL="143.248.55.83:8088";
+		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
+		//MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.DEBUG = false;
 		MMSClientHandler server = new MMSClientHandler(myMRN);
 		int port = 8907;
 		
@@ -53,9 +55,9 @@ public class TS1_server {
 				List<String> list = headerField.get("content-length");															
 			
 				if(list != null){
-					//System.out.println("list" +list.get(0));
-					
-					//System.out.println("message : "+messages.get(0));
+//					System.out.println("list" +list.get(0));
+				
+//					System.out.println("message : "+messages.get(0));
 					
 					content_length = Integer.parseInt(list.get(0));
 					

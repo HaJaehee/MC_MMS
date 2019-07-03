@@ -1,14 +1,5 @@
 package kr.ac.kaist.mns_interaction;
 
-import java.text.ParseException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import kr.ac.kaist.mms_server.MMSConfiguration;
-import kr.ac.kaist.mms_server.MMSLog;
-import kr.ac.kaist.mms_server.MMSLogForDebug;
-
 /* -------------------------------------------------------- */
 /** 
 File name : MNSInteractionHandler.java
@@ -41,8 +32,32 @@ Rev. history : 2018-10-15
 Version : 0.8.0
 	Resolved MAVEN dependency problems with library "net.etri.pkilib".
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history: 2019-03-09
+Version : 0.8.1
+	MMS Client is able to choose its polling method.
+	Removed locator registering function.
+	Duplicated polling requests are not allowed.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-05-27
+Version : 0.9.1
+	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
+
+
+import java.text.ParseException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.MMSLog;
+import kr.ac.kaist.mms_server.MMSLogForDebug;
+
 
 public class MNSInteractionHandler {
 	
@@ -92,19 +107,14 @@ public class MNSInteractionHandler {
 	}
 	
 	@Deprecated
-	public String updateClientInfo(String srcMRN, String srcIP, int srcPort, String srcModel){
-		String msg = locatorUpdater.buildUpdate(srcMRN, srcIP, srcPort, srcModel);
-		if(MMSConfiguration.WEB_LOG_PROVIDING()) {
-			String log = "SessionID="+this.SESSION_ID+" Update client information.";
-			mmsLog.addBriefLogForStatus(log);
-			mmsLogForDebug.addLog(this.SESSION_ID, log);
-		}
-		logger.debug("SessionID="+this.SESSION_ID+" Update client information.");
+	public String updateClientInfo(String srcMRN, String srcIP){
+		String msg = locatorUpdater.buildUpdate(srcMRN, srcIP);
+		mmsLog.debug(logger, this.SESSION_ID, "Update client information.");
 		return messageOutput.sendToMNS(msg);
 	}
 
 	@Deprecated
-	public String registerClientInfo (String srcMRN, String srcIP, int srcPort, String srcModel){
-		return updateClientInfo(srcMRN, srcIP, srcPort, srcModel);
+	public String registerClientInfo (String srcMRN, String srcIP){
+		return updateClientInfo(srcMRN, srcIP);
 	}
 }

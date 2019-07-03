@@ -29,8 +29,9 @@ public class SCPoulLowenorn {
 		String myMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 		//myMRN = args[0];
 		
-		MMSConfiguration.MMS_URL = "211.43.202.193:8088";
-		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
+		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
+//		MMSConfiguration.MMS_URL="127.0.0.1:8088";
+		MMSConfiguration.DEBUG = true; // If you are debugging client, set this variable true.
 		
 		//Service Consumer cannot be HTTP server and should poll from MMS. 
 		MMSClientHandler polling = new MMSClientHandler(myMRN);
@@ -54,12 +55,11 @@ public class SCPoulLowenorn {
 		String hexSignedData_active = byteConverter.byteArrToHexString(signedData_active);
 		
 		//===== revoked certificate =====
-		//String privateKeyPath_revoked = "PrivateKey_POUL_LOWENORN_revoked.pem";
-		//String certPath_revoked = "Certificate_POUL_LOWENORN_revoked.pem";
-		
-		//byte[] signedData_revoked = clientPKILib.generateSignedData(content, privateKeyPath_revoked, certPath_revoked);
-		//String hexSignedData_revoked = byteConverter.byteArrToHexString(signedData_revoked);
-
+//		String privateKeyPath_revoked = "PrivateKey_POUL_LOWENORN_revoked.pem";
+//		String certPath_revoked = "Certificate_POUL_LOWENORN_revoked.pem";
+//		
+//		byte[] signedData_revoked = clientPKILib.generateSignedData(content, privateKeyPath_revoked, certPath_revoked);
+//		String hexSignedData_revoked = byteConverter.byteArrToHexString(signedData_revoked);
 
 		polling.startPolling(dstMRN, svcMRN, hexSignedData_active, pollInterval, 
 				new MMSClientHandler.PollingResponseCallback() {
@@ -69,7 +69,7 @@ public class SCPoulLowenorn {
 			public void callbackMethod(Map<String, List<String>> headerField, List<String> messages) {
 				// TODO Auto-generated method stub
 				for (String s : messages) {
-					System.out.print(s);
+					System.out.println(s);
 				}
 			}
 		});
