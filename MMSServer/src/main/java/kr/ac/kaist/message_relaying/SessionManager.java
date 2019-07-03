@@ -452,4 +452,10 @@ public class SessionManager {
 			return pollingReqCount;
 		}
 	}
+	
+	public static int getSessionCountListSize() {
+		synchronized(sessionCountList) {
+			return sessionCountList.size();
+		}
+	}
 }
