@@ -107,6 +107,11 @@ Rev. history : 2019-06-20
 Version : 0.9.2
 	HOTFIX: polling authentication bug.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-03
+Version : 0.9.3
+	Added multi-thread safety.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -114,8 +119,6 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.LinkedList;
-import java.util.Random;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,18 +128,14 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaderValues;
-import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.AttributeKey;
-import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel.ConnectionThread;
 import kr.ac.kaist.mms_server.ChannelTerminateListener;
 import kr.ac.kaist.mms_server.ErrorCode;
-import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
@@ -210,7 +209,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			mmsLogForDebug = MMSLogForDebug.getInstance();
 
 			SESSION_ID = ctx.channel().id().asShortText();
-			SessionManager.getSessionInfo().put(SESSION_ID, "");
+			SessionManager.putSessionInfo(SESSION_ID, "");
 			
 			this.parser = new MessageParser(SESSION_ID);
 			try {
@@ -288,11 +287,11 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	// TODO: Youngjin Kim must inspect this following code.
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
-    	String clientType = SessionManager.getSessionInfo().get(SESSION_ID);
+    	String clientType = SessionManager.getSessionType(SESSION_ID);
     	if (clientType != null) {
-    		SessionManager.getSessionInfo().remove(SESSION_ID);
+    		SessionManager.removeSessionInfo(SESSION_ID);
     		
-    		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
+    		SeamlessRoamingHandler.removeDuplicateInfo(DUPLICATE_ID);
     		if (clientType.equals("p")) {
     			mmsLog.info(logger, this.SESSION_ID, ErrorCode.POLLING_CLIENT_DISCONNECTED.toString());
     		} 
@@ -312,8 +311,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 
 //    	ctx.channel().
-    	String clientType = SessionManager.getSessionInfo().get(SESSION_ID);
-    	String duplicateType = SeamlessRoamingHandler.getDuplicateInfo().get(DUPLICATE_ID);
+    	String clientType = SessionManager.getSessionType(SESSION_ID);
+    	String duplicateType = SeamlessRoamingHandler.getDuplicateInfo(DUPLICATE_ID);
 //    	ctx.pipeline().get(HttpHeaderValues.class);
 //    	channels.
     	
@@ -359,10 +358,10 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     	    printError(srcIP, reqInfo, clientType);
     	}
     	if (clientType != null) {
-    		SessionManager.getSessionInfo().remove(SESSION_ID);    		
+    		SessionManager.removeSessionInfo(SESSION_ID);    		
       }
     	if(duplicateType!=null) {
-    		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
+    		SeamlessRoamingHandler.removeDuplicateInfo(DUPLICATE_ID);
     		
     	}
     	if (!ctx.isRemoved()){

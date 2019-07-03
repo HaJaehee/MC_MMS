@@ -55,6 +55,11 @@ Rev. history : 2019-07-02
 Version : 0.9.2
 	HOTFIX: duplicated long polling is not accepted.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-03
+Version : 0.9.3
+	Added multi-thread safety.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -220,18 +225,18 @@ public class SeamlessRoamingHandler {
 
 
 		if (pollingMethod.equals("normal"))	{
-			SessionManager.getSessionInfo().put(SESSION_ID, "p");
-			SessionManager.getSessionCountList().get(0).incPollingSessionCount();
+			SessionManager.putSessionInfo(SESSION_ID, "p");
+			SessionManager.incPollingSessionCount();
 			pmh.dequeueSCMessage(outputChannel, ctx, srcMRN, svcMRN, pollingMethod);
 		}
 		else if (pollingMethod.equals("long")) {
-			SessionManager.getSessionInfo().put(SESSION_ID, "lp");
-			SessionManager.getSessionCountList().get(0).incPollingSessionCount();
+			SessionManager.putSessionInfo(SESSION_ID, "lp");
+			SessionManager.incPollingSessionCount();
 			
 			// Youngjin code
 			// Duplicated polling request is not allowed.
 			String DUPLICATE_ID = srcMRN + svcMRN;
-			if (duplicateInfo.containsKey(DUPLICATE_ID)) {
+			if (getDuplicateInfo(DUPLICATE_ID) != null) {
 				
 //				System.out.println("duplicate long polling request");
 				
@@ -256,12 +261,30 @@ public class SeamlessRoamingHandler {
 	public void putSCMessage(String srcMRN, String dstMRN, String message) {
 		scmh.enqueueSCMessage(srcMRN, dstMRN, message);
 	}
-	
-	public static HashMap<String, String> getDuplicateInfo() {
-		return duplicateInfo;
-	}
+
 	
 	public static long getDuplicateInfoSize() {
-		return duplicateInfo.size();
+		synchronized(duplicateInfo) {
+			return duplicateInfo.size();
+		}
+	}
+	
+	public static String getDuplicateInfo(String duplicate_id) {
+		synchronized(duplicateInfo) {
+			return duplicateInfo.get(duplicate_id);
+		}
+	}
+	
+	public static void putDuplicateInfo(String duplicate_id) {
+		synchronized(duplicateInfo) {
+			duplicateInfo.put(duplicate_id, "y");
+		}
+	}
+	
+	public static void removeDuplicateInfo(String duplicate_id) {
+		synchronized(duplicateInfo) {
+			duplicateInfo.remove(duplicate_id);
+		}
 	}
 }
+

@@ -134,6 +134,10 @@ Version : 0.9.2
 	Fixed channel error.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
+Rev. history : 2019-07-03
+Version : 0.9.3
+	Added multi-thread safety.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -310,11 +314,11 @@ public class MessageQueueDequeuer extends Thread{
 			
 			mmsLog.debug(logger, this.SESSION_ID, "Dequeue="+queueName+".");
 	  
-	    	if (SessionManager.getSessionInfo().get(this.SESSION_ID) != null) {
-	    		SessionManager.getSessionInfo().remove(this.SESSION_ID);
+	    	if (SessionManager.getSessionType(this.SESSION_ID) != null) {
+	    		SessionManager.removeSessionInfo(this.SESSION_ID);
 	    	}
-	    	if(SeamlessRoamingHandler.getDuplicateInfo().get(DUPLICATE_ID)!=null) {
-	    		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
+	    	if(SeamlessRoamingHandler.getDuplicateInfo(DUPLICATE_ID)!=null) {
+	    		SeamlessRoamingHandler.removeDuplicateInfo(DUPLICATE_ID);
 	    	}
 	    	try {
 	    		outputChannel.replyToSender(ctx, message.toString().getBytes());
@@ -328,12 +332,12 @@ public class MessageQueueDequeuer extends Thread{
 			if (pollingMethod.equals("normal") ) {//If polling method is normal polling
 				mmsLog.debug(logger, this.SESSION_ID, "Empty queue="+queueName+".");
 
-		    	if (SessionManager.getSessionInfo().get(this.SESSION_ID) != null) {
-		    		SessionManager.getSessionInfo().remove(this.SESSION_ID);
+		    	if (SessionManager.getSessionType(this.SESSION_ID) != null) {
+		    		SessionManager.removeSessionInfo(this.SESSION_ID);
 		    	}
 
-		    	if(SeamlessRoamingHandler.getDuplicateInfo().get(DUPLICATE_ID)!=null) {
-		    		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
+		    	if(SeamlessRoamingHandler.getDuplicateInfo(DUPLICATE_ID)!=null) {
+		    		SeamlessRoamingHandler.removeDuplicateInfo(DUPLICATE_ID);
 		    	}
 		    	try {
 		    		outputChannel.replyToSender(ctx, message.toString().getBytes());
@@ -360,12 +364,12 @@ public class MessageQueueDequeuer extends Thread{
 							
 							mmsLog.debug(logger, SESSION_ID, "Dequeue="+queueName+".");
 
-					    	if (SessionManager.getSessionInfo().get(SESSION_ID) != null) {
-					    		SessionManager.getSessionInfo().remove(SESSION_ID);
+					    	if (SessionManager.getSessionType(SESSION_ID) != null) {
+					    		SessionManager.removeSessionInfo(SESSION_ID);
 					    	}
 					    	
-					    	if(SeamlessRoamingHandler.getDuplicateInfo().get(DUPLICATE_ID)!=null) {
-					    		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
+					    	if(SeamlessRoamingHandler.getDuplicateInfo(DUPLICATE_ID)!=null) {
+					    		SeamlessRoamingHandler.removeDuplicateInfo(DUPLICATE_ID);
 					    	}
 					    	try {
 					    		outputChannel.replyToSender(ctx, message.toString().getBytes());
@@ -453,7 +457,6 @@ public class MessageQueueDequeuer extends Thread{
 					channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 				} else {
 					message.append(new String(delivery.getBody()));
-
 					if(MMSConfiguration.WEB_LOG_PROVIDING) {
 						String log = "SessionID="+this.SESSION_ID+" Dequeue="+queueName+".";
 						mmsLog.addBriefLogForStatus(log);
@@ -525,5 +528,6 @@ public class MessageQueueDequeuer extends Thread{
 			}*/
     	}		
 	}
+
 
 }

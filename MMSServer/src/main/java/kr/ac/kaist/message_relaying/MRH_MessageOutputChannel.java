@@ -109,6 +109,11 @@ Rev. history : 2019-06-18
 Version : 0.9.2
 	Added ErrorCode.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-03
+Version : 0.9.3
+	Added multi-thread safety.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -243,7 +248,7 @@ public class MRH_MessageOutputChannel{
             }
         });
     	
-        SessionManager.getSessionInfo().remove(SESSION_ID);
+        SessionManager.removeSessionInfo(SESSION_ID);
         if (logger.isTraceEnabled()) {
         	mmsLog.trace(logger, this.SESSION_ID, "Message has been sent completely.");
         }

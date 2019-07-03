@@ -121,6 +121,11 @@ Rev. history : 2019-06-10
 Version : 0.9.2
 	Made logs neat (cont'd).
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-03
+Version : 0.9.3
+	Added multi-thread safety.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -237,10 +242,10 @@ public class MMSLog {
 			status.append("<strong>Sessions waiting for a message:</strong><br/>");
 			status.append("<div style=\"max-height: 200px; overflow-y: scroll;\">");
 			int nPollingSessions = 0;
-			if (!SessionManager.getSessionInfo().isEmpty()){
-				SortedSet<String> keys = new TreeSet<String>(SessionManager.getSessionInfo().keySet());
+			if (!SessionManager.isSessionInfoEmpty()){
+				SortedSet<String> keys = new TreeSet<String>(SessionManager.getSessionIDs());
 				for (String key : keys){
-					if (SessionManager.getSessionInfo().get(key).equals("p")) {
+					if (SessionManager.getSessionType(key).equals("p")) {
 						status.append("SessionID="+key+"<br/>");
 						nPollingSessions++;
 					}
