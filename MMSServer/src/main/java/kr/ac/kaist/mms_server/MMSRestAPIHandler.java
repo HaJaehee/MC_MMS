@@ -284,7 +284,8 @@ public class MMSRestAPIHandler {
 				
 			}
 			if (relayReqCount != -1) {
-				int countListSize = SessionManager.getSessionCount(relayReqMinutes);
+				int countListSize = SessionManager.getSessionCountListSize();
+				relayReqCount = SessionManager.getSessionCount(relayReqMinutes);
 				JSONObject jobj2 = new JSONObject();
 				
 				if (countListSize <= 12) {
@@ -298,7 +299,8 @@ public class MMSRestAPIHandler {
 				
 			}
 			if (pollingReqCount != -1) {
-				int countListSize = SessionManager.getPollingSessionCount(pollingReqMinutes);
+				int countListSize = SessionManager.getSessionCountListSize();
+				pollingReqCount = SessionManager.getPollingSessionCount(pollingReqMinutes);
 				JSONObject jobj2 = new JSONObject();
 				if (countListSize <= 12) {
 					jobj2.put("min", 1);
