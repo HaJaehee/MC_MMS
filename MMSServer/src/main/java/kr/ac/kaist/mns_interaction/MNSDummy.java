@@ -686,7 +686,7 @@ public class MNSDummy {
 				try {
 					String[] params = data.substring(10).split(",");
 					String mrn = params[0];
-					String locator = params[1] +":"+ params[2] +":"+ params[3];
+					String locator = ","+params[1] +":"+ params[2] +":"+ params[3];
 					System.out.println(mrn+locator);
 					MRNtoIP.put(mrn, locator);
 					//loggerwarn("MNSDummy:ADD="+mrn+".");

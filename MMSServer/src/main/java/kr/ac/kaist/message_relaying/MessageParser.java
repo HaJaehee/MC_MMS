@@ -330,7 +330,9 @@ public class MessageParser {
 //			System.out.println("[Test Message] the certificate is " + hexSignedData.substring(6));
 			isJSONOfPollingFormat = true;
 			if (this.svcMRN == null) {
-				mmsLog.info(logger, this.SESSION_ID, "The service MRN is not included.");
+
+				mmsLog.info(logger, this.SESSION_ID, ErrorCode.NULL_SVC_MRN.toString());
+
 			}
 			
 			return ;

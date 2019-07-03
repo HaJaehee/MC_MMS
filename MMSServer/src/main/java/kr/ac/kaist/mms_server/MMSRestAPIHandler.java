@@ -44,6 +44,11 @@ Rev. history : 2019-06-18
 Version : 0.9.2
 	Added ErrorCode.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-03
+Version : 0.9.3
+	Added multi-thread safety.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 
@@ -247,7 +252,10 @@ public class MMSRestAPIHandler {
 			
 			if (clientSessionIds != -1) {
 				JSONArray jary = new JSONArray();
-				jary.addAll(SessionManager.getSessionInfo().keySet());
+				if (SessionManager.getSessionInfoSize()<0) {
+					SessionManager.resetSessionInfo();
+				}
+				jary.addAll(SessionManager.getSessionIDs());
 				jobj.put("client-session-ids", jary);
 			}
 			if (mrnsBeingDebugged != -1) {
@@ -264,7 +272,10 @@ public class MMSRestAPIHandler {
 				jobj.put("msg-queue-count", mqm.getTotalQueueNumber());
 			}
 			if (clientSessionCount != -1) {
-				clientSessionCount = SessionManager.getSessionInfo().size();
+				if (SessionManager.getSessionInfoSize()<0) {
+					SessionManager.resetSessionInfo();
+				}
+				clientSessionCount = SessionManager.getSessionInfoSize();
 				jobj.put("client-session-count", clientSessionCount);
 			}
 			if (isMmsRunning != false) {
@@ -273,11 +284,7 @@ public class MMSRestAPIHandler {
 				
 			}
 			if (relayReqCount != -1) {
-				int countListSize = SessionManager.getSessionCountList().size(); // Session counting list saves the number of sessions for every 5 seconds.
-				for (int i = 0 ; i < countListSize && i < relayReqMinutes*12 ; i++) { // Adding count up for x minutes.
-					relayReqCount += SessionManager.getSessionCountList().get(i).getSessionCount() // Total session counts.
-							- SessionManager.getSessionCountList().get(i).getPollingSessionCount();// Subtract polling session counts from total session counts.
-				}
+				int countListSize = SessionManager.getSessionCount(relayReqMinutes);
 				JSONObject jobj2 = new JSONObject();
 				
 				if (countListSize <= 12) {
@@ -291,10 +298,7 @@ public class MMSRestAPIHandler {
 				
 			}
 			if (pollingReqCount != -1) {
-				int countListSize = SessionManager.getSessionCountList().size(); // Session counting list saves the number of sessions for every 5 seconds.
-				for (int i = 0 ; i < countListSize && i < pollingReqMinutes*12 ; i++) { // Adding count up for x minutes.
-					pollingReqCount += SessionManager.getSessionCountList().get(i).getPollingSessionCount(); // Polling session counts.
-				}
+				int countListSize = SessionManager.getPollingSessionCount(pollingReqMinutes);
 				JSONObject jobj2 = new JSONObject();
 				if (countListSize <= 12) {
 					jobj2.put("min", 1);

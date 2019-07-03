@@ -11,6 +11,11 @@ Rev. history : 2019-06-18
 Version : 0.9.2
 	Added ErrorCode.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-03
+Version : 0.9.3
+	Added multi-thread safety.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */
 
@@ -42,7 +47,7 @@ class MessageOrderingHandler {
 	private String srcIP = null;
 	int dstPort = 0;
 	long seqNum = -1;
-	String srcDstPair = srcMRN+"::"+dstMRN;
+	String srcDstPair = null;
 	private String SESSION_ID = "";
 	private Thread sessionBlocker = null;
 	private MMSLog mmsLog = null;
@@ -72,22 +77,22 @@ class MessageOrderingHandler {
 
 		//System.out.println("SessionID="+this.SESSION_ID+" RELAYING_TO_SERVER_SEQUENTIALLY INIT");
 		
-		if (SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair) == null ) { //Initialization
-			SessionManager.getMapSrcDstPairAndSessionInfo().put(srcDstPair, new SessionList<SessionIdAndThr>());	
-			while (SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair) == null) {}
+		if (SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair) == null ) { //Initialization
+			SessionManager.putItemToMapSrcDstPairAndSessionInfo(srcDstPair);	
+			while (SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair) == null) {}
 		}
 		
-		if (SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) == null ) { //Initialization
-			SessionManager.getMapSrcDstPairAndLastSeqNum().put(srcDstPair, (double) -1);
-			while (SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) == null) {}
+		if (SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair) == null ) { //Initialization
+			SessionManager.resetNumInMapSrcDstPairAndLastSeqNum(srcDstPair);
+			while (SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair) == null) {}
 		}
 		
-		List <SessionIdAndThr> itemList = SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair);
+		List <SessionIdAndThr> itemList = SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair);
 		//System.out.println("SessionID="+this.SESSION_ID+" RELAYING_TO_SERVER_SEQUENTIALLY START");
 		//printSessionsInSessionMng (srcDstPair);
 		if (seqNum == 0) {
 			
-			if (SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) != -1) { //Reset sessions in SessionManager related to srcMRN and dstMRN pair.
+			if (SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair) != -1) { //Reset sessions in SessionManager related to srcMRN and dstMRN pair.
 				//System.out.println("Reset sessions in SessionManager related to srcMRN and dstMRN pair.");
 				int itemListSize = itemList.size();
 				while (itemListSize > 0) {
@@ -100,7 +105,7 @@ class MessageOrderingHandler {
 				}
 				itemList.clear();
 				
-				SessionManager.getMapSrcDstPairAndLastSeqNum().put(srcDstPair, (double) -1);
+				SessionManager.resetNumInMapSrcDstPairAndLastSeqNum(srcDstPair);
 				itemList.add(new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
 			}
 			else { //SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) == -1
@@ -117,7 +122,7 @@ class MessageOrderingHandler {
 			
 			int index = 0;
 			int itemListSize = itemList.size();
-			if (seqNum > SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair)) {
+			if (seqNum > SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair)) {
 				while (index < itemListSize) {
 					try {
 						if (seqNum > itemList.get(index).getSeqNum()) {
@@ -133,7 +138,7 @@ class MessageOrderingHandler {
 							//System.out.println("index="+index+", seqNum="+seqNum+", seqNum in List="+itemList.get(0).getSeqNum());
 							//System.out.println("Sequence number of message is duplicated.");
 							message = ErrorCode.SEQUENCE_NUMBER_IS_DUPLICATED.getUTF8Bytes();
-							mmsLog.info(logger, this.SESSION_ID, "Sequence number of message is duplicated.");
+							mmsLog.info(logger, this.SESSION_ID, ErrorCode.SEQUENCE_NUMBER_IS_DUPLICATED.toString());
 							return message;
 						}
 					}
@@ -148,7 +153,7 @@ class MessageOrderingHandler {
 			}
 			else { //Drop message.
 				message = ErrorCode.SEQUENCE_NUMBER_IS_OUT_OF_ORDER.getUTF8Bytes();
-				mmsLog.info(logger, this.SESSION_ID, "Sequence number of message is out of order.");
+				mmsLog.info(logger, this.SESSION_ID, ErrorCode.SEQUENCE_NUMBER_IS_OUT_OF_ORDER.toString());
 				return message;
 			}
 			//System.out.println("index="+index+", seqNum="+seqNum+", seqNum in List="+itemList.get(0).getSeqNum());
@@ -163,7 +168,7 @@ class MessageOrderingHandler {
 	public byte[] processMessage (MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String protocol, MessageCastingHandler mch, MessageTypeDecider.msgType type) {
 		byte[] message = null;
 		
-		List<SessionIdAndThr> itemList = SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair);
+		List<SessionIdAndThr> itemList = SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair);
 
 		while (true) { 
 			if (itemList == null || 
@@ -172,14 +177,14 @@ class MessageOrderingHandler {
 					itemList.get(0).getSessionBlocker() == null) { //Check null pointer exception.
 				// This condition is required for safe coding when using multi-threads.
 				
-				message = ErrorCode.SEQUENTIAL_RELAYING_INITIALIZATION_ERR.getUTF8Bytes();
+				message = ErrorCode.SEQUENTIAL_RELAYING_INITIALIZATION_ERROR.getUTF8Bytes();
 				
 				throw new NullPointerException();
 			}
 			try {
 				//System.out.println("RELAYING_TO_SERVER_SEQUENTIALLY getSessionID="+itemList.get(0).getSessionId());
-				if (itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
-					if (SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) == itemList.get(0).getPreSeqNum() || 
+				if (itemList.size()>0 && itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
+					if (SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair) == itemList.get(0).getPreSeqNum() || 
 							itemList.get(0).getWaitingCount() > 0 ||
 							itemList.get(0).isExceptionOccured()) {
 						// If this session is interrupted, process its message.
@@ -200,8 +205,8 @@ class MessageOrderingHandler {
 			} 
 			catch (InterruptedException e) {
 				//System.out.println("Interrupted! This session ID="+SESSION_ID+", Session ID in list="+itemList.get(0).getSessionId()+", isExceptionOccured="+itemList.get(0).isExceptionOccured()+", seq num="+seqNum+", last seq num="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
-				if (itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
-					if ((itemList.get(0).getPreSeqNum() == SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) && 
+				if (itemList.size()>0 && itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
+					if ((itemList.get(0).getPreSeqNum() == SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair) && 
 							!itemList.get(0).isExceptionOccured()) || itemList.get(0).getWaitingCount() > 0){
 						message = setThisSessionWaitingRes(srcDstPair);
 						if (message != null) {
@@ -224,10 +229,10 @@ class MessageOrderingHandler {
 						break;
 					}
 					else if (itemList.get(0).isExceptionOccured()) {
-						message = ErrorCode.SEQUENTIAL_RELAYING_EXCEPTION_ERR.getUTF8Bytes();
+						message = ErrorCode.SEQUENTIAL_RELAYING_EXCEPTION_ERROR.getUTF8Bytes();
 						
 						printSessionsInSessionMng(srcDstPair);
-						mmsLog.info(logger, this.SESSION_ID, "Message order exception is occured. Message sequence is reset 0.");
+						mmsLog.info(logger, this.SESSION_ID, ErrorCode.SEQUENTIAL_RELAYING_EXCEPTION_ERROR.toString());
 	
 						itemList.remove(0);
 						break;
@@ -237,12 +242,12 @@ class MessageOrderingHandler {
 			}
 		}
 		
-		itemList = SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair);
+		itemList = SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair);
 
 		// TODO Is there any risk for shutting down the process before replying to sender?
 		// HOTFIX: Resolved a bug related to message ordering.
 		if (itemList.size()>0 && itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
-			if ((itemList.get(0).getPreSeqNum() == SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) && 
+			if ((itemList.get(0).getPreSeqNum() == SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair) && 
 					!itemList.get(0).isExceptionOccured()) || itemList.get(0).getWaitingCount() > 0){
 				
 				message = rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcDstPair);
@@ -253,13 +258,13 @@ class MessageOrderingHandler {
 			}
 		}
 
-		// TODO 이 위치에 진입하면 message가 null로 설정됩니다. 적당한 할당 필요  by using Error Code 
-		// 위에 꺼를 방지하기 위해 이 위치에서 thread도 널이고, message도 널이면 message에 적당한 에러 코드를 삽입하면 좋을듯
+		// If message is null, no error occurred, otherwise an error occurred (excluding message equals "OK").
+		// If thread is null, an error occurred, otherwise no error occurred (excluding message equals "OK").
 		return message;
 	}
 	
 	private void printSessionsInSessionMng (String srcDstPair) {
-		List<SessionIdAndThr> itemList = SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair);
+		List<SessionIdAndThr> itemList = SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair);
 		if (itemList.size() > 0) {
 			SessionIdAndThr item = itemList.get(0);
 			//System.out.println("index="+0+", SessionID="+item.getSessionId()+", seqNum="+item.getSeqNum()+", waitingCount="+item.getWaitingCount()+", isExceptionOccured="+item.isExceptionOccured());
@@ -273,12 +278,12 @@ class MessageOrderingHandler {
 	private byte[] rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked (String srcDstPair){
 		
 		byte[] message = null;
-		List <SessionIdAndThr> listItem = SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair);
+		List <SessionIdAndThr> listItem = SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair);
 		if (listItem == null || 
 				listItem.size() == 0 ||
 				listItem.get(0) == null ||
 				listItem.get(0).getSessionBlocker() == null ||
-				SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) == null) { //Check null pointer exception.
+				SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair) == null) { //Check null pointer exception.
 			return ErrorCode.SEQUENTIAL_RELAYING_NULL_POINTER_EXCEPTION.getUTF8Bytes();
 		}
 		//System.out.println("Seq number="+listItem.get(0).getSeqNum());
@@ -297,7 +302,7 @@ class MessageOrderingHandler {
 				//System.out.println("index="+1+", SessionID="+listItem.get(1).getSessionId()+", seqNum="+listItem.get(1).getSeqNum()+", waitingCount="+listItem.get(1).getWaitingCount()+", isExceptionOccured="+listItem.get(1).isExceptionOccured());
 
 			}
-			SessionManager.getMapSrcDstPairAndLastSeqNum().put(srcDstPair, (double) listItem.get(0).getSeqNum());
+			SessionManager.setNumInMapSrcDstPairAndLastSeqNum(srcDstPair, (double) listItem.get(0).getSeqNum());
 			//System.out.println("Updated last seq number="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
 			listItem.remove(0); //Remove current relaying process from the schedule. 
 			if (checkNextSeq) { //Wake up next relaying process blocked if exist.
@@ -315,12 +320,12 @@ class MessageOrderingHandler {
 		
 		byte[] message = null;
 		
-		List <SessionIdAndThr> listItem = SessionManager.getMapSrcDstPairAndSessionInfo().get(srcDstPair);
+		List <SessionIdAndThr> listItem = SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair);
 		if (listItem == null || 
 				listItem.size() == 0 ||
 				listItem.get(0) == null ||
 				listItem.get(0).getSessionBlocker() == null ||
-				SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) == null) { //Check null pointer exception.
+				SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair) == null) { //Check null pointer exception.
 			return ErrorCode.SEQUENTIAL_RELAYING_NULL_POINTER_EXCEPTION.getUTF8Bytes();
 		}
 		

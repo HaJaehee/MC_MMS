@@ -59,6 +59,12 @@ Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-03
+Version : 0.9.3
+	Added resetSessionInfo().
+	Added multi-thread safety.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */
 
@@ -74,6 +80,9 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +101,7 @@ public class SessionManager {
 	private static HashMap<String, SessionList<SessionIdAndThr>> mapSrcDstPairAndSessionInfo = null; //This is used for handling input messages by reordering policy.
 	private static HashMap<String, Double> mapSrcDstPairAndLastSeqNum = null; //This is used for handling last sequence numbers of sessions.
 	private static ArrayList<SessionCountForFiveSecs> sessionCountList = null; //This saves the number of sessions for every five seconds.
+
 	
 	private SessionCounter sessionCounter = null;
 	
@@ -188,7 +198,9 @@ public class SessionManager {
 						SessionCountForFiveSecs scffs = new SessionCountForFiveSecs(time);
 						scffs.setSessionCount(sessionCount);
 						scffs.setPollingSessionCount(pollingSessionCount);
-						sessionCountList.add(0,scffs);
+						synchronized(sessionCountList) {
+							sessionCountList.add(0,scffs);
+						}
 					}
 					br.close();
 					fr.close();
@@ -251,38 +263,39 @@ public class SessionManager {
 						
 						
 					
+						synchronized(sessionCountList) {
+							long lastTime = 0;
+							if (sessionCountList.size() > 0) {
+								lastTime = sessionCountList.get(0).getCurTimeInMillis();
+							}
+							
 						
-						long lastTime = 0;
-						if (sessionCountList.size() > 0) {
-							lastTime = sessionCountList.get(0).getCurTimeInMillis();
+							while (curTimeMillis - lastTime > 10000 && curTimeMillis - lastTime < 1000*60*60*24) { // More than 10 seconds, less than 24 hours.
+								sessionCountList.add(0,new SessionCountForFiveSecs(lastTime+5000)); // Add time slots having 0 session count.
+								lastTime += 5000;
+							}
+							
+							
+							
+							for (int i = sessionCountList.size()-(12*60*24) ; i >= 0 ; i--) { // Session counts are saved for 24 hours.
+								sessionCountList.remove(sessionCountList.size()-1);
+							}
+							
+							fw = new FileWriter(f, true);
+							bw = new BufferedWriter(fw);
+							pw = new PrintWriter(bw);
+							if (sessionCountList.size() > 0) {
+								pw.println(sessionCountList.get(0).getCurTimeInMillis()+","
+										+sessionCountList.get(0).getSessionCount()+","
+										+sessionCountList.get(0).getPollingSessionCount());
+							}
+							pw.close();
+							bw.close();
+							fw.close();
+							
+							SessionCountForFiveSecs curCount = new SessionCountForFiveSecs(curTimeMillis);
+							sessionCountList.add(0, curCount);
 						}
-						
-					
-						while (curTimeMillis - lastTime > 10000 && curTimeMillis - lastTime < 1000*60*60*24) { // More than 10 seconds, less than 24 hours.
-							sessionCountList.add(0,new SessionCountForFiveSecs(lastTime+5000)); // Add time slots having 0 session count.
-							lastTime += 5000;
-						}
-						
-						
-						
-						for (int i = sessionCountList.size()-(12*60*24) ; i >= 0 ; i--) { // Session counts are saved for 24 hours.
-							sessionCountList.remove(sessionCountList.size()-1);
-						}
-						
-						fw = new FileWriter(f, true);
-						bw = new BufferedWriter(fw);
-						pw = new PrintWriter(bw);
-						if (sessionCountList.size() > 0) {
-							pw.println(sessionCountList.get(0).getCurTimeInMillis()+","
-									+sessionCountList.get(0).getSessionCount()+","
-									+sessionCountList.get(0).getPollingSessionCount());
-						}
-						pw.close();
-						bw.close();
-						fw.close();
-						
-						SessionCountForFiveSecs curCount = new SessionCountForFiveSecs(curTimeMillis);
-						sessionCountList.add(0, curCount);
 		
 						/*
 						// print
@@ -333,19 +346,110 @@ public class SessionManager {
 		}
 	}
 	
-	public static HashMap<String, String> getSessionInfo() {
-		return sessionInfo;
+	public static void putSessionInfo(String sessionId, String type) {
+		synchronized(sessionInfo) {
+			sessionInfo.put(sessionId, type);
+		}
+	}
+	
+	public static String getSessionType(String sessionId) {
+		synchronized(sessionInfo) {
+			return sessionInfo.get(sessionId);
+		}
+	}
+	
+	public static void removeSessionInfo(String sessionId) {
+		synchronized(sessionInfo) {
+			sessionInfo.remove(sessionId);
+		}
+	}
+	
+	public static Set<String> getSessionIDs() {
+		synchronized(sessionInfo) {
+			return sessionInfo.keySet();
+		}
+	}
+	
+	public static boolean isSessionInfoEmpty() {
+		synchronized(sessionInfo) {
+			return sessionInfo.isEmpty();
+		}
+	}
+	
+	public static int getSessionInfoSize() {
+		synchronized(sessionInfo) {
+			return sessionInfo.size();
+		}
+	}
+	
+	public static void resetSessionInfo() {
+		synchronized(sessionInfo) {
+			sessionInfo = new HashMap<>();
+		}
 	}
 
-	public static HashMap<String, SessionList<SessionIdAndThr>> getMapSrcDstPairAndSessionInfo() {
-		return mapSrcDstPairAndSessionInfo;
+	public static void putItemToMapSrcDstPairAndSessionInfo(String srcDstPair) {
+		synchronized(mapSrcDstPairAndSessionInfo) {
+			mapSrcDstPairAndSessionInfo.put(srcDstPair, new SessionList<SessionIdAndThr>());
+		}
 	}
 
-	public static HashMap<String, Double> getMapSrcDstPairAndLastSeqNum() {
-		return mapSrcDstPairAndLastSeqNum;
+	public static SessionList<SessionIdAndThr> getItemFromMapSrcDstPairAndSessionInfo(String srcDstPair) {
+		synchronized(mapSrcDstPairAndSessionInfo) {
+			return mapSrcDstPairAndSessionInfo.get(srcDstPair);
+		}
+	}
+	
+	public static Double getNumFromMapSrcDstPairAndLastSeqNum(String srcDstPair) {
+		synchronized(mapSrcDstPairAndLastSeqNum) {
+			return mapSrcDstPairAndLastSeqNum.get(srcDstPair);
+		}
 	}
 
-	public static ArrayList<SessionCountForFiveSecs> getSessionCountList() {
-		return sessionCountList;
+	public static void resetNumInMapSrcDstPairAndLastSeqNum(String srcDstPair) {
+		synchronized(mapSrcDstPairAndLastSeqNum) {
+			mapSrcDstPairAndLastSeqNum.put(srcDstPair, -1.0);
+		}
+	}
+	
+	public static void setNumInMapSrcDstPairAndLastSeqNum(String srcDstPair, Double num) {
+		synchronized(mapSrcDstPairAndLastSeqNum) {
+			mapSrcDstPairAndLastSeqNum.put(srcDstPair, num);
+		}
+	}
+	
+	public static void incSessionCount() {
+		synchronized(sessionCountList) {
+			sessionCountList.get(0).incSessionCount();
+		}
+	}
+	
+	public static void incPollingSessionCount() {
+		synchronized(sessionCountList) {
+			sessionCountList.get(0).incPollingSessionCount();
+		}
+	}
+	
+	public static int getSessionCount(int minutes) {
+		synchronized(sessionCountList) {
+			int countListSize = sessionCountList.size(); // Session counting list saves the number of sessions for every 5 seconds.
+			int relayReqCount = 0;
+			for (int i = 0 ; i < countListSize && i < minutes*12 ; i++) { // Adding count up for x minutes.
+				relayReqCount += sessionCountList.get(i).getSessionCount() // Total session counts.
+						- sessionCountList.get(i).getPollingSessionCount();// Subtract polling session counts from total session counts.
+			}
+			return relayReqCount;
+		}
+	}
+	
+	public static int getPollingSessionCount(int minutes) {
+		synchronized(sessionCountList) {
+			int countListSize = sessionCountList.size(); // Session counting list saves the number of sessions for every 5 seconds.
+			int pollingReqCount = 0;
+			for (int i = 0 ; i < countListSize && i < minutes*12 ; i++) { // Adding count up for x minutes.
+				pollingReqCount += sessionCountList.get(i).getPollingSessionCount(); // Polling session counts.
+			}
+			return pollingReqCount;
+		}
 	}
 }
