@@ -230,7 +230,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
             relayingHandler = new MessageRelayingHandler(ctx, req, protocol, parser, SESSION_ID);
 		} 	finally {
 			// TODO Why this part is needed?
-			//req.release();
+			req.release();
 		}
 	}
 	
