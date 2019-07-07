@@ -239,6 +239,11 @@ Rev. history : 2019-06-20
 Version : 0.9.2
 	HOTFIX: polling authentication bug.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-07
+Version : 0.9.3
+	Added resource managing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -284,6 +289,8 @@ public class MessageRelayingHandler  {
     private ConnectionThread thread = null;
     
     private boolean isErrorOccured = false;
+    
+    private boolean isReqReleased = false;
 
 	
 	public MessageRelayingHandler(ChannelHandlerContext ctx, FullHttpRequest req, String protocol, MessageParser parser, String sessionId) {		
@@ -417,15 +424,17 @@ public class MessageRelayingHandler  {
 		// TODO: Youngjin Kim must inspect this following code.
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) {
+			isReqReleased = true; // The (FullHttpRequest) req MUST be released in these logic A, B, and C. 
 			srh = new SeamlessRoamingHandler(this.SESSION_ID);
 			if (type == MessageTypeDecider.msgType.POLLING) {
-				message = srh.initializeAndGetError(parser, outputChannel, ctx, "normal");
+				message = srh.initializeAndGetError(parser, outputChannel, ctx, req, "normal"); // logic A.
 			}
 			else if (type == MessageTypeDecider.msgType.LONG_POLLING) {
-				message = srh.initializeAndGetError(parser, outputChannel, ctx, "long");
+				message = srh.initializeAndGetError(parser, outputChannel, ctx, req, "long"); // logic B.
 			}
-			if (message != null) {
+			if (message != null) { 
 				outputChannel.replyToSender(ctx, message, isRealtimeLog);
+				req.release(); // logic C.
 			}
 
 			return;
@@ -556,5 +565,9 @@ public class MessageRelayingHandler  {
 			}
 		}
 
+	}
+	
+	public boolean isReqReleased() {
+		return isReqReleased;
 	}
 }

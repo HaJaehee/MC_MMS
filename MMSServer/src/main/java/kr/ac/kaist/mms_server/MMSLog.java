@@ -126,6 +126,11 @@ Rev. history : 2019-07-03
 Version : 0.9.3
 	Added multi-thread safety.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-07
+Version : 0.9.3
+	Added infoException().
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -518,6 +523,15 @@ public class MMSLog {
 			String newLog = makeLog(sessionId, log);
 			addWebLog(sessionId, log, "ERROR");
 			logger.error(newLog);
+		}
+	}
+	
+	public void infoException (Logger logger, String sessionId, String log, Exception e, int traceDepth) {
+		if (logger.isInfoEnabled()) {
+			info(logger, sessionId, makeExceptionLog(log, e));
+			for (int i = 1 ; i < e.getStackTrace().length && i < traceDepth ; i++) {
+				logger.info(makeLog(sessionId, e.getStackTrace()[i]+"."));
+			}
 		}
 	}
 	

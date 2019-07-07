@@ -37,12 +37,12 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-13
 Version : 0.6.0
-	Fixed channel.close() and connection.close() bugs
+	Fixed mqChannel.close() and mqConnection.close() bugs
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-26
 Version : 0.6.0
-	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+	Replaced from random int SESSION_ID to String SESSION_ID as mqConnection context mqChannel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-29
@@ -63,7 +63,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-06-25
 Version : 0.7.2
-	Fixed closing channel connection problem.
+	Fixed closing mqChannel mqConnection problem.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-08-05
@@ -101,7 +101,7 @@ Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
 
 Rev. history : 2019-05-23
 Version : 0.9.1
-	Fixed a problem where rabbitmq connection was not terminated even when client disconnected by using context-channel attribute.
+	Fixed a problem where rabbitmq mqConnection was not terminated even when client disconnected by using context-mqChannel attribute.
 Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 
 Rev. history : 2019-05-27
@@ -111,17 +111,17 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2019-06-01
 Version : 0.9.2
-	Let Rabbit MQ Channels share the one Rabbit MQ Connection.
+	Let Rabbit MQ Channels share the one Rabbit MQ mqConnection.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2019-06-03
 Version : 0.9.2
-	Created Rabbit MQ Connection pool.
+	Created Rabbit MQ mqConnection pool.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2019-06-12
 Version : 0.9.2
-	Fixed bugs related to connection pool.
+	Fixed bugs related to mqConnection pool.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2019-06-18
@@ -131,12 +131,17 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2019-06-21
 Version : 0.9.2
-	Fixed channel error.
+	Fixed mqChannel error.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2019-07-03
 Version : 0.9.3
 	Added multi-thread safety.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-07
+Version : 0.9.3
+	Added resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -153,6 +158,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.AlreadyClosedException;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -162,6 +168,7 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.GetResponse;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.FullHttpRequest;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.SessionManager;
@@ -186,11 +193,12 @@ public class MessageQueueDequeuer extends Thread{
 	private String pollingMethod = "normal";
 	private MRH_MessageOutputChannel outputChannel = null;
 	private ChannelHandlerContext ctx = null;
-	private Channel channel = null;
+	private FullHttpRequest req = null;
+	private Channel mqChannel = null;
 	private static ArrayList<Connection> connectionPool = null;
 	private static ConnectionFactory connFac = null;
 	private static int connectionPoolSize = 0;
-	
+
 	
 	private MMSLog mmsLog = null;
 	MessageQueueDequeuer (String sessionId) {
@@ -198,13 +206,14 @@ public class MessageQueueDequeuer extends Thread{
 		mmsLog = MMSLog.getInstance();
 	}
 	
-	void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN, String pollingMethod) {
+	void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String srcMRN, String svcMRN, String pollingMethod) {
 		
 		this.queueName = srcMRN+"::"+svcMRN;
 		this.srcMRN = srcMRN;
 		this.svcMRN = svcMRN;
 		this.outputChannel = outputChannel;
 		this.ctx = ctx;
+		this.req = req;
 		this.pollingMethod = pollingMethod;
 		this.DUPLICATE_ID = srcMRN+svcMRN;		
 		
@@ -242,16 +251,30 @@ public class MessageQueueDequeuer extends Thread{
 				connectionPool.set(connId, connFac.newConnection());
 			} catch (IOException | TimeoutException e) {
 				mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
+				//System.out.println(req.refCnt());
+				if(this.req != null && this.req.refCnt() > 0) {
+					//System.out.println("The request is released.");
+	    			this.req.release();
+					this.req = null;
+				}
 				return;
 			}
 		}
 		
 		try {
-			channel = connectionPool.get(connId).createChannel();
+			mqChannel = connectionPool.get(connId).createChannel();
 		} catch (IOException e1) {
 			mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString(), e1, 5);
+			//System.out.println(req.refCnt());
+			if(this.req != null && this.req.refCnt() > 0) {
+				//System.out.println("The request is released.");
+    			this.req.release();
+				this.req = null;
+			}
 			return;
 		}
+		
+		//TODO: Unexpectedly a mqChannel is shutdown while transferring a response to polling client, MUST A MESSAGE IS REQUEUED.
 		try {
 			ctx.channel().attr(MRH_MessageInputChannel.TERMINATOR).get().add(new ChannelTerminateListener() {
 				
@@ -260,14 +283,21 @@ public class MessageQueueDequeuer extends Thread{
 					
 					mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
 					try {
-						
-						if(channel != null && channel.isOpen()) {
-							channel.close();
+						if(mqChannel != null && mqChannel.isOpen()) {
+							mqChannel.close();
 						}
 					} catch (IOException | TimeoutException e) {
 						mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
 				    	
 					} 
+					finally {
+						//System.out.println(req.refCnt());
+						if(req != null && req.refCnt() > 0) {
+							//System.out.println("The request is released.");
+			    			req.release();
+							req = null;
+						}
+					}
 				}
 			});
 		}
@@ -276,7 +306,7 @@ public class MessageQueueDequeuer extends Thread{
 		}
 		
 		try {
-			channel.queueDeclare(queueName, true, false, false, null);
+			mqChannel.queueDeclare(queueName, true, false, false, null);
 		}
 		catch (IOException e) {
 			mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
@@ -284,11 +314,13 @@ public class MessageQueueDequeuer extends Thread{
 		
 		GetResponse res = null;
 		StringBuffer message = new StringBuffer();
+		ArrayList<String> backupMsg = new ArrayList<String>();
 		message.append("[");
+		
 		int msgCount = 0;
 		do { //Check that the queue having queueName has a message
 			try {
-				res = channel.basicGet(queueName, true);
+				res = mqChannel.basicGet(queueName, true);
 			}
 			catch (IOException e) {
 				mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
@@ -300,6 +332,7 @@ public class MessageQueueDequeuer extends Thread{
 				}
 				try {
 					message.append("\""+URLEncoder.encode(new String(res.getBody()),"UTF-8")+"\"");
+					backupMsg.add(0,new String(res.getBody()));
 				} catch (UnsupportedEncodingException e) {
 					mmsLog.info(logger, SESSION_ID, ErrorCode.MESSAGE_ENCODING_ERROR.toString());
 				}
@@ -325,6 +358,28 @@ public class MessageQueueDequeuer extends Thread{
 	    	}
 	    	catch (Exception e) {
 	    		mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
+	    		for (String msg : backupMsg) {
+	    			try {
+						mqChannel.basicPublish("", queueName, null, msg.getBytes());
+					} catch (IOException e1) {
+						mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
+					}
+	    		}
+	    	}
+	    	finally {
+	    		//System.out.println(req.refCnt());
+	    		if(this.req != null && this.req.refCnt() > 0) {
+					//System.out.println("The request is released.");
+	    			this.req.release();
+					this.req = null;
+				}
+	    	}
+	    	try {
+	    		mqChannel.close();
+	    		mqChannel = null;
+	    	}
+	    	catch (IOException | TimeoutException e) {
+	    		mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString());
 	    	}
 		} 
 		else { //If the queue does not have any message, message count == 0
@@ -341,19 +396,33 @@ public class MessageQueueDequeuer extends Thread{
 		    	}
 		    	try {
 		    		outputChannel.replyToSender(ctx, message.toString().getBytes());
+		    		//System.out.println(req.refCnt());
+		    		if(this.req != null && this.req.refCnt() > 0) {
+						//System.out.println("The request is released.");
+		    			this.req.release();
+						this.req = null;
+					}
 		    	}
 		    	catch (Exception e) {
 		    		mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
 		    	}
+		    	
+		    	try {
+		    		mqChannel.close();
+		    		mqChannel = null;
+		    	}
+		    	catch (IOException | TimeoutException e) {
+		    		mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString());
+		    	}
 			}
 			
 			else if (pollingMethod.equals("long")){ //If polling method is long polling
-				//Enroll a delivery listener to the queue channel in order to get a message from the queue.
+				//Enroll a delivery listener to the queue mqChannel in order to get a message from the queue.
 				mmsLog.debug(logger, this.SESSION_ID, "Client is waiting the message queue="+queueName+".");
 				
-				//TODO: Even though a polling client disconnects long polling session, this DefaultConsumer holds a channel.
-				//When a polling client disconnects long polling session, this DefaultConsumer have to free the channel. 
-				Consumer consumer = new DefaultConsumer(channel) {
+				//TODO: Even though a polling client disconnects long polling session, this DefaultConsumer holds a mqChannel.
+				//When a polling client disconnects long polling session, this DefaultConsumer have to free the mqChannel. 
+				Consumer consumer = new DefaultConsumer(mqChannel) {
 					 @Override
 					  public void handleDelivery(String consumerTag, Envelope envelope,
 					                             AMQP.BasicProperties properties, byte[] body)
@@ -373,55 +442,57 @@ public class MessageQueueDequeuer extends Thread{
 					    	}
 					    	try {
 					    		outputChannel.replyToSender(ctx, message.toString().getBytes());
+					    		//System.out.println(req.refCnt());
 					    	}
-					    	catch (Exception e) {
+						    catch (Exception e) {
 					    		mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
+					    		mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
 					    	}
-						    try {
-						    	channel.basicAck(envelope.getDeliveryTag(), false);
-						    }
-						    catch (IOException e) {
-						    	mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
-						    }
-						    
+					    	finally {
+					    		if(req != null && req.refCnt() > 0) {
+									//System.out.println("The request is released.");
+					    			req.release();
+									req = null;
+								}
+						    	try {
+						    		if (mqChannel != null && mqChannel.isOpen()) {
+						    			mqChannel.basicAck(envelope.getDeliveryTag(), false);
+						    		}
+						    	}  
+						    	catch (AlreadyClosedException | IOException e) {
+							    	mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
+							    }
+					    	}
 						} else {
 							mmsLog.debug(logger, SESSION_ID, "Dequeue="+queueName+".");
 							mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString()+" srcMRN="+ srcMRN+". Re-enqueue the messages.");
 							
 							try {
-								channel.basicNack(envelope.getDeliveryTag(), false, true);
+								mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
 							}
-							catch (IOException e) {
+							catch (AlreadyClosedException | IOException e) {
 								mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
 							}
+							finally {
+								//System.out.println(req.refCnt());
+								if(req != null && req.refCnt() > 0) {
+									//System.out.println("The request is released.");
+					    			req.release();
+									req = null;
+								}
+							}
 						}
-
-					    try {
-					    	if (this.getChannel() != null && this.getChannel().isOpen()) {
-					    		this.getChannel().basicCancel(this.getConsumerTag());
-					    	}
-					    	if (this.getChannel() != null && this.getChannel().isOpen()) {
-					    		this.getChannel().close();
-					    		
-					    	}
-					    	/*if (connection != null) {
-					    		connection.close();
-					    	}*/
-						} catch (IOException | TimeoutException e) {
-							mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
-						}
-
 					  }
 				};
 				try {
-					channel.basicConsume(queueName, false, consumer);
+					mqChannel.basicConsume(queueName, false, consumer);
 				}
 				catch (IOException e) {
 					mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
 				}
 
 				
-				//Enroll a  to the queue channel in order to get a message from the queue.
+				//Enroll a  to the queue mqChannel in order to get a message from the queue.
 				//However, it does not block exactly this thread.
 			}
 			
@@ -430,15 +501,15 @@ public class MessageQueueDequeuer extends Thread{
 			/*
 			 else { //If polling method of service having svcMRN is long polling
 			 
-				//Enroll a delivery listener to the queue channel in order to get a message from the queue.
+				//Enroll a delivery listener to the queue mqChannel in order to get a message from the queue.
 				if(MMSConfiguration.WEB_LOG_PROVIDING) {
 					String log = "SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".";
 					mmsLog.addBriefLogForStatus(log);
 					mmsLogForDebug.addLog(this.SESSION_ID, log);
 				}
 				logger.debug("SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".");
-				QueueingConsumer consumer = new QueueingConsumer(channel);
-				channel.basicConsume(queueName, false, consumer);
+				QueueingConsumer consumer = new QueueingConsumer(mqChannel);
+				mqChannel.basicConsume(queueName, false, consumer);
 				QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 				if(!ctx.isRemoved()){
 					message.append("[\""+URLEncoder.encode(new String(delivery.getBody()),"UTF-8")+"\"]");
@@ -454,7 +525,7 @@ public class MessageQueueDequeuer extends Thread{
 			    		SessionManager.sessionInfo.remove(this.SESSION_ID);
 			    	}
 				    outputChannel.replyToSender(ctx, message.toString().getBytes());
-					channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+					mqChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 				} else {
 					message.append(new String(delivery.getBody()));
 					if(MMSConfiguration.WEB_LOG_PROVIDING) {
@@ -467,11 +538,11 @@ public class MessageQueueDequeuer extends Thread{
 					}
 					logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
 					logger.warn("SessionID="+this.SESSION_ID+" "+srcMRN+" is disconnected. Requeue.");
-					channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
+					mqChannel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
 				}
 				
 				
-				//Enroll a delivery listener to the queue channel in order to get a message from the queue.
+				//Enroll a delivery listener to the queue mqChannel in order to get a message from the queue.
 				//However, it blocks exactly this thread.
 			}*/
 		}
@@ -480,7 +551,7 @@ public class MessageQueueDequeuer extends Thread{
 			//Busy waiting
 //			GetResponse res = null;
 //			while (res == null){
-//				res = channel.basicGet(queueName, true);
+//				res = mqChannel.basicGet(queueName, true);
 //				if (res != null){
 //					String message = new String(res.getBody());
 //					if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+" [x] Received '" + message + "'");
@@ -491,8 +562,8 @@ public class MessageQueueDequeuer extends Thread{
 		//It consumes CPU resources a lot.
 		
 		
-		//Enroll a callback to queue channel
-//			Consumer consumer = new DefaultConsumer(channel)
+		//Enroll a callback to queue mqChannel
+//			Consumer consumer = new DefaultConsumer(mqChannel)
 //			{
 //			  @Override
 //			  public void handleDelivery(String consumerTag, Envelope envelope,
@@ -504,24 +575,24 @@ public class MessageQueueDequeuer extends Thread{
 //			    outputChannel.replyToSender(ctx, body);		  
 //			  	}
 //			};
-//			channel.basicConsume(queueName, true, consumer);
-		//Enroll a callback to queue channel
+//			mqChannel.basicConsume(queueName, true, consumer);
+		//Enroll a callback to queue mqChannel
 		//If there are some messages in the queue, callback is called and messages are retrieved from the queue 
 		//		until the queue is empty.
 		//It do not block this thread.
 			
 	    
     	if (pollingMethod.equals("normal")) { // Polling method: normal polling
-    		if (channel != null && channel.isOpen()) {
+    		if (mqChannel != null && mqChannel.isOpen()) {
 	    		try {
-					channel.close();
+					mqChannel.close();
 				} catch (IOException | TimeoutException e) {
 					mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
 				}
 	    	}
-			/*if (connection != null) {
+			/*if (mqConnection != null) {
 				try {
-					connection.close();
+					mqConnection.close();
 				} catch (IOException e) {
 					mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 				}
