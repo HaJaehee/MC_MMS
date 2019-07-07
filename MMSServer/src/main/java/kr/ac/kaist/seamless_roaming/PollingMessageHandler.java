@@ -33,10 +33,16 @@ Version : 0.8.1
 	Removed locator registering function.
 	Duplicated polling requests are not allowed.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-07
+Version : 0.9.3
+	Added resource managing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.FullHttpRequest;
 import kr.ac.kaist.message_queue.MessageQueueManager;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
@@ -65,8 +71,8 @@ class PollingMessageHandler {
 	}
 	
 	// TODO: Youngjin Kim must inspect this following code.
-	void dequeueSCMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN, String pollingMethod){
-		mqm.dequeueMessage(outputChannel, ctx, srcMRN, svcMRN, pollingMethod);
+	void dequeueSCMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String srcMRN, String svcMRN, String pollingMethod){
+		mqm.dequeueMessage(outputChannel, ctx, req, srcMRN, svcMRN, pollingMethod);
 	}
 	
 }

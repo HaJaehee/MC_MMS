@@ -112,6 +112,11 @@ Rev. history : 2019-07-03
 Version : 0.9.3
 	Added multi-thread safety.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-07
+Version : 0.9.3
+	Added resource managing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -155,7 +160,6 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
     private MessageRelayingHandler relayingHandler;
-    private FullHttpRequest imsg;
 	
     private String DUPLICATE_ID="";
 
@@ -214,10 +218,10 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			this.parser = new MessageParser(SESSION_ID);
 			try {
 				parser.parseMessage(ctx, req);
-			} catch (NumberFormatException | NullPointerException  e) {
+			} catch (IOException | NumberFormatException | NullPointerException  e) {
 				mmsLog.info(logger, SESSION_ID, ErrorCode.MESSAGE_PARSING_ERROR.toString());
 				
-			}
+			} 
 			if (!parser.isRealtimeLogReq()) {
 				mmsLog.info(logger, SESSION_ID, "Receive a message."); 
 			}// If a request is not a realtime logging service request.
@@ -229,8 +233,9 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     		ctx.channel().attr(TERMINATOR).set(new LinkedList<ChannelTerminateListener>());
             relayingHandler = new MessageRelayingHandler(ctx, req, protocol, parser, SESSION_ID);
 		} 	finally {
-			// TODO Why this part is needed?
-			req.release();
+			if (req.refCnt() > 0 && relayingHandler != null && !relayingHandler.isReqReleased()) {
+				req.release();
+			}
 		}
 	}
 	
@@ -249,12 +254,14 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
             	mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
                 thread.terminate();
             }
+        	relayingHandler = null;
         }
         
         LinkedList<ChannelTerminateListener> listeners = ctx.channel().attr(TERMINATOR).get();
         for(ChannelTerminateListener listener: listeners) {
         	listener.terminate(ctx);
         }
+        
         //if (isRemainJob(ctx)) {
         //    ReferenceCountUtil.release(imsg);
         //}

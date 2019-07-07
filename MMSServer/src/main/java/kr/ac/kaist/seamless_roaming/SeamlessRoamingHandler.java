@@ -60,6 +60,11 @@ Rev. history : 2019-07-03
 Version : 0.9.3
 	Added multi-thread safety.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-07
+Version : 0.9.3
+	Added resource managing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -121,7 +126,7 @@ public class SeamlessRoamingHandler {
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 
-	public byte[] initializeAndGetError (MessageParser parser, MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String method) {
+	public byte[] initializeAndGetError (MessageParser parser, MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String method) {
 		
 		byte[] message = null;
 		String srcMRN = parser.getSrcMRN();
@@ -211,7 +216,7 @@ public class SeamlessRoamingHandler {
 		}
 		
 
-		processPollingMessage(outputChannel, ctx, srcMRN, srcIP, method, svcMRN);
+		message = processPollingMessage(outputChannel, ctx, req, srcMRN, srcIP, method, svcMRN);
 
 		
 		return message;
@@ -220,14 +225,14 @@ public class SeamlessRoamingHandler {
 	
 	// TODO: Youngjin Kim must inspect this following code.
 	// Poll SC message in queue.
-	public void processPollingMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN,
+	public byte[] processPollingMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String srcMRN,
 			String srcIP, String pollingMethod, String svcMRN) {
 
-
+		byte[] message = null;
 		if (pollingMethod.equals("normal"))	{
 			SessionManager.putSessionInfo(SESSION_ID, "p");
 			SessionManager.incPollingSessionCount();
-			pmh.dequeueSCMessage(outputChannel, ctx, srcMRN, svcMRN, pollingMethod);
+			pmh.dequeueSCMessage(outputChannel, ctx, req, srcMRN, svcMRN, pollingMethod);
 		}
 		else if (pollingMethod.equals("long")) {
 			SessionManager.putSessionInfo(SESSION_ID, "lp");
@@ -241,15 +246,17 @@ public class SeamlessRoamingHandler {
 //				System.out.println("duplicate long polling request");
 				
 				// TODO: To define error message.
-				byte[] message = ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes();
+				message = ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes();
 				
-				outputChannel.replyToSender(ctx, message);
+				return message;
 				
 			} else {
 				duplicateInfo.put(DUPLICATE_ID, "y");
-				pmh.dequeueSCMessage(outputChannel, ctx, srcMRN, svcMRN, pollingMethod);
+				pmh.dequeueSCMessage(outputChannel, ctx, req, srcMRN, svcMRN, pollingMethod);
 			}
 		}
+		
+		return message;
 		
 		//Removed at version 0.8.2.
 		/*if (MMSConfiguration.getMnsHost().equals("localhost")||MMSConfiguration.getMnsHost().equals("127.0.0.1")) {
