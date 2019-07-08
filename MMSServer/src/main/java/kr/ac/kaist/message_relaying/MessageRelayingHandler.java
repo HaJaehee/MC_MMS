@@ -244,6 +244,11 @@ Rev. history : 2019-07-07
 Version : 0.9.3
 	Added resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-08
+Version : 0.9.3
+	Updated resource managing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -289,9 +294,6 @@ public class MessageRelayingHandler  {
     private ConnectionThread thread = null;
     
     private boolean isErrorOccured = false;
-    
-    private boolean isReqReleased = false;
-
 	
 	public MessageRelayingHandler(ChannelHandlerContext ctx, FullHttpRequest req, String protocol, MessageParser parser, String sessionId) {		
 		this.protocol = protocol;
@@ -424,7 +426,7 @@ public class MessageRelayingHandler  {
 		// TODO: Youngjin Kim must inspect this following code.
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) {
-			isReqReleased = true; // The (FullHttpRequest) req MUST be released in these logic A, B, or C. 
+			req.retain(); // The (FullHttpRequest) req MUST be released in these logic A, B, or C. 
 			srh = new SeamlessRoamingHandler(this.SESSION_ID);
 			if (type == MessageTypeDecider.msgType.POLLING) {
 				message = srh.initializeAndGetError(parser, outputChannel, ctx, req, "normal"); // logic A.
@@ -456,17 +458,23 @@ public class MessageRelayingHandler  {
 		
 		//Below code MUST be 'if' statement not 'else if'. 
 		if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
-			message = moh.processMessage(outputChannel, req, protocol, mch, type);
+			message = moh.processMessage(outputChannel, req, protocol, mch, type); // The (FullHttpRequest) req MUST be released in this logic.
 			if (message != null) {
 				isErrorOccured = true;
 			}
 			else {
 				thread = moh.getConnectionThread();
+				if (thread != null) {
+					req.retain();
+				}
 			}
 		}
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
-			thread = mch.asynchronizedUnicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN);
+			thread = mch.asynchronizedUnicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); // The (FullHttpRequest) req MUST be released in this logic.
+			if (thread != null) {
+				req.retain();
+			}
 		}
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (type == MessageTypeDecider.msgType.GEOCASTING_CIRCLE || type == MessageTypeDecider.msgType.GEOCASTING_POLYGON) {
@@ -544,7 +552,7 @@ public class MessageRelayingHandler  {
 			if ((type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) && thread == null) {
 				if (message == null) {
 					message = ErrorCode.UNKNOWN_ERR.getBytes();
-					mmsLog.info(logger, this.SESSION_ID, "INVALID MESSAGE.");
+					mmsLog.info(logger, this.SESSION_ID, ErrorCode.UNKNOWN_ERR.toString());
 					outputChannel.replyToSender(ctx, message, isRealtimeLog); //TODO: MUST HAVE MORE DEFINED EXCEPTION MESSAGES.
 					return;
 				}
@@ -559,15 +567,11 @@ public class MessageRelayingHandler  {
 			}
 			else if (!isErrorOccured && message == null && !(type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SERVER)) {
 				message = ErrorCode.UNKNOWN_ERR.getBytes();
-				mmsLog.info(logger, this.SESSION_ID, "INVALID MESSAGE.");
+				mmsLog.info(logger, this.SESSION_ID, ErrorCode.UNKNOWN_ERR.toString());
 				outputChannel.replyToSender(ctx, message, isRealtimeLog); //TODO: MUST HAVE MORE DEFINED EXCEPTION MESSAGES.
 				return;
 			}
 		}
 
-	}
-	
-	public boolean isReqReleased() {
-		return isReqReleased;
 	}
 }

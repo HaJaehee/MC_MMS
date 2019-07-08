@@ -114,6 +114,11 @@ Rev. history : 2019-07-03
 Version : 0.9.3
 	Added multi-thread safety.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-08
+Version : 0.9.3
+	Added resource managing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -451,7 +456,7 @@ public class MRH_MessageOutputChannel{
 	
 	public ConnectionThread asynchronizeSendMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
 		HttpURLConnection con = requestMessage(req, IPAddress, port, httpMethod, srcMRN, dstMRN);
-		return new ConnectionThread(con);
+		return new ConnectionThread(con, req);
 	}
 
 	
@@ -468,7 +473,7 @@ public class MRH_MessageOutputChannel{
 	
 	public ConnectionThread asynchronizeSendSecureMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws NullPointerException, IOException { // 
 		HttpURLConnection con = requestSecureMessage(req, IPAddress, port, httpMethod, srcMRN, dstMRN);
-		return new ConnectionThread(con);
+		return new ConnectionThread(con, req);
 	}
 	
 	HostnameVerifier getHV (){
@@ -620,10 +625,12 @@ public class MRH_MessageOutputChannel{
 	}
 
 	public class ConnectionThread extends Thread {
-		private HttpURLConnection con;
+		private HttpURLConnection con = null;
+		private FullHttpRequest req = null;
 		private byte[] data;
-		public ConnectionThread(HttpURLConnection con) {
+		public ConnectionThread(HttpURLConnection con, FullHttpRequest req) {
 			this.con = con;
+			this.req = req;
 			data = null;
 		}
 		public void terminate() {
@@ -631,6 +638,7 @@ public class MRH_MessageOutputChannel{
 	       	con.disconnect();
 	       	try {
 				con.getInputStream().close();
+				con = null;
 			} 
 	       	catch (IOException e) {
 	       		mmsLog.info(logger, SESSION_ID, ErrorCode.MESSAGE_RELAYING_FAIL_DISCONNECT.toString());
@@ -651,6 +659,11 @@ public class MRH_MessageOutputChannel{
 					data = ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.getUTF8Bytes();
 				}
 				replyToSender(ctx, data);
+				if (req != null && req.refCnt() > 0) {
+					req.release();
+					req = null;
+				}
+				con = null;
 			}
         } 
 	}

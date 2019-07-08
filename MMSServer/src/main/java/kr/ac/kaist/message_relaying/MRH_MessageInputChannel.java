@@ -117,6 +117,11 @@ Rev. history : 2019-07-07
 Version : 0.9.3
 	Added resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-08
+Version : 0.9.3
+	Updated resource managing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -233,9 +238,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     		ctx.channel().attr(TERMINATOR).set(new LinkedList<ChannelTerminateListener>());
             relayingHandler = new MessageRelayingHandler(ctx, req, protocol, parser, SESSION_ID);
 		} 	finally {
-			if (req.refCnt() > 0 && relayingHandler != null && !relayingHandler.isReqReleased()) {
-				req.release();
-			}
+			req.release();
 		}
 	}
 	
