@@ -2,6 +2,7 @@ package kr.ac.kaist.message_queue;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -12,6 +13,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
+import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -79,6 +81,26 @@ Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-01
+Version : 0.9.2
+	Let Rabbit MQ Channels share the one Rabbit MQ Connection.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-03
+Version : 0.9.2
+	Created Rabbit MQ Connection pool.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-12
+Version : 0.9.2
+	Fixed bugs related to connection pool.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 
 /* -------------------------------------------------------- */
@@ -89,22 +111,22 @@ class MessageQueueEnqueuer {
 	private String SESSION_ID = "";
 	
 	private MMSLog mmsLog = null;
-	private MMSLogForDebug mmsLogForDebug = null;
 	
-	MessageQueueEnqueuer (String sessionId) {
+	private static ConnectionFactory connFac = null;
+	
+	
+	public MessageQueueEnqueuer (String sessionId) {
 		this.SESSION_ID = sessionId;
 		mmsLog = MMSLog.getInstance();
-		mmsLogForDebug = MMSLogForDebug.getInstance();
+		
 	}
 	
 	
 	void enqueueMessage(String srcMRN, String dstMRN, String message) {
-		
+		Connection connection = null;
+		Channel channel = null;
 		String queueName = dstMRN+"::"+srcMRN;
-		String longSpace = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-		 
-		
-		 if(logger.isTraceEnabled()) {
+		if(logger.isTraceEnabled()) {
 			mmsLog.trace(logger, this.SESSION_ID, "Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(message));
 		 }
 		 else {
@@ -112,13 +134,14 @@ class MessageQueueEnqueuer {
 		 }
 		
 		try {
-			ConnectionFactory factory = new ConnectionFactory();
-			factory.setHost(MMSConfiguration.getRabbitMqHost());
-			factory.setPort(MMSConfiguration.getRabbitMqPort());
-			factory.setUsername(MMSConfiguration.getRabbitMqUser());
-			factory.setPassword(MMSConfiguration.getRabbitMqPasswd());
-			Connection connection = factory.newConnection();
-			Channel channel;
+			if (connFac == null) {
+				connFac = new ConnectionFactory();
+				connFac.setHost(MMSConfiguration.getRabbitMqHost());
+				connFac.setPort(MMSConfiguration.getRabbitMqPort());
+				connFac.setUsername(MMSConfiguration.getRabbitMqUser());
+				connFac.setPassword(MMSConfiguration.getRabbitMqPasswd());
+			}
+			connection = connFac.newConnection();
 			
 			channel = connection.createChannel();
 			channel.queueDeclare(queueName, true, false, false, null);
@@ -126,13 +149,30 @@ class MessageQueueEnqueuer {
 			channel.basicPublish("", queueName, null, message.getBytes());
 			channel.close();
 			connection.close();
+			
 		} 
 		catch (IOException e) {
-			mmsLog.errorException(logger, SESSION_ID, "", e, 5);
+			mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
 			
 		} 
 		catch (TimeoutException e) {
-			mmsLog.errorException(logger, SESSION_ID, "", e, 5);
+			mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
+		}
+		finally {
+    		if (channel != null && channel.isOpen()) {
+	    		try {
+					channel.close();
+				} catch (IOException | TimeoutException e) {
+					mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
+				}
+	    	}
+    		if (connection != null && channel.isOpen()) {
+	    		try {
+	    			connection.close();
+				} catch (IOException e) {
+					mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CONNECTION_CLOSE_ERROR.toString(), e, 5);
+				}
+	    	}
 		}
 	}
 }

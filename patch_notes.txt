@@ -1,5 +1,13 @@
 Patch Notes
 ***********
+14-June 2019
+MC_MMS 0.9.1-2 new features/enhancements & bug-fixes:
+1. Added RabbitMQ connection pool functions.
+2. Updated one-time running JUnit test cases.
+3. REFACTORING MessageRelayingHandler.
+4. Fixed several bugs.
+5. Updated manuals.
+
 29-May 2019
 MC_MMS 0.9.1-1 new features/enhancements & bug-fixes:
 1. Updated MMS one-time installation script.

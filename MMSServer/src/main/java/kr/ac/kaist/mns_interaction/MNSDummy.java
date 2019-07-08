@@ -60,6 +60,11 @@ Rev. history : 2018-07-27
 Version : 0.7.2
 	Added geocasting features which cast message to circle or polygon area.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-07
+Version : 0.9.2
+	Made logs neat.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */
 
@@ -87,14 +92,12 @@ public class MNSDummy {
 	private static int GROUPCASTING = 3;
 
 
-
 	//private static final Logger logger = LoggerFactory.getLogger(MNSDummy.class);
 	//All MRN to IP Mapping is in hashmap 
 	private static HashMap<String, String> MRNtoIP = new HashMap<String, String>();
 	//	private static HashMap<String, String> IPtoMRN = new HashMap<String, String>();
 
 	public static void main(String argv[]) throws Exception
-
 	{
 		ServerSocket Sock = new ServerSocket(MMSConfiguration.getMnsPort());
 		System.out.println("Listen:"+MMSConfiguration.getMnsPort());
@@ -190,17 +193,21 @@ public class MNSDummy {
 		
 		// LOCAL TEST //
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-01-client","127.0.0.1:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-01-server","143.248.57.72:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-01-server","192.168.0.5:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-02-client","127.0.0.1:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-02-server","143.248.57.72:8907:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-03-server","143.248.57.72:8907:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-client","143.248.57.72:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-server","143.248.57.72:8902:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-06-server","143.248.57.72:8902:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-02-server","192.168.0.5:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-03-server","192.168.0.5:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-client","192.168.0.5:0:1");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-server","192.168.0.5:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-06-server","192.168.0.5:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-07-client","1.1.1.1:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-07-server","143.248.57.72:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-07-server","192.168.0.5:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-08-client","192.168.0.5:8907:1");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-08-server","192.168.0.5:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-09-client","192.168.0.5:8907:1");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-09-server","192.168.0.5:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-10-client","1.1.1.1:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-10-server","143.248.57.72:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-10-server","192.168.0.5:8907:2");
 		MRNtoIP.put("urn:mrn:smart-navi:device:service-provider","127.0.0.1:0:2");
 		//-----------------------------------------------------
 
@@ -527,7 +534,13 @@ public class MNSDummy {
 						SortedSet<String> keys = new TreeSet<String>(MRNtoIP.keySet());
 						for (String key : keys) {
 							String value = MRNtoIP.get(key);
-							dataToReply = dataToReply + key + "," + value + "<br/>";
+							String values[] = value.split(":");
+							dataToReply = dataToReply + "<tr>"
+										+ "<td>" + key + "</td>"
+										+ "<td>" + values[0] + "</td>"
+										+ "<td>" + values[1] + "</td>"
+										+ "<td>" + values[2] + "</td>"
+										+ "</tr>";
 						}
 					}
 					else{

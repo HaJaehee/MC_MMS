@@ -45,15 +45,9 @@ public class ServiceProvider_GEO_Circle {
 		
 		// It is able to set its HTTP header field
 		Map<String, List<String>> headerfield = new HashMap<String, List<String>>(); // Header field example. You are able to remove this code.
-<<<<<<< HEAD:Examples/ServiceProvider-GEO/src/ServiceProvider_GEO.java
-		List<String> geoTrue = new ArrayList<String>(); 
-		geoTrue.add("true");
-		headerfield.put("geocasting",geoTrue);
-=======
 		List<String> geoType = new ArrayList<String>(); 
 		geoType.add("circle");
 		headerfield.put("geocasting",geoType);
->>>>>>> c4de56b1347cdbb058824bf3b77771eeefeff5f6:Examples/Geocasting/ServiceProvider-GEO-Circle/src/ServiceProvider_GEO_Circle.java
 		List<String> latValue = new ArrayList<String>();
 		latValue.add("1");
 		headerfield.put("lat", latValue);
@@ -66,14 +60,9 @@ public class ServiceProvider_GEO_Circle {
 		sender.setMsgHeader(headerfield);
 		// Header field example ends.
 		
-<<<<<<< HEAD:Examples/ServiceProvider-GEO/src/ServiceProvider_GEO.java
-		sender.sendPostMsg(null, "Hello Geocast");
-		server.setServerPort(port, "/forwarding", new MMSClientHandler.RequestCallback() {
-=======
 		String dstMRN = "*";
 		sender.sendPostMsg(dstMRN, "Hello Geocast");
 		/*server.setServerPort(port, "/forwarding", new MMSClientHandler.RequestCallback() {
->>>>>>> c4de56b1347cdbb058824bf3b77771eeefeff5f6:Examples/Geocasting/ServiceProvider-GEO-Circle/src/ServiceProvider_GEO_Circle.java
 			//Request Callback from the request message
 			//it is called when client receives a message
 			

@@ -1,8 +1,7 @@
 # MC_MMS
-[![Build Status](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS.svg?branch=beta-0.9.1-closed)](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS) <br/>
-Beta Version 0.9.1 <br/>
-2019.05.29 <br/>
-
+[![Build Status](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS.svg?branch=beta-0.9.2-closed%2BHOTFIX)](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS)<br/>
+Beta Version 0.9.2 <br/>
+2019.06.17 <br/>
 
 # Web Site
 https://www.mms-kaist.com <br/>
@@ -51,6 +50,8 @@ Before building MMS Server, specify configuration files in [MMSServer/MMS-config
 <code>cd MMSServer/scripts </code><br/>
 <code>sudo sh deploy-mms.sh [domain name]</code><br/>
 It will automatically build and run MMS Server, MMS Monitoring Module and related services.<br/>
+After running MMS Monitoring Module docker container, re-configure detailed configurations of <br/>
+apache2 in [/etc/apache2/] in the docker container.<br/>
 
 <b>ONLY BUILD AND START MMS SERVER:</b> run the scripts at the directory [MMSServer/Linux/].<br/>
 <code>cd MMSServer/Linux </code><br/>

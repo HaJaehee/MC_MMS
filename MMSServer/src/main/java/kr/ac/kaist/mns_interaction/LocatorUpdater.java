@@ -21,7 +21,6 @@ Version : 0.6.1
 	Deprecated this class.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
-
 Rev. history: 2019-03-09
 Version : 0.8.1
 	MMS Client is able to choose its polling method.
@@ -46,7 +45,6 @@ public class LocatorUpdater {
 	LocatorUpdater (String sessionId){
 		this.SESSION_ID = sessionId;
 	}
-
 	String buildUpdate(String MRN, String IP) {
 		String msg = "Location-Update:" + IP + "," + MRN + ",0,1";
 

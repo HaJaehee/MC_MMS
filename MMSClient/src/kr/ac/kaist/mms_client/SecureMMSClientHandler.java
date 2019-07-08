@@ -72,7 +72,6 @@ Version : 0.7.1
 	Removed IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION, EXPOSURE_OF_SYSTEM_DATA hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
-
 Rev. history : 2018-07-19
 Version : 0.7.2
 	Added API; message sender guarantees message sequence.
@@ -100,7 +99,6 @@ Version : 0.9.1
 	Revised for testing restful API.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
-
 */
 /* -------------------------------------------------------- */
 
@@ -113,7 +111,6 @@ import kr.ac.kaist.mms_client.MMSClientHandler.ResponseCallback;
 
 
 /**
-
  * This handler helps client communicate to MMS over HTTPS. Client uses it to send or receive messages.
  * @version 0.8.1
  * @see MMSClientHandler
@@ -135,9 +132,7 @@ public class SecureMMSClientHandler {
 	 * @throws	IOException 	if exception occurs
 	 */	
 	public SecureMMSClientHandler(String clientMRN) throws IOException, NullPointerException{
-
 	
-
 		this.clientMRN = clientMRN;
 		rcvHandler = null;
 		pollHandler = null;

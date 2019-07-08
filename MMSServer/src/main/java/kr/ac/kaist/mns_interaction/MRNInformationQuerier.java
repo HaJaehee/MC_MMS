@@ -33,7 +33,6 @@ public class MRNInformationQuerier {
 
 	private static final Logger logger = LoggerFactory.getLogger(MRNInformationQuerier.class);
 	
-
 	String buildQuery(String castType, String srcMRN, String dstMRN, float geoLat, float geoLong, float geoRadius) {
 		return "{\""+castType+"\":"+
 				"{\"srcMRN\":\""+srcMRN+"\","+
@@ -42,7 +41,6 @@ public class MRNInformationQuerier {
 				"\"long\":\""+geoLong+"\","+
 				"\"radius\":\""+geoRadius+"\"}}";
 	}
-
 	
 	//TODO
 	String buildQuery(String castType, String srcMRN, String dstMRN, float geoLat[], float[] geoLong) {

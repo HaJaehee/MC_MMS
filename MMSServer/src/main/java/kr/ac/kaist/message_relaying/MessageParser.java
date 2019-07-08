@@ -38,7 +38,6 @@ Version : 0.7.1
 	Added isGeocastingMsg boolean variable and getIsGeocastingMsg method.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
-
 Rev. history : 2018-07-18
 Version : 0.7.2
 	Added handling input messages by reordering policy.
@@ -95,6 +94,16 @@ Rev. history : 2019-05-29
 Version : 0.9.1
 	Resolved a bug related to realtime log function.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-14
+Version : 0.9.2
+	Refactoring.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -103,15 +112,12 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
-
 import java.util.Arrays;
 import java.util.Iterator;
-
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,6 +128,7 @@ import io.netty.handler.codec.http.HttpMethod;
 import kr.ac.kaist.message_casting.GeolocationCircleInfo;
 import kr.ac.kaist.message_casting.GeolocationPolygonInfo;
 import kr.ac.kaist.message_relaying.MessageTypeDecider.msgType;
+import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -137,14 +144,12 @@ public class MessageParser {
 	private String dstMRN = null;
 	private String[] multiDstMRN = null;
 	private int dstPort = 0;
-
 	private String dstModel = null;
 	private String uri = null;
 	private HttpMethod httpMethod = null;
 	private String svcMRN = null;
 	private String netType = null;
 	private boolean isGeocasting = false;
-
 
 	private boolean isJSONOfPollingFormat = false;
 	private GeolocationCircleInfo geoCircleInfo = null;
@@ -166,12 +171,10 @@ public class MessageParser {
 		uri = null;
 		httpMethod = null;
 		dstPort = 0;
-
 		dstModel = null;
 		svcMRN = null;
 		netType = null;
 		isGeocasting = false;
-
 		geoCircleInfo = null;
 		geoPolygonInfo = null;
 		geoDstInfo = null;
@@ -188,7 +191,6 @@ public class MessageParser {
 	    uri = req.uri();
 		httpMethod = req.method();
 		
-
 	    if (inetaddress != null) {
 	    	srcIP = inetaddress.getHostAddress(); // IP address of client
 	    } 
@@ -198,7 +200,6 @@ public class MessageParser {
 		srcMRN = req.headers().get("srcMRN");
 		dstMRN = req.headers().get("dstMRN");
 		
-
 		if (srcMRN != null && dstMRN != null && dstMRN.equals(MMSConfiguration.getMmsMrn()) && httpMethod == HttpMethod.POST && (uri.equals("/polling")||uri.equals("/long-polling"))) {
 			//When polling
 			parseSvcMRNAndHexSign(req);
@@ -212,11 +213,11 @@ public class MessageParser {
 		
 		String o = req.headers().get("seqNum");
 		if (o != null) {
-			//seqNum must be positive and lower than MAXIMUM VALUE of double. seqNum must be checked.
+			//seqNum must be positive and lower than MAXIMUM VALUE of long. seqNum must be checked.
 			seqNum = Long.parseLong(o);
 			new BigInteger(o);
 			if (seqNum < 0) {
-				logger.warn("SessionID="+SESSION_ID+" In header, seqNum must be positive integer.");
+				mmsLog.info(logger, SESSION_ID, ErrorCode.SEQUENCE_NUMBER_IS_NEGATIVE.toString());
 				throw new NumberFormatException();
 			}
 		}
@@ -256,10 +257,9 @@ public class MessageParser {
 						mmsLog.debug(logger, this.SESSION_ID, "Geocasting polygon request. "+strGeoPolyInfo.toString()+".");
 
 					}
-
 				} 
 				catch (ParseException e) {
-					logger.warn("SessionID="+this.SESSION_ID+" Failed to parse geolocation info.");
+					mmsLog.info(logger, this.SESSION_ID, ErrorCode.WRONG_GEOCASTING_INFO.toString());
 				}
 			} 
 			else {
@@ -270,7 +270,6 @@ public class MessageParser {
 			isGeocasting = false;
 		}
 		
-
 		
 	}
 	
@@ -285,11 +284,11 @@ public class MessageParser {
 			if (keyStr.equals("svcMRN")) {
 				svcMRN = (String) pollingRequestContents.get("svcMRN");
 //				System.out.println("[Parser] serviceMRN: " + svcMRN);
-				logger.debug("SessionID="+this.SESSION_ID+" [Parser] serviceMRN: " + svcMRN + ".");
+				mmsLog.debug(logger, this.SESSION_ID, "Service MRN: " + svcMRN + ".");
 			}
 			else if (keyStr.equals("certificate")) {
 				hexSignedData = (String) pollingRequestContents.get("certificate");
-				logger.debug("SessionID="+this.SESSION_ID+" [Parser] client's certificate is included.");
+				mmsLog.debug(logger, this.SESSION_ID, "Client's certificate is included.");
 			}
 		}
 	}
@@ -316,7 +315,6 @@ public class MessageParser {
 				hexSignedData = sepContent[1];
 			}
 		}
-
 	}
 	
 	void parseSvcMRNAndHexSign(FullHttpRequest req) throws IOException{
@@ -325,21 +323,22 @@ public class MessageParser {
 		if (content.length() == 0) {
 			throw new IOException ("Invalid content.");
 		}
-
+		
 		try {
 			parsePollingRequestToJSON(content);
 //			System.out.println("[Test Message] the svcMRN is " + svcMRN);
 //			System.out.println("[Test Message] the certificate is " + hexSignedData.substring(6));
 			isJSONOfPollingFormat = true;
 			if (this.svcMRN == null) {
-				mmsLog.warn(logger, this.SESSION_ID, "The service MRN is not included.");
+
+				mmsLog.info(logger, this.SESSION_ID, ErrorCode.NULL_SVC_MRN.toString());
 
 			}
 			
 			return ;
 		} 
 		catch (org.json.simple.parser.ParseException e) {
-			mmsLog.warnException(logger, this.SESSION_ID, "Failed to parse polling request content whose type is a JSON format.", e, 5);
+			mmsLog.info(logger, this.SESSION_ID, ErrorCode.JSON_FORMAT_ERROR.toString());
 			
 			isJSONOfPollingFormat = false;
 		}
@@ -366,10 +365,9 @@ public class MessageParser {
 				netType = (String) json.get("netType");
 			}
     	
-
 		}
 		catch (org.json.simple.parser.ParseException e) {
-			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+			mmsLog.info(logger, this.SESSION_ID, ErrorCode.MNS_WRONG_FORMAT_ERROR.toString());
 		}
 	}
 	
@@ -380,8 +378,7 @@ public class MessageParser {
 			geoDstInfo = (JSONArray) parser.parse(geocastInfo);
 			
 		} catch (org.json.simple.parser.ParseException e) {
-
-			mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+			mmsLog.info(logger, this.SESSION_ID, ErrorCode.WRONG_GEOCASTING_INFO.toString());
 		}
 	}
 	
@@ -398,9 +395,8 @@ public class MessageParser {
 	// Destination Information //
 	String getDstIP() { return dstIP; }
 	int getDstPort() { return dstPort; }
-	String getDstMRN() { return dstMRN; }
+	public String getDstMRN() { return dstMRN; }
 	String getDstModel() { return dstModel; }
-
 	long getSeqNum() { return seqNum;	}
 	
 	// Destination Special Information //
@@ -412,19 +408,17 @@ public class MessageParser {
 	}
 	
 	// Source Information //
-	String getSrcIP(){ return srcIP; }
-	String getSrcMRN() { return srcMRN; }
-
+	public String getSrcIP(){ return srcIP; }
+	public String getSrcMRN() { return srcMRN; }
 	
 	// Service Information //
-	String getSvcMRN (){ return svcMRN; }
+	public String getSvcMRN (){ return svcMRN; }
 	
 	// Geolocation Information // 
 	public boolean isGeocastingMsg (){
 		return isGeocasting;
 	}
 	
-
 	public void setGeoCircleInfo (FullHttpRequest req) throws NumberFormatException, NullPointerException {
 		geoCircleInfo = new GeolocationCircleInfo();
 		if (req.headers().get("lat") == null) {
@@ -457,7 +451,7 @@ public class MessageParser {
 		float[] geoLatList = parseToFloatList(req.headers().get("lat"));
 		float[] geoLongList = parseToFloatList(req.headers().get("long"));
 		if (geoLatList.length < 3 || geoLongList.length < 3 || geoLatList.length != geoLongList.length) {
-			throw new ParseException(ParseException.ERROR_UNEXPECTED_EXCEPTION);
+			mmsLog.info(logger, SESSION_ID, ErrorCode.WRONG_GEOCASTING_INFO.toString());
 		}
 		geoPolygonInfo.setGeoLatList(geoLatList);
 		geoPolygonInfo.setGeoLongList(geoLongList);
@@ -485,7 +479,6 @@ public class MessageParser {
 	public JSONArray getGeoDstInfo () {
 		return geoDstInfo;
 	}
-
 	
 	public String getHexSignedData () {
 		return hexSignedData;

@@ -34,6 +34,7 @@ Version : 0.7.1
 	Removed EXPOSURE_OF_SYSTEM_DATA hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+
 Rev. history : 2018-10-11
 Version : 0.8.0
 	Modified polling client verification.
@@ -91,7 +92,6 @@ class MMSPollHandler {
 	}
 	//HJH
 	
-
 	private class PollingRequestContents {
 		private String svcMRN = null;
 		private String certificate = null;
@@ -126,7 +126,6 @@ class MMSPollHandler {
 //		String getCertificate() {
 //			return this.certificate;
 //		}
-
 	}
 	
     class PollHandler extends Thread{

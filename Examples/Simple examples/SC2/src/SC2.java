@@ -42,11 +42,7 @@ public class SC2 {
 		String myMRN = "urn:mrn:imo:imo-no:1000002";
 		//myMRN = args[0];
 
-<<<<<<< HEAD:Examples/SC2/src/SC2.java
-		MMSConfiguration.MMS_URL = "127.0.0.1:8088";
-=======
 		MMSConfiguration.MMS_URL = "143.248.57.144:8088";
->>>>>>> c4de56b1347cdbb058824bf3b77771eeefeff5f6:Examples/Simple examples/SC2/src/SC2.java
 		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 
 		//Service Consumer which can only send message

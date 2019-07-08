@@ -30,7 +30,6 @@ Version : 0.7.1
 	Removed IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
-
 Rev. history : 2018-07-19
 Version : 0.7.2
 	Added API; message sender guarantees message sequence .
@@ -60,7 +59,6 @@ Rev. history : 2019-05-22
 Version : 0.9.1
 	Add send function with timeout.
 Modifier : Yunho Choi (choiking10@kaist.ac.kr)
-
 */
 /* -------------------------------------------------------- */
 
@@ -69,15 +67,11 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
-
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -93,17 +87,13 @@ import java.util.Set;
 class MMSSndHandler {
 	
 	private String TAG = "[MMSSndHandler] ";
-
 	private final String USER_AGENT = MMSConfiguration.USER_AGENT;
-
 	private String clientMRN = null;
 	private boolean isRgstLoc = false;
 	private MMSClientHandler.ResponseCallback myCallback;
 	MMSSndHandler (String clientMRN){
 		this.clientMRN = clientMRN;
 	}
-
-
 
 	void setResponseCallback (MMSClientHandler.ResponseCallback callback){
 		this.myCallback = callback;
@@ -114,14 +104,12 @@ class MMSSndHandler {
 	}
 	
 	void sendHttpPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws IOException  {
-
 		sendHttpPost(dstMRN, loc, data, headerField, -1);
 	}
 	void sendHttpPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int seqNum) throws IOException  {
 		sendHttpPost(dstMRN, loc, data, headerField, seqNum, -1);
 	}
 	void sendHttpPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int seqNum, int timeout) throws IOException  {
-
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
 			loc = "/" + loc;
@@ -135,7 +123,6 @@ class MMSSndHandler {
 		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 		con.setRequestProperty("srcMRN", clientMRN);
-
 		
 		if (dstMRN != null) {
 			con.setRequestProperty("dstMRN", dstMRN);
@@ -148,7 +135,6 @@ class MMSSndHandler {
 			con.setConnectTimeout(timeout);
 			con.setReadTimeout(timeout);
 		}
-
 		//con.addRequestProperty("Connection","keep-alive");
 		
 		if (headerField != null) {
@@ -296,7 +282,6 @@ class MMSSndHandler {
 		con.setRequestProperty("User-Agent", USER_AGENT);
 		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-
 		if (clientMRN != null) {
 			con.setRequestProperty("srcMRN", clientMRN);
 		}
@@ -306,7 +291,6 @@ class MMSSndHandler {
 		if (seqNum != -1) {
 			con.setRequestProperty("seqNum", ""+seqNum);
 		}
-
 		if (headerField != null) {
 			con = addCustomHeaderField(con, headerField);
 		}
@@ -370,7 +354,6 @@ class MMSSndHandler {
 	private HttpURLConnection addCustomHeaderField (HttpURLConnection con, Map<String,List<String>> headerField) {
 		HttpURLConnection retCon = con;
 		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"set headerfield[");}
-
 		for (Iterator<String> keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 			String key = (String) keys.next();
 			List<String> valueList = (List<String>) headerField.get(key);
@@ -407,7 +390,6 @@ class MMSSndHandler {
 			else if (valueList == null) {
 				if(MMSConfiguration.DEBUG) {System.out.println(key+":null");}
 				retCon.addRequestProperty(key, null);
-
 			}
 		}
 		if(MMSConfiguration.DEBUG) {System.out.println("]");}

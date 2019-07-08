@@ -45,11 +45,22 @@ Version : 0.9.1
 	Simplified logger.
 	Modified for requiring MMS keystore in MMS.conf.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-12
+Version : 0.9.2
+	Fixed bugs related to connection pool.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-14
+Version : 0.9.2
+	Added RABBIT_MQ_CONN_POOL.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import kr.ac.kaist.message_queue.MessageQueueDequeuer;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.SessionManager;
 
@@ -69,21 +80,27 @@ public class MMSServer {
 	
 	public static void main(String[] args){
 		
+		File f = new File("./logs");
+		if (SystemUtils.IS_OS_WINDOWS) {
+			f.mkdirs();
+		}
+		else if (SystemUtils.IS_OS_LINUX) {
+			f = new File("/var/mms/logs");
+			f.mkdirs();
+		}
+		f = new File("./MMS-configuration");
+		f.mkdirs();
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e1) {
+			
+		}
+		
 		new MMSConfiguration(args);
 		logger = LoggerFactory.getLogger(MMSServer.class);
 		
 		
 		try {
-			File f = new File("./logs");
-			f.mkdirs();
-			if (SystemUtils.IS_OS_LINUX) {
-				f = new File("/var/mms/logs");
-				f.mkdirs();
-			}
-			f = new File("./MMS-configuration");
-			f.mkdirs();
-			Thread.sleep(2000);
-			
 			
 			logger.error("MUST check that MNS server is online="+MMSConfiguration.getMnsHost()+":"+MMSConfiguration.getMnsPort()+".");
 			logger.error("MUST check that Rabbit MQ server is online="+MMSConfiguration.getRabbitMqHost()+":"+MMSConfiguration.getRabbitMqPort()+".");
@@ -112,6 +129,10 @@ public class MMSServer {
 			MMSLog.getInstance(); //initialize MMSLog.
 			MMSLogForDebug.getInstance(); //initialize MMSLogsForDebug.
 			Thread.sleep(1000);
+			
+			logger.error("Now setting message queue connection pool size.");
+			MessageQueueDequeuer.setConnectionPool(MMSConfiguration.getRabbitMqConnPool());
+			Thread.sleep(1500);
 			
 			if (MMSConfiguration.isHttpsEnabled()) {
 				logger.error("Now starting MMS HTTPS server.");

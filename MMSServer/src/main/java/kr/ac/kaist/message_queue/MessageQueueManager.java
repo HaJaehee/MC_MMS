@@ -43,6 +43,11 @@ Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-07
+Version : 0.9.3
+	Added resource managing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -55,8 +60,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
+import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 
@@ -77,9 +84,9 @@ public class MessageQueueManager {
 		outputChannel = new MRH_MessageOutputChannel(SESSION_ID);
 	}
 	
-	public void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, String srcMRN, String svcMRN, String pollingMethod) {
+	public void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String srcMRN, String svcMRN, String pollingMethod) {
 		MessageQueueDequeuer mqd = new MessageQueueDequeuer(this.SESSION_ID);
-		mqd.dequeueMessage(outputChannel, ctx, srcMRN, svcMRN, pollingMethod);
+		mqd.dequeueMessage(outputChannel, ctx, req, srcMRN, svcMRN, pollingMethod);
 	}
 	
 	public void enqueueMessage (String srcMRN, String dstMRN, String message) {
@@ -122,12 +129,12 @@ public class MessageQueueManager {
 		} 
 		catch (IOException e) {
 			MMSLog mmsLog = MMSLog.getInstance();
-			mmsLog.warnException(logger, SESSION_ID, "MessageQueueManager has a problem when connecting to RabbitMQ management module.", e, 5);
+			mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_MANAGEMENT_CONNECTION_OPEN_ERROR.toString(), e, 5);
 
 		} 
 		catch (ParseException e) {
 			MMSLog mmsLog = MMSLog.getInstance();
-			mmsLog.warnException(logger, SESSION_ID, "MessageQueueManager has a problem when connecting to RabbitMQ management module.", e, 5);
+			mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_MANAGEMENT_CONNECTION_OPEN_ERROR.toString(), e, 5);
 
 		}
 		

@@ -37,7 +37,6 @@ public class KeystoreCoder {
 	//private static final Logger logger = LoggerFactory.getLogger(KeystoreCoder.class);
 
 	public static void main(String[] args) {
-
 		 final File original = new File(System.getProperty("user.dir")+"/cert2.jks");
 		 FileInputStream fis = null;
 		 try {

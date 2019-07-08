@@ -66,7 +66,6 @@ Version : 0.7.1
 	Fixed large response issues.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 	Jaehyun Park (jae519@kaist.ac.kr)
-
 	
 Rev. history : 2018-07-03
 Version : 0.7.2
@@ -99,6 +98,21 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-14
+Version : 0.9.2
+	Refactoring.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-03
+Version : 0.9.3
+	Added multi-thread safety.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -143,6 +157,7 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
+import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
@@ -163,7 +178,6 @@ public class MRH_MessageOutputChannel{
 	private MMSLogForDebug mmsLogForDebug = null;
 	private MMSLog mmsLog = null;
 	
-
 	public MRH_MessageOutputChannel(String sessionId) {
 		this.SESSION_ID = sessionId;
 		initializeModule();
@@ -198,7 +212,6 @@ public class MRH_MessageOutputChannel{
 	
 	public void replyToSender(ChannelHandlerContext ctx, byte[] data) {
     	if (!realtimeLog) {
-
     		mmsLog.info(logger, this.SESSION_ID, "Reply to sender.");
 		}
     	
@@ -229,18 +242,16 @@ public class MRH_MessageOutputChannel{
     	f.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) {
-
                 assert f == future; //TODO Requeueing function MUST be implemented.  
                 
                 ctx.close();
             }
         });
     	
-
-        SessionManager.getSessionInfo().remove(SESSION_ID);
-
-        
-        logger.trace("SessionID=" + this.SESSION_ID + " Message is sent completely.");
+        SessionManager.removeSessionInfo(SESSION_ID);
+        if (logger.isTraceEnabled()) {
+        	mmsLog.trace(logger, this.SESSION_ID, "Message has been sent completely.");
+        }
     }
 
 	public HttpURLConnection requestMessage(String IPAddress, int port, HttpMethod httpMethod, String uri, String username, String password) throws IOException {  
@@ -264,8 +275,10 @@ public class MRH_MessageOutputChannel{
 		con.setRequestProperty("Authorization","Basic "+new String(encodedBytes));
 
 		// get request doesn't have http body
-		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+		 if (logger.isTraceEnabled()) {
+			 mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (httpMethod==httpMethod.POST?"POST":"GET")+"\n");
+		 }
 		return con;
 	}
 	
@@ -308,15 +321,15 @@ public class MRH_MessageOutputChannel{
 		} 
 		
 		// get request doesn't have http body
-
-		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+		 if (logger.isTraceEnabled()) {
+			 mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters=" + urlParameters+"\n");
+		 }
 		return con;
 	}
 
 	public HttpURLConnection requestSecureMessage(FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
 		
-
 
 	  	hv = getHV();
 	  	
@@ -361,9 +374,10 @@ public class MRH_MessageOutputChannel{
 			wr.flush();
 			wr.close();
 		} 
-
-		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+		 if (logger.isTraceEnabled()) {
+			 mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (httpMethod==httpMethod.POST?"POST":"GET")+" parameters=" + urlParameters+"\n");
+		 }
 		
 		return con;
 	}
@@ -391,8 +405,10 @@ public class MRH_MessageOutputChannel{
 		con.setRequestProperty("Authorization","Basic "+new String(encodedBytes));
 
 		// get request doesn't have http body
-		logger.trace("SessionID="+this.SESSION_ID+" "+(httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+		 if (logger.isTraceEnabled()) {
+			 mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (httpMethod==httpMethod.POST?"POST":"GET")+"\n");
+		 }
 		return con;
 	}
 	
@@ -478,7 +494,6 @@ public class MRH_MessageOutputChannel{
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (NoSuchAlgorithmException e) {
-
         	mmsLog.warnException(logger, SESSION_ID, "", e, 5);
 		} catch (KeyManagementException e) {
 			mmsLog.warnException(logger, SESSION_ID, "", e, 5);
@@ -618,7 +633,7 @@ public class MRH_MessageOutputChannel{
 				con.getInputStream().close();
 			} 
 	       	catch (IOException e) {
-	       		mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+	       		mmsLog.info(logger, SESSION_ID, ErrorCode.MESSAGE_RELAYING_FAIL_DISCONNECT.toString());
 			}
 	    }
 		public byte[] getData() {
@@ -629,12 +644,11 @@ public class MRH_MessageOutputChannel{
 				data = getResponseMessage(con);
 			} 
 			catch (IOException e) {
-	    		mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+	    		mmsLog.info(logger, SESSION_ID, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString());
 			} 
 			finally {
 				if (data == null) {
-					data = "INVALID MESSAGE.".getBytes();
-					mmsLog.info(logger, SESSION_ID, "INVALID MESSAGE.");
+					data = ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.getUTF8Bytes();
 				}
 				replyToSender(ctx, data);
 			}

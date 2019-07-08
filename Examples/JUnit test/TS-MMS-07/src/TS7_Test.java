@@ -54,9 +54,9 @@ public class TS7_Test {
 	public String getErrorCode(String s) {
 		return s.substring(1, 6);
 	}
-	public void sendMessage(String src, String dst, String message, String expectedMessage) throws Exception {
+	public void sendMessage(String src, String dst, String loc, String message, String expectedMessage) throws Exception {
 		TS7_client client = new TS7_client(src);
-		client.sendMessage(dst, message, new MMSClientHandler.ResponseCallback() {		
+		client.sendMessage(dst, message, loc, new MMSClientHandler.ResponseCallback() {		
 			@Override
 			public void callbackMethod(Map<String, List<String>> headerField, String message) {
 				// TODO Auto-generatedX method stub
@@ -72,9 +72,10 @@ public class TS7_Test {
 		}
 	
 	}
-	public void sendMessageForError(String src, String dst, String message, String expectedCode) throws Exception {
+	public void sendMessageForError(String src, String dst, String loc, String message, String expectedCode) throws Exception {
+		
 		TS7_client client = new TS7_client(src);
-		client.sendMessage(dst, message, new MMSClientHandler.ResponseCallback() {		
+		client.sendMessage(dst, loc, message, new MMSClientHandler.ResponseCallback() {		
 			@Override
 			public void callbackMethod(Map<String, List<String>> headerField, String message) {
 				// TODO Auto-generatedX method stub
@@ -83,21 +84,23 @@ public class TS7_Test {
 				assertEquals(getErrorCode(message), expectedCode);
 			}
 		});
-		
 	}
 	
 	@Test
 	public void testOK() throws Exception {
-		sendMessage(srcMRN, dstMRN, "123", "OK");
+		sendMessage(srcMRN, dstMRN, "", "123", "OK");
 	}
 	@Test
-	public void testUnknownSrcMRN1() throws Exception {
-		sendMessageForError("1234", "123", "123", "10001");
+	public void testNullSrcMRN() throws Exception {
+		sendMessageForError(null, dstMRN, "", "123", "10002");
 	}
 	@Test
-	public void testUnknownSrcMRN2() throws Exception {
-		sendMessageForError(srcMRN, "123", "123", "10001");
+	public void testNullDstMRN() throws Exception {
+		sendMessageForError(srcMRN, null, "", "123", "10003");
 	}
-
+	@Test
+	public void testNullMRN() throws Exception {
+		sendMessageForError(null, null, "", "123", "10004");
+	}
 }
 

@@ -44,7 +44,6 @@ Version : 0.7.1
 	Removed NULL_RETURN_STD hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
-
 Rev. history : 2018-07-03
 Version : 0.7.2
 	Added handling input messages by FIFO scheduling.
@@ -92,6 +91,32 @@ Rev. history : 2019-05-29
 Version : 0.9.1
 	Resolved a bug related to realtime log function.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-13
+Version : 0.9.2
+	HOTFIX: Resolved a bug related to message ordering.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr),
+		Yunho Choi (choiking10@kaist.ac.kr)
+		
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-20
+Version : 0.9.2
+	HOTFIX: polling authentication bug.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-03
+Version : 0.9.3
+	Added multi-thread safety.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-07
+Version : 0.9.3
+	Added resource managing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -99,8 +124,6 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.LinkedList;
-import java.util.Random;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,8 +133,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaderValues;
-import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.Future;
@@ -119,7 +140,7 @@ import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel.ConnectionThread;
 import kr.ac.kaist.mms_server.ChannelTerminateListener;
-import kr.ac.kaist.mms_server.MMSConfiguration;
+import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
@@ -138,7 +159,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	private String protocol = "";
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
-    private MessageRelayingHandler relayingHandler;   
+    private MessageRelayingHandler relayingHandler;
 	
     private String DUPLICATE_ID="";
 
@@ -149,6 +170,38 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		
 	}
 	
+	/*
+	public boolean isRemainJob(ChannelHandlerContext ctx) {
+		ConnectionThread thread = relayingHandler.getConnectionThread();
+        if (thread != null) {
+        	return true;
+        }
+        LinkedList<ChannelTerminateListener> listeners = ctx.channel().attr(TERMINATOR).get();
+        for(ChannelTerminateListener listener: listeners) {
+        	return true;
+        }
+        return false;
+	}*/
+	
+    /*@Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        boolean release = true;
+        try {
+            if (acceptInboundMessage(msg)) {
+                imsg = (FullHttpRequest) msg;
+                channelRead0(ctx, imsg);
+            } else {
+                release = false;
+                ctx.fireChannelRead(msg);
+            }
+        } finally {
+        	// TODO Carefully inspect this code. There is a risk of memory leak.
+            if (!isRemainJob(ctx) && release) {
+                ReferenceCountUtil.release(msg);
+            }
+        }
+    }*/
+    
 //	when coming http message
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
@@ -160,15 +213,15 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			mmsLogForDebug = MMSLogForDebug.getInstance();
 
 			SESSION_ID = ctx.channel().id().asShortText();
-			SessionManager.getSessionInfo().put(SESSION_ID, "");
+			SessionManager.putSessionInfo(SESSION_ID, "");
 			
 			this.parser = new MessageParser(SESSION_ID);
 			try {
 				parser.parseMessage(ctx, req);
-			} catch (NumberFormatException | NullPointerException  e) {
-				mmsLog.warnException(logger, SESSION_ID, "Exception occured while parsing the message.", e, 5);
+			} catch (IOException | NumberFormatException | NullPointerException  e) {
+				mmsLog.info(logger, SESSION_ID, ErrorCode.MESSAGE_PARSING_ERROR.toString());
 				
-			}
+			} 
 			if (!parser.isRealtimeLogReq()) {
 				mmsLog.info(logger, SESSION_ID, "Receive a message."); 
 			}// If a request is not a realtime logging service request.
@@ -180,8 +233,9 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     		ctx.channel().attr(TERMINATOR).set(new LinkedList<ChannelTerminateListener>());
             relayingHandler = new MessageRelayingHandler(ctx, req, protocol, parser, SESSION_ID);
 		} 	finally {
-			// TODO 이 코드는 무슨의미가 있는가?
-			req.release();
+			if (req.refCnt() > 0 && relayingHandler != null && !relayingHandler.isReqReleased()) {
+				req.release();
+			}
 		}
 	}
 	
@@ -191,18 +245,26 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        // TODO Auto-generated method stub
+
         super.channelInactive(ctx);
         
-        ConnectionThread thread = relayingHandler.getConnectionThread();
-        if (thread != null) {
-        	mmsLog.info(logger, SESSION_ID, "Client disconnected.");
-            thread.terminate();
+        if (relayingHandler != null) {
+        	ConnectionThread thread = relayingHandler.getConnectionThread();
+        	if (thread != null) {
+            	mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
+                thread.terminate();
+            }
+        	relayingHandler = null;
         }
+        
         LinkedList<ChannelTerminateListener> listeners = ctx.channel().attr(TERMINATOR).get();
         for(ChannelTerminateListener listener: listeners) {
         	listener.terminate(ctx);
         }
+        
+        //if (isRemainJob(ctx)) {
+        //    ReferenceCountUtil.release(imsg);
+        //}
         ctx.close();
     }
 
@@ -232,19 +294,19 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	// TODO: Youngjin Kim must inspect this following code.
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
-    	String clientType = SessionManager.getSessionInfo().get(SESSION_ID);
+    	String clientType = SessionManager.getSessionType(SESSION_ID);
     	if (clientType != null) {
-    		SessionManager.getSessionInfo().remove(SESSION_ID);
+    		SessionManager.removeSessionInfo(SESSION_ID);
     		
-    		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
+    		SeamlessRoamingHandler.removeDuplicateInfo(DUPLICATE_ID);
     		if (clientType.equals("p")) {
-    			mmsLog.warn(logger, this.SESSION_ID, "The polling client is disconnected.");
+    			mmsLog.info(logger, this.SESSION_ID, ErrorCode.POLLING_CLIENT_DISCONNECTED.toString());
     		} 
     		else if (clientType.equals("lp")) {
-    			mmsLog.warn(logger, this.SESSION_ID, "The long polling client is disconnected.");
+    			mmsLog.info(logger, this.SESSION_ID, ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
     		}
     		else {
-    			mmsLog.warn(logger, this.SESSION_ID, "The client is disconnected.");
+    			mmsLog.info(logger, this.SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
     		}
     	}
     	if (!ctx.isRemoved()){
@@ -256,12 +318,12 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 
 //    	ctx.channel().
-    	String clientType = SessionManager.getSessionInfo().get(SESSION_ID);
-    	String duplicateType = SeamlessRoamingHandler.getDuplicateInfo().get(DUPLICATE_ID);
+    	String clientType = SessionManager.getSessionType(SESSION_ID);
+    	String duplicateType = SeamlessRoamingHandler.getDuplicateInfo(DUPLICATE_ID);
 //    	ctx.pipeline().get(HttpHeaderValues.class);
 //    	channels.
     	
-    	if (cause instanceof IOException){
+    	if (cause instanceof IOException && parser != null){
     		int srcPort = 0;
         	String srcIP = null;
         	String[] reqInfo;
@@ -303,10 +365,10 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     	    printError(srcIP, reqInfo, clientType);
     	}
     	if (clientType != null) {
-    		SessionManager.getSessionInfo().remove(SESSION_ID);    		
+    		SessionManager.removeSessionInfo(SESSION_ID);    		
       }
     	if(duplicateType!=null) {
-    		SeamlessRoamingHandler.getDuplicateInfo().remove(DUPLICATE_ID);
+    		SeamlessRoamingHandler.removeDuplicateInfo(DUPLICATE_ID);
     		
     	}
     	if (!ctx.isRemoved()){
@@ -352,7 +414,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
       }
   //  System.out.println("/*****************************************/");
 	
-      mmsLog.warn(logger, this.SESSION_ID, "The client is disconnected, " + errorlog + ".");
+      mmsLog.info(logger, this.SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString() + " " + errorlog + ".");
      
     }
 }

@@ -23,7 +23,6 @@ Version : 0.7.1
 	Removed IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION, EXPOSURE_OF_SYSTEM_DATA hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
-
 Rev. history : 2018-07-19
 Version : 0.7.2
 	Added API; message sender guarantees message sequence .
@@ -48,7 +47,6 @@ Rev. history : 2019-04-29
 Version : 0.8.2
 	Revised Base64 Encoder/Decoder.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
 */
 /* -------------------------------------------------------- */
 
@@ -82,9 +80,7 @@ import javax.net.ssl.*;
 
 class SecureMMSSndHandler {
 	private String TAG = "[SecureMMSSndHandler] ";
-
 	private final String USER_AGENT = MMSConfiguration.USER_AGENT;
-
 	private String clientMRN = null;
 	private boolean isRgstLoc = false;
 	private SecureMMSClientHandler.ResponseCallback myCallback;
@@ -100,12 +96,10 @@ class SecureMMSSndHandler {
 	}
 	
 
-
 	void sendHttpsPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws IOException{
 		sendHttpsPost(dstMRN, loc, data, headerField, -1);
 	}
 	void sendHttpsPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int seqNum) throws IOException{
-
         
 		String url = "https://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
@@ -275,7 +269,6 @@ class SecureMMSSndHandler {
 		con.setRequestProperty("User-Agent", USER_AGENT);
 		con.setRequestProperty("Accept-Charset", "UTF-8");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-
 		if (clientMRN != null) {
 			con.setRequestProperty("srcMRN", clientMRN);
 		}
@@ -285,7 +278,6 @@ class SecureMMSSndHandler {
 		if (seqNum != -1) {
 			con.setRequestProperty("seqNum", ""+seqNum);
 		}
-
 		if (headerField != null) {
 			con = addCustomHeaderField(con, headerField);
 		}
@@ -389,7 +381,6 @@ class SecureMMSSndHandler {
 	private HttpsURLConnection addCustomHeaderField (HttpsURLConnection con, Map<String,List<String>> headerField) {
 		HttpsURLConnection retCon = con;
 		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"set headerfield[");}
-
 		for (Iterator<String> keys = headerField.keySet().iterator() ; keys.hasNext() ;) {
 			String key = (String) keys.next();
 			List<String> valueList = (List<String>) headerField.get(key);
@@ -426,7 +417,6 @@ class SecureMMSSndHandler {
 			else if (valueList == null) {
 				if(MMSConfiguration.DEBUG) {System.out.println(key+":null");}
 				retCon.addRequestProperty(key, null);
-
 			}
 		}
 		if(MMSConfiguration.DEBUG) {System.out.println("]");}

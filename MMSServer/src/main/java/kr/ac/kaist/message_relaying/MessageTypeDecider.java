@@ -110,6 +110,11 @@ Rev. history: 2019-05-05
 Version : 0.9.0
 	Added rest API functions.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-03
+Version : 0.9.3
+	Added multi-thread safety.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -232,14 +237,18 @@ class MessageTypeDecider {
 		}
 		
 		else if (dstMRN.equals(MMSConfiguration.getMmsMrn())) {
+			
+
 			// TODO: Youngjin Kim must inspect this following code.
 			//When polling
 			if (httpMethod == HttpMethod.POST && uri.equals("/polling")) {
+				SessionManager.incSessionCount();
 	    		return msgType.POLLING; 
 	    	}
 			
 			//When long polling
 			if (httpMethod == HttpMethod.POST && uri.equals("/long-polling")) {
+				SessionManager.incSessionCount();
 	    		return msgType.LONG_POLLING; 
 	    	}
 	    	
@@ -250,6 +259,8 @@ class MessageTypeDecider {
 		
 		// When geocasting
 		else if (parser.isGeocastingMsg()) {
+			SessionManager.incSessionCount();
+			
 			if (parser.getGeoCircleInfo() != null) {
 				GeolocationCircleInfo geo = parser.getGeoCircleInfo();
 				String geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geo.getGeoLat(), geo.getGeoLong(), geo.getGeoRadius());
@@ -295,14 +306,14 @@ class MessageTypeDecider {
 	        	}  
 	        	//TODO: This function must be defined.
 	        	else if (dstInfo.regionMatches(0, "MULTIPLE_MRN,", 0, 9)){
-	        		SessionManager.getSessionCountList().get(0).incSessionCount();
+	        		SessionManager.incSessionCount();
 	        		parser.parseMultiDstInfo(dstInfo);
 	        		return msgType.RELAYING_TO_MULTIPLE_SC;
 	        	}
 	
 	        	parser.parseDstInfo(dstInfo);
 	        	String model = parser.getDstModel();
-	        	SessionManager.getSessionCountList().get(0).incSessionCount();
+	        	SessionManager.incSessionCount();
 				
 				
 	        	if (model.equals("push")) {//model B (destination MSR, MIR, or MSP as servers)

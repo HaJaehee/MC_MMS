@@ -468,7 +468,6 @@ public class MMSClientHandler {
 		}
 	}
 	
-
 	
 	
 	
@@ -495,7 +494,6 @@ public class MMSClientHandler {
 		} else {
 			this.sendHandler = new SendHandler(clientMRN);
 			this.sendHandler.setResponseCallback(callback);
-
 		}
 
 	}

@@ -34,10 +34,32 @@ Version : 0.9.1
 	Added MMS configuration querying api.
 	Added long polling session count api.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-14
+Version : 0.9.2
+	Refactoring.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-06-18
+Version : 0.9.2
+	Added ErrorCode.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-03
+Version : 0.9.3
+	Added multi-thread safety.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -51,6 +73,8 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.QueryStringDecoder;
 import kr.ac.kaist.message_queue.MessageQueueManager;
 import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
@@ -58,6 +82,10 @@ import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 public class MMSRestAPIHandler {
 	String SESSION_ID = "";
 	private static final Logger logger = LoggerFactory.getLogger(MMSRestAPIHandler.class);
+	
+	private MMSLog mmsLog = null;
+	private MMSLogForDebug mmsLogForDebug = null;
+	
 	private static final List<String> apiList = new ArrayList<String>();
 	private long clientSessionIds = -1;
 	private long mrnsBeingDebugged = -1;
@@ -72,6 +100,7 @@ public class MMSRestAPIHandler {
 	private boolean correctParams = true;
 	private boolean mmsConfiguration = false;
 	private long longPollingSessionCount = -1;
+
 	
 	MessageQueueManager mqm = null;
 
@@ -84,6 +113,8 @@ public class MMSRestAPIHandler {
 	
 	private void initializeModule () {
 		mqm = new MessageQueueManager(SESSION_ID);
+		mmsLog = MMSLog.getInstance();
+		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 	
 	private void setApiList () {
@@ -102,7 +133,9 @@ public class MMSRestAPIHandler {
 	}
 	
 	
-	public void setParams (Map<String, List<String>> params) {
+	public void setParams (FullHttpRequest req) {
+		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+		Map<String,List<String>> params = qsd.parameters();
 		
 		correctParams = checkParamsInApiList(params);
 
@@ -219,7 +252,10 @@ public class MMSRestAPIHandler {
 			
 			if (clientSessionIds != -1) {
 				JSONArray jary = new JSONArray();
-				jary.addAll(SessionManager.getSessionInfo().keySet());
+				if (SessionManager.getSessionInfoSize()<0) {
+					SessionManager.resetSessionInfo();
+				}
+				jary.addAll(SessionManager.getSessionIDs());
 				jobj.put("client-session-ids", jary);
 			}
 			if (mrnsBeingDebugged != -1) {
@@ -236,7 +272,10 @@ public class MMSRestAPIHandler {
 				jobj.put("msg-queue-count", mqm.getTotalQueueNumber());
 			}
 			if (clientSessionCount != -1) {
-				clientSessionCount = SessionManager.getSessionInfo().size();
+				if (SessionManager.getSessionInfoSize()<0) {
+					SessionManager.resetSessionInfo();
+				}
+				clientSessionCount = SessionManager.getSessionInfoSize();
 				jobj.put("client-session-count", clientSessionCount);
 			}
 			if (isMmsRunning != false) {
@@ -245,11 +284,8 @@ public class MMSRestAPIHandler {
 				
 			}
 			if (relayReqCount != -1) {
-				int countListSize = SessionManager.getSessionCountList().size(); // Session counting list saves the number of sessions for every 5 seconds.
-				for (int i = 0 ; i < countListSize && i < relayReqMinutes*12 ; i++) { // Adding count up for x minutes.
-					relayReqCount += SessionManager.getSessionCountList().get(i).getSessionCount() // Total session counts.
-							- SessionManager.getSessionCountList().get(i).getPollingSessionCount();// Subtract polling session counts from total session counts.
-				}
+				int countListSize = SessionManager.getSessionCountListSize();
+				relayReqCount = SessionManager.getSessionCount(relayReqMinutes);
 				JSONObject jobj2 = new JSONObject();
 				
 				if (countListSize <= 12) {
@@ -263,10 +299,8 @@ public class MMSRestAPIHandler {
 				
 			}
 			if (pollingReqCount != -1) {
-				int countListSize = SessionManager.getSessionCountList().size(); // Session counting list saves the number of sessions for every 5 seconds.
-				for (int i = 0 ; i < countListSize && i < pollingReqMinutes*12 ; i++) { // Adding count up for x minutes.
-					pollingReqCount += SessionManager.getSessionCountList().get(i).getPollingSessionCount(); // Polling session counts.
-				}
+				int countListSize = SessionManager.getSessionCountListSize();
+				pollingReqCount = SessionManager.getPollingSessionCount(pollingReqMinutes);
 				JSONObject jobj2 = new JSONObject();
 				if (countListSize <= 12) {
 					jobj2.put("min", 1);
@@ -328,4 +362,349 @@ public class MMSRestAPIHandler {
 			return false;
 		}
 	}
+	
+	public byte[] getRealtimeLog (FullHttpRequest req) {
+		byte[] message;
+		
+		String realtimeLog = "";
+		String callback = "";
+		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+		Map<String,List<String>> params = qsd.parameters();
+		if (params.get("id") != null & params.get("callback") != null) {
+			callback = params.get("callback").get(0);
+			realtimeLog = mmsLog.getRealtimeLog(params.get("id").get(0), this.SESSION_ID);
+			message = (callback+"("+realtimeLog+")").getBytes(Charset.forName("UTF-8"));
+		}
+		else {
+			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
+		}
+		
+		return message;
+	}
+	
+	public byte[] getStatus (FullHttpRequest req) {
+		
+		byte[] message = null;
+		
+		String status;
+		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+		Map<String,List<String>> params = qsd.parameters();
+		mmsLog.info(logger, this.SESSION_ID, "Get MMS status and logs.");
+
+		if (params.get("mrn") == null) {
+			try {
+				status = mmsLog.getStatus("");
+				message = status.getBytes(Charset.forName("UTF-8"));
+			} 
+			catch (UnknownHostException e) {
+				message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
+				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
+			} 
+			catch (IOException e) {
+				message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
+				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
+			}
+		}
+		else {
+
+			try {
+				status = mmsLog.getStatus(params.get("mrn").get(0));
+				message = status.getBytes(Charset.forName("UTF-8"));
+			} 
+			catch (UnknownHostException e) {
+				message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
+				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
+			} 
+			catch (IOException e) {
+				message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
+				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
+			}
+		}
+		
+		return message;
+	}
+	
+	public byte[] addIdInRealtimeLogIds (FullHttpRequest req) {
+		byte[] message = null;
+
+		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+		Map<String,List<String>> params = qsd.parameters();
+		if (params.get("id") != null) {
+			mmsLog.addIdToBriefRealtimeLogEachIDs(params.get("id").get(0));
+			mmsLog.warn(logger, this.SESSION_ID, "Added an ID using realtime log service="+params.get("id").get(0)+".");
+			message = "OK".getBytes(Charset.forName("UTF-8"));
+		}
+		else {
+			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
+			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
+		}
+		
+		return message;
+	}
+	
+	public byte[] removeIdInRealtimeLogIds (FullHttpRequest req) {
+		byte[] message = null;
+
+		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+		Map<String,List<String>> params = qsd.parameters();
+		if (params.get("id") != null) {
+			mmsLog.removeIdFromBriefRealtimeLogEachIDs(params.get("id").get(0));
+			mmsLog.warn(logger, this.SESSION_ID, "Removed an ID using realtime log service="+params.get("id").get(0)+".");
+			message = "OK".getBytes(Charset.forName("UTF-8"));
+		}
+		else {
+			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
+			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
+		}
+		
+		return message;
+	}
+	
+	public byte[] addMrnBeingDebugged (FullHttpRequest req) {
+		byte[] message = null;
+		
+		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+		Map<String,List<String>> params = qsd.parameters();
+		if (params.get("mrn")!=null) {
+			String mrn = params.get("mrn").get(0);
+			mmsLogForDebug.addMrn(mrn);
+			mmsLog.warn(logger, this.SESSION_ID, "Added a MRN being debugged="+mrn+".");
+			message = "OK".getBytes(Charset.forName("UTF-8"));
+		}
+		else {
+			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
+			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
+		}
+		
+		return message;
+	}
+	
+	public byte[] removeMrnBeingDebugged (FullHttpRequest req) {
+		byte[] message = null;
+		
+		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+		Map<String,List<String>> params = qsd.parameters();
+		if (params.get("mrn")!=null) {
+			String mrn = params.get("mrn").get(0);
+			mmsLogForDebug.removeMrn(mrn);
+			mmsLog.warn(logger, this.SESSION_ID, "Removed debug MRN="+mrn+".");
+			message = "OK".getBytes(Charset.forName("UTF-8"));
+		}
+		else {
+			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
+			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
+		}
+		
+		return message;
+	}
+	
+	//This method will be
+	  @Deprecated
+	public byte[] addMnsEntry (FullHttpRequest req) {
+		byte[] message = null;
+		
+		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+		Map<String,List<String>> params = qsd.parameters();
+		mmsLog.warn(logger, this.SESSION_ID, "Add MRN=" + params.get("mrn").get(0) + " IP=" + params.get("ip").get(0) + " Port=" + params.get("port").get(0) + " Model=" + params.get("model").get(0)+".");
+		if (params.get("mrn")!=null && !params.get("mrn").get(0).equals(MMSConfiguration.getMmsMrn())) {
+			try {
+				addEntryMNS(params.get("mrn").get(0), params.get("ip").get(0), params.get("port").get(0), params.get("model").get(0));
+				message = "OK".getBytes(Charset.forName("UTF-8"));
+			}
+			catch (UnknownHostException e) {
+				// This code block will be deprecated, so there is no definition of error code.
+				
+				mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+			} 
+    		catch (IOException e) {
+    			ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
+    			
+    			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+			} 
+		}
+		else {
+			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
+			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
+		}
+		return message;
+	}
+	//This method will be
+	  @Deprecated
+	public byte[] removeMnsEntry (FullHttpRequest req) {
+		byte[] message = null;
+		
+		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
+		Map<String,List<String>> params = qsd.parameters();
+		mmsLog.warn(logger, this.SESSION_ID, "Remove MRN=" + params.get("mrn").get(0)+".");
+		if (params.get("mrn")!=null && !params.get("mrn").get(0).equals(MMSConfiguration.getMmsMrn())) {
+			try {
+				removeEntryMNS(params.get("mrn").get(0));
+				message = "OK".getBytes(Charset.forName("UTF-8"));
+			} 
+    		catch (UnknownHostException e) {
+				// This code block will be deprecated, so there is no definition of error code.
+    			
+    			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+			} 
+    		catch (IOException e) {
+    			message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
+    			
+    			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+			} 
+		}
+		else {
+			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
+			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
+		}
+		
+		return message;
+	}
+
+	//This method will be
+	  @Deprecated
+	private void removeEntryMNS(String mrn) throws UnknownHostException, IOException{ //
+	
+	
+		Socket MNSSocket = null;
+		PrintWriter pw = null;	
+		InputStreamReader isr = null;
+		BufferedReader br = null;
+		String queryReply = null;
+		try{
+			//String modifiedSentence;
+	
+			MNSSocket = new Socket(MMSConfiguration.getMnsHost(), MMSConfiguration.getMnsPort());
+			MNSSocket.setSoTimeout(5000);
+			pw = new PrintWriter(MNSSocket.getOutputStream());
+			isr = new InputStreamReader(MNSSocket.getInputStream());
+			br = new BufferedReader(isr);
+			String inputLine = null;
+			StringBuffer response = new StringBuffer();
+	
+			mmsLog.warn(logger, this.SESSION_ID, "Remove Entry="+mrn+".");
+	
+			pw.println("Remove-Entry:"+mrn);
+			pw.flush();
+			if (!MNSSocket.isOutputShutdown()) {
+				MNSSocket.shutdownOutput();
+			}
+	
+	
+			while ((inputLine = br.readLine()) != null) {
+				response.append(inputLine);
+			}
+	
+	
+			queryReply = response.toString();
+			mmsLog.trace(logger, this.SESSION_ID, "From server="+queryReply+".");
+	
+	
+		} catch (UnknownHostException e) {
+			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+			
+		} catch (IOException e) {
+			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+			
+		} finally {
+			if (pw != null) {
+				pw.close();
+			}
+			if (isr != null) {
+				try {
+					isr.close();
+				} catch (IOException e) {
+					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+				}
+			}
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+				}
+			}
+			if (MNSSocket != null) {
+				try {
+					MNSSocket.close();
+				} catch (IOException e) {
+					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+				}
+			}
+		}
+		return;
+	}
+	
+	//This method will be
+	@Deprecated
+	private void addEntryMNS(String mrn, String ip, String port, String model) throws UnknownHostException, IOException {
+
+
+		Socket MNSSocket = null;
+		PrintWriter pw = null;	
+		InputStreamReader isr = null;
+		BufferedReader br = null;
+		String queryReply = null;
+		try{
+			//String modifiedSentence;
+
+			MNSSocket = new Socket(MMSConfiguration.getMnsHost(), MMSConfiguration.getMnsPort());
+			MNSSocket.setSoTimeout(5000);
+			pw = new PrintWriter(MNSSocket.getOutputStream());
+			isr = new InputStreamReader(MNSSocket.getInputStream());
+			br = new BufferedReader(isr);
+			String inputLine = null;
+			StringBuffer response = new StringBuffer();
+
+			mmsLog.warn(logger, this.SESSION_ID, "Add Entry="+mrn+".");
+
+			pw.println("Add-Entry:"+mrn+","+ip+","+port+","+model);
+			pw.flush();
+			if (!MNSSocket.isOutputShutdown()) {
+				MNSSocket.shutdownOutput();
+			}
+
+
+			while ((inputLine = br.readLine()) != null) {
+				response.append(inputLine);
+			}
+
+
+			queryReply = response.toString();
+			mmsLog.trace(logger, this.SESSION_ID, "From server=" + queryReply+".");
+
+		} catch (UnknownHostException e) {
+			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+			 
+		} catch (IOException e) {
+			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+			
+		} finally {
+			if (pw != null) {
+				pw.close();
+			}
+			if (isr != null) {
+				try {
+					isr.close();
+				} catch (IOException e) {
+					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+				}
+			}
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+				}
+			}
+			if (MNSSocket != null) {
+				try {
+					MNSSocket.close();
+				} catch (IOException e) {
+					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+				}
+			}
+		}
+		return;
+	}
+	
 }

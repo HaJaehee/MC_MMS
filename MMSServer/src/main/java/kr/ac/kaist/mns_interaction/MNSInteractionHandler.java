@@ -1,4 +1,5 @@
 package kr.ac.kaist.mns_interaction;
+
 /* -------------------------------------------------------- */
 /** 
 File name : MNSInteractionHandler.java
@@ -90,7 +91,6 @@ public class MNSInteractionHandler {
 	}
 	
 
-
 	public String requestDstInfo(String srcMRN, String dstMRN, float geoLat, float geoLong, float geoRadius) {
 		String msg = MRNInfoQuerier.buildQuery("geocasting_circle", srcMRN, dstMRN, geoLat, geoLong, geoRadius);
 		return messageOutput.sendToMNS(msg);
@@ -107,7 +107,6 @@ public class MNSInteractionHandler {
 	}
 	
 	@Deprecated
-
 	public String updateClientInfo(String srcMRN, String srcIP){
 		String msg = locatorUpdater.buildUpdate(srcMRN, srcIP);
 		mmsLog.debug(logger, this.SESSION_ID, "Update client information.");

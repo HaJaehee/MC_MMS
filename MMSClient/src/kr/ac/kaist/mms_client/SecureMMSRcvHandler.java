@@ -21,7 +21,6 @@ Version : 0.7.1
 	Removed FORWARD_NULL, RESOURCE_LEAK, IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)	
 
-
 Rev. history : 2018-07-27
 Version : 0.7.2
 	Revised setting header field function.
@@ -31,7 +30,6 @@ Rev. history : 2019-04-29
 Version : 0.8.2
 	Revised Base64 Encoder/Decoder.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
 */
 /* -------------------------------------------------------- */
 
@@ -76,9 +74,7 @@ class SecureMMSRcvHandler {
 	//OONI
 
 	private String TAG = "[SecureMMSRcvHandler] ";
-
 	private static final String USER_AGENT = MMSConfiguration.USER_AGENT;
-
 	private String clientMRN = null;
 	
 	SecureMMSRcvHandler(int port, String jksDirectory, String jksPassword) throws Exception{
@@ -175,9 +171,7 @@ class SecureMMSRcvHandler {
 						} catch (NoSuchAlgorithmException e) {
 							// TODO Auto-generated catch block
 			                System.err.println( "Failed to create HTTPS port" );
-
 							//e.printStackTrace();
-
 						}
 		                
 		            
@@ -268,13 +262,11 @@ class SecureMMSRcvHandler {
     			if(MMSConfiguration.DEBUG) {System.out.println(TAG+"set headerfield[");}
     			for (Iterator keys = myHdr.keySet().iterator() ; keys.hasNext() ;) {
     				String key = (String) keys.next();
-
     				List<String> valueList = (List<String>) myHdr.get(key);
     				for (String value : valueList) {
     					if(MMSConfiguration.DEBUG) {System.out.println(key+":"+value);}
     				}
     				resHdr.put(key, valueList);
-
     			}
     			if(MMSConfiguration.DEBUG) {System.out.println("]");}
     			
@@ -319,9 +311,7 @@ class SecureMMSRcvHandler {
 	        	
 	            fileName = System.getProperty("user.dir")+fileName.trim();
 	            File file = new File (fileName);
-
 	            Base64.Encoder base64Encoder = Base64.getEncoder();
-
 	            in = new FileInputStream(file);
 	
 	            byteOutStream=new ByteArrayOutputStream();
@@ -335,9 +325,7 @@ class SecureMMSRcvHandler {
 	            }
 	
 	            byte fileArray[]=byteOutStream.toByteArray();
-
 	            encodeBytes=base64Encoder.encode(fileArray);  
-
         	} finally {
         		if (in != null) {
         			in.close();

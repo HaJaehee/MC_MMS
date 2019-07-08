@@ -114,10 +114,8 @@ class MMSRcvHandler {
         server.createContext(context, hrh);
         if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \""+context+"\" is created");}
 
-
         serverExecutor = Executors.newFixedThreadPool(NO_OF_THREADPOOL);
         server.setExecutor(serverExecutor); 
-
         server.start();
 	}
 	
@@ -227,13 +225,11 @@ class MMSRcvHandler {
     			if(MMSConfiguration.DEBUG) {System.out.println(TAG+"set headerfield[");}
     			for (Iterator keys = myHdr.keySet().iterator() ; keys.hasNext() ;) {
     				String key = (String) keys.next();
-
     				List<String> valueList = (List<String>) myHdr.get(key);
     				for (String value : valueList) {
     					if(MMSConfiguration.DEBUG) {System.out.println(key+":"+value);}
     				}
     				resHdr.put(key, valueList);
-
     			}
     			if(MMSConfiguration.DEBUG) {System.out.println("]");}
     			
@@ -279,9 +275,7 @@ class MMSRcvHandler {
 	        	
 	            fileName = System.getProperty("user.dir")+fileName.trim();
 	            File file = new File (fileName);
-
 	            Base64.Encoder base64Encoder = Base64.getEncoder();
-
 	            in = new FileInputStream(file);
 	
 	            byteOutStream=new ByteArrayOutputStream();
@@ -295,9 +289,7 @@ class MMSRcvHandler {
 	            }
 	
 	            byte fileArray[]=byteOutStream.toByteArray();
-
 	            encodeBytes=base64Encoder.encode(fileArray); 
-
         	} finally {
         		if (in != null) {
         			in.close();

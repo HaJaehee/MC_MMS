@@ -36,7 +36,6 @@ import java.util.Map;
 public class MMSGeoInfoReporter {
 	GeoInfoReporter gr = null;
 	//HJH
-
 	private String TAG = "[MMSGeoInfoReporter] ";
 	private String clientMRN = null;
 	
@@ -70,12 +69,10 @@ public class MMSGeoInfoReporter {
 	    			Thread.sleep(interval);
 	    			Report();
     			} catch (InterruptedException e){
-
     				System.out.println(TAG+" Exception: "+ e.getLocalizedMessage());
 					if(MMSConfiguration.DEBUG){e.printStackTrace();}
     			} catch (Exception e){
     				System.out.println(TAG+" Exception: "+ e.getLocalizedMessage());
-
 					if(MMSConfiguration.DEBUG){e.printStackTrace();}
     			}
     		}
@@ -87,7 +84,6 @@ public class MMSGeoInfoReporter {
     		return "lat-" + MMSConfiguration.lat + "-long-" + MMSConfiguration.lon;
     	}
 		void Report() throws Exception {
-
 			
 			Socket MNSSocket = null;
 			PrintWriter pw = null;	
@@ -154,7 +150,6 @@ public class MMSGeoInfoReporter {
 						if(MMSConfiguration.DEBUG){e.printStackTrace();}
 					}
 	    		}
-
 			}
 		}
 		

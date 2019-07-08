@@ -33,7 +33,6 @@ Version : 0.7.1
 	Removed IMPROPER_CHECK_FOR_UNUSUAL_OR_EXCEPTIONAL_CONDITION, EXPOSURE_OF_SYSTEM_DATA hazard.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
-
 Rev. history : 2018-10-11
 Version : 0.8.0
 	Modified polling client verification.
@@ -43,7 +42,6 @@ Rev. history: 2019-03-09
 Version : 0.8.1
 	MMS Client is able to choose its polling method.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
 */
 /* -------------------------------------------------------- */
 
@@ -85,13 +83,10 @@ class SecureMMSPollHandler {
 	SecurePollingHandler ph = null;
 	//HJH
 	private String TAG = "[SecureMMSPollHandler] ";
-
 	private static final String USER_AGENT = MMSConfiguration.USER_AGENT;
-
 	private String clientMRN = null;
 	private PollingRequestContents contents = null;
 	
-
 	SecureMMSPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, String pollingMethod, Map<String,List<String>> headerField) throws IOException{
 		String svcMRNWithHexSign = svcMRN;
 //		if (hexSignedData != null) {
@@ -137,7 +132,6 @@ class SecureMMSPollHandler {
 //		String getCertificate() {
 //			return this.certificate;
 //		}
-
 	}
 	
     //HJH
