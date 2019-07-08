@@ -25,7 +25,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-11-22
 Version : 0.7.0
-	Resolved critical problem caused by duplicated items in the list of mrnSessionIdMapper and sessionIdMrnMapper.
+	Resolved critical problem caused by duplicated items in the list of mapMrnAndSessionId and mapSessionIdAndMrn.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history: 2019-03-09
@@ -39,6 +39,11 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2019-05-27
 Version : 0.9.1
 	Simplified logger.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-08
+Version : 0.9.3
+	Improved performance.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -58,15 +63,15 @@ import ch.qos.logback.classic.jul.JULHelper;
 
 
 public class MMSLogForDebug {
-	private HashMap<String,ArrayList<String>> sessionIdLogMapper = null;
-	private HashMap<String,LinkedHashSet<String>> mrnSessionIdMapper = null;
-	private HashMap<String,LinkedHashSet<String>> sessionIdMrnMapper = null;
+	private HashMap<String,ArrayList<String>> mapSessionIdAndLog = null;
+	private HashMap<String,LinkedHashSet<String>> mapMrnAndSessionId = null;
+	private HashMap<String,LinkedHashSet<String>> mapSessionIdAndMrn = null;
 	private int maxSessionCount = 0;
 	
 	private MMSLogForDebug () {
-		sessionIdLogMapper = new HashMap<String,ArrayList<String>>();
-		mrnSessionIdMapper = new HashMap<String,LinkedHashSet<String>>();
-		sessionIdMrnMapper = new HashMap<String,LinkedHashSet<String>>();
+		mapSessionIdAndLog = new HashMap<String,ArrayList<String>>();
+		mapMrnAndSessionId = new HashMap<String,LinkedHashSet<String>>();
+		mapSessionIdAndMrn = new HashMap<String,LinkedHashSet<String>>();
 		maxSessionCount = 50;
 		
 		//addMrn("urn:mrn:mcl:vessel:dma:poul-lowenorn"); //For testing.
@@ -100,25 +105,25 @@ public class MMSLogForDebug {
 	}
 	
 	public synchronized String getLog (String mrn){
-		if (mrn!=null&&mrnSessionIdMapper!=null&&sessionIdLogMapper!=null) {
-			LinkedHashSet<String> sessionIdList = mrnSessionIdMapper.get(mrn);
+		if (mrn!=null&&mapMrnAndSessionId!=null&&mapSessionIdAndLog!=null) {
+			LinkedHashSet<String> sessionIdList = mapMrnAndSessionId.get(mrn);
 			if (sessionIdList!=null) {
 				StringBuilder logs = new StringBuilder();
 				for (String sessionId : sessionIdList) {
-					ArrayList<String> logList = sessionIdLogMapper.get(sessionId);
+					ArrayList<String> logList = mapSessionIdAndLog.get(sessionId);
 					if (logList!=null) {
 						for (String log : logList) {
 							logs.append(log);
 						}
 					} 
-					else { // sessionIdLogMapper.get(sessionId)==null
+					else { // mapSessionIdAndLog.get(sessionId)==null
 						return "";
 					}
 				}
 				return logs.toString();
 			} 
-			else { // mrnSessionIdMapper.get(mrn)==null
-				if (mrnSessionIdMapper.containsKey(mrn)) {
+			else { // mapMrnAndSessionId.get(mrn)==null
+				if (mapMrnAndSessionId.containsKey(mrn)) {
 					return "";
 				}
 				else {
@@ -131,149 +136,159 @@ public class MMSLogForDebug {
 		}
 	}
 	
-	public synchronized boolean containsSessionId (String sessionId){
-		if (sessionId!=null&&
-				sessionIdLogMapper!=null&&sessionIdMrnMapper!=null&&
-				sessionIdLogMapper.containsKey(sessionId)&&sessionIdMrnMapper.containsKey(sessionId)) {
-			return true;
-		} 
-		else {
-			return false;
-		}
-	}
-	
-	public synchronized void addMrn (String mrn) {
-		if (mrnSessionIdMapper==null) {
-			mrnSessionIdMapper = new HashMap<String,LinkedHashSet<String>>();
-		}
-			
-		if (mrn==null||mrnSessionIdMapper.containsKey(mrn)) {
-			return;
+	public boolean containsSessionId (String sessionId){
+		synchronized (mapSessionIdAndLog) {
+			synchronized (mapSessionIdAndMrn) {
+				if (sessionId!=null&&
+						mapSessionIdAndLog!=null&&mapSessionIdAndMrn!=null&&
+						mapSessionIdAndLog.containsKey(sessionId)&&mapSessionIdAndMrn.containsKey(sessionId)) {
+					return true;
+				} 
+				else {
+					return false;
+				}
+			}
 		}
 		
-		LinkedHashSet<String> sessionIdList = new LinkedHashSet<String>();
-		mrnSessionIdMapper.put(mrn, sessionIdList);
+	}
+	
+	public void addMrn (String mrn) {
+		synchronized (mapMrnAndSessionId) {
+			if (mapMrnAndSessionId==null) {
+				mapMrnAndSessionId = new HashMap<String,LinkedHashSet<String>>();
+			}
+				
+			if (mrn==null||mapMrnAndSessionId.containsKey(mrn)) {
+				return;
+			}
+			
+			LinkedHashSet<String> sessionIdList = new LinkedHashSet<String>();
+			mapMrnAndSessionId.put(mrn, sessionIdList);
+		}
 	}
 	
 	
 	public synchronized void removeMrn (String mrn){
-		if (mrnSessionIdMapper!=null) {
-			LinkedHashSet<String> sessionIdList = mrnSessionIdMapper.get(mrn);
+		if (mapMrnAndSessionId!=null) {
+			LinkedHashSet<String> sessionIdList = mapMrnAndSessionId.get(mrn);
 			if (sessionIdList!=null) {
 				for (String sessionId : sessionIdList) {
-					if (sessionIdMrnMapper!=null) {
-						LinkedHashSet<String> mrnList = sessionIdMrnMapper.get(sessionId);
+					if (mapSessionIdAndMrn!=null) {
+						LinkedHashSet<String> mrnList = mapSessionIdAndMrn.get(sessionId);
 						if (mrnList!=null) {
 							mrnList.remove(mrn);
 							if (mrnList.isEmpty()) {
-								if (sessionIdLogMapper!=null) {
-									ArrayList<String> logList = sessionIdLogMapper.get(sessionId);
+								if (mapSessionIdAndLog!=null) {
+									ArrayList<String> logList = mapSessionIdAndLog.get(sessionId);
 									if (logList!=null) {
 										logList.clear();
 										logList = null;
-										sessionIdLogMapper.remove(sessionId);
+										mapSessionIdAndLog.remove(sessionId);
 									}
 								}
-								else { //sessionIdLogMapper==null
-									sessionIdLogMapper = new HashMap<String,ArrayList<String>>();
+								else { //mapSessionIdAndLog==null
+									mapSessionIdAndLog = new HashMap<String,ArrayList<String>>();
 								}
 								mrnList = null;
-								sessionIdMrnMapper.remove(sessionId);
+								mapSessionIdAndMrn.remove(sessionId);
 							}
 						}
 					}
-					else { //sessionIdMrnMapper==null
-						sessionIdMrnMapper = new HashMap<String,LinkedHashSet<String>>();
+					else { //mapSessionIdAndMrn==null
+						mapSessionIdAndMrn = new HashMap<String,LinkedHashSet<String>>();
 					}
 				}
 				sessionIdList.clear();
 				sessionIdList = null;
 			}
-			mrnSessionIdMapper.remove(mrn);
+			mapMrnAndSessionId.remove(mrn);
 		}
-		else { // mrnSessionIdMapper==null
-			mrnSessionIdMapper = new HashMap<String,LinkedHashSet<String>>();
+		else { // mapMrnAndSessionId==null
+			mapMrnAndSessionId = new HashMap<String,LinkedHashSet<String>>();
 		}
 	}
 	
-	public synchronized Set<String> getMrnSet () {
-		if (mrnSessionIdMapper==null){
-			mrnSessionIdMapper = new HashMap<String,LinkedHashSet<String>>();
+	public Set<String> getMrnSet () {
+		synchronized (mapMrnAndSessionId) {
+			if (mapMrnAndSessionId==null){
+				mapMrnAndSessionId = new HashMap<String,LinkedHashSet<String>>();
+			}
+			return mapMrnAndSessionId.keySet();
 		}
-		return mrnSessionIdMapper.keySet();
 	}
 	
 	public synchronized void addSessionId (String mrn, String sessionId){
 		if(mrn!=null&&sessionId!=null) {
 			
-			if (sessionIdLogMapper==null){
-				sessionIdLogMapper = new HashMap<String,ArrayList<String>>();
+			if (mapSessionIdAndLog==null){
+				mapSessionIdAndLog = new HashMap<String,ArrayList<String>>();
 			}
-			if (mrnSessionIdMapper==null){
-				mrnSessionIdMapper = new HashMap<String,LinkedHashSet<String>>();
+			if (mapMrnAndSessionId==null){
+				mapMrnAndSessionId = new HashMap<String,LinkedHashSet<String>>();
 			}
-			if (sessionIdMrnMapper==null){
-				sessionIdMrnMapper = new HashMap<String,LinkedHashSet<String>>();
+			if (mapSessionIdAndMrn==null){
+				mapSessionIdAndMrn = new HashMap<String,LinkedHashSet<String>>();
 			}
 			
-			LinkedHashSet<String> sessionIdList = mrnSessionIdMapper.get(mrn);
+			LinkedHashSet<String> sessionIdList = mapMrnAndSessionId.get(mrn);
 			if (sessionIdList!=null) {
 				while (sessionIdList.size() > maxSessionCount) {
 					String lruSession = sessionIdList.iterator().next();
-					LinkedHashSet<String> mrnList = sessionIdMrnMapper.get(lruSession);
+					LinkedHashSet<String> mrnList = mapSessionIdAndMrn.get(lruSession);
 					if (mrnList!=null) {
 						mrnList.remove(mrn);
 						if (mrnList.isEmpty()) {
-							ArrayList<String> logList = sessionIdLogMapper.get(lruSession);
+							ArrayList<String> logList = mapSessionIdAndLog.get(lruSession);
 							if (logList!=null) {
 								logList.clear();
 								logList = null;
-								sessionIdLogMapper.remove(lruSession);
+								mapSessionIdAndLog.remove(lruSession);
 							}
 							mrnList = null;
-							sessionIdMrnMapper.remove(lruSession);
+							mapSessionIdAndMrn.remove(lruSession);
 						}
 					}
 					sessionIdList.remove(lruSession);
 				}
 				sessionIdList.add(sessionId);
-				mrnSessionIdMapper.put(mrn, sessionIdList);
+				mapMrnAndSessionId.put(mrn, sessionIdList);
 				
-				LinkedHashSet<String> mrnList = sessionIdMrnMapper.get(sessionId);
+				LinkedHashSet<String> mrnList = mapSessionIdAndMrn.get(sessionId);
 				if (mrnList==null) {
 					mrnList = new LinkedHashSet<String>();
 					mrnList.add(mrn);
-					sessionIdMrnMapper.put(sessionId, mrnList);
+					mapSessionIdAndMrn.put(sessionId, mrnList);
 				} 
-				else { //sessionIdMrnMapper.get(sessionId)!=null
+				else { //mapSessionIdAndMrn.get(sessionId)!=null
 					mrnList.add(mrn);
-					sessionIdMrnMapper.put(sessionId, mrnList);
+					mapSessionIdAndMrn.put(sessionId, mrnList);
 				}
-				ArrayList<String> logList = sessionIdLogMapper.get(sessionId);
+				ArrayList<String> logList = mapSessionIdAndLog.get(sessionId);
 				if (logList==null)
 				{
 					logList = new ArrayList<String>();
-					sessionIdLogMapper.put(sessionId, logList);
+					mapSessionIdAndLog.put(sessionId, logList);
 				}
 			} 
 		}
 	}
 	
-	synchronized void addLog (String sessionId, String log) {
-
-		if (sessionId!=null&&sessionIdLogMapper!=null&&sessionIdLogMapper.get(sessionId)!=null)	{
-			
-			
-			sessionIdLogMapper.get(sessionId).add(log);
+	void addLog (String sessionId, String log) {
+		synchronized (mapSessionIdAndLog) {
+			if (sessionId!=null&&mapSessionIdAndLog!=null&&mapSessionIdAndLog.get(sessionId)!=null)	{
+				mapSessionIdAndLog.get(sessionId).add(log);
+			}
 		}
 	}
 
-	public synchronized boolean isItsLogListEmtpy (String sessionId) {
-		if (sessionId!=null&&sessionIdLogMapper!=null&&sessionIdLogMapper.get(sessionId)!=null&&sessionIdLogMapper.get(sessionId).isEmpty()) {
-			return true;
-		}
-		else {
-			return false;
+	public boolean isItsLogListEmtpy (String sessionId) {
+		synchronized (mapSessionIdAndLog) {
+			if (sessionId!=null&&mapSessionIdAndLog!=null&&mapSessionIdAndLog.get(sessionId)!=null&&mapSessionIdAndLog.get(sessionId).isEmpty()) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 	}
 	public int getMaxSessionCount ()	{

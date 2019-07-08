@@ -424,7 +424,7 @@ public class MessageRelayingHandler  {
 		// TODO: Youngjin Kim must inspect this following code.
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) {
-			isReqReleased = true; // The (FullHttpRequest) req MUST be released in these logic A, B, and C. 
+			isReqReleased = true; // The (FullHttpRequest) req MUST be released in these logic A, B, or C. 
 			srh = new SeamlessRoamingHandler(this.SESSION_ID);
 			if (type == MessageTypeDecider.msgType.POLLING) {
 				message = srh.initializeAndGetError(parser, outputChannel, ctx, req, "normal"); // logic A.

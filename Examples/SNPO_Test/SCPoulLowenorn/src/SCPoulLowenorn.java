@@ -54,7 +54,7 @@ public class SCPoulLowenorn {
 		
 		String dstMRN = "urn:mrn:mcp:service:instance:sp-uni";
 		String data = "";
-		sender.sendPostMsg(dstMRN, data);
+		//sender.sendPostMsg(dstMRN, data);
 		
 		
 		ClientPKILibrary clientPKILib = ClientPKILibrary.getInstance();
@@ -78,7 +78,7 @@ public class SCPoulLowenorn {
 		//String hexSignedData_revoked = byteConverter.byteArrToHexString(signedData_revoked);
 
 		
-		int pollInterval = 3000; // The unit is millisecond. 
+		int pollInterval = 0; // The unit is millisecond. 
 		String dstMRNMMS = "urn:mrn:smart-navi:device:mms1";
 		String svcMRN = "urn:mrn:mcp:service:instance:sp-uni";
 

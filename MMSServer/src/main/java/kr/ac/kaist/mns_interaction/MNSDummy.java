@@ -193,21 +193,21 @@ public class MNSDummy {
 		
 		// LOCAL TEST //
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-01-client","127.0.0.1:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-01-server","192.168.0.5:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-01-server","127.0.0.1:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-02-client","127.0.0.1:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-02-server","192.168.0.5:8907:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-03-server","192.168.0.5:8907:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-client","192.168.0.5:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-server","192.168.0.5:8907:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-06-server","192.168.0.5:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-02-server","127.0.0.1:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-03-server","127.0.0.1:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-client","127.0.0.1:0:1");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-server","127.0.0.1:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-06-server","127.0.0.1:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-07-client","1.1.1.1:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-07-server","192.168.0.5:8907:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-08-client","192.168.0.5:8907:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-08-server","192.168.0.5:8907:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-09-client","192.168.0.5:8907:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-09-server","192.168.0.5:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-07-server","127.0.0.1:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-08-client","127.0.0.1:8907:1");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-08-server","127.0.0.1:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-09-client","127.0.0.1:8907:1");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-09-server","127.0.0.1:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-10-client","1.1.1.1:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-10-server","192.168.0.5:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-10-server","127.0.0.1:8907:2");
 		MRNtoIP.put("urn:mrn:smart-navi:device:service-provider","127.0.0.1:0:2");
 		//-----------------------------------------------------
 
