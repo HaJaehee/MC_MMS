@@ -169,8 +169,8 @@ class MessageOrderingHandler {
 		byte[] message = null;
 		
 		List<SessionIdAndThr> itemList = SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair);
-
-		while (true) { 
+		boolean escape = false;
+		while (!escape) { 
 			if (itemList == null || 
 					itemList.size() == 0 ||
 					itemList.get(0) == null ||
@@ -211,6 +211,7 @@ class MessageOrderingHandler {
 						message = setThisSessionWaitingRes(srcDstPair);
 						if (message != null) {
 							mmsLog.info(logger, this.SESSION_ID, new String(message));
+							itemList.remove(0);
 							return message;
 						}
 						if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
@@ -226,7 +227,7 @@ class MessageOrderingHandler {
 							mmsLog.info(logger, this.SESSION_ID, new String(message));
 							return message;
 						}
-						break;
+						escape = true;
 					}
 					else if (itemList.get(0).isExceptionOccured()) {
 						message = ErrorCode.SEQUENTIAL_RELAYING_EXCEPTION_ERROR.getUTF8Bytes();
@@ -235,7 +236,7 @@ class MessageOrderingHandler {
 						mmsLog.info(logger, this.SESSION_ID, ErrorCode.SEQUENTIAL_RELAYING_EXCEPTION_ERROR.toString());
 	
 						itemList.remove(0);
-						break;
+						escape = true;
 					}
 					
 				}
