@@ -249,9 +249,15 @@ Rev. history : 2019-07-08
 Version : 0.9.3
 	Updated resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-09
+Version : 0.9.3
+	Revised for coding rule conformity.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -435,8 +441,14 @@ public class MessageRelayingHandler  {
 				message = srh.initializeAndGetError(parser, outputChannel, ctx, req, "long"); // logic B.
 			}
 			if (message != null) { 
-				outputChannel.replyToSender(ctx, message, isRealtimeLog);
-				req.release(); // logic C.
+				try {
+					outputChannel.replyToSender(ctx, message, isRealtimeLog);
+				} catch (IOException e) {
+					mmsLog.infoException(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+				}
+				finally {
+					req.release(); // logic C.
+				}
 			}
 
 			return;
@@ -446,7 +458,12 @@ public class MessageRelayingHandler  {
 			srh = new SeamlessRoamingHandler(this.SESSION_ID);
 			srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
     		message = "OK".getBytes(Charset.forName("UTF-8"));
-    		outputChannel.replyToSender(ctx, message, isRealtimeLog);
+    		
+    		try {
+				outputChannel.replyToSender(ctx, message, isRealtimeLog);
+			} catch (IOException e) {
+				mmsLog.infoException(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+			}
     		return;
 		} 
 		//This code MUST be 'else if' statement not 'if'. 
@@ -553,22 +570,38 @@ public class MessageRelayingHandler  {
 				if (message == null) {
 					message = ErrorCode.UNKNOWN_ERR.getBytes();
 					mmsLog.info(logger, this.SESSION_ID, ErrorCode.UNKNOWN_ERR.toString());
-					outputChannel.replyToSender(ctx, message, isRealtimeLog); //TODO: MUST HAVE MORE DEFINED EXCEPTION MESSAGES.
+					try {
+						outputChannel.replyToSender(ctx, message, isRealtimeLog);
+					} catch (IOException e) {
+						mmsLog.infoException(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+					} //TODO: MUST HAVE MORE DEFINED EXCEPTION MESSAGES.
 					return;
 				}
 				else {
-					outputChannel.replyToSender(ctx, message, isRealtimeLog);
+					try {
+						outputChannel.replyToSender(ctx, message, isRealtimeLog);
+					} catch (IOException e) {
+						mmsLog.infoException(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+					}
 					return;
 				}
 			}
 			else if (isErrorOccured || message != null) {
-				outputChannel.replyToSender(ctx, message, isRealtimeLog);
+				try {
+					outputChannel.replyToSender(ctx, message, isRealtimeLog);
+				} catch (IOException e) {
+					mmsLog.infoException(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+				}
 				return;
 			}
 			else if (!isErrorOccured && message == null && !(type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SERVER)) {
 				message = ErrorCode.UNKNOWN_ERR.getBytes();
 				mmsLog.info(logger, this.SESSION_ID, ErrorCode.UNKNOWN_ERR.toString());
-				outputChannel.replyToSender(ctx, message, isRealtimeLog); //TODO: MUST HAVE MORE DEFINED EXCEPTION MESSAGES.
+				try {
+					outputChannel.replyToSender(ctx, message, isRealtimeLog);
+				} catch (IOException e) {
+					mmsLog.infoException(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+				} //TODO: MUST HAVE MORE DEFINED EXCEPTION MESSAGES.
 				return;
 			}
 		}

@@ -1,9 +1,16 @@
 package kr.ac.kaist.mms_server;
 
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.netty.channel.ChannelHandlerContext;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 
 public class ErrorResponseException extends MMSBaseException {
+	private static final Logger logger = LoggerFactory.getLogger(ErrorResponseException.class);
+
 	private byte[] message;
 	private int responseCode;
 	private boolean realtimeLog;
@@ -32,6 +39,10 @@ public class ErrorResponseException extends MMSBaseException {
 		this(null, responseCode);
 	}
 	public void replyToSender(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx) {
-		outputChannel.replyToSender(ctx, message, realtimeLog, responseCode);
+		try {
+			outputChannel.replyToSender(ctx, message, realtimeLog, responseCode);
+		} catch (IOException e) {
+			MMSLog.getInstance().infoException(logger, "", ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+		}
 	}
 }

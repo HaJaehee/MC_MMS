@@ -16,6 +16,11 @@ Rev. history : 2019-07-03
 Version : 0.9.3
 	Added multi-thread safety.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-09
+Version : 0.9.3
+	Revised for coding rule conformity.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */
 
@@ -124,27 +129,21 @@ class MessageOrderingHandler {
 			int itemListSize = itemList.size();
 			if (seqNum > SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair)) {
 				while (index < itemListSize) {
-					try {
-						if (seqNum > itemList.get(index).getSeqNum()) {
-							index++;
-							itemListSize = itemList.size(); //MUST be updated in every iteration because of multi-thread safety.
-							continue;
-						}
-						else if (seqNum < itemList.get(index).getSeqNum()) {
-							itemList.add(index, new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
-							break;
-						}
-						else { //seqNum == itemList.get(index).getSeqNum()
-							//System.out.println("index="+index+", seqNum="+seqNum+", seqNum in List="+itemList.get(0).getSeqNum());
-							//System.out.println("Sequence number of message is duplicated.");
-							message = ErrorCode.SEQUENCE_NUMBER_IS_DUPLICATED.getUTF8Bytes();
-							mmsLog.info(logger, this.SESSION_ID, ErrorCode.SEQUENCE_NUMBER_IS_DUPLICATED.toString());
-							return message;
-						}
+					if (seqNum > itemList.get(index).getSeqNum()) {
+						index++;
+						itemListSize = itemList.size(); //MUST be updated in every iteration because of multi-thread safety.
+						continue;
 					}
-					catch (NullPointerException e) {
-						index = 0;
-						itemListSize = itemList.size();
+					else if (seqNum < itemList.get(index).getSeqNum()) {
+						itemList.add(index, new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
+						break;
+					}
+					else { //seqNum == itemList.get(index).getSeqNum()
+						//System.out.println("index="+index+", seqNum="+seqNum+", seqNum in List="+itemList.get(0).getSeqNum());
+						//System.out.println("Sequence number of message is duplicated.");
+						message = ErrorCode.SEQUENCE_NUMBER_IS_DUPLICATED.getUTF8Bytes();
+						mmsLog.info(logger, this.SESSION_ID, ErrorCode.SEQUENCE_NUMBER_IS_DUPLICATED.toString());
+						return message;
 					}
 				}
 				if (index == itemListSize) { //This condition contains conditions "index == 0" and "itemListSize == 0".
@@ -169,8 +168,8 @@ class MessageOrderingHandler {
 		byte[] message = null;
 		
 		List<SessionIdAndThr> itemList = SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair);
-		boolean escape = false;
-		while (!escape) { 
+		boolean escapeLoop = false;
+		while (!escapeLoop) { 
 			if (itemList == null || 
 					itemList.size() == 0 ||
 					itemList.get(0) == null ||
@@ -179,7 +178,7 @@ class MessageOrderingHandler {
 				
 				message = ErrorCode.SEQUENTIAL_RELAYING_INITIALIZATION_ERROR.getUTF8Bytes();
 				
-				throw new NullPointerException();
+				return message;
 			}
 			try {
 				//System.out.println("RELAYING_TO_SERVER_SEQUENTIALLY getSessionID="+itemList.get(0).getSessionId());
@@ -188,7 +187,11 @@ class MessageOrderingHandler {
 							itemList.get(0).getWaitingCount() > 0 ||
 							itemList.get(0).isExceptionOccured()) {
 						// If this session is interrupted, process its message.
-						throw new InterruptedException();	
+						message = processThisThread(itemList, outputChannel, req, protocol, mch, type);
+						if (message != null) {
+							escapeLoop = true;
+						}
+						
 					}
 					else {
 						//System.out.println("Block (by sleep) this relaying process if it's not this session's turn with seq num.");
@@ -204,41 +207,9 @@ class MessageOrderingHandler {
 				}
 			} 
 			catch (InterruptedException e) {
-				//System.out.println("Interrupted! This session ID="+SESSION_ID+", Session ID in list="+itemList.get(0).getSessionId()+", isExceptionOccured="+itemList.get(0).isExceptionOccured()+", seq num="+seqNum+", last seq num="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
-				if (itemList.size()>0 && itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
-					if ((itemList.get(0).getPreSeqNum() == SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair) && 
-							!itemList.get(0).isExceptionOccured()) || itemList.get(0).getWaitingCount() > 0){
-						message = setThisSessionWaitingRes(srcDstPair);
-						if (message != null) {
-							mmsLog.info(logger, this.SESSION_ID, new String(message));
-							itemList.remove(0);
-							return message;
-						}
-						if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
-							thread = mch.asynchronizedUnicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); // Execute this relaying process
-						}
-						else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
-							SeamlessRoamingHandler srh = new SeamlessRoamingHandler(this.SESSION_ID);
-							srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
-				    		message = "OK".getBytes(Charset.forName("UTF-8"));
-						}
-						message = rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcDstPair);
-						if (message != null) {
-							mmsLog.info(logger, this.SESSION_ID, new String(message));
-							return message;
-						}
-						escape = true;
-					}
-					else if (itemList.get(0).isExceptionOccured()) {
-						message = ErrorCode.SEQUENTIAL_RELAYING_EXCEPTION_ERROR.getUTF8Bytes();
-						
-						printSessionsInSessionMng(srcDstPair);
-						mmsLog.info(logger, this.SESSION_ID, ErrorCode.SEQUENTIAL_RELAYING_EXCEPTION_ERROR.toString());
-	
-						itemList.remove(0);
-						escape = true;
-					}
-					
+				message = processThisThread(itemList, outputChannel, req, protocol, mch, type);
+				if (message != null) {
+					escapeLoop = true;
 				}
 			}
 		}
@@ -261,6 +232,47 @@ class MessageOrderingHandler {
 
 		// If message is null, no error occurred, otherwise an error occurred (excluding message equals "OK").
 		// If thread is null, an error occurred, otherwise no error occurred (excluding message equals "OK").
+		return message;
+	}
+	
+	private byte[] processThisThread (List<SessionIdAndThr> itemList, MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String protocol, MessageCastingHandler mch, MessageTypeDecider.msgType type) {
+		byte[] message = null;
+		//System.out.println("Interrupted! This session ID="+SESSION_ID+", Session ID in list="+itemList.get(0).getSessionId()+", isExceptionOccured="+itemList.get(0).isExceptionOccured()+", seq num="+seqNum+", last seq num="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
+		if (itemList.size()>0 && itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
+			if ((itemList.get(0).getPreSeqNum() == SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair) && 
+					!itemList.get(0).isExceptionOccured()) || itemList.get(0).getWaitingCount() > 0){
+				message = setThisSessionWaitingRes(srcDstPair);
+				if (message != null) {
+					mmsLog.info(logger, this.SESSION_ID, new String(message));
+					itemList.remove(0);
+					return message;
+				}
+				if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
+					thread = mch.asynchronizedUnicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); // Execute this relaying process
+				}
+				else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
+					SeamlessRoamingHandler srh = new SeamlessRoamingHandler(this.SESSION_ID);
+					srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
+		    		message = "OK".getBytes(Charset.forName("UTF-8"));
+				}
+				message = rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcDstPair);
+				if (message != null) {
+					mmsLog.info(logger, this.SESSION_ID, new String(message));
+					return message;
+				}
+				return message;
+			}
+			else if (itemList.get(0).isExceptionOccured()) {
+				message = ErrorCode.SEQUENTIAL_RELAYING_EXCEPTION_ERROR.getUTF8Bytes();
+				
+				printSessionsInSessionMng(srcDstPair);
+				mmsLog.info(logger, this.SESSION_ID, ErrorCode.SEQUENTIAL_RELAYING_EXCEPTION_ERROR.toString());
+
+				itemList.remove(0);
+				return message;
+			}
+			
+		}
 		return message;
 	}
 	

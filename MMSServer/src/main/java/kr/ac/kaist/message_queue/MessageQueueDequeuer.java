@@ -143,6 +143,11 @@ Rev. history : 2019-07-07
 Version : 0.9.3
 	Added resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-09
+Version : 0.9.3
+	Revised for coding rule conformity.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -275,35 +280,32 @@ public class MessageQueueDequeuer extends Thread{
 		}
 		
 		//TODO: Unexpectedly a mqChannel is shutdown while transferring a response to polling client, MUST A MESSAGE IS REQUEUED.
-		try {
-			ctx.channel().attr(MRH_MessageInputChannel.TERMINATOR).get().add(new ChannelTerminateListener() {
+
+		ctx.channel().attr(MRH_MessageInputChannel.TERMINATOR).get().add(new ChannelTerminateListener() {
+			
+			@Override
+			public void terminate(ChannelHandlerContext ctx) {
 				
-				@Override
-				public void terminate(ChannelHandlerContext ctx) {
-					
-					mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
-					try {
-						if(mqChannel != null && mqChannel.isOpen()) {
-							mqChannel.close();
-						}
-					} catch (IOException | TimeoutException e) {
-						mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
-				    	
-					} 
-					finally {
-						//System.out.println(req.refCnt());
-						if(req != null && req.refCnt() > 0) {
-							//System.out.println("The request is released.");
-			    			req.release();
-							req = null;
-						}
+				mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
+				try {
+					if(mqChannel != null && mqChannel.isOpen()) {
+						mqChannel.close();
+					}
+				} catch (IOException | TimeoutException e) {
+					mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
+			    	
+				} 
+				finally {
+					//System.out.println(req.refCnt());
+					if(req != null && req.refCnt() > 0) {
+						//System.out.println("The request is released.");
+		    			req.release();
+						req = null;
 					}
 				}
-			});
-		}
-		catch (Exception e) {
-			mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
-		}
+			}
+		});
+
 		
 		try {
 			mqChannel.queueDeclare(queueName, true, false, false, null);
@@ -356,7 +358,7 @@ public class MessageQueueDequeuer extends Thread{
 	    	try {
 	    		outputChannel.replyToSender(ctx, message.toString().getBytes());
 	    	}
-	    	catch (Exception e) {
+	    	catch (IOException e) {
 	    		mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
 	    		for (String msg : backupMsg) {
 	    			try {
@@ -403,7 +405,7 @@ public class MessageQueueDequeuer extends Thread{
 						this.req = null;
 					}
 		    	}
-		    	catch (Exception e) {
+		    	catch (IOException e) {
 		    		mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
 		    	}
 		    	
@@ -444,7 +446,7 @@ public class MessageQueueDequeuer extends Thread{
 					    		outputChannel.replyToSender(ctx, message.toString().getBytes());
 					    		//System.out.println(req.refCnt());
 					    	}
-						    catch (Exception e) {
+						    catch (IOException e) {
 					    		mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
 					    		mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
 					    	}

@@ -119,6 +119,11 @@ Rev. history : 2019-07-08
 Version : 0.9.3
 	Added resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-09
+Version : 0.9.3
+	Revised for coding rule conformity.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -204,18 +209,18 @@ public class MRH_MessageOutputChannel{
 		storedHeader = storingHeader;
 	}
 	
-	public void replyToSender(ChannelHandlerContext ctx, byte[] data, boolean realtimeLog, int responseCode) {
+	public void replyToSender(ChannelHandlerContext ctx, byte[] data, boolean realtimeLog, int responseCode) throws IOException{
 		this.realtimeLog = realtimeLog;
 		this.responseCode = responseCode;
 		replyToSender(ctx, data);
 	}
 	
-	public void replyToSender(ChannelHandlerContext ctx, byte[] data, boolean realtimeLog) {
+	public void replyToSender(ChannelHandlerContext ctx, byte[] data, boolean realtimeLog) throws IOException{
 		this.realtimeLog = realtimeLog;
 		replyToSender(ctx, data);
 	}
 	
-	public void replyToSender(ChannelHandlerContext ctx, byte[] data) {
+	public void replyToSender(ChannelHandlerContext ctx, byte[] data) throws IOException{
     	if (!realtimeLog) {
     		mmsLog.info(logger, this.SESSION_ID, "Reply to sender.");
 		}
@@ -645,7 +650,14 @@ public class MRH_MessageOutputChannel{
 			}
 	    }
 		public byte[] getData() {
-			return data;
+			byte[] ret = null;
+			if (data != null) {
+				ret = new byte[data.length];
+				for (int i = 0; i < data.length; i++) {
+					ret[i] = data[i];
+				}
+			}
+			return ret;
 		}
 		public void run(){
 			try {
@@ -658,12 +670,18 @@ public class MRH_MessageOutputChannel{
 				if (data == null) {
 					data = ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.getUTF8Bytes();
 				}
-				replyToSender(ctx, data);
-				if (req != null && req.refCnt() > 0) {
-					req.release();
-					req = null;
+				try {
+					replyToSender(ctx, data);
+				} catch (IOException e) {
+					mmsLog.infoException(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 				}
-				con = null;
+				finally {
+					if (req != null && req.refCnt() > 0) {
+						req.release();
+						req = null;
+					}
+					con = null;
+				}
 			}
         } 
 	}

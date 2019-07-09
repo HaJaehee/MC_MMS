@@ -49,6 +49,11 @@ Rev. history : 2019-07-03
 Version : 0.9.3
 	Added multi-thread safety.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-09
+Version : 0.9.3
+	Revised for coding rule conformity.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 
@@ -467,9 +472,15 @@ public class MMSRestAPIHandler {
 		Map<String,List<String>> params = qsd.parameters();
 		if (params.get("mrn")!=null) {
 			String mrn = params.get("mrn").get(0);
-			mmsLogForDebug.addMrn(mrn);
-			mmsLog.warn(logger, this.SESSION_ID, "Added a MRN being debugged="+mrn+".");
-			message = "OK".getBytes(Charset.forName("UTF-8"));
+			if (mrn != null) {
+				mmsLogForDebug.addMrn(mrn);
+				mmsLog.warn(logger, this.SESSION_ID, "Added a MRN being debugged="+mrn+".");
+				message = "OK".getBytes(Charset.forName("UTF-8"));
+			}
+			else {
+				mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
+				message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
+			}
 		}
 		else {
 			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
