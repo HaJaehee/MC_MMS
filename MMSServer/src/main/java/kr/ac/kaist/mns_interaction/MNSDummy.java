@@ -209,6 +209,45 @@ public class MNSDummy {
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-10-client","1.1.1.1:0:1");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-10-server","127.0.0.1:8907:2");
 		MRNtoIP.put("urn:mrn:smart-navi:device:service-provider","127.0.0.1:0:2");
+		
+		// REQUESTED MRN //
+		// - SERVICE
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:namas-avs","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:sbsms-osrm","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:sorps-osvp","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:redss-edus","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:redss-wst","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:pitas-ptbs","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:pitas-vpps","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:mesis-msi","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:mesis-np","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:mesis-owhi","203.250.182.94:7088:2");
+		
+		// - DEVICE
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0001","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0002","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0003","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0004","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0005","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0006","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0007","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0008","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0009","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0010","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:user:cp:0001","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:user:cp:0002","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:user:cp:0003","1.1.1.1:0:1");
+		
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:440190220","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:440000350","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:440077620","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:440332640","1.1.1.1:0:1");
+		
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:440337650","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:440956000","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:441178000","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:000000001","1.1.1.1:0:1");
+		
 		//-----------------------------------------------------
 
 		while(true)
