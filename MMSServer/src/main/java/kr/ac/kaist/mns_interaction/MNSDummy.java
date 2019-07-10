@@ -190,13 +190,13 @@ public class MNSDummy {
 		MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp520fors53","119.197.77.106:0:1");
 		MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp520fors55","203.250.182.203:0:1");
 
-		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S10_DEMO","203.250.182.94:7088:2");
-		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S11_DEMO","203.250.182.94:7088:2");
-		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S20_DEMO","203.250.182.94:7088:2");
-		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S30_DEMO","203.250.182.94:7088:2");
-		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S40_DEMO","203.250.182.94:7088:2");
-		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S51_DEMO","203.250.182.94:7088:2");
-		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S52_DEMO","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S10_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S11_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S20_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S30_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S40_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S51_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S52_DEMO","203.250.182.93:7088:2");
 		
 		// LOCAL TEST //
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-01-client","127.0.0.1:0:1");
