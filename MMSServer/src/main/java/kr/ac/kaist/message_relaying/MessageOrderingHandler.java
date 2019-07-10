@@ -21,6 +21,11 @@ Rev. history : 2019-07-09
 Version : 0.9.3
 	Revised for coding rule conformity.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-10
+Version : 0.9.3
+	Added resource managing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */
 
@@ -31,6 +36,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
@@ -164,7 +170,7 @@ class MessageOrderingHandler {
 	}
 	
 	
-	public byte[] processMessage (MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String protocol, MessageCastingHandler mch, MessageTypeDecider.msgType type) {
+	public byte[] processMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String protocol, MessageCastingHandler mch, MessageTypeDecider.msgType type) {
 		byte[] message = null;
 		
 		List<SessionIdAndThr> itemList = SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair);
@@ -187,7 +193,7 @@ class MessageOrderingHandler {
 							itemList.get(0).getWaitingCount() > 0 ||
 							itemList.get(0).isExceptionOccured()) {
 						// If this session is interrupted, process its message.
-						message = processThisThread(itemList, outputChannel, req, protocol, mch, type);
+						message = processThisThread(itemList, outputChannel, ctx, req, protocol, mch, type);
 						if (message != null) {
 							escapeLoop = true;
 						}
@@ -207,7 +213,7 @@ class MessageOrderingHandler {
 				}
 			} 
 			catch (InterruptedException e) {
-				message = processThisThread(itemList, outputChannel, req, protocol, mch, type);
+				message = processThisThread(itemList, outputChannel, ctx, req, protocol, mch, type);
 				if (message != null) {
 					escapeLoop = true;
 				}
@@ -235,7 +241,7 @@ class MessageOrderingHandler {
 		return message;
 	}
 	
-	private byte[] processThisThread (List<SessionIdAndThr> itemList, MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String protocol, MessageCastingHandler mch, MessageTypeDecider.msgType type) {
+	private byte[] processThisThread (List<SessionIdAndThr> itemList, MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String protocol, MessageCastingHandler mch, MessageTypeDecider.msgType type) {
 		byte[] message = null;
 		//System.out.println("Interrupted! This session ID="+SESSION_ID+", Session ID in list="+itemList.get(0).getSessionId()+", isExceptionOccured="+itemList.get(0).isExceptionOccured()+", seq num="+seqNum+", last seq num="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
 		if (itemList.size()>0 && itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
@@ -248,7 +254,7 @@ class MessageOrderingHandler {
 					return message;
 				}
 				if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
-					thread = mch.asynchronizedUnicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); // Execute this relaying process
+					thread = mch.asynchronizedUnicast(outputChannel, ctx, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); // Execute this relaying process
 				}
 				else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 					SeamlessRoamingHandler srh = new SeamlessRoamingHandler(this.SESSION_ID);

@@ -54,6 +54,11 @@ Rev. history : 2019-07-09
 Version : 0.9.3
 	Revised for coding rule conformity.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-10
+Version : 0.9.3
+	Added resource managing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 

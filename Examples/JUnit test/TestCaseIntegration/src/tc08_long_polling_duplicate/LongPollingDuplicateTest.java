@@ -45,9 +45,8 @@ public class LongPollingDuplicateTest extends MMSTestBase {
 	@BeforeClass 
 	public static void setupForClass() throws Exception {
 		client = new LongPollingDuplicateClient();
-		server = new LongPollingDuplicateServer();
 		client.emptyTheQueue();
-		Thread.sleep(2000);
+		Thread.sleep(5000);
 		offset = 4;
 	}
 	
@@ -57,12 +56,14 @@ public class LongPollingDuplicateTest extends MMSTestBase {
 		int actual = 0;		
 		boolean testPass = false;
 		response = new ArrayList<String>();
-
+		client = new LongPollingDuplicateClient();
+		server = new LongPollingDuplicateServer();
+		
 		client.singleThreadStart(); /// Do not 
 		Thread.sleep(5000);	
 		
 		server.sendContent(actual);	
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		
 		for (String s : response) {
 			expected = response.size();
@@ -83,12 +84,14 @@ public class LongPollingDuplicateTest extends MMSTestBase {
 		int actualError = 0;
 		boolean testPass = false;
 		response = new ArrayList<String>();
+		client = new LongPollingDuplicateClient();
+		server = new LongPollingDuplicateServer();
 			
 		client.multipleThreadStart();
-		Thread.sleep(5000);
+		Thread.sleep(10000);
 		
 		server.sendContent(actual);	
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		
 		for (String s : response) {
 			expectedError = response.size()-1;

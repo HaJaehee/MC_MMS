@@ -127,6 +127,11 @@ Rev. history : 2019-07-09
 Version : 0.9.3
 	Revised for coding rule conformity.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-10
+Version : 0.9.3
+	Updated resource managing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -305,8 +310,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     	String clientType = SessionManager.getSessionType(SESSION_ID);
     	if (clientType != null) {
     		SessionManager.removeSessionInfo(SESSION_ID);
-    		
-    		SeamlessRoamingHandler.removeDuplicateInfo(DUPLICATE_ID);
+
     		if (clientType.equals("p")) {
     			mmsLog.info(logger, this.SESSION_ID, ErrorCode.POLLING_CLIENT_DISCONNECTED.toString());
     		} 
@@ -327,7 +331,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 
 //    	ctx.channel().
     	String clientType = SessionManager.getSessionType(SESSION_ID);
-    	String duplicateType = SeamlessRoamingHandler.getDuplicateInfo(DUPLICATE_ID);
+    	Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicateInfoCnt(DUPLICATE_ID);
 //    	ctx.pipeline().get(HttpHeaderValues.class);
 //    	channels.
     	
@@ -375,9 +379,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     	if (clientType != null) {
     		SessionManager.removeSessionInfo(SESSION_ID);    		
       }
-    	if(duplicateType!=null) {
-    		SeamlessRoamingHandler.removeDuplicateInfo(DUPLICATE_ID);
-    		
+    	if(duplicateInfoCnt!=null) {
+    		SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);	
     	}
     	if (!ctx.isRemoved()){
     		  ctx.close();

@@ -254,6 +254,11 @@ Rev. history : 2019-07-09
 Version : 0.9.3
 	Revised for coding rule conformity.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-10
+Version : 0.9.3
+	Updated resource managing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -333,7 +338,7 @@ public class MessageRelayingHandler  {
 	
 	private void initializeSubModule(ChannelHandlerContext ctx) {
 		typeDecider = new MessageTypeDecider(this.SESSION_ID);
-		outputChannel = new MRH_MessageOutputChannel(this.SESSION_ID, ctx);
+		outputChannel = new MRH_MessageOutputChannel(this.SESSION_ID);
 		
 //		if (MMSConfiguration.isPollingTest()) {
 //			cltVerifier = new ClientVerifierTest();
@@ -475,7 +480,7 @@ public class MessageRelayingHandler  {
 		
 		//Below code MUST be 'if' statement not 'else if'. 
 		if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
-			message = moh.processMessage(outputChannel, req, protocol, mch, type); // The (FullHttpRequest) req MUST be released in this logic.
+			message = moh.processMessage(outputChannel, ctx, req, protocol, mch, type); // The (FullHttpRequest) req MUST be released in this logic.
 			if (message != null) {
 				isErrorOccured = true;
 			}
@@ -488,7 +493,7 @@ public class MessageRelayingHandler  {
 		}
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
-			thread = mch.asynchronizedUnicast(outputChannel, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); // The (FullHttpRequest) req MUST be released in this logic.
+			thread = mch.asynchronizedUnicast(outputChannel, ctx, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); // The (FullHttpRequest) req MUST be released in this logic.
 			if (thread != null) {
 				req.retain();
 			}
@@ -496,7 +501,7 @@ public class MessageRelayingHandler  {
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (type == MessageTypeDecider.msgType.GEOCASTING_CIRCLE || type == MessageTypeDecider.msgType.GEOCASTING_POLYGON) {
 			JSONArray geoDstInfo = parser.getGeoDstInfo();
-			message = mch.geocast(outputChannel, req, srcMRN, geoDstInfo, protocol, httpMethod);
+			message = mch.geocast(outputChannel, ctx, req, srcMRN, geoDstInfo, protocol, httpMethod);
 		}
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (type == MessageTypeDecider.msgType.STATUS){
