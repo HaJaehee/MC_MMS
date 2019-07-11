@@ -474,18 +474,20 @@ public class MessageQueueDequeuer extends Thread{
 							    		
 						    			mqChannel.basicAck(envelope.getDeliveryTag(), false);
 						    			mqChannel.basicCancel(consumerTag);
+						    			mqChannel.close(320, "Service stoppted.");
 							    		
 								    	clear(true, true);
 							    	}
-								    catch (IOException e) {
+								    catch (IOException | TimeoutException e) {
 							    		mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
 							    		try {
 							    			if (mqChannel != null && mqChannel.isOpen()) {
 							    				mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
 							    				mqChannel.basicCancel(consumerTag);
+							    				mqChannel.close(320, "Service stoppted.");
 							    			}
 							    		}
-							    		catch (AlreadyClosedException | IOException e1) {
+							    		catch (AlreadyClosedException | IOException | TimeoutException e1) {
 							    			mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
 							    			clear(true, true);
 							    			return;
@@ -499,8 +501,9 @@ public class MessageQueueDequeuer extends Thread{
 									try {
 										mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
 										mqChannel.basicCancel(consumerTag);
+										mqChannel.close(320, "Service stoppted.");
 									}
-									catch (AlreadyClosedException | IOException e) {
+									catch (AlreadyClosedException | IOException | TimeoutException e) {
 										mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
 										return;
 									}
