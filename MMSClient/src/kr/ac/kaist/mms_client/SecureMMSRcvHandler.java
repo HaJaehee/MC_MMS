@@ -30,6 +30,11 @@ Rev. history : 2019-04-29
 Version : 0.8.2
 	Revised Base64 Encoder/Decoder.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-11
+Version : 0.9.3
+	Updated exception throw-catch phrases.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -45,8 +50,12 @@ import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Iterator;
@@ -77,7 +86,7 @@ class SecureMMSRcvHandler {
 	private static final String USER_AGENT = MMSConfiguration.USER_AGENT;
 	private String clientMRN = null;
 	
-	SecureMMSRcvHandler(int port, String jksDirectory, String jksPassword) throws Exception{
+	SecureMMSRcvHandler(int port, String jksDirectory, String jksPassword) throws IOException{
 		httpsServerConfigure(port, jksDirectory, jksPassword);
 		hrh = new HttpsReqHandler();
 		if (hrh != null) {
@@ -93,7 +102,7 @@ class SecureMMSRcvHandler {
         //HttpsServer is in java library. Cannot fix FORWARD_NULL
 	}
 	
-	SecureMMSRcvHandler(int port, String context, String jksDirectory, String jksPassword) throws Exception {
+	SecureMMSRcvHandler(int port, String context, String jksDirectory, String jksPassword) throws IOException {
 		httpsServerConfigure(port, jksDirectory, jksPassword);
 		hrh = new HttpsReqHandler();
 		if (!context.startsWith("/")){
@@ -106,7 +115,7 @@ class SecureMMSRcvHandler {
         server.start();
 	}
 	
-	SecureMMSRcvHandler(int port, String fileDirectory, String fileName, String jksDirectory, String jksPassword) throws Exception {
+	SecureMMSRcvHandler(int port, String fileDirectory, String fileName, String jksDirectory, String jksPassword) throws IOException {
 		httpsServerConfigure(port, jksDirectory, jksPassword);
         //OONI
         frh = new SecureFileReqHandler();
@@ -126,31 +135,82 @@ class SecureMMSRcvHandler {
         server.start();
 	}
 	
-	void httpsServerConfigure (int port, String jksDirectory, String jksPassword) throws Exception{
+	void httpsServerConfigure (int port, String jksDirectory, String jksPassword) throws IOException{
 		
 		FileInputStream fis = null;
 		 KeyManagerFactory kmf = null;
 		try {
 			server = HttpsServer.create(new InetSocketAddress(port), 0);
-			sslContext = SSLContext.getInstance( "TLS" );
+			try {
+				sslContext = SSLContext.getInstance( "TLS" );
+			} catch (NoSuchAlgorithmException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
 			 // initialise the keystore
 		    char[] jksPwCharArr = jksPassword.toCharArray ();
-		    KeyStore ks = KeyStore.getInstance ( "JKS" );
+		    KeyStore ks = null;
+			try {
+				ks = KeyStore.getInstance ( "JKS" );
+			} catch (KeyStoreException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		    //FileInputStream fis = new FileInputStream ( System.getProperty("user.dir")+"/testkey.jks" );
 		    fis = new FileInputStream ( jksDirectory );
-		    ks.load ( fis, jksPwCharArr );
+		    try {
+				ks.load ( fis, jksPwCharArr );
+			} catch (NoSuchAlgorithmException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (CertificateException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 	
 		    // setup the key manager factory
-		    kmf = KeyManagerFactory.getInstance ( "SunX509" );
-		    kmf.init ( ks, jksPwCharArr );
+		    try {
+				kmf = KeyManagerFactory.getInstance ( "SunX509" );
+			} catch (NoSuchAlgorithmException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+		    try {
+				kmf.init ( ks, jksPwCharArr );
+			} catch (UnrecoverableKeyException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (KeyStoreException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (NoSuchAlgorithmException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		    
 		    // setup the trust manager factory
-		    TrustManagerFactory tmf = TrustManagerFactory.getInstance ( "SunX509" );
-		    tmf.init ( ks );
+		    TrustManagerFactory tmf = null;
+			try {
+				tmf = TrustManagerFactory.getInstance ( "SunX509" );
+			} catch (NoSuchAlgorithmException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		    try {
+				tmf.init ( ks );
+			} catch (KeyStoreException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 	
 		    // setup the HTTPS context and parameters
-		    sslContext.init ( kmf.getKeyManagers (), tmf.getTrustManagers (), null );
+		    try {
+				sslContext.init ( kmf.getKeyManagers (), tmf.getTrustManagers (), null );
+			} catch (KeyManagementException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		    server.setHttpsConfigurator ( new HttpsConfigurator( sslContext )
 		    {
 		        public void configure ( HttpsParameters params )
