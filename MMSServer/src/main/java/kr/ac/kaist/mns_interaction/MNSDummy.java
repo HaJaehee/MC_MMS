@@ -65,6 +65,11 @@ Rev. history : 2019-06-07
 Version : 0.9.2
 	Made logs neat.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-11
+Version : 0.9.3
+	Added GC suggestion.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */
 
@@ -100,6 +105,7 @@ public class MNSDummy {
 	public static void main(String argv[]) throws Exception
 	{
 		ServerSocket Sock = new ServerSocket(MMSConfiguration.getMnsPort());
+		int gcSuggestion = 0;
 		System.out.println("Listen:"+MMSConfiguration.getMnsPort());
 
 		//logger.error("MNSDummy started.");
@@ -270,7 +276,11 @@ public class MNSDummy {
 
 		while(true)
 		{
-
+			gcSuggestion++;
+			if (gcSuggestion > 1000) {
+				System.gc();
+				gcSuggestion = 0;
+			}
 			Socket connectionSocket = Sock.accept();
 
 
