@@ -70,6 +70,11 @@ Rev. history : 2019-07-09
 Version : 0.9.3
 	Revised for coding rule conformity.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-11
+Version : 0.9.3
+	Added GC suggestion.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */
 
@@ -307,9 +312,16 @@ public class SessionManager {
 				}
 			}
 			
+			int gcSuggestion = 0;
+			
 			boolean escapeLoop = false;
 			while (!escapeLoop) { // Start tik tok.
 			
+				gcSuggestion++;
+				if (gcSuggestion > 100) {
+					System.gc();
+					gcSuggestion = 0;
+				}
 				long curTimeMillis = System.currentTimeMillis();
 				long correction = 0;
 				
