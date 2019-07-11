@@ -349,7 +349,7 @@ public class SessionManager {
 							}
 						}
 						catch (IOException e){
-							escapeLoop = true;
+							//escapeLoop = true;
 							MMSLog.getInstance().warnException(logger, "","File session-count.csv is not found or there is a problem when writing the file.", e, 5);
 
 						}
