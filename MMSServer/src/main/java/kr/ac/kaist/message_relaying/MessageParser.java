@@ -293,8 +293,8 @@ public class MessageParser {
 			String keyStr = (String) key;
 			if (keyStr.equals("svcMRN")) {
 				svcMRN = (String) pollingRequestContents.get("svcMRN");
-//				System.out.println("[Parser] serviceMRN: " + svcMRN);
-				mmsLog.debug(logger, this.SESSION_ID, "Service MRN: " + svcMRN + ".");
+//				System.out.println("[Parser] serviceMRN=" + svcMRN);
+				mmsLog.debug(logger, this.SESSION_ID, "Service MRN=" + svcMRN + ".");
 			}
 			else if (keyStr.equals("certificate")) {
 				hexSignedData = (String) pollingRequestContents.get("certificate");

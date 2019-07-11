@@ -415,12 +415,12 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         }
 
   //	System.out.println("srcIP: " + reqInfo[0]);
-  //	System.out.println("srcMRN: " +  reqInfo[1]);
+  //	System.out.println("srcMRN=" +  reqInfo[1]);
         errorlog += " srcIP=" + reqInfo[0] + " srcMRN=" + reqInfo[1];
       if (reqInfo.length == 5){
-  //	System.out.println("dstIP: " +  reqInfo[2]);
-  //	System.out.println("dstMRN: " +  reqInfo[3]);
-  //	System.out.println("svcMRN: " + reqInfo[4]);
+  //	System.out.println("dstIP=" +  reqInfo[2]);
+  //	System.out.println("dstMRN=" +  reqInfo[3]);
+  //	System.out.println("svcMRN=" + reqInfo[4]);
         errorlog += " dstIP=" + reqInfo[2] + " dstMRN=" + reqInfo[3] + " svcMRN=" + reqInfo[4];
       }
   //  System.out.println("/*****************************************/");
