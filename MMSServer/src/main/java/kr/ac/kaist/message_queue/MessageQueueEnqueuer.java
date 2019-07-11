@@ -153,7 +153,7 @@ class MessageQueueEnqueuer {
 			
 			channel.basicPublish("", queueName, null, message.getBytes());
 			channel.close(320, "Service stopped.");
-			connection.close();
+			connection.close(320, "Service stopped.", 1000);
 			
 		} 
 		catch (IOException e) {
