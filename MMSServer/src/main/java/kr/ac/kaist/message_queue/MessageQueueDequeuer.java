@@ -153,6 +153,11 @@ Rev. history : 2019-07-10
 Version : 0.9.3
 	Updated resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-11
+Version : 0.9.3
+	Updated mqChannel closing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -286,7 +291,7 @@ public class MessageQueueDequeuer extends Thread{
 				mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
 				try {
 					if(mqChannel != null && mqChannel.isOpen()) {
-						mqChannel.close();
+						mqChannel.close(320, "Service stoppted.");
 					}
 				} catch (IOException | TimeoutException e) {
 					mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
@@ -374,7 +379,7 @@ public class MessageQueueDequeuer extends Thread{
 	    	}
 	    	try {
 	    		if (mqChannel != null && mqChannel.isOpen()) {
-		    		mqChannel.close();
+	    			mqChannel.close(320, "Service stoppted.");
 		    		mqChannel = null;
 	    		}
 	    	}
@@ -417,7 +422,7 @@ public class MessageQueueDequeuer extends Thread{
 		    	
 		    	try {
 		    		if (mqChannel != null && mqChannel.isOpen()) {
-			    		mqChannel.close();
+			    		mqChannel.close(320, "Service stoppted.");
 			    		mqChannel = null;
 		    		}
 		    	}
@@ -607,7 +612,7 @@ public class MessageQueueDequeuer extends Thread{
     	if (pollingMethod != null && pollingMethod.equals("normal")) { // Polling method: normal polling
     		if (mqChannel != null && mqChannel.isOpen()) {
 	    		try {
-					mqChannel.close();
+					mqChannel.close(320, "Service stoppted.");
 				} catch (IOException | TimeoutException e) {
 					mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
 				}
