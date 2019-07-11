@@ -230,6 +230,17 @@ public class MNSDummy {
 		MRNtoIP.put("urn:mrn:kr:service:instance:smart:mesis-np","203.250.182.94:7088:2");
 		MRNtoIP.put("urn:mrn:kr:service:instance:smart:mesis-owhi","203.250.182.94:7088:2");
 		
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:namas-avs_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:sbsms-osrm_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:sorps-osvp_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:redss-edus_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:redss-wst_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:pitas-ptbs_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:pitas-vpps_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:mesis-msi_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:mesis-np_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:mesis-owhi_DEMO","203.250.182.93:7088:2");
+		
 		// - DEVICE
 		MRNtoIP.put("urn:mrn:kr:device:ecs:0001","1.1.1.1:0:1");
 		MRNtoIP.put("urn:mrn:kr:device:ecs:0002","1.1.1.1:0:1");
