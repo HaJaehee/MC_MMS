@@ -4,4 +4,4 @@ if [ -f "/var/mms/logs/mms-server.html" ]; then
 	mv /var/mms/logs/mms-server.html /var/mms/logs/mms-server.$now.html
 fi
 cd ../target
-java -cp ../target/MC_MMS-0.9.2-SNAPSHOT.jar kr.ac.kaist.mms_server.MMSServer -mqmngproto https
+java -cp ../target/MC_MMS-0.9.3-SNAPSHOT.jar kr.ac.kaist.mms_server.MMSServer -mqmngproto https

@@ -65,6 +65,16 @@ Version : 0.9.3
 	Added resetSessionInfo().
 	Added multi-thread safety.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-09
+Version : 0.9.3
+	Revised for coding rule conformity.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-11
+Version : 0.9.3
+	Added GC suggestion.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */
 
@@ -129,13 +139,13 @@ public class SessionManager {
 			super();
 		}
 		
-		//TODO
 		@Override
-		public void run() {
+		public synchronized void run() {
 			try { // Wait for initializing other threads.
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				// Do nothing.
+				System.out.println(e.getMessage());
 			}
 			
 			File f = new File("./session-count.csv");
@@ -144,73 +154,120 @@ public class SessionManager {
 			BufferedWriter bw = null;
 			PrintWriter pw = null;
 			
-			if (f.exists()) {
+			
+			synchronized (f) {
 				long fileLines = 0;
-				try {
-					FileReader fr = new FileReader(f);
-					BufferedReader br = new BufferedReader(fr);
-					String line;
-	
-					while ((line=br.readLine()) != null) {
-						fileLines++;
+				FileReader fr = null;
+				BufferedReader br = null;
+				if (f.exists()) {
+
+					try {
+						fr = new FileReader(f);
+						br = new BufferedReader(fr);
+						String line;
+		
+						while ((line=br.readLine()) != null) {
+							fileLines++;
+						}
+						
+						br.close();
+						fr.close();
+						
+					} //TODO: logger 사용 변경 
+					catch (ArrayIndexOutOfBoundsException | NumberFormatException | IOException e1) {
+						MMSLog.getInstance().warnException(logger, "", "File session-count.csv is not found or there is a problem when reading the file.", e1, 5);
 					}
-					
-					br.close();
-					fr.close();
-					
-				} //TODO: logger 사용 변경 
-				catch (ArrayIndexOutOfBoundsException | NumberFormatException | IOException e1) {
-					MMSLog mmsLog = MMSLog.getInstance();
-					mmsLog.warnException(logger, "", "File session-count.csv is not found or there is a problem when reading the file.", e1, 5);
+					finally {
+						if (fr != null) {
+							try {
+								fr.close();
+							} catch (IOException e) {
+								MMSLog.getInstance().warnException(logger, "","Failed to close BufferedWriter.", e, 5);
+							}
+							fr = null;
+						}
+						if (br != null) {
+							try {
+								br.close();
+							} catch (IOException e) {
+								MMSLog.getInstance().warnException(logger, "","Failed to close BufferedWriter.", e, 5);
+			
+							}
+							bw = null;
+						}
+					}
 				}
-				
+					
 				fileLines -= 12*60*24;
 				long lineCount = fileLines;
+				
+				if (f.exists()) {
+					try {
+						fr = new FileReader(f);
+						br = new BufferedReader(fr);
+						String line;
+						long curTimeMillis = System.currentTimeMillis();
+						
+						while ((line=br.readLine()) != null) {
+							if (lineCount > 0) {
+								lineCount--;
+								continue;
+							}
+							
+							
+							if (line.equals("")) {
+								break;
+							}
+							String[] timeAndSessionCountAndPollingSessionCount = line.split(",");
+							//print
+							
+							long time = Long.parseLong(timeAndSessionCountAndPollingSessionCount[0]);
+							long isOverflow  = curTimeMillis - time;
+							long aDayTime = 1000*60*60*24;
+							if (isOverflow > 0 && isOverflow > aDayTime ) {  // More than 24 hours,
+								continue; // ignore.
+							}
+							
+							long sessionCount = Long.parseLong(timeAndSessionCountAndPollingSessionCount[1]);
+							long pollingSessionCount = Long.parseLong(timeAndSessionCountAndPollingSessionCount[2]);
+							
+							
+							SessionCountForFiveSecs scffs = new SessionCountForFiveSecs(time);
+							scffs.setSessionCount(sessionCount);
+							scffs.setPollingSessionCount(pollingSessionCount);
+							synchronized(sessionCountList) {
+								sessionCountList.add(0,scffs);
+							}
+						}
+						br.close();
+						fr.close();
+					} 
+					catch (ArrayIndexOutOfBoundsException | NumberFormatException | IOException e1) {
+						MMSLog mmsLog = MMSLog.getInstance();
+						mmsLog.warnException(logger, "", "File session-count.csv is not found or there is a problem when reading the file.", e1, 5);
 	
-				try {
-					FileReader fr = new FileReader(f);
-					BufferedReader br = new BufferedReader(fr);
-					String line;
-					long curTimeMillis = System.currentTimeMillis();
-					
-					while ((line=br.readLine()) != null) {
-						if (lineCount > 0) {
-							lineCount--;
-							continue;
+					}
+					finally {
+						if (fr != null) {
+							try {
+								fr.close();
+							} catch (IOException e) {
+								MMSLog.getInstance().warnException(logger, "","Failed to close BufferedWriter.", e, 5);
+							}
+							fr = null;
 						}
-						
-						
-						if (line.equals("")) {
-							break;
-						}
-						String[] timeAndSessionCountAndPollingSessionCount = line.split(",");
-						//print
-						
-						long time = Long.parseLong(timeAndSessionCountAndPollingSessionCount[0]);
-						if (curTimeMillis - time > 1000*60*60*24) {  // More than 24 hours,
-							continue; // ignore.
-						}
-						
-						long sessionCount = Long.parseLong(timeAndSessionCountAndPollingSessionCount[1]);
-						long pollingSessionCount = Long.parseLong(timeAndSessionCountAndPollingSessionCount[2]);
-						
-						
-						SessionCountForFiveSecs scffs = new SessionCountForFiveSecs(time);
-						scffs.setSessionCount(sessionCount);
-						scffs.setPollingSessionCount(pollingSessionCount);
-						synchronized(sessionCountList) {
-							sessionCountList.add(0,scffs);
+						if (br != null) {
+							try {
+								br.close();
+							} catch (IOException e) {
+								MMSLog.getInstance().warnException(logger, "","Failed to close BufferedWriter.", e, 5);
+			
+							}
+							bw = null;
 						}
 					}
-					br.close();
-					fr.close();
-				} catch (ArrayIndexOutOfBoundsException | NumberFormatException | IOException e1) {
-					MMSLog mmsLog = MMSLog.getInstance();
-					mmsLog.warnException(logger, "", "File session-count.csv is not found or there is a problem when reading the file.", e1, 5);
-
 				}
-				
-				
+					
 				
 				/*
 				// Rewrite session-count.csv if the file has more than 24 hours content.
@@ -242,106 +299,119 @@ public class SessionManager {
 			    			}
 					} 
 				}*/
+				
 			}
+			System.gc();
 			
 			while (System.currentTimeMillis() % 5000 > 100 ) { // Avoid busy waiting.
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					// Do nothing.
+					System.out.println(e.getMessage());
 				}
 			}
 			
+			int gcSuggestion = 0;
 			
-			while (true) { // Start tik tok.
-				try {
-					long curTimeMillis = System.currentTimeMillis();
-					long correction = 0;
-					
-					if (curTimeMillis % 5000 < 100 ) {
-						correction = curTimeMillis % 5000; // Session counting list saves the number of sessions for every 5 seconds.
-						
-						
-					
-						synchronized(sessionCountList) {
-							long lastTime = 0;
-							if (sessionCountList.size() > 0) {
-								lastTime = sessionCountList.get(0).getCurTimeInMillis();
-							}
-							
-						
-							while (curTimeMillis - lastTime > 10000 && curTimeMillis - lastTime < 1000*60*60*24) { // More than 10 seconds, less than 24 hours.
-								sessionCountList.add(0,new SessionCountForFiveSecs(lastTime+5000)); // Add time slots having 0 session count.
-								lastTime += 5000;
-							}
-							
-							
-							
-							for (int i = sessionCountList.size()-(12*60*24) ; i >= 0 ; i--) { // Session counts are saved for 24 hours.
-								sessionCountList.remove(sessionCountList.size()-1);
-							}
-							
-							fw = new FileWriter(f, true);
-							bw = new BufferedWriter(fw);
-							pw = new PrintWriter(bw);
-							if (sessionCountList.size() > 0) {
-								pw.println(sessionCountList.get(0).getCurTimeInMillis()+","
-										+sessionCountList.get(0).getSessionCount()+","
-										+sessionCountList.get(0).getPollingSessionCount());
-							}
-							pw.close();
-							bw.close();
-							fw.close();
-							
-							SessionCountForFiveSecs curCount = new SessionCountForFiveSecs(curTimeMillis);
-							sessionCountList.add(0, curCount);
-						}
-		
-						/*
-						// print
-						for (int i = 0 ; i < sessionCountList.size() ; i++) {
-							SimpleDateFormat dayTime = new SimpleDateFormat("hh:mm:ss:SSS");
-							System.out.print(dayTime.format(sessionCountList.get(i).getCurTimeInMillis())+"  ");
-						}
-						System.out.println();
-						*/
-						
-						try {
-							Thread.sleep(5000 - correction);
-						} catch (InterruptedException e) {
-							// Do nothing.
-						}
-						
-					}
+			boolean escapeLoop = false;
+			while (!escapeLoop) { // Start tik tok.
+			
+				gcSuggestion++;
+				if (gcSuggestion > 100) {
+					System.gc();
+					gcSuggestion = 0;
 				}
-				catch (IOException e1) {
-					MMSLog mmsLog = MMSLog.getInstance();
-					mmsLog.warnException(logger, "","File session-count.csv is not found or there is a problem when writing the file.", e1, 5);
-					
-				} 
-				finally {
-					if (pw != null) {
-						pw.close();
-					}
-					if (bw != null) {
-						try {
-							bw.close();
-						} catch (IOException e) {
-							MMSLog mmsLog = MMSLog.getInstance();
-							mmsLog.warnException(logger, "","Failed to close BufferedWriter.", e, 5);
-		
+				long curTimeMillis = System.currentTimeMillis();
+				long correction = 0;
+				
+				if (curTimeMillis % 5000 < 100 ) {
+					correction = curTimeMillis % 5000; // Session counting list saves the number of sessions for every 5 seconds.
+					synchronized(sessionCountList) {
+						long lastTime = 0;
+						if (sessionCountList.size() > 0) {
+							lastTime = sessionCountList.get(0).getCurTimeInMillis();
 						}
-					}
-					if (fw != null) {
-						try {
-							fw.close();
-						} catch (IOException e) {
-							MMSLog mmsLog = MMSLog.getInstance();
-							mmsLog.warnException(logger, "","Failed to close FileWriter.", e, 5);
 						
+					
+						while (curTimeMillis - lastTime > 10000 && curTimeMillis - lastTime < 1000*60*60*24) { // More than 10 seconds, less than 24 hours.
+							sessionCountList.add(0,new SessionCountForFiveSecs(lastTime+5000)); // Add time slots having 0 session count.
+							lastTime += 5000;
 						}
+
+						for (int i = sessionCountList.size()-(12*60*24) ; i >= 0 ; i--) { // Session counts are saved for 24 hours.
+							sessionCountList.remove(sessionCountList.size()-1);
+						}
+						
+						try {
+							synchronized (f) {
+								if (f.exists()) {
+									fw = new FileWriter(f, true);
+									bw = new BufferedWriter(fw);
+									pw = new PrintWriter(bw);
+									if (sessionCountList.size() > 0) {
+										pw.println(sessionCountList.get(0).getCurTimeInMillis()+","
+												+sessionCountList.get(0).getSessionCount()+","
+												+sessionCountList.get(0).getPollingSessionCount());
+									}
+									pw.close();
+									bw.close();
+									fw.close();
+								}
+							}
+						}
+						catch (IOException e){
+							//escapeLoop = true;
+							MMSLog.getInstance().warnException(logger, "","File session-count.csv is not found or there is a problem when writing the file.", e, 5);
+
+						}
+						finally {
+							if (pw != null) {
+								pw.close();
+								pw = null;
+							}
+							if (bw != null) {
+								try {
+									bw.close();
+								} catch (IOException e) {
+									MMSLog mmsLog = MMSLog.getInstance();
+									mmsLog.warnException(logger, "","Failed to close BufferedWriter.", e, 5);
+				
+								}
+								bw = null;
+							}
+							if (fw != null) {
+								try {
+									fw.close();
+								} catch (IOException e) {
+									MMSLog mmsLog = MMSLog.getInstance();
+									mmsLog.warnException(logger, "","Failed to close FileWriter.", e, 5);
+								
+								}
+								fw = null;
+							}
+						}
+						
+						SessionCountForFiveSecs curCount = new SessionCountForFiveSecs(curTimeMillis);
+						sessionCountList.add(0, curCount);
 					}
-				}
+	
+					/*
+					// print
+					for (int i = 0 ; i < sessionCountList.size() ; i++) {
+						SimpleDateFormat dayTime = new SimpleDateFormat("hh:mm:ss:SSS");
+						System.out.print(dayTime.format(sessionCountList.get(i).getCurTimeInMillis())+"  ");
+					}
+					System.out.println();
+					*/
+					
+					try {
+						Thread.sleep(5000 - correction);
+					} catch (InterruptedException e) {
+						// Do nothing.
+						System.out.println(e.getMessage());
+					}
+				}			
 			} 
 		}
 	}

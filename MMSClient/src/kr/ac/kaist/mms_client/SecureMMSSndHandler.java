@@ -47,6 +47,11 @@ Rev. history : 2019-04-29
 Version : 0.8.2
 	Revised Base64 Encoder/Decoder.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-11
+Version : 0.9.3
+	Updated exception throw-catch phrases.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -181,7 +186,7 @@ class SecureMMSSndHandler {
     } 
 	
 	//OONI
-	String sendHttpsGetFile(String dstMRN, String fileName, Map<String,List<String>> headerField) throws Exception {
+	String sendHttpsGetFile(String dstMRN, String fileName, Map<String,List<String>> headerField) throws IOException {
 
 		String url = "https://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!fileName.startsWith("/")) {
@@ -239,10 +244,10 @@ class SecureMMSSndHandler {
 	//OONI end
 	
 	//HJH
-	void sendHttpsGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField) throws Exception {
+	void sendHttpsGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField) throws IOException {
 		sendHttpsGet(dstMRN, loc, params, headerField, -1);
 	}
-	void sendHttpsGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField, int seqNum) throws Exception {
+	void sendHttpsGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField, int seqNum) throws IOException {
 
 		String url = "https://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {

@@ -1,5 +1,10 @@
 Patch Notes
 ***********
+12-July 2019
+MC_MMS 0.9.3 new features/enhancements & bug-fixes:
+1. Resolved the memroy leak.
+2. Fixed several bugs.
+
 8-July 2019
 MC_MMS 0.9.2-HOTFIX new features/enhancements & bug-fixes:
 1. Added multi-thread safety codes.

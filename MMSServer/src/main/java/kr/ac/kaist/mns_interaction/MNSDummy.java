@@ -65,6 +65,11 @@ Rev. history : 2019-06-07
 Version : 0.9.2
 	Made logs neat.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-11
+Version : 0.9.3
+	Added GC suggestion.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */
 
@@ -100,6 +105,7 @@ public class MNSDummy {
 	public static void main(String argv[]) throws Exception
 	{
 		ServerSocket Sock = new ServerSocket(MMSConfiguration.getMnsPort());
+		int gcSuggestion = 0;
 		System.out.println("Listen:"+MMSConfiguration.getMnsPort());
 
 		//logger.error("MNSDummy started.");
@@ -190,30 +196,91 @@ public class MNSDummy {
 		MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp520fors53","119.197.77.106:0:1");
 		MRNtoIP.put("urn:mrn:smart:vessel:imo-no:mof:tmp520fors55","203.250.182.203:0:1");
 
+		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S10_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S11_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S20_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S30_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S40_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S51_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:smart:service:instance:mof:S52_DEMO","203.250.182.93:7088:2");
 		
 		// LOCAL TEST //
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-01-client","127.0.0.1:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-01-server","192.168.0.5:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-01-server","127.0.0.1:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-02-client","127.0.0.1:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-02-server","192.168.0.5:8907:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-03-server","192.168.0.5:8907:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-client","192.168.0.5:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-server","192.168.0.5:8907:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-06-server","192.168.0.5:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-02-server","127.0.0.1:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-03-server","127.0.0.1:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-client","127.0.0.1:0:1");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-04-server","127.0.0.1:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-06-server","127.0.0.1:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-07-client","1.1.1.1:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-07-server","192.168.0.5:8907:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-08-client","192.168.0.5:8907:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-08-server","192.168.0.5:8907:2");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-09-client","192.168.0.5:8907:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-09-server","192.168.0.5:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-07-server","127.0.0.1:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-08-client","127.0.0.1:8907:1");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-08-server","127.0.0.1:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-09-client","127.0.0.1:8907:1");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-09-server","127.0.0.1:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-10-client","1.1.1.1:0:1");
-		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-10-server","192.168.0.5:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-10-server","127.0.0.1:8907:2");
 		MRNtoIP.put("urn:mrn:smart-navi:device:service-provider","127.0.0.1:0:2");
+		
+		// REQUESTED MRN //
+		// - SERVICE
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:namas-avs","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:sbsms-osrm","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:sorps-osvp","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:redss-edus","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:redss-wst","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:pitas-ptbs","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:pitas-vpps","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:mesis-msi","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:mesis-np","203.250.182.94:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:mesis-owhi","203.250.182.94:7088:2");
+		
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:namas-avs_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:sbsms-osrm_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:sorps-osvp_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:redss-edus_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:redss-wst_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:pitas-ptbs_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:pitas-vpps_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:mesis-msi_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:mesis-np_DEMO","203.250.182.93:7088:2");
+		MRNtoIP.put("urn:mrn:kr:service:instance:smart:mesis-owhi_DEMO","203.250.182.93:7088:2");
+		
+		// - DEVICE
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0001","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0002","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0003","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0004","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0005","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0006","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0007","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0008","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0009","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:device:ecs:0010","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:user:cp:0001","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:user:cp:0002","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:user:cp:0003","1.1.1.1:0:1");
+		
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:440190220","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:440000350","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:440077620","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:440332640","1.1.1.1:0:1");
+		
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:440337650","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:440956000","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:441178000","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:kr:vessel:mmsi:000000001","1.1.1.1:0:1");
+		
 		//-----------------------------------------------------
 
 		while(true)
 		{
-
+			gcSuggestion++;
+			if (gcSuggestion > 1000) {
+				System.gc();
+				gcSuggestion = 0;
+			}
 			Socket connectionSocket = Sock.accept();
 
 
