@@ -53,6 +53,8 @@ public class MessageSequenceTest extends MMSTestBase {
 
 		client.SendRandomSequence(delay);
 		
+		Thread.sleep(2000);
+		
 		int size = server.getArraySize();
 		seqArray = server.getSeqnum();
 		
@@ -81,6 +83,8 @@ public class MessageSequenceTest extends MMSTestBase {
 
 		client.SendRandomSequence(delay);
 		
+		Thread.sleep(2000);
+		
 		int size = server.getArraySize();
 		seqArray = server.getSeqnum();
 		
@@ -107,6 +111,8 @@ public class MessageSequenceTest extends MMSTestBase {
 
 		client.SendRandomSequence(delay);
 		
+		Thread.sleep(2000);
+		
 		int size = server.getArraySize();
 		seqArray = server.getSeqnum();
 		
@@ -131,6 +137,8 @@ public class MessageSequenceTest extends MMSTestBase {
 		int checker =0;
 
 		client.SendSortedSequence(delay);
+		
+		Thread.sleep(2000);
 		
 		int size = server.getArraySize();
 		seqArray = server.getSeqnum();
@@ -157,6 +165,8 @@ public class MessageSequenceTest extends MMSTestBase {
 
 		client.SendSortedSequence(delay);
 		
+		Thread.sleep(2000);
+		
 		int size = server.getArraySize();
 		seqArray = server.getSeqnum();
 		
@@ -182,8 +192,11 @@ public class MessageSequenceTest extends MMSTestBase {
 
 		client.SendSortedSequence(delay);
 		
+		Thread.sleep(2000);
+		
 		int size = server.getArraySize();
 		seqArray = server.getSeqnum();
+		
 		
 		System.out.println("size : " +size);
 		assertFalse(size == 0);

@@ -31,6 +31,11 @@ Rev. history : 2019-06-20
 Version : 0.9.2
 	HOTFIX: polling authentication bug.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-09
+Version : 0.9.3
+	Revised for coding rule conformity.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -119,17 +124,13 @@ public class ClientVerifier {
 	
 	private void authenticateUsingMIRAPI(String srcMRN, String hexSignedData) {
 		
-		try {
-			serverPKILib = ServerPKILibrary.getInstance();
-			
-			byteConverter = ByteConverter.getInstance();
-			signedData = byteConverter.hexToByteArray(hexSignedData);
-			isVerified = serverPKILib.verifySignedData(signedData);
-			isMatching = serverPKILib.getSubjectMRN(signedData).equals(srcMRN);
-		}
-		catch (Exception e) {
-			mmsLog.info(logger, this.SESSION_ID, ErrorCode.MIR_API_ERROR.toString());
-		}
+		serverPKILib = ServerPKILibrary.getInstance();
+		
+		byteConverter = ByteConverter.getInstance();
+		signedData = byteConverter.hexToByteArray(hexSignedData);
+		isVerified = serverPKILib.verifySignedData(signedData);
+		isMatching = serverPKILib.getSubjectMRN(signedData).equals(srcMRN);
+
 	}
 	
 	public boolean isMatching () {

@@ -104,6 +104,11 @@ Rev. history : 2019-06-18
 Version : 0.9.2
 	Added ErrorCode.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-09
+Version : 0.9.3
+	Revised for coding rule conformity.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -225,15 +230,20 @@ public class MessageParser {
 		if (this.SESSION_ID != null && req.headers().get("geocasting") != null) {
 			if (req.headers().get("geocasting").equals("circle")) {
 				isGeocasting = true;	
-				setGeoCircleInfo(req);
-				if (logger.isDebugEnabled()) {
-					mmsLog.debug(logger, this.SESSION_ID, "Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".");
+				String msg = setGeoCircleInfo(req);
+				if (msg == null) {
+					if (logger.isDebugEnabled()) {
+						mmsLog.debug(logger, this.SESSION_ID, "Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".");
+					}
+				}
+				else {
+					mmsLog.info(logger, this.SESSION_ID, msg);
 				}
 			} 
 			else if (req.headers().get("geocasting").equals("polygon")) {
 				isGeocasting = true;
-				try {
-					setGeoPolygonInfo(req);
+				String msg = setGeoPolygonInfo(req);
+				if (msg == null) {
 					
 					if (logger.isDebugEnabled()) {
 						float [] geoLatList = geoPolygonInfo.getGeoLatList();
@@ -257,9 +267,9 @@ public class MessageParser {
 						mmsLog.debug(logger, this.SESSION_ID, "Geocasting polygon request. "+strGeoPolyInfo.toString()+".");
 
 					}
-				} 
-				catch (ParseException e) {
-					mmsLog.info(logger, this.SESSION_ID, ErrorCode.WRONG_GEOCASTING_INFO.toString());
+				}
+				else {
+					mmsLog.info(logger, this.SESSION_ID, msg);
 				}
 			} 
 			else {
@@ -283,8 +293,8 @@ public class MessageParser {
 			String keyStr = (String) key;
 			if (keyStr.equals("svcMRN")) {
 				svcMRN = (String) pollingRequestContents.get("svcMRN");
-//				System.out.println("[Parser] serviceMRN: " + svcMRN);
-				mmsLog.debug(logger, this.SESSION_ID, "Service MRN: " + svcMRN + ".");
+//				System.out.println("[Parser] serviceMRN=" + svcMRN);
+				mmsLog.debug(logger, this.SESSION_ID, "Service MRN=" + svcMRN + ".");
 			}
 			else if (keyStr.equals("certificate")) {
 				hexSignedData = (String) pollingRequestContents.get("certificate");
@@ -419,42 +429,58 @@ public class MessageParser {
 		return isGeocasting;
 	}
 	
-	public void setGeoCircleInfo (FullHttpRequest req) throws NumberFormatException, NullPointerException {
+	public String setGeoCircleInfo (FullHttpRequest req) {
 		geoCircleInfo = new GeolocationCircleInfo();
+		String ret = null;
 		if (req.headers().get("lat") == null) {
-			throw new NullPointerException("In header, \"lat\" item is missing.");
+			return ErrorCode.WRONG_GEOCASTING_INFO.toString().toString();
 		}
 		if (req.headers().get("long") == null) {
-			throw new NullPointerException("In header, \"long\" item is missing.");
+			return ErrorCode.WRONG_GEOCASTING_INFO.toString().toString();
 		}
 		if (req.headers().get("radius") == null) {
-			throw new NullPointerException("In header, \"radius\" item is missing.");
+			return ErrorCode.WRONG_GEOCASTING_INFO.toString().toString();
 		}
 		geoCircleInfo.setGeoLat(Float.parseFloat(req.headers().get("lat")));
 		geoCircleInfo.setGeoLong(Float.parseFloat(req.headers().get("long")));
 		geoCircleInfo.setGeoRadius(Float.parseFloat(req.headers().get("radius")));	
+		return ret;
 	}
 	
 	public GeolocationCircleInfo getGeoCircleInfo() {
 		return geoCircleInfo;
 	}
 	
-	public void setGeoPolygonInfo (FullHttpRequest req) throws NumberFormatException, ParseException, NullPointerException {
-		
+	public String setGeoPolygonInfo (FullHttpRequest req) {
+		String ret = null;
 		geoPolygonInfo = new GeolocationPolygonInfo();
 		if (req.headers().get("lat") == null) {
-			throw new NullPointerException("In header, \"lat\" item is missing.");
+			return ErrorCode.WRONG_GEOCASTING_INFO.toString().toString();
 		}
 		if (req.headers().get("long") == null) {
-			throw new NullPointerException("In header, \"long\" item is missing.");
+			return ErrorCode.WRONG_GEOCASTING_INFO.toString().toString();
 		}
-		float[] geoLatList = parseToFloatList(req.headers().get("lat"));
-		float[] geoLongList = parseToFloatList(req.headers().get("long"));
-		if (geoLatList.length < 3 || geoLongList.length < 3 || geoLatList.length != geoLongList.length) {
-			mmsLog.info(logger, SESSION_ID, ErrorCode.WRONG_GEOCASTING_INFO.toString());
+		float[] geoLatList = null;
+		try {
+			geoLatList = parseToFloatList(req.headers().get("lat"));
+		} catch (NumberFormatException | NullPointerException | ParseException e1) {
+			return ErrorCode.WRONG_GEOCASTING_INFO.toString().toString();
 		}
-		geoPolygonInfo.setGeoLatList(geoLatList);
-		geoPolygonInfo.setGeoLongList(geoLongList);
+		float[] geoLongList = null;
+		try {
+			geoLongList = parseToFloatList(req.headers().get("long"));
+		} catch (NumberFormatException | NullPointerException | ParseException e) {
+			return ErrorCode.WRONG_GEOCASTING_INFO.toString().toString();
+		}
+		if (geoLatList != null && geoLongList != null) {
+			if (geoLatList.length < 3 || geoLongList.length < 3 || geoLatList.length != geoLongList.length) {
+				mmsLog.info(logger, SESSION_ID, ErrorCode.WRONG_GEOCASTING_INFO.toString());
+			}
+			
+			geoPolygonInfo.setGeoLatList(geoLatList);
+			geoPolygonInfo.setGeoLongList(geoLongList);
+		}
+		return ret;
 	}
 	
 	private float[] parseToFloatList (String input) throws ParseException, NumberFormatException,  NullPointerException {

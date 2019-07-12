@@ -101,6 +101,16 @@ Rev. history : 2019-06-18
 Version : 0.9.2
 	Added ErrorCode.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-11
+Version : 0.9.3
+	Updated mqChannel closing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-12
+Version : 0.9.3
+	Updated mqChannel, mqConnection closing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 
 /* -------------------------------------------------------- */
@@ -147,8 +157,8 @@ class MessageQueueEnqueuer {
 			channel.queueDeclare(queueName, true, false, false, null);
 			
 			channel.basicPublish("", queueName, null, message.getBytes());
-			channel.close();
-			connection.close();
+			channel.close(320, "Service stopped.");
+			connection.close(320, "Service stopped.", 1000);
 			
 		} 
 		catch (IOException e) {
@@ -161,14 +171,14 @@ class MessageQueueEnqueuer {
 		finally {
     		if (channel != null && channel.isOpen()) {
 	    		try {
-					channel.close();
+					channel.close(320, "Service stopped.");
 				} catch (IOException | TimeoutException e) {
 					mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
 				}
 	    	}
     		if (connection != null && channel.isOpen()) {
 	    		try {
-	    			connection.close();
+	    			connection.close(320, "Service stopped.",1000);
 				} catch (IOException e) {
 					mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CONNECTION_CLOSE_ERROR.toString(), e, 5);
 				}

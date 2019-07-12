@@ -75,6 +75,11 @@ Rev. history : 2019-06-18
 Version : 0.9.2
 	Added ErrorCode.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-10
+Version : 0.9.3
+	Added resource managing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -98,6 +103,7 @@ import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 
@@ -162,16 +168,16 @@ public class MessageCastingHandler {
 		}
 		return "OK".getBytes(Charset.forName("UTF-8"));
 	}
-	public byte[] unicast (MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String dstIP, int dstPort, String protocol, HttpMethod httpMethod, String srcMRN, String dstMRN) {
+	public byte[] unicast (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx,  FullHttpRequest req, String dstIP, int dstPort, String protocol, HttpMethod httpMethod, String srcMRN, String dstMRN) {
 		
 		byte[] message = null;
 		try {
     		if (protocol.equals("http")) {
-    			message = outputChannel.sendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    			message = outputChannel.sendMessage(ctx, req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
     			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTP.");
     		} 
     		else if (protocol.equals("https")) { 
-    			message = outputChannel.secureSendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    			message = outputChannel.secureSendMessage(ctx, req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
     			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTPS.");
     		} 
     		else {
@@ -185,17 +191,17 @@ public class MessageCastingHandler {
 		return message;
 	}
 	
-	public ConnectionThread asynchronizedUnicast(MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String dstIP, int dstPort, String protocol, HttpMethod httpMethod, String srcMRN, String dstMRN) {
+	public ConnectionThread asynchronizedUnicast(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String dstIP, int dstPort, String protocol, HttpMethod httpMethod, String srcMRN, String dstMRN) {
 		ConnectionThread thread = null;
 		try {
     		if (protocol.equals("http")) {
-    			thread = outputChannel.asynchronizeSendMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    			thread = outputChannel.asynchronizeSendMessage(ctx, req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
     			thread.start();
     			
     			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTP.");
     		} 
     		else if (protocol.equals("https")) { 
-    			thread = outputChannel.asynchronizeSendSecureMessage(req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    			thread = outputChannel.asynchronizeSendSecureMessage(ctx, req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
     			thread.start();
     			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTPS.");
     		} 
@@ -211,7 +217,7 @@ public class MessageCastingHandler {
 	}
 	
 	
-	public byte[] geocast (MRH_MessageOutputChannel outputChannel, FullHttpRequest req, String srcMRN, JSONArray geoDstInfo, String protocol, HttpMethod httpMethod) {
+	public byte[] geocast (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String srcMRN, JSONArray geoDstInfo, String protocol, HttpMethod httpMethod) {
 		
 		if (geoDstInfo != null) {
 			Iterator iter = geoDstInfo.iterator();
@@ -242,11 +248,11 @@ public class MessageCastingHandler {
 		        		int dstPortInGeoDstInfo = Integer.parseInt((String) obj.get("portNum"));
 		        		
 		        		if (protocol.equals("http")) {
-						    outputChannel.sendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
+						    outputChannel.sendMessage(ctx, req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
 						    mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTP.");
 		        		} 
 		        		else if (protocol.equals("https")) { 
-		        			outputChannel.secureSendMessage(req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
+		        			outputChannel.secureSendMessage(ctx, req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
 		        			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTPS.");
 		        		} 
 		        		else {

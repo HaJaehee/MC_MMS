@@ -14,6 +14,10 @@ Author : Jin Jeong (jungst0001@kaist.ac.kr)
 Creation Date : 2019-05-21
 Version : 0.9.1
 
+Rev. history : 2019-07-09
+Version : 0.9.3
+	Revised for coding rule conformity.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 
 @Deprecated
@@ -66,14 +70,23 @@ public class PollingSessionManager {
 	public synchronized PollingSessionManagerCode refresh(String srcMRN, String hexSignedData) {
 //		System.out.println("[PollingSessionManager] Update this session");
 		PollingSession session = sessionList.get(srcMRN, hexSignedData);
-		session.getTask().cancel();
-		setTimerOn(session);
+		
+		if (session != null) {
+			TimerTask task = session.getTask();
+			if (task != null) {
+				task.cancel();
+			}
+			setTimerOn(session);
+		}
 		
 		return PollingSessionManagerCode.REFLESHED;
 	}
 	
 	public synchronized PollingSessionManagerCode refresh(PollingSession session) {
-		session.getTask().cancel();
+		TimerTask task = session.getTask();
+		if (task != null) {
+			task.cancel();
+		}
 		setTimerOn(session);
 		
 		return PollingSessionManagerCode.REFLESHED;

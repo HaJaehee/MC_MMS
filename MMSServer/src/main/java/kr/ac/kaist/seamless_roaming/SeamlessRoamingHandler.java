@@ -65,6 +65,11 @@ Rev. history : 2019-07-07
 Version : 0.9.3
 	Added resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-10
+Version : 0.9.3
+	Updated resource managing codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -102,7 +107,7 @@ public class SeamlessRoamingHandler {
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
 
-	private static HashMap<String, String> duplicateInfo = new HashMap<>();
+	private static HashMap<String, Integer> duplicateInfo = new HashMap<>();
 	
 
 	public SeamlessRoamingHandler(String sessionId) {
@@ -241,17 +246,21 @@ public class SeamlessRoamingHandler {
 			// Youngjin code
 			// Duplicated polling request is not allowed.
 			String DUPLICATE_ID = srcMRN + svcMRN;
-			if (getDuplicateInfo(DUPLICATE_ID) != null) {
+			retainDuplicateInfo(DUPLICATE_ID);
+			
+			if (getDuplicateInfoCnt(DUPLICATE_ID) > 1) {
 				
-//				System.out.println("duplicate long polling request");
+//					System.out.println("duplicate long polling request");
 				
 				// TODO: To define error message.
 				message = ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes();
-				
+				mmsLog.debug(logger, SESSION_ID, ErrorCode.DUPLICATED_POLLING.toString());
+				if (req != null && req.refCnt()>0) {
+					req.release();
+				}
 				return message;
 				
 			} else {
-				duplicateInfo.put(DUPLICATE_ID, "y");
 				pmh.dequeueSCMessage(outputChannel, ctx, req, srcMRN, svcMRN, pollingMethod);
 			}
 		}
@@ -276,21 +285,30 @@ public class SeamlessRoamingHandler {
 		}
 	}
 	
-	public static String getDuplicateInfo(String duplicate_id) {
+	public static Integer getDuplicateInfoCnt(String duplicate_id) {
 		synchronized(duplicateInfo) {
 			return duplicateInfo.get(duplicate_id);
 		}
 	}
 	
-	public static void putDuplicateInfo(String duplicate_id) {
+	public static void retainDuplicateInfo(String duplicate_id) {
 		synchronized(duplicateInfo) {
-			duplicateInfo.put(duplicate_id, "y");
+			Integer refCnt = duplicateInfo.get(duplicate_id);
+			duplicateInfo.put(duplicate_id, refCnt == null? new Integer(1) : (Integer) (refCnt.intValue() + 1));
 		}
 	}
 	
-	public static void removeDuplicateInfo(String duplicate_id) {
+	public static void releaseDuplicateInfo(String duplicate_id) {
 		synchronized(duplicateInfo) {
-			duplicateInfo.remove(duplicate_id);
+			Integer refCnt = duplicateInfo.get(duplicate_id);
+			if (refCnt != null) {
+				if (refCnt.intValue() == 1) {
+					duplicateInfo.remove(duplicate_id);
+				}
+				else {
+					duplicateInfo.put(duplicate_id, (Integer) (refCnt.intValue() - 1));
+				}
+			}
 		}
 	}
 }

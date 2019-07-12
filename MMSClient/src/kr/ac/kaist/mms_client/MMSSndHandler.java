@@ -59,6 +59,11 @@ Rev. history : 2019-05-22
 Version : 0.9.1
 	Add send function with timeout.
 Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
+Rev. history : 2019-07-11
+Version : 0.9.3
+	Updated exception throw-catch phrases.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -197,7 +202,7 @@ class MMSSndHandler {
 	}
 	
 	//OONI
-	String sendHttpGetFile(String dstMRN, String fileName, Map<String,List<String>> headerField) throws Exception {
+	String sendHttpGetFile(String dstMRN, String fileName, Map<String,List<String>> headerField) throws IOException {
 
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!fileName.startsWith("/")) {
@@ -253,10 +258,10 @@ class MMSSndHandler {
 	//OONI end
 	
 	//HJH
-	void sendHttpGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField) throws Exception {
+	void sendHttpGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField) throws IOException {
 		sendHttpGet(dstMRN, loc, params, headerField, -1);
 	}
-	void sendHttpGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField, int seqNum) throws Exception {
+	void sendHttpGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField, int seqNum) throws IOException {
 
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
