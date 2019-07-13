@@ -436,14 +436,10 @@ public class MessageRelayingHandler  {
 		// TODO: Youngjin Kim must inspect this following code.
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (bean.getType() == MessageTypeDecider.msgType.POLLING || bean.getType() == MessageTypeDecider.msgType.LONG_POLLING) {
-			bean.retain(); // The (MRH_MessageInputChannel.ChannelBean) bean MUST be released in these logic A, B, or C. 
+			bean.retain(); // The (MRH_MessageInputChannel.ChannelBean) bean MUST be released in these logic A or B. 
 			srh = new SeamlessRoamingHandler(bean.getSessionId());
-			if (bean.getType() == MessageTypeDecider.msgType.POLLING) {
-				message = srh.initializeAndGetError(bean, "normal"); // logic A.
-			}
-			else if (bean.getType() == MessageTypeDecider.msgType.LONG_POLLING) {
-				message = srh.initializeAndGetError(bean, "long"); // logic B.
-			}
+			message = srh.initializeAndGetError(bean); // logic A.
+
 			if (message != null) { 
 				try {
 					bean.getOutputChannel().replyToSender(bean.getCtx(), message, isRealtimeLog);
@@ -451,7 +447,7 @@ public class MessageRelayingHandler  {
 					mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 				}
 				finally {
-					bean.getReq().release(); // logic C.
+					bean.getReq().release(); // logic B.
 				}
 			}
 

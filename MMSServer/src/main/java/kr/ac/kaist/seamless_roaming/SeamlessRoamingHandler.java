@@ -138,7 +138,7 @@ public class SeamlessRoamingHandler {
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 
-	public byte[] initializeAndGetError (MRH_MessageInputChannel.ChannelBean bean, String method) {
+	public byte[] initializeAndGetError (MRH_MessageInputChannel.ChannelBean bean) {
 		
 		byte[] message = null;
 		String srcMRN = bean.getParser().getSrcMRN();
