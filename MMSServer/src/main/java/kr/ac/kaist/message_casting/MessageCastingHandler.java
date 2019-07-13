@@ -167,23 +167,24 @@ public class MessageCastingHandler {
 		
 	}
 	
-	public byte[] castMsgsToMultipleCS (String srcMRN, String[] dstMRNs, String content) {
+	/*public byte[] castMsgsToMultipleCS (MRH_MessageInputChannel.ChannelBean bean, String content) {
 		mmsLog.debug(logger, this.SESSION_ID, "multicast.");
+		String [] dstMRNs = bean.getParser().getMultiDstMRN();
 		for (int i = 0; i < dstMRNs.length;i++){
 			srh.putSCMessage(srcMRN, dstMRNs[i], content);
 		}
 		return "OK".getBytes(Charset.forName("UTF-8"));
-	}
-	public byte[] unicast (MRH_MessageInputChannel.ChannelBean bean, String dstIP, int dstPort, HttpMethod httpMethod, String srcMRN, String dstMRN) {
+	}*/
+	public byte[] unicast (MRH_MessageInputChannel.ChannelBean bean) {
 		
 		byte[] message = null;
 		try {
     		if (bean.getProtocol().equals("http")) {
-    			message = bean.getOutputChannel().sendMessage(bean, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    			message = bean.getOutputChannel().sendMessage(bean);
     			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTP.");
     		} 
     		else if (bean.getProtocol().equals("https")) { 
-    			message = bean.getOutputChannel().secureSendMessage(bean, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    			message = bean.getOutputChannel().secureSendMessage(bean);
     			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTPS.");
     		} 
     		else {
@@ -197,17 +198,17 @@ public class MessageCastingHandler {
 		return message;
 	}
 	
-	public ConnectionThread asynchronizedUnicast(MRH_MessageInputChannel.ChannelBean bean, String dstIP, int dstPort, HttpMethod httpMethod, String srcMRN, String dstMRN) {
+	public ConnectionThread asynchronizedUnicast(MRH_MessageInputChannel.ChannelBean bean) {
 		ConnectionThread thread = null;
 		try {
     		if (bean.getProtocol().equals("http")) {
-    			thread = bean.getOutputChannel().asynchronizeSendMessage(bean, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    			thread = bean.getOutputChannel().asynchronizeSendMessage(bean);
     			thread.start();
     			
     			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTP.");
     		} 
     		else if (bean.getProtocol().equals("https")) { 
-    			thread = bean.getOutputChannel().asynchronizeSendSecureMessage(bean, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    			thread = bean.getOutputChannel().asynchronizeSendSecureMessage(bean);
     			thread.start();
     			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTPS.");
     		} 
@@ -223,10 +224,10 @@ public class MessageCastingHandler {
 	}
 	
 	
-	public byte[] geocast (MRH_MessageInputChannel.ChannelBean bean, String srcMRN, JSONArray geoDstInfo, HttpMethod httpMethod) {
+	public byte[] geocast (MRH_MessageInputChannel.ChannelBean bean) {
 		
-		if (geoDstInfo != null) {
-			Iterator iter = geoDstInfo.iterator();
+		if (bean.getParser().getGeoDstInfo() != null) {
+			Iterator iter = bean.getParser().getGeoDstInfo().iterator();
 			while (iter.hasNext()) {
 				JSONObject obj = (JSONObject) iter.next(); 
 				String connType = (String) obj.get("connType");
@@ -243,7 +244,7 @@ public class MessageCastingHandler {
 					
 					String dstMRNInGeoDstInfo = (String) obj.get("dstMRN");
 					String netTypeInGeoDstInfo = (String) obj.get("netType");
-					srh.putSCMessage(srcMRN, dstMRNInGeoDstInfo, bean.getReq().content().toString(Charset.forName("UTF-8")).trim());
+					srh.putSCMessage(bean, bean.getReq().content().toString(Charset.forName("UTF-8")).trim());
 		    		
 				}
 				else if (connType.equals("push")) {
@@ -254,11 +255,11 @@ public class MessageCastingHandler {
 		        		int dstPortInGeoDstInfo = Integer.parseInt((String) obj.get("portNum"));
 		        		
 		        		if (bean.getProtocol().equals("http")) {
-						    bean.getOutputChannel().sendMessage(bean, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
+						    bean.getOutputChannel().sendMessage(bean);
 						    mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTP.");
 		        		} 
 		        		else if (bean.getProtocol().equals("https")) { 
-		        			bean.getOutputChannel().secureSendMessage(bean, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
+		        			bean.getOutputChannel().secureSendMessage(bean);
 		        			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTPS.");
 		        		} 
 		        		else {

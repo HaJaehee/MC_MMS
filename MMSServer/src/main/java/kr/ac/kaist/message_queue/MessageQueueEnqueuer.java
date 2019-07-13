@@ -13,6 +13,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
+import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
@@ -111,6 +112,11 @@ Rev. history : 2019-07-12
 Version : 0.9.3
 	Updated mqChannel, mqConnection closing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Introduced MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 
 /* -------------------------------------------------------- */
@@ -132,10 +138,10 @@ class MessageQueueEnqueuer {
 	}
 	
 	
-	void enqueueMessage(String srcMRN, String dstMRN, String message) {
+	void enqueueMessage(MRH_MessageInputChannel.ChannelBean bean, String message) {
 		Connection connection = null;
 		Channel channel = null;
-		String queueName = dstMRN+"::"+srcMRN;
+		String queueName = bean.getParser().getDstMRN()+"::"+bean.getParser().getSrcMRN();
 		if(logger.isTraceEnabled()) {
 			mmsLog.trace(logger, this.SESSION_ID, "Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(message));
 		 }

@@ -90,14 +90,14 @@ public class MessageQueueManager {
 		outputChannel = new MRH_MessageOutputChannel(SESSION_ID);
 	}
 	
-	public void dequeueMessage (MRH_MessageInputChannel.ChannelBean bean, String srcMRN, String svcMRN, String pollingMethod) {
+	public void dequeueMessage (MRH_MessageInputChannel.ChannelBean bean) {
 		MessageQueueDequeuer mqd = new MessageQueueDequeuer(this.SESSION_ID);
-		mqd.dequeueMessage(bean, srcMRN, svcMRN, pollingMethod);
+		mqd.dequeueMessage(bean);
 	}
 	
-	public void enqueueMessage (String srcMRN, String dstMRN, String message) {
+	public void enqueueMessage (MRH_MessageInputChannel.ChannelBean bean, String message) {
 		MessageQueueEnqueuer mqe = new MessageQueueEnqueuer(this.SESSION_ID);
-		mqe.enqueueMessage(srcMRN, dstMRN, message);
+		mqe.enqueueMessage(bean, message);
 	}
 	
 	public long getTotalQueueNumber ()  {

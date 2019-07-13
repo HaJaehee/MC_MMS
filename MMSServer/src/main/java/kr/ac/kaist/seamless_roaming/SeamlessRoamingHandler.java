@@ -83,7 +83,7 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.MessageParser;
-
+import kr.ac.kaist.message_relaying.MessageTypeDecider;
 import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.message_relaying.polling_auth.ClientVerifier;
 import kr.ac.kaist.mms_server.ErrorCode;
@@ -92,6 +92,7 @@ import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 
+import java.awt.TrayIcon.MessageType;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -227,7 +228,7 @@ public class SeamlessRoamingHandler {
 		}
 		
 
-		message = processPollingMessage(bean, srcMRN, srcIP, method, svcMRN);
+		message = processPollingMessage(bean);
 
 		
 		return message;
@@ -236,22 +237,21 @@ public class SeamlessRoamingHandler {
 	
 	// TODO: Youngjin Kim must inspect this following code.
 	// Poll SC message in queue.
-	public byte[] processPollingMessage(MRH_MessageInputChannel.ChannelBean bean, String srcMRN,
-			String srcIP, String pollingMethod, String svcMRN) {
+	public byte[] processPollingMessage(MRH_MessageInputChannel.ChannelBean bean) {
 
 		byte[] message = null;
-		if (pollingMethod.equals("normal"))	{
+		if (bean.getType() == MessageTypeDecider.msgType.POLLING)	{
 			SessionManager.putSessionInfo(SESSION_ID, "p");
 			SessionManager.incPollingSessionCount();
-			pmh.dequeueSCMessage(bean, srcMRN, svcMRN, pollingMethod);
+			pmh.dequeueSCMessage(bean);
 		}
-		else if (pollingMethod.equals("long")) {
+		else if (bean.getType() == MessageTypeDecider.msgType.LONG_POLLING) {
 			SessionManager.putSessionInfo(SESSION_ID, "lp");
 			SessionManager.incPollingSessionCount();
 			
 			// Youngjin code
 			// Duplicated polling request is not allowed.
-			String DUPLICATE_ID = srcMRN + svcMRN;
+			String DUPLICATE_ID = bean.getParser().getSrcMRN() + bean.getParser().getSvcMRN();
 			retainDuplicateInfo(DUPLICATE_ID);
 			
 			if (getDuplicateInfoCnt(DUPLICATE_ID) > 1) {
@@ -267,7 +267,7 @@ public class SeamlessRoamingHandler {
 				return message;
 				
 			} else {
-				pmh.dequeueSCMessage(bean, srcMRN, svcMRN, pollingMethod);
+				pmh.dequeueSCMessage(bean);
 			}
 		}
 		
@@ -280,8 +280,8 @@ public class SeamlessRoamingHandler {
 	}
 
 //	save SC message into queue
-	public void putSCMessage(String srcMRN, String dstMRN, String message) {
-		scmh.enqueueSCMessage(srcMRN, dstMRN, message);
+	public void putSCMessage(MRH_MessageInputChannel.ChannelBean bean, String message) {
+		scmh.enqueueSCMessage(bean, message);
 	}
 
 	

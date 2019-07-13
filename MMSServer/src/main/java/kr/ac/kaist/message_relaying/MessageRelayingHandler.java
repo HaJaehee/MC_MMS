@@ -460,7 +460,7 @@ public class MessageRelayingHandler  {
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC) {
 			srh = new SeamlessRoamingHandler(bean.getSessionId());
-			srh.putSCMessage(srcMRN, dstMRN, bean.getReq().content().toString(Charset.forName("UTF-8")).trim());
+			srh.putSCMessage(bean, bean.getReq().content().toString(Charset.forName("UTF-8")).trim());
     		message = "OK".getBytes(Charset.forName("UTF-8"));
     		
     		try {
@@ -470,11 +470,11 @@ public class MessageRelayingHandler  {
 			}
     		return;
 		} 
-		//This code MUST be 'else if' statement not 'if'. 
+		/*//This code MUST be 'else if' statement not 'if'. 
 		else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_MULTIPLE_SC){
-			String [] dstMRNs = bean.getParser().getMultiDstMRN();
-			message = mch.castMsgsToMultipleCS(srcMRN, dstMRNs, bean.getReq().content().toString(Charset.forName("UTF-8")).trim());
-		} 
+			
+			message = mch.castMsgsToMultipleCS(bean, bean.getReq().content().toString(Charset.forName("UTF-8")).trim());
+		} */
 		
 		
 		//Below code MUST be 'if' statement not 'else if'. 
@@ -492,15 +492,14 @@ public class MessageRelayingHandler  {
 		}
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
-			thread = mch.asynchronizedUnicast(bean, dstIP, dstPort, httpMethod, srcMRN, dstMRN); // The (FullHttpRequest) req MUST be released in this logic.
+			thread = mch.asynchronizedUnicast(bean); // The (FullHttpRequest) req MUST be released in this logic.
 			if (thread != null) {
 				bean.retain();
 			}
 		}
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (bean.getType() == MessageTypeDecider.msgType.GEOCASTING_CIRCLE || bean.getType() == MessageTypeDecider.msgType.GEOCASTING_POLYGON) {
-			JSONArray geoDstInfo = bean.getParser().getGeoDstInfo();
-			message = mch.geocast(bean, srcMRN, geoDstInfo, httpMethod);
+			message = mch.geocast(bean);
 		}
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (bean.getType() == MessageTypeDecider.msgType.STATUS){

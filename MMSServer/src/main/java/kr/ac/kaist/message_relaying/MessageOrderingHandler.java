@@ -257,11 +257,11 @@ class MessageOrderingHandler {
 					return message;
 				}
 				if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
-					thread = mch.asynchronizedUnicast(bean, dstIP, dstPort, httpMethod, srcMRN, dstMRN); // Execute this relaying process
+					thread = mch.asynchronizedUnicast(bean); // Execute this relaying process
 				}
 				else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 					SeamlessRoamingHandler srh = new SeamlessRoamingHandler(bean.getSessionId());
-					srh.putSCMessage(srcMRN, dstMRN, bean.getReq().content().toString(Charset.forName("UTF-8")).trim());
+					srh.putSCMessage(bean, bean.getReq().content().toString(Charset.forName("UTF-8")).trim());
 		    		message = "OK".getBytes(Charset.forName("UTF-8"));
 				}
 				message = rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcDstPair, bean.getSessionId());

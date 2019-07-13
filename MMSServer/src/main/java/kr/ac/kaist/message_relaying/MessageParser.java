@@ -409,13 +409,13 @@ public class MessageParser {
 	String getDstModel() { return dstModel; }
 	long getSeqNum() { return seqNum;	}
 	
-	// Destination Special Information //
-	String[] getMultiDstMRN() { 
+	/*// Destination Special Information //
+	public String[] getMultiDstMRN() { 
 		String[] ret = null;
 		ret = Arrays.copyOf(this.multiDstMRN, this.multiDstMRN.length);
 		
 		return ret; 
-	}
+	}*/
 	
 	// Source Information //
 	public String getSrcIP(){ return srcIP; }

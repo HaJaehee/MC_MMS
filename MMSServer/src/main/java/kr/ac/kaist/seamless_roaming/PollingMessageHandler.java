@@ -77,8 +77,8 @@ class PollingMessageHandler {
 	}
 	
 	// TODO: Youngjin Kim must inspect this following code.
-	void dequeueSCMessage(MRH_MessageInputChannel.ChannelBean bean, String srcMRN, String svcMRN, String pollingMethod){
-		mqm.dequeueMessage(bean, srcMRN, svcMRN, pollingMethod);
+	void dequeueSCMessage(MRH_MessageInputChannel.ChannelBean bean){
+		mqm.dequeueMessage(bean);
 	}
 	
 }

@@ -27,6 +27,8 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 import kr.ac.kaist.message_queue.MessageQueueManager;
+import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +41,8 @@ class SCMessageHandler {
 		this.SESSION_ID = sessionId;
 	}
 	
-	void enqueueSCMessage(String srcMRN, String dstMRN, String message){
+	void enqueueSCMessage(MRH_MessageInputChannel.ChannelBean bean, String message){
 		MessageQueueManager mqm = new MessageQueueManager(this.SESSION_ID);
-		mqm.enqueueMessage(srcMRN, dstMRN, message);
+		mqm.enqueueMessage(bean, message);
 	}
 }

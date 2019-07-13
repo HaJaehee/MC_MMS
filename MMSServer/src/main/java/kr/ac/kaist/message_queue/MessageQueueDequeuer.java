@@ -171,6 +171,7 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import java.awt.TrayIcon.MessageType;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -196,6 +197,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
+import kr.ac.kaist.message_relaying.MessageTypeDecider;
 import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.mms_server.Base64Coder;
 import kr.ac.kaist.mms_server.ChannelTerminateListener;
@@ -216,7 +218,7 @@ public class MessageQueueDequeuer extends Thread{
 	private String queueName = null;
 	private String srcMRN = null;
 	private String svcMRN = null;
-	private String pollingMethod = "normal";
+	private MessageTypeDecider.msgType pollingMethod = MessageTypeDecider.msgType.POLLING;
 	private Channel mqChannel = null;
 	private String consumerTag = null;
 	private static ArrayList<Connection> connectionPool = null;
@@ -230,13 +232,14 @@ public class MessageQueueDequeuer extends Thread{
 		mmsLog = MMSLog.getInstance();
 	}
 	
-	void dequeueMessage (MRH_MessageInputChannel.ChannelBean bean, String srcMRN, String svcMRN, String pollingMethod) {
+	void dequeueMessage (MRH_MessageInputChannel.ChannelBean bean) {
 		
-		this.queueName = srcMRN+"::"+svcMRN;
-		this.srcMRN = srcMRN;
-		this.svcMRN = svcMRN;
+		
+		this.srcMRN = bean.getParser().getSrcMRN();
+		this.svcMRN = bean.getParser().getSvcMRN();
 		this.bean = bean;
-		this.pollingMethod = pollingMethod;
+		this.queueName = srcMRN+"::"+svcMRN;
+		this.pollingMethod = bean.getType();
 		this.DUPLICATE_ID = srcMRN+svcMRN;		
 		
 		this.start();
@@ -386,7 +389,7 @@ public class MessageQueueDequeuer extends Thread{
 		else { //If the queue does not have any message, message count == 0
 			message = null;
 			backupMsg = null;
-			if (pollingMethod.equals("normal") ) {//If polling method is normal polling
+			if (pollingMethod == MessageTypeDecider.msgType.POLLING ) {//If polling method is normal polling
 				mmsLog.debug(logger, this.SESSION_ID, "Empty queue="+queueName+".");
 
 		    	if (SessionManager.getSessionType(this.SESSION_ID) != null) {
@@ -425,7 +428,7 @@ public class MessageQueueDequeuer extends Thread{
 		    	}
 			}
 			
-			else if (pollingMethod.equals("long")){ //If polling method is long polling
+			else if (pollingMethod == MessageTypeDecider.msgType.LONG_POLLING){ //If polling method is long polling
 				//Enroll a delivery listener to the queue mqChannel in order to get a message from the queue.
 				mmsLog.debug(logger, this.SESSION_ID, "Client is waiting the message queue="+queueName+".");
 				
@@ -638,7 +641,7 @@ public class MessageQueueDequeuer extends Thread{
 		//It do not block this thread.
 			
 	    
-    	if (pollingMethod != null && pollingMethod.equals("normal")) { // Polling method: normal polling
+    	if (pollingMethod != null && pollingMethod == MessageTypeDecider.msgType.POLLING) { // Polling method: normal polling
     		if (mqChannel != null && mqChannel.isOpen()) {
 	    		try {
 					mqChannel.close(320, "Service stoppted.");
