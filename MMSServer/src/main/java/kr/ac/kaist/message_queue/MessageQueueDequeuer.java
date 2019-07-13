@@ -289,6 +289,10 @@ public class MessageQueueDequeuer extends Thread{
 			public void terminate(ChannelHandlerContext ctx) {
 				
 				mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
+				Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicateInfoCnt(DUPLICATE_ID);
+    			if(duplicateInfoCnt!=null) {
+    	    		SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);	
+    	    	}
 				try {
 					if(mqChannel != null && mqChannel.isOpen()) {
 						mqChannel.close(320, "Service stoppted.");
