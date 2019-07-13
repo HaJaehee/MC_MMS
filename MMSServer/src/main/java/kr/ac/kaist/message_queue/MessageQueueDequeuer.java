@@ -158,6 +158,11 @@ Rev. history : 2019-07-11
 Version : 0.9.3
 	Updated mqChannel closing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-11
+Version : 0.9.3
+	Fixed bug related to duplicated long polling session.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
