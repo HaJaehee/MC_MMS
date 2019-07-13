@@ -129,6 +129,11 @@ Rev. history : 2019-07-10
 Version : 0.9.3
 	Updated resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Introduced MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -290,14 +295,14 @@ public class MRH_MessageOutputChannel{
 		return con;
 	}
 	
-	public HttpURLConnection requestMessage(ChannelHandlerContext ctx, FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
+	public HttpURLConnection requestMessage(MRH_MessageInputChannel.ChannelBean bean, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
 		
-		String url = "http://" + IPAddress + ":" + port + req.uri();
+		String url = "http://" + IPAddress + ":" + port + bean.getReq().uri();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		mmsLog.info(logger, this.SESSION_ID, "Try connecting to url="+url);
 
-		HttpHeaders httpHeaders = req.headers();
+		HttpHeaders httpHeaders = bean.getReq().headers();
 		
 		
 //		Setting HTTP method
@@ -314,7 +319,7 @@ public class MRH_MessageOutputChannel{
 			con.setRequestProperty(htrValue.getKey(), htrValue.getValue());
 		}
 
-		String urlParameters = req.content().toString(Charset.forName("UTF-8")).trim();
+		String urlParameters = bean.getReq().content().toString(Charset.forName("UTF-8")).trim();
 		con.setRequestProperty("Content-Length", urlParameters.length() + "");
 		
 		
@@ -336,12 +341,12 @@ public class MRH_MessageOutputChannel{
 		return con;
 	}
 
-	public HttpURLConnection requestSecureMessage(ChannelHandlerContext ctx, FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
+	public HttpURLConnection requestSecureMessage(MRH_MessageInputChannel.ChannelBean bean, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
 		
 
 	  	hv = getHV();
 	  	
-		String url = "https://" + IPAddress + ":" + port + req.uri();
+		String url = "https://" + IPAddress + ":" + port + bean.getReq().uri();
 		
 		URL obj = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
@@ -349,7 +354,7 @@ public class MRH_MessageOutputChannel{
 
 		con.setHostnameVerifier(hv);
 		
-		HttpHeaders httpHeaders = req.headers();
+		HttpHeaders httpHeaders = bean.getReq().headers();
 		
 		
 //		Setting HTTP method
@@ -369,7 +374,7 @@ public class MRH_MessageOutputChannel{
 			//}
 		}
 
-		String urlParameters = req.content().toString(Charset.forName("UTF-8")).trim();
+		String urlParameters = bean.getReq().content().toString(Charset.forName("UTF-8")).trim();
 		con.setRequestProperty("Content-Length", urlParameters.length() + "");
 		
 		
@@ -453,19 +458,19 @@ public class MRH_MessageOutputChannel{
 	}
 	
     //  To do relaying
-	public byte[] sendMessage(ChannelHandlerContext ctx, FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
-		return getResponseMessage(requestMessage(ctx, req, IPAddress, port, httpMethod, srcMRN, dstMRN));
+	public byte[] sendMessage(MRH_MessageInputChannel.ChannelBean bean, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
+		return getResponseMessage(requestMessage(bean, IPAddress, port, httpMethod, srcMRN, dstMRN));
 	}
 	
-	public ConnectionThread asynchronizeSendMessage(ChannelHandlerContext ctx, FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
-		HttpURLConnection con = requestMessage(ctx, req, IPAddress, port, httpMethod, srcMRN, dstMRN);
-		return new ConnectionThread(con, ctx, req);
+	public ConnectionThread asynchronizeSendMessage(MRH_MessageInputChannel.ChannelBean bean, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws IOException {  
+		HttpURLConnection con = requestMessage(bean, IPAddress, port, httpMethod, srcMRN, dstMRN);
+		return new ConnectionThread(con, bean);
 	}
 
 	
 	// To do secure relaying
-	public byte[] secureSendMessage(ChannelHandlerContext ctx, FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws NullPointerException, IOException { // 
-		HttpURLConnection con = requestSecureMessage(ctx, req, IPAddress, port, httpMethod, srcMRN, dstMRN);
+	public byte[] secureSendMessage(MRH_MessageInputChannel.ChannelBean bean, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws NullPointerException, IOException { // 
+		HttpURLConnection con = requestSecureMessage(bean, IPAddress, port, httpMethod, srcMRN, dstMRN);
 		return getResponseMessage(con);
 	}
 	
@@ -474,9 +479,9 @@ public class MRH_MessageOutputChannel{
 		return getResponseMessage(requestSecureMessage(IPAddress, port, httpMethod, uri, username, password));
 	}
 	
-	public ConnectionThread asynchronizeSendSecureMessage(ChannelHandlerContext ctx, FullHttpRequest req, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws NullPointerException, IOException { // 
-		HttpURLConnection con = requestSecureMessage(ctx, req, IPAddress, port, httpMethod, srcMRN, dstMRN);
-		return new ConnectionThread(con, ctx, req);
+	public ConnectionThread asynchronizeSendSecureMessage(MRH_MessageInputChannel.ChannelBean bean, String IPAddress, int port, HttpMethod httpMethod, String srcMRN, String dstMRN) throws NullPointerException, IOException { // 
+		HttpURLConnection con = requestSecureMessage(bean, IPAddress, port, httpMethod, srcMRN, dstMRN);
+		return new ConnectionThread(con, bean);
 	}
 	
 	HostnameVerifier getHV (){
@@ -628,14 +633,12 @@ public class MRH_MessageOutputChannel{
 	}
 
 	public class ConnectionThread extends Thread {
-		private ChannelHandlerContext ctx = null;
 		private HttpURLConnection con = null;
-		private FullHttpRequest req = null;
+		private MRH_MessageInputChannel.ChannelBean bean = null;
 		private byte[] data;
-		public ConnectionThread(HttpURLConnection con, ChannelHandlerContext ctx, FullHttpRequest req) {
+		public ConnectionThread(HttpURLConnection con, MRH_MessageInputChannel.ChannelBean bean) {
 			this.con = con;
-			this.ctx = ctx;
-			this.req = req;
+			this.bean = bean;
 			data = null;
 		}
 		public void terminate() {
@@ -671,13 +674,12 @@ public class MRH_MessageOutputChannel{
 					data = ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.getUTF8Bytes();
 				}
 				try {
-					replyToSender(ctx, data);
-					if (req != null && req.refCnt() > 0) {
-						req.release();
-						req = null;
+					replyToSender(bean.getCtx(), data);
+					if (bean != null && bean.refCnt() > 0) {
+						bean.release();
+						bean = null;
 					}
 					con = null;
-					ctx = null;
 				} catch (IOException e) {
 					mmsLog.infoException(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 				}

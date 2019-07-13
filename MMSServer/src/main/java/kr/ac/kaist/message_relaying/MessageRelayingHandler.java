@@ -259,6 +259,11 @@ Rev. history : 2019-07-10
 Version : 0.9.3
 	Updated resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Introduced MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -287,10 +292,9 @@ public class MessageRelayingHandler  {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageRelayingHandler.class);
 
-	private String SESSION_ID = "";
-	private MessageParser parser = null;
 	private MessageTypeDecider typeDecider = null;
-	private MRH_MessageOutputChannel outputChannel = null;
+	
+	private MRH_MessageInputChannel.ChannelBean bean = null;
 	
 	private MessageOrderingHandler moh = null;
 	private SeamlessRoamingHandler srh = null;
@@ -299,46 +303,41 @@ public class MessageRelayingHandler  {
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
 	private MMSRestAPIHandler mmsRestApiHandler = null;
-
-	private String protocol = "";
 	
     private ConnectionThread thread = null;
     
     private boolean isErrorOccured = false;
 	
-	public MessageRelayingHandler(ChannelHandlerContext ctx, FullHttpRequest req, String protocol, MessageParser parser, String sessionId) {		
-		this.protocol = protocol;
-		this.SESSION_ID = sessionId;
+	public MessageRelayingHandler(MRH_MessageInputChannel.ChannelBean bean) {		
+		
+		this.bean = bean;
 		
 		initializeModule();
-		initializeSubModule(ctx);
-		
-		this.parser = parser;
-	
+		initializeSubModule();
 		
 		MessageTypeDecider.msgType type = null;
 		try {
-			type = typeDecider.decideType(parser, mch);
+			bean.setType(typeDecider.decideType(bean.getParser(), mch));
 		} 
 		catch (ParseException e) {
-			mmsLog.info(logger, SESSION_ID, ErrorCode.MESSAGE_PARSING_ERROR.toString());
+			mmsLog.info(logger, bean.getSessionId(), ErrorCode.MESSAGE_PARSING_ERROR.toString());
 		}
 		try {
-			processRelaying(type, ctx, req);
+			processRelaying(bean);
 		} catch(ErrorResponseException e) {
-			e.replyToSender(outputChannel, ctx);
+			e.replyToSender(bean);
 		}
 	}
 	
 	private void initializeModule() {
-		mch = new MessageCastingHandler(this.SESSION_ID);
+		mch = new MessageCastingHandler(bean.getSessionId());
 		mmsLog = MMSLog.getInstance();
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 	
-	private void initializeSubModule(ChannelHandlerContext ctx) {
-		typeDecider = new MessageTypeDecider(this.SESSION_ID);
-		outputChannel = new MRH_MessageOutputChannel(this.SESSION_ID);
+	private void initializeSubModule() {
+		typeDecider = new MessageTypeDecider(bean.getSessionId());
+		bean.setOutputChannel(new MRH_MessageOutputChannel(bean.getSessionId()));
 		
 //		if (MMSConfiguration.isPollingTest()) {
 //			cltVerifier = new ClientVerifierTest();
@@ -351,261 +350,261 @@ public class MessageRelayingHandler  {
         return thread;
     }
 
-	private void processRelaying(MessageTypeDecider.msgType type, ChannelHandlerContext ctx, FullHttpRequest req)
+	private void processRelaying(MRH_MessageInputChannel.ChannelBean bean)
 			throws ErrorResponseException {
 
 		byte[] message = null;
 		boolean isRealtimeLog = false;
 		
 		
-		String srcMRN = parser.getSrcMRN();
-		String dstMRN = parser.getDstMRN();
-		HttpMethod httpMethod = parser.getHttpMethod();
-		String dstIP = parser.getDstIP();
-		int dstPort = parser.getDstPort();
-		long seqNum = parser.getSeqNum();
+		String srcMRN = bean.getParser().getSrcMRN();
+		String dstMRN = bean.getParser().getDstMRN();
+		HttpMethod httpMethod = bean.getParser().getHttpMethod();
+		String dstIP = bean.getParser().getDstIP();
+		int dstPort = bean.getParser().getDstPort();
+		long seqNum = bean.getParser().getSeqNum();
 		
 		try {
-			mmsLogForDebug.addSessionId(srcMRN, this.SESSION_ID);
+			mmsLogForDebug.addSessionId(srcMRN, bean.getSessionId());
 		}
 		catch (NullPointerException e) {
-			mmsLog.info(logger, this.SESSION_ID, "Detected MMSLogForDebug problem with MRN="+srcMRN+".");
+			mmsLog.info(logger, bean.getSessionId(), "Detected MMSLogForDebug problem with MRN="+srcMRN+".");
 			mmsLogForDebug.removeMrn(srcMRN);
 			mmsLogForDebug.addMrn(srcMRN);
-			mmsLogForDebug.addSessionId(srcMRN, this.SESSION_ID);
+			mmsLogForDebug.addSessionId(srcMRN, bean.getSessionId());
 		}
 
 		try {
-			mmsLogForDebug.addSessionId(dstMRN, this.SESSION_ID);
+			mmsLogForDebug.addSessionId(dstMRN, bean.getSessionId());
 		}
 		catch (NullPointerException e) {
-			mmsLog.info(logger, this.SESSION_ID, "Detected MMSLogForDebug problem with MRN="+srcMRN+".");
+			mmsLog.info(logger, bean.getSessionId(), "Detected MMSLogForDebug problem with MRN="+srcMRN+".");
 			mmsLogForDebug.removeMrn(dstMRN);
 			mmsLogForDebug.addMrn(dstMRN);
-			mmsLogForDebug.addSessionId(dstMRN, this.SESSION_ID);
+			mmsLogForDebug.addSessionId(dstMRN, bean.getSessionId());
 		}
 		
 		
 		//This code MUST be 'if' statement not 'else if'. 
-		if (type != MessageTypeDecider.msgType.REALTIME_LOG) {
+		if (bean.getType() != MessageTypeDecider.msgType.REALTIME_LOG) {
 			if (seqNum != -1) {
 				String log = "In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+", seqNum="+seqNum+".";
-				mmsLog.info(logger, this.SESSION_ID, log);
+				mmsLog.info(logger, bean.getSessionId(), log);
 			}
 			else {
 				String log = "In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".";
-				mmsLog.info(logger, this.SESSION_ID, log);
+				mmsLog.info(logger, bean.getSessionId(), log);
 			}
 			
 			if(logger.isTraceEnabled()) {
-				mmsLog.trace(logger, this.SESSION_ID, "Payload="+StringEscapeUtils.escapeXml(req.content().toString(Charset.forName("UTF-8")).trim()));
+				mmsLog.trace(logger, bean.getSessionId(), "Payload="+StringEscapeUtils.escapeXml(bean.getReq().content().toString(Charset.forName("UTF-8")).trim()));
 			}
 		}
 		
 		//This code MUST be 'if' statement not 'else if'. 
-		if (type == MessageTypeDecider.msgType.REST_API) {
-    		mmsRestApiHandler = new MMSRestAPIHandler(this.SESSION_ID);
-    		mmsRestApiHandler.setParams(req);
+		if (bean.getType() == MessageTypeDecider.msgType.REST_API) {
+    		mmsRestApiHandler = new MMSRestAPIHandler(bean.getSessionId());
+    		mmsRestApiHandler.setParams(bean.getReq());
     		message = mmsRestApiHandler.getResponse().getBytes(Charset.forName("UTF-8"));
-    		mmsLog.info(logger, this.SESSION_ID, "Respond to a REST API request.");
+    		mmsLog.info(logger, bean.getSessionId(), "Respond to a REST API request.");
 		}
 		
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
+		else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 			moh = new MessageOrderingHandler();
-			message = moh.initializeAndGetError(parser, this.SESSION_ID);
+			message = moh.initializeAndGetError(bean);
 			if (message != null) {
 				isErrorOccured = true;
 			}
 		}
 		
 		//Below code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.NULL_MRN) {
+		else if (bean.getType() == MessageTypeDecider.msgType.NULL_MRN) {
 			isErrorOccured = true;
 			message = ErrorCode.NULL_MRN.getUTF8Bytes();
 		}
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.NULL_SRC_MRN) {
+		else if (bean.getType() == MessageTypeDecider.msgType.NULL_SRC_MRN) {
 			isErrorOccured = true;
 			message = ErrorCode.NULL_SRC_MRN.getUTF8Bytes();
 		}
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.NULL_DST_MRN) {
+		else if (bean.getType() == MessageTypeDecider.msgType.NULL_DST_MRN) {
 			isErrorOccured = true;
 			message = ErrorCode.NULL_DST_MRN.getUTF8Bytes();
 		}
 		// TODO: Youngjin Kim must inspect this following code.
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.POLLING || type == MessageTypeDecider.msgType.LONG_POLLING) {
-			req.retain(); // The (FullHttpRequest) req MUST be released in these logic A, B, or C. 
-			srh = new SeamlessRoamingHandler(this.SESSION_ID);
-			if (type == MessageTypeDecider.msgType.POLLING) {
-				message = srh.initializeAndGetError(parser, outputChannel, ctx, req, "normal"); // logic A.
+		else if (bean.getType() == MessageTypeDecider.msgType.POLLING || bean.getType() == MessageTypeDecider.msgType.LONG_POLLING) {
+			bean.retain(); // The (MRH_MessageInputChannel.ChannelBean) bean MUST be released in these logic A, B, or C. 
+			srh = new SeamlessRoamingHandler(bean.getSessionId());
+			if (bean.getType() == MessageTypeDecider.msgType.POLLING) {
+				message = srh.initializeAndGetError(bean, "normal"); // logic A.
 			}
-			else if (type == MessageTypeDecider.msgType.LONG_POLLING) {
-				message = srh.initializeAndGetError(parser, outputChannel, ctx, req, "long"); // logic B.
+			else if (bean.getType() == MessageTypeDecider.msgType.LONG_POLLING) {
+				message = srh.initializeAndGetError(bean, "long"); // logic B.
 			}
 			if (message != null) { 
 				try {
-					outputChannel.replyToSender(ctx, message, isRealtimeLog);
+					bean.getOutputChannel().replyToSender(bean.getCtx(), message, isRealtimeLog);
 				} catch (IOException e) {
-					mmsLog.infoException(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+					mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 				}
 				finally {
-					req.release(); // logic C.
+					bean.getReq().release(); // logic C.
 				}
 			}
 
 			return;
 		} 
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC) {
-			srh = new SeamlessRoamingHandler(this.SESSION_ID);
-			srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
+		else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC) {
+			srh = new SeamlessRoamingHandler(bean.getSessionId());
+			srh.putSCMessage(srcMRN, dstMRN, bean.getReq().content().toString(Charset.forName("UTF-8")).trim());
     		message = "OK".getBytes(Charset.forName("UTF-8"));
     		
     		try {
-				outputChannel.replyToSender(ctx, message, isRealtimeLog);
+				bean.getOutputChannel().replyToSender(bean.getCtx(), message, isRealtimeLog);
 			} catch (IOException e) {
-				mmsLog.infoException(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+				mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 			}
     		return;
 		} 
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.RELAYING_TO_MULTIPLE_SC){
-			String [] dstMRNs = parser.getMultiDstMRN();
-			message = mch.castMsgsToMultipleCS(srcMRN, dstMRNs, req.content().toString(Charset.forName("UTF-8")).trim());
+		else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_MULTIPLE_SC){
+			String [] dstMRNs = bean.getParser().getMultiDstMRN();
+			message = mch.castMsgsToMultipleCS(srcMRN, dstMRNs, bean.getReq().content().toString(Charset.forName("UTF-8")).trim());
 		} 
 		
 		
 		//Below code MUST be 'if' statement not 'else if'. 
-		if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
-			message = moh.processMessage(outputChannel, ctx, req, protocol, mch, type); // The (FullHttpRequest) req MUST be released in this logic.
+		if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
+			message = moh.processMessage(bean, mch); // The (FullHttpRequest) req MUST be released in this logic.
 			if (message != null) {
 				isErrorOccured = true;
 			}
 			else {
 				thread = moh.getConnectionThread();
 				if (thread != null) {
-					req.retain();
+					bean.retain();
 				}
 			}
 		}
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
-			thread = mch.asynchronizedUnicast(outputChannel, ctx, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); // The (FullHttpRequest) req MUST be released in this logic.
+		else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER) {
+			thread = mch.asynchronizedUnicast(bean, dstIP, dstPort, httpMethod, srcMRN, dstMRN); // The (FullHttpRequest) req MUST be released in this logic.
 			if (thread != null) {
-				req.retain();
+				bean.retain();
 			}
 		}
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.GEOCASTING_CIRCLE || type == MessageTypeDecider.msgType.GEOCASTING_POLYGON) {
-			JSONArray geoDstInfo = parser.getGeoDstInfo();
-			message = mch.geocast(outputChannel, ctx, req, srcMRN, geoDstInfo, protocol, httpMethod);
+		else if (bean.getType() == MessageTypeDecider.msgType.GEOCASTING_CIRCLE || bean.getType() == MessageTypeDecider.msgType.GEOCASTING_POLYGON) {
+			JSONArray geoDstInfo = bean.getParser().getGeoDstInfo();
+			message = mch.geocast(bean, srcMRN, geoDstInfo, httpMethod);
 		}
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.STATUS){
-			mmsRestApiHandler = new MMSRestAPIHandler(this.SESSION_ID);
-    		message = mmsRestApiHandler.getStatus(req);
+		else if (bean.getType() == MessageTypeDecider.msgType.STATUS){
+			mmsRestApiHandler = new MMSRestAPIHandler(bean.getSessionId());
+    		message = mmsRestApiHandler.getStatus(bean.getReq());
 		}
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.REALTIME_LOG){
+		else if (bean.getType() == MessageTypeDecider.msgType.REALTIME_LOG){
 			isRealtimeLog = true;
-			mmsRestApiHandler = new MMSRestAPIHandler(this.SESSION_ID);
-			message = mmsRestApiHandler.getRealtimeLog(req);
+			mmsRestApiHandler = new MMSRestAPIHandler(bean.getSessionId());
+			message = mmsRestApiHandler.getRealtimeLog(bean.getReq());
 			
 		}
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.ADD_ID_IN_REALTIME_LOG_IDS) {
-			mmsRestApiHandler = new MMSRestAPIHandler(this.SESSION_ID);
-			message = mmsRestApiHandler.addIdInRealtimeLogIds(req);
+		else if (bean.getType() == MessageTypeDecider.msgType.ADD_ID_IN_REALTIME_LOG_IDS) {
+			mmsRestApiHandler = new MMSRestAPIHandler(bean.getSessionId());
+			message = mmsRestApiHandler.addIdInRealtimeLogIds(bean.getReq());
 		}
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.REMOVE_ID_IN_REALTIME_LOG_IDS) {
-			mmsRestApiHandler = new MMSRestAPIHandler(this.SESSION_ID);
-			message = mmsRestApiHandler.removeIdInRealtimeLogIds(req);
+		else if (bean.getType() == MessageTypeDecider.msgType.REMOVE_ID_IN_REALTIME_LOG_IDS) {
+			mmsRestApiHandler = new MMSRestAPIHandler(bean.getSessionId());
+			message = mmsRestApiHandler.removeIdInRealtimeLogIds(bean.getReq());
 		}
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.ADD_MRN_BEING_DEBUGGED) {
-			mmsRestApiHandler = new MMSRestAPIHandler(this.SESSION_ID);
-			message = mmsRestApiHandler.addMrnBeingDebugged(req);
+		else if (bean.getType() == MessageTypeDecider.msgType.ADD_MRN_BEING_DEBUGGED) {
+			mmsRestApiHandler = new MMSRestAPIHandler(bean.getSessionId());
+			message = mmsRestApiHandler.addMrnBeingDebugged(bean.getReq());
 		}
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.REMOVE_MRN_BEING_DEBUGGED) {
-			mmsRestApiHandler = new MMSRestAPIHandler(this.SESSION_ID);
-			message = mmsRestApiHandler.removeMrnBeingDebugged(req);
-		}
-		// TODO this condition has to be deprecated.
-		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.ADD_MNS_ENTRY) {
-			mmsRestApiHandler = new MMSRestAPIHandler(this.SESSION_ID);
-			message = mmsRestApiHandler.addMnsEntry(req);
+		else if (bean.getType() == MessageTypeDecider.msgType.REMOVE_MRN_BEING_DEBUGGED) {
+			mmsRestApiHandler = new MMSRestAPIHandler(bean.getSessionId());
+			message = mmsRestApiHandler.removeMrnBeingDebugged(bean.getReq());
 		}
 		// TODO this condition has to be deprecated.
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.REMOVE_MNS_ENTRY) {
-			mmsRestApiHandler = new MMSRestAPIHandler(this.SESSION_ID);
-			message = mmsRestApiHandler.removeMnsEntry(req);
+		else if (bean.getType() == MessageTypeDecider.msgType.ADD_MNS_ENTRY) {
+			mmsRestApiHandler = new MMSRestAPIHandler(bean.getSessionId());
+			message = mmsRestApiHandler.addMnsEntry(bean.getReq());
+		}
+		// TODO this condition has to be deprecated.
+		//This code MUST be 'else if' statement not 'if'. 
+		else if (bean.getType() == MessageTypeDecider.msgType.REMOVE_MNS_ENTRY) {
+			mmsRestApiHandler = new MMSRestAPIHandler(bean.getSessionId());
+			message = mmsRestApiHandler.removeMnsEntry(bean.getReq());
 		} 
 
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.DST_MRN_IS_THIS_MMS_MRN) {
+		else if (bean.getType() == MessageTypeDecider.msgType.DST_MRN_IS_THIS_MMS_MRN) {
 			isErrorOccured = true;
-			mmsLog.debug(logger, this.SESSION_ID, "Hello, MMS!");
+			mmsLog.debug(logger, bean.getSessionId(), "Hello, MMS!");
 			message = "Hello, MMS!".getBytes();
 		}
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.SRC_MRN_IS_THIS_MMS_MRN) {
+		else if (bean.getType() == MessageTypeDecider.msgType.SRC_MRN_IS_THIS_MMS_MRN) {
 			isErrorOccured = true;
-			mmsLog.debug(logger, this.SESSION_ID, "You are not me.");
+			mmsLog.debug(logger, bean.getSessionId(), "You are not me.");
 			message = "You are not me.".getBytes();
 		}
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (type == MessageTypeDecider.msgType.UNKNOWN_MRN) {
+		else if (bean.getType() == MessageTypeDecider.msgType.UNKNOWN_MRN) {
 			isErrorOccured = true;
-			mmsLog.info(logger, this.SESSION_ID, ErrorCode.UNKNOWN_MRN.toString());
+			mmsLog.info(logger, bean.getSessionId(), ErrorCode.UNKNOWN_MRN.toString());
 			message = ErrorCode.UNKNOWN_MRN.getUTF8Bytes();
 			//logger.info("test "+message);
 		} 
 
 		//This code MUST be 'if' statement not 'else if'.
-		if (type != MessageTypeDecider.msgType.POLLING && type != MessageTypeDecider.msgType.LONG_POLLING) {
+		if (bean.getType() != MessageTypeDecider.msgType.POLLING && bean.getType() != MessageTypeDecider.msgType.LONG_POLLING) {
 
-			if ((type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SERVER) && thread == null) {
+			if ((bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER) && thread == null) {
 				if (message == null) {
 					message = ErrorCode.UNKNOWN_ERR.getBytes();
-					mmsLog.info(logger, this.SESSION_ID, ErrorCode.UNKNOWN_ERR.toString());
+					mmsLog.info(logger, bean.getSessionId(), ErrorCode.UNKNOWN_ERR.toString());
 					try {
-						outputChannel.replyToSender(ctx, message, isRealtimeLog);
+						bean.getOutputChannel().replyToSender(bean.getCtx(), message, isRealtimeLog);
 					} catch (IOException e) {
-						mmsLog.infoException(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+						mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 					} //TODO: MUST HAVE MORE DEFINED EXCEPTION MESSAGES.
 					return;
 				}
 				else {
 					try {
-						outputChannel.replyToSender(ctx, message, isRealtimeLog);
+						bean.getOutputChannel().replyToSender(bean.getCtx(), message, isRealtimeLog);
 					} catch (IOException e) {
-						mmsLog.infoException(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+						mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 					}
 					return;
 				}
 			}
 			else if (isErrorOccured || message != null) {
 				try {
-					outputChannel.replyToSender(ctx, message, isRealtimeLog);
+					bean.getOutputChannel().replyToSender(bean.getCtx(), message, isRealtimeLog);
 				} catch (IOException e) {
-					mmsLog.infoException(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+					mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 				}
 				return;
 			}
-			else if (!isErrorOccured && message == null && !(type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || type == MessageTypeDecider.msgType.RELAYING_TO_SERVER)) {
+			else if (!isErrorOccured && message == null && !(bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER)) {
 				message = ErrorCode.UNKNOWN_ERR.getBytes();
-				mmsLog.info(logger, this.SESSION_ID, ErrorCode.UNKNOWN_ERR.toString());
+				mmsLog.info(logger, bean.getSessionId(), ErrorCode.UNKNOWN_ERR.toString());
 				try {
-					outputChannel.replyToSender(ctx, message, isRealtimeLog);
+					bean.getOutputChannel().replyToSender(bean.getCtx(), message, isRealtimeLog);
 				} catch (IOException e) {
-					mmsLog.infoException(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+					mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 				} //TODO: MUST HAVE MORE DEFINED EXCEPTION MESSAGES.
 				return;
 			}

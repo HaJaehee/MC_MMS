@@ -70,11 +70,17 @@ Rev. history : 2019-07-10
 Version : 0.9.3
 	Updated resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Introduced MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
+import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.MessageParser;
 
@@ -131,34 +137,34 @@ public class SeamlessRoamingHandler {
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 
-	public byte[] initializeAndGetError (MessageParser parser, MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String method) {
+	public byte[] initializeAndGetError (MRH_MessageInputChannel.ChannelBean bean, String method) {
 		
 		byte[] message = null;
-		String srcMRN = parser.getSrcMRN();
-		String dstMRN = parser.getDstMRN();
-		String srcIP = parser.getSrcIP();
+		String srcMRN = bean.getParser().getSrcMRN();
+		String dstMRN = bean.getParser().getDstMRN();
+		String srcIP = bean.getParser().getSrcIP();
 		
 		boolean isClientVerified = false;
 		
-		if (parser.isJSONOfPollingMsg() == false){
+		if (bean.getParser().isJSONOfPollingMsg() == false){
 			message = ErrorCode.JSON_FORMAT_ERROR.getJSONFormattedUTF8Bytes();
 			return message;
 		}
 		
 
-		if(parser.getSvcMRN() == null) {
+		if(bean.getParser().getSvcMRN() == null) {
 			message = ErrorCode.NULL_SVC_MRN.getJSONFormattedUTF8Bytes();
 			return message;
 		}
 		
-		mmsLog.debug(logger, this.SESSION_ID, "This is a polling request and the service MRN is " + parser.getSvcMRN());
+		mmsLog.debug(logger, this.SESSION_ID, "This is a polling request and the service MRN is " + bean.getParser().getSvcMRN());
 
 		//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
-		if (parser.getHexSignedData() != null) { //In this version 0.8.0, polling client verification is optional. 
+		if (bean.getParser().getHexSignedData() != null) { //In this version 0.8.0, polling client verification is optional. 
 			
 			mmsLog.debug(logger, this.SESSION_ID, " Client verification using MRN="+srcMRN+" and signed data.");
 
-			isClientVerified = cltVerifier.verifyClient(srcMRN, parser.getHexSignedData());
+			isClientVerified = cltVerifier.verifyClient(srcMRN, bean.getParser().getHexSignedData());
 			
 //				if (cltVerifier instanceof ClientVerifierTest) {
 //					byte[] verificationTime = ((ClientVerifierTest) cltVerifier).verificationTimeJSONString();
@@ -201,7 +207,7 @@ public class SeamlessRoamingHandler {
 			return message;
 		}
 
-		String svcMRN = parser.getSvcMRN();
+		String svcMRN = bean.getParser().getSvcMRN();
 	
 		try {
 			mmsLogForDebug.addSessionId(svcMRN, this.SESSION_ID);
@@ -221,7 +227,7 @@ public class SeamlessRoamingHandler {
 		}
 		
 
-		message = processPollingMessage(outputChannel, ctx, req, srcMRN, srcIP, method, svcMRN);
+		message = processPollingMessage(bean, srcMRN, srcIP, method, svcMRN);
 
 		
 		return message;
@@ -230,14 +236,14 @@ public class SeamlessRoamingHandler {
 	
 	// TODO: Youngjin Kim must inspect this following code.
 	// Poll SC message in queue.
-	public byte[] processPollingMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String srcMRN,
+	public byte[] processPollingMessage(MRH_MessageInputChannel.ChannelBean bean, String srcMRN,
 			String srcIP, String pollingMethod, String svcMRN) {
 
 		byte[] message = null;
 		if (pollingMethod.equals("normal"))	{
 			SessionManager.putSessionInfo(SESSION_ID, "p");
 			SessionManager.incPollingSessionCount();
-			pmh.dequeueSCMessage(outputChannel, ctx, req, srcMRN, svcMRN, pollingMethod);
+			pmh.dequeueSCMessage(bean, srcMRN, svcMRN, pollingMethod);
 		}
 		else if (pollingMethod.equals("long")) {
 			SessionManager.putSessionInfo(SESSION_ID, "lp");
@@ -255,13 +261,13 @@ public class SeamlessRoamingHandler {
 				// TODO: To define error message.
 				message = ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes();
 				mmsLog.debug(logger, SESSION_ID, ErrorCode.DUPLICATED_POLLING.toString());
-				if (req != null && req.refCnt()>0) {
-					req.release();
+				if (bean != null && bean.refCnt()>0) {
+					bean.release();
 				}
 				return message;
 				
 			} else {
-				pmh.dequeueSCMessage(outputChannel, ctx, req, srcMRN, svcMRN, pollingMethod);
+				pmh.dequeueSCMessage(bean, srcMRN, svcMRN, pollingMethod);
 			}
 		}
 		

@@ -163,6 +163,11 @@ Rev. history : 2019-07-11
 Version : 0.9.3
 	Fixed bug related to duplicated long polling session.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Introduced MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -207,14 +212,13 @@ public class MessageQueueDequeuer extends Thread{
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueDequeuer.class);
 	private String SESSION_ID = "";
 	private String DUPLICATE_ID="";
+	private MRH_MessageInputChannel.ChannelBean bean = null;
 	private String queueName = null;
 	private String srcMRN = null;
 	private String svcMRN = null;
 	private String pollingMethod = "normal";
-	private MRH_MessageOutputChannel outputChannel = null;
-	private ChannelHandlerContext ctx = null;
-	private FullHttpRequest req = null;
 	private Channel mqChannel = null;
+	private String consumerTag = null;
 	private static ArrayList<Connection> connectionPool = null;
 	private static ConnectionFactory connFac = null;
 	private static int connectionPoolSize = 0;
@@ -226,14 +230,12 @@ public class MessageQueueDequeuer extends Thread{
 		mmsLog = MMSLog.getInstance();
 	}
 	
-	void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String srcMRN, String svcMRN, String pollingMethod) {
+	void dequeueMessage (MRH_MessageInputChannel.ChannelBean bean, String srcMRN, String svcMRN, String pollingMethod) {
 		
 		this.queueName = srcMRN+"::"+svcMRN;
 		this.srcMRN = srcMRN;
 		this.svcMRN = svcMRN;
-		this.outputChannel = outputChannel;
-		this.ctx = ctx;
-		this.req = req;
+		this.bean = bean;
 		this.pollingMethod = pollingMethod;
 		this.DUPLICATE_ID = srcMRN+svcMRN;		
 		
@@ -286,28 +288,7 @@ public class MessageQueueDequeuer extends Thread{
 		}
 
 		
-		//TODO: Unexpectedly a mqChannel is shutdown while transferring a response to polling client, MUST A MESSAGE IS REQUEUED.
 
-		ctx.channel().attr(MRH_MessageInputChannel.TERMINATOR).get().add(new ChannelTerminateListener() {
-			
-			@Override
-			public void terminate(ChannelHandlerContext ctx) {
-				
-				mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
-				Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicateInfoCnt(DUPLICATE_ID);
-    			if(duplicateInfoCnt!=null) {
-    	    		SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);	
-    	    	}
-				try {
-					if(mqChannel != null && mqChannel.isOpen()) {
-						mqChannel.close(320, "Service stoppted.");
-					}
-				} catch (IOException | TimeoutException e) {
-					mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
-					return;
-				} 
-			}
-		});
 
 		
 		try {
@@ -365,11 +346,11 @@ public class MessageQueueDequeuer extends Thread{
 	    		SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);
 	    	}
 	    	try {
-	    		outputChannel.replyToSender(ctx, message.toString().getBytes());
-	    		if(this.req != null && this.req.refCnt() > 0) {
+	    		bean.getOutputChannel().replyToSender(bean.getCtx(), message.toString().getBytes());
+	    		if(bean != null && bean.refCnt() > 0) {
 					//System.out.println("The request is released.");
-					this.req.release();
-					this.req = null;
+	    			bean.release();
+	    			bean = null;
 				}
 	    	}
 	    	catch (IOException e) {
@@ -416,11 +397,11 @@ public class MessageQueueDequeuer extends Thread{
 		    		SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);
 		    	}
 		    	try {
-		    		outputChannel.replyToSender(ctx, "".getBytes());
-		    		if(this.req != null && this.req.refCnt() > 0) {
+		    		bean.getOutputChannel().replyToSender(bean.getCtx(), "".getBytes());
+		    		if(bean != null && bean.refCnt() > 0) {
 						//System.out.println("The request is released.");
-						this.req.release();
-						this.req = null;
+		    			bean.release();
+		    			bean = null;
 					}
 		    	}
 		    	catch (IOException e) {
@@ -457,9 +438,9 @@ public class MessageQueueDequeuer extends Thread{
 						                             AMQP.BasicProperties properties, byte[] body)
 						      throws IOException {
 						    String dqMessage = new String(body, "UTF-8");
-						    
+						    MessageQueueDequeuer.this.consumerTag = consumerTag;
 						    if(mqChannel != null && mqChannel.isOpen()) {
-						    	if (ctx != null && !ctx.isRemoved()){
+						    	if (bean.getCtx() != null && !bean.getCtx().isRemoved()){
 							    	StringBuffer message = new StringBuffer();
 									message.append("[\""+URLEncoder.encode(dqMessage,"UTF-8")+"\"]");
 									
@@ -474,11 +455,11 @@ public class MessageQueueDequeuer extends Thread{
 							    	}
 							    	
 							    	try {
-							    		outputChannel.replyToSender(ctx, message.toString().getBytes());
-							    		if(req != null && req.refCnt() > 0) {
+							    		bean.getOutputChannel().replyToSender(bean.getCtx(), message.toString().getBytes());
+							    		if(bean != null && bean.refCnt() > 0) {
 											//System.out.println("The request is released.");
-											req.release();
-											req = null;
+							    			bean.release();
+							    			bean = null;
 										}
 							    		
 						    			mqChannel.basicAck(envelope.getDeliveryTag(), false);
@@ -533,6 +514,42 @@ public class MessageQueueDequeuer extends Thread{
 				
 				//Enroll a  to the queue mqChannel in order to get a message from the queue.
 				//However, it does not block exactly this thread.
+			}
+			
+			//TODO: Unexpectedly a mqChannel is shutdown while transferring a response to polling client, MUST A MESSAGE IS REQUEUED.
+
+			if (bean != null && bean.getCtx() != null) {
+				bean.getCtx().channel().attr(MRH_MessageInputChannel.TERMINATOR).get().add(new ChannelTerminateListener() {
+					
+					@Override
+					public void terminate(ChannelHandlerContext ctx) {
+						
+						mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
+						Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicateInfoCnt(DUPLICATE_ID);
+		    			if(duplicateInfoCnt!=null) {
+		    	    		SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);	
+		    	    	}
+						try {
+							//System.out.println(consumerTag);
+							if(consumerTag != null && mqChannel != null && mqChannel.isOpen()) {
+								//System.out.println(mqChannel.getDefaultConsumer());
+								if (mqChannel.getDefaultConsumer() != null) {
+									mqChannel.basicCancel(consumerTag);
+									try {
+										mqChannel.close(320, "Service stoppted.");
+									}
+									catch (AlreadyClosedException | IOException | TimeoutException e) {
+										mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
+										return;
+									}
+								}
+							}
+						} catch (IOException e) {
+							mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
+							return;
+						} 
+					}
+				});
 			}
 			
 			
@@ -640,7 +657,6 @@ public class MessageQueueDequeuer extends Thread{
 	}
 
 	public void clear(boolean clearMqChannel, boolean clearMrns) {
-		this.outputChannel = null;
 		this.pollingMethod = null;
 		this.DUPLICATE_ID = null;
 		if (clearMrns) {
@@ -649,13 +665,12 @@ public class MessageQueueDequeuer extends Thread{
 			this.queueName = null;
 		}
 		if (clearMqChannel) {
-			if(this.req != null && this.req.refCnt() > 0) {
+			if(bean != null && bean.refCnt() > 0) {
 				//System.out.println("The request is released.");
-				this.req.release();
-				this.req = null;
+				bean.release();
+				bean = null;
 			}
 			this.mqChannel = null;
-			this.ctx = null;
 		}
 	}
 }
