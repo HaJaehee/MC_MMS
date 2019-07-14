@@ -451,7 +451,7 @@ public class MessageRelayingHandler  {
 					mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 				}
 				finally {
-					bean.getReq().release(); // logic B.
+					bean.release(); // logic B.
 				}
 			}
 
