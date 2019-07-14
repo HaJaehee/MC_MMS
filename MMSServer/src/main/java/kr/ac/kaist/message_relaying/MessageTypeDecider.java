@@ -50,7 +50,7 @@ Version : 0.6.0
 	Added adding mrn entry case.
 	Removed empty queue logs case.
 	Added enum msgType and removed public integers.
-	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+	Replaced from random int sessionId to String sessionId as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-29
@@ -131,7 +131,7 @@ import kr.ac.kaist.mms_server.MMSConfiguration;
 public class MessageTypeDecider {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageTypeDecider.class);
-	private String SESSION_ID = "";
+	private String sessionId = "";
 	
 	
 	public static enum msgType {
@@ -168,7 +168,7 @@ public class MessageTypeDecider {
 
 	
 	MessageTypeDecider(String sessionId) {
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 	}
 	
 	msgType decideType(MessageParser parser, MessageCastingHandler mch) throws ParseException{

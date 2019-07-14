@@ -42,7 +42,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-26
 Version : 0.6.0
-	Replaced from random int SESSION_ID to String SESSION_ID as mqConnection context mqChannel id.
+	Replaced from random int sessionId to String sessionId as mqConnection context mqChannel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-29
@@ -168,6 +168,11 @@ Rev. history : 2019-07-14
 Version : 0.9.4
 	Introduced MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Updated MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -212,7 +217,7 @@ import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 public class MessageQueueDequeuer extends Thread{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueDequeuer.class);
-	private String SESSION_ID = "";
+	private String sessionId = "";
 	private String DUPLICATE_ID="";
 	private MRH_MessageInputChannel.ChannelBean bean = null;
 	private String queueName = null;
@@ -228,7 +233,7 @@ public class MessageQueueDequeuer extends Thread{
 	
 	private MMSLog mmsLog = null;
 	MessageQueueDequeuer (String sessionId) {
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 		mmsLog = MMSLog.getInstance();
 	}
 	
@@ -270,12 +275,12 @@ public class MessageQueueDequeuer extends Thread{
 		// TODO: Youngjin Kim must inspect this following code.
 		super.run();
 		
-		int connId = (int) (Long.decode("0x"+this.SESSION_ID) % connectionPoolSize);
+		int connId = (int) (Long.decode("0x"+this.sessionId) % connectionPoolSize);
 		if (connectionPool.get(connId) == null || !connectionPool.get(connId).isOpen()) {
 			try {
 				connectionPool.set(connId, connFac.newConnection());
 			} catch (IOException | TimeoutException e) {
-				mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
+				mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
 				clear(true, true);
 				return;
 			}
@@ -285,7 +290,7 @@ public class MessageQueueDequeuer extends Thread{
 		try {
 			mqChannel = connectionPool.get(connId).createChannel();
 		} catch (IOException e1) {
-			mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString(), e1, 5);
+			mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString(), e1, 5);
 			clear(true, true);
 			return;
 		}
@@ -298,7 +303,7 @@ public class MessageQueueDequeuer extends Thread{
 			mqChannel.queueDeclare(queueName, true, false, false, null);
 		}
 		catch (IOException e) {
-			mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
+			mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
 			clear(true, true);
 			return;
 		}
@@ -314,7 +319,7 @@ public class MessageQueueDequeuer extends Thread{
 				res = mqChannel.basicGet(queueName, true);
 			}
 			catch (IOException e) {
-				mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
+				mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
 				message = null;
 				backupMsg = null;
 				clear(true, true);
@@ -329,7 +334,7 @@ public class MessageQueueDequeuer extends Thread{
 					message.append("\""+URLEncoder.encode(new String(res.getBody()),"UTF-8")+"\"");
 					backupMsg.add(0,new String(res.getBody()));
 				} catch (UnsupportedEncodingException e) {
-					mmsLog.info(logger, SESSION_ID, ErrorCode.MESSAGE_ENCODING_ERROR.toString());
+					mmsLog.info(logger, sessionId, ErrorCode.MESSAGE_ENCODING_ERROR.toString());
 				}
 				msgCount++;
 
@@ -340,16 +345,16 @@ public class MessageQueueDequeuer extends Thread{
 		if (msgCount > 0) { //If the queue has a message
 			message.append("]");
 			
-			mmsLog.debug(logger, this.SESSION_ID, "Dequeue="+queueName+".");
+			mmsLog.debug(logger, this.sessionId, "Dequeue="+queueName+".");
 	  
-	    	if (SessionManager.getSessionType(this.SESSION_ID) != null) {
-	    		SessionManager.removeSessionInfo(this.SESSION_ID);
+	    	if (SessionManager.getSessionType(this.sessionId) != null) {
+	    		SessionManager.removeSessionInfo(this.sessionId);
 	    	}
 	    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(DUPLICATE_ID)!=null) {
 	    		SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);
 	    	}
 	    	try {
-	    		bean.getOutputChannel().replyToSender(bean.getCtx(), message.toString().getBytes());
+	    		bean.getOutputChannel().replyToSender(bean, message.toString().getBytes());
 	    		if(bean != null && bean.refCnt() > 0) {
 					//System.out.println("The request is released.");
 	    			bean.release();
@@ -357,12 +362,12 @@ public class MessageQueueDequeuer extends Thread{
 				}
 	    	}
 	    	catch (IOException e) {
-	    		mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
+	    		mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
 	    		for (String msg : backupMsg) {
 	    			try {
 						mqChannel.basicPublish("", queueName, null, msg.getBytes());
 					} catch (IOException e1) {
-						mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
+						mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
 						backupMsg = null;
 	    	    		message = null;
 	    	    		clear(true, true);
@@ -377,7 +382,7 @@ public class MessageQueueDequeuer extends Thread{
 	    		}
 	    	}
 	    	catch (IOException | TimeoutException e) {
-	    		mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString());
+	    		mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString());
 	    		return;
 	    	}
 	    	finally {
@@ -390,17 +395,17 @@ public class MessageQueueDequeuer extends Thread{
 			message = null;
 			backupMsg = null;
 			if (pollingMethod == MessageTypeDecider.msgType.POLLING ) {//If polling method is normal polling
-				mmsLog.debug(logger, this.SESSION_ID, "Empty queue="+queueName+".");
+				mmsLog.debug(logger, this.sessionId, "Empty queue="+queueName+".");
 
-		    	if (SessionManager.getSessionType(this.SESSION_ID) != null) {
-		    		SessionManager.removeSessionInfo(this.SESSION_ID);
+		    	if (SessionManager.getSessionType(this.sessionId) != null) {
+		    		SessionManager.removeSessionInfo(this.sessionId);
 		    	}
 
 		    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(DUPLICATE_ID)!=null) {
 		    		SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);
 		    	}
 		    	try {
-		    		bean.getOutputChannel().replyToSender(bean.getCtx(), "".getBytes());
+		    		bean.getOutputChannel().replyToSender(bean, "".getBytes());
 		    		if(bean != null && bean.refCnt() > 0) {
 						//System.out.println("The request is released.");
 		    			bean.release();
@@ -408,7 +413,7 @@ public class MessageQueueDequeuer extends Thread{
 					}
 		    	}
 		    	catch (IOException e) {
-		    		mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
+		    		mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
 		    		clear(true, true);
 		    		return;
 		    	}
@@ -420,7 +425,7 @@ public class MessageQueueDequeuer extends Thread{
 		    		}
 		    	}
 		    	catch (IOException | TimeoutException e) {
-		    		mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString());
+		    		mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString());
 		    		return;
 		    	}
 		    	finally {
@@ -430,7 +435,7 @@ public class MessageQueueDequeuer extends Thread{
 			
 			else if (pollingMethod == MessageTypeDecider.msgType.LONG_POLLING){ //If polling method is long polling
 				//Enroll a delivery listener to the queue mqChannel in order to get a message from the queue.
-				mmsLog.debug(logger, this.SESSION_ID, "Client is waiting the message queue="+queueName+".");
+				mmsLog.debug(logger, this.sessionId, "Client is waiting the message queue="+queueName+".");
 				
 				//TODO: Even though a polling client disconnects long polling session, this DefaultConsumer holds a mqChannel.
 				//When a polling client disconnects long polling session, this DefaultConsumer have to free the mqChannel. 
@@ -447,10 +452,10 @@ public class MessageQueueDequeuer extends Thread{
 							    	StringBuffer message = new StringBuffer();
 									message.append("[\""+URLEncoder.encode(dqMessage,"UTF-8")+"\"]");
 									
-									mmsLog.debug(logger, SESSION_ID, "Dequeue="+queueName+".");
+									mmsLog.debug(logger, sessionId, "Dequeue="+queueName+".");
 	
-							    	if (SessionManager.getSessionType(SESSION_ID) != null) {
-							    		SessionManager.removeSessionInfo(SESSION_ID);
+							    	if (SessionManager.getSessionType(sessionId) != null) {
+							    		SessionManager.removeSessionInfo(sessionId);
 							    	}
 							    	
 							    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(DUPLICATE_ID)!=null) {
@@ -458,7 +463,7 @@ public class MessageQueueDequeuer extends Thread{
 							    	}
 							    	
 							    	try {
-							    		bean.getOutputChannel().replyToSender(bean.getCtx(), message.toString().getBytes());
+							    		bean.getOutputChannel().replyToSender(bean, message.toString().getBytes());
 							    		if(bean != null && bean.refCnt() > 0) {
 											//System.out.println("The request is released.");
 							    			bean.release();
@@ -472,7 +477,7 @@ public class MessageQueueDequeuer extends Thread{
 								    	clear(true, true);
 							    	}
 								    catch (IOException | TimeoutException e) {
-							    		mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
+							    		mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
 							    		try {
 							    			if (mqChannel != null && mqChannel.isOpen()) {
 							    				mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
@@ -481,15 +486,15 @@ public class MessageQueueDequeuer extends Thread{
 							    			}
 							    		}
 							    		catch (AlreadyClosedException | IOException | TimeoutException e1) {
-							    			mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
+							    			mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
 							    			clear(true, true);
 							    			return;
 							    		}
 							    	}
 								} else {
 	
-									mmsLog.debug(logger, SESSION_ID, "Dequeue="+queueName+".");
-									mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString()+" srcMRN="+ srcMRN+". Re-enqueue the messages.");
+									mmsLog.debug(logger, sessionId, "Dequeue="+queueName+".");
+									mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString()+" srcMRN="+ srcMRN+". Re-enqueue the messages.");
 									
 									try {
 										mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
@@ -497,7 +502,7 @@ public class MessageQueueDequeuer extends Thread{
 										mqChannel.close(320, "Service stoppted.");
 									}
 									catch (AlreadyClosedException | IOException | TimeoutException e) {
-										mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
+										mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
 										return;
 									}
 									finally {
@@ -510,7 +515,7 @@ public class MessageQueueDequeuer extends Thread{
 					});
 				}
 				catch (IOException e) {
-					mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
+					mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
 					clear(true, true);
 				}
 
@@ -527,7 +532,7 @@ public class MessageQueueDequeuer extends Thread{
 					@Override
 					public void terminate(ChannelHandlerContext ctx) {
 						
-						mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
+						mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
 						Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicateInfoCnt(DUPLICATE_ID);
 		    			if(duplicateInfoCnt!=null) {
 		    	    		SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);	
@@ -542,13 +547,13 @@ public class MessageQueueDequeuer extends Thread{
 										mqChannel.close(320, "Service stoppted.");
 									}
 									catch (AlreadyClosedException | IOException | TimeoutException e) {
-										mmsLog.warn(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
+										mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
 										return;
 									}
 								}
 							}
 						} catch (IOException e) {
-							mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
+							mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
 							return;
 						} 
 					}
@@ -562,11 +567,11 @@ public class MessageQueueDequeuer extends Thread{
 			 
 				//Enroll a delivery listener to the queue mqChannel in order to get a message from the queue.
 				if(MMSConfiguration.WEB_LOG_PROVIDING) {
-					String log = "SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".";
+					String log = "SessionID="+this.sessionId+" Client is waiting message queue="+queueName+".";
 					mmsLog.addBriefLogForStatus(log);
-					mmsLogForDebug.addLog(this.SESSION_ID, log);
+					mmsLogForDebug.addLog(this.sessionId, log);
 				}
-				logger.debug("SessionID="+this.SESSION_ID+" Client is waiting message queue="+queueName+".");
+				logger.debug("SessionID="+this.sessionId+" Client is waiting message queue="+queueName+".");
 				QueueingConsumer consumer = new QueueingConsumer(mqChannel);
 				mqChannel.basicConsume(queueName, false, consumer);
 				QueueingConsumer.Delivery delivery = consumer.nextDelivery();
@@ -574,29 +579,29 @@ public class MessageQueueDequeuer extends Thread{
 					message.append("[\""+URLEncoder.encode(new String(delivery.getBody()),"UTF-8")+"\"]");
 					
 					if(MMSConfiguration.WEB_LOG_PROVIDING) {
-						String log = "SessionID="+this.SESSION_ID+" Dequeue="+queueName+".";
+						String log = "SessionID="+this.sessionId+" Dequeue="+queueName+".";
 						mmsLog.addBriefLogForStatus(log);
-						mmsLogForDebug.addLog(this.SESSION_ID, log);
+						mmsLogForDebug.addLog(this.sessionId, log);
 					}
-					logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
+					logger.debug("SessionID="+this.sessionId+" Dequeue="+queueName+".");
 			    	
-			    	if (SessionManager.sessionInfo.get(this.SESSION_ID) != null) {
-			    		SessionManager.sessionInfo.remove(this.SESSION_ID);
+			    	if (SessionManager.sessionInfo.get(this.sessionId) != null) {
+			    		SessionManager.sessionInfo.remove(this.sessionId);
 			    	}
 				    outputChannel.replyToSender(ctx, message.toString().getBytes());
 					mqChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 				} else {
 					message.append(new String(delivery.getBody()));
 					if(MMSConfiguration.WEB_LOG_PROVIDING) {
-						String log = "SessionID="+this.SESSION_ID+" Dequeue="+queueName+".";
+						String log = "SessionID="+this.sessionId+" Dequeue="+queueName+".";
 						mmsLog.addBriefLogForStatus(log);
-						mmsLogForDebug.addLog(this.SESSION_ID, log);
-						log = "SessionID="+this.SESSION_ID+" "+srcMRN+" is disconnected. Requeue.";
+						mmsLogForDebug.addLog(this.sessionId, log);
+						log = "SessionID="+this.sessionId+" "+srcMRN+" is disconnected. Requeue.";
 						mmsLog.addBriefLogForStatus(log);
-						mmsLogForDebug.addLog(this.SESSION_ID, log);
+						mmsLogForDebug.addLog(this.sessionId, log);
 					}
-					logger.debug("SessionID="+this.SESSION_ID+" Dequeue="+queueName+".");
-					logger.warn("SessionID="+this.SESSION_ID+" "+srcMRN+" is disconnected. Requeue.");
+					logger.debug("SessionID="+this.sessionId+" Dequeue="+queueName+".");
+					logger.warn("SessionID="+this.sessionId+" "+srcMRN+" is disconnected. Requeue.");
 					mqChannel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
 				}
 				
@@ -646,14 +651,14 @@ public class MessageQueueDequeuer extends Thread{
 	    		try {
 					mqChannel.close(320, "Service stoppted.");
 				} catch (IOException | TimeoutException e) {
-					mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
+					mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
 				}
 	    	}
 			/*if (mqConnection != null) {
 				try {
 					mqConnection.close();
 				} catch (IOException e) {
-					mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+					mmsLog.warnException(logger, sessionId, "", e, 5);
 				}
 			}*/
     	}		

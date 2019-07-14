@@ -57,7 +57,7 @@ public class ClientVerifier {
 	private ServerPKILibrary serverPKILib;
 	private boolean isMatching;
 	private boolean isVerified;
-	private String SESSION_ID;
+	private String sessionId;
 	private PollingSessionManager pManager;
 	private final MMSLog mmsLog = MMSLog.getInstance();
 	
@@ -67,7 +67,7 @@ public class ClientVerifier {
 		serverPKILib = null;
 		isMatching = false;
 		isVerified = false;
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 		pManager = new PollingSessionManager();
 	}
 	

@@ -35,7 +35,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-26
 Version : 0.6.0
-	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+	Replaced from random int sessionId to String sessionId as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-10-25
@@ -134,6 +134,11 @@ Rev. history : 2019-07-14
 Version : 0.9.4
 	Introduced MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Updated MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -187,7 +192,7 @@ public class MRH_MessageOutputChannel{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MRH_MessageOutputChannel.class);
 	
-	private String SESSION_ID = "";
+	private String sessionId = "";
 	private static Map<String,List<String>> storedHeader = null;
 	private static boolean isStoredHeader = false;
 	private HostnameVerifier hv = null;
@@ -197,7 +202,7 @@ public class MRH_MessageOutputChannel{
 	private MMSLog mmsLog = null;
 	
 	public MRH_MessageOutputChannel(String sessionId) {
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 		initializeModule();
 	}
 	
@@ -211,20 +216,14 @@ public class MRH_MessageOutputChannel{
 		storedHeader = storingHeader;
 	}
 	
-	public void replyToSender(ChannelHandlerContext ctx, byte[] data, boolean realtimeLog, int responseCode) throws IOException{
-		this.realtimeLog = realtimeLog;
+	public void replyToSender(MRH_MessageInputChannel.ChannelBean bean, byte[] data, int responseCode) throws IOException{
 		this.responseCode = responseCode;
-		replyToSender(ctx, data);
+		replyToSender(bean, data);
 	}
 	
-	public void replyToSender(ChannelHandlerContext ctx, byte[] data, boolean realtimeLog) throws IOException{
-		this.realtimeLog = realtimeLog;
-		replyToSender(ctx, data);
-	}
-	
-	public void replyToSender(ChannelHandlerContext ctx, byte[] data) throws IOException{
-    	if (!realtimeLog) {
-    		mmsLog.info(logger, this.SESSION_ID, "Reply to sender.");
+	public void replyToSender(MRH_MessageInputChannel.ChannelBean bean, byte[] data) throws IOException{
+    	if (bean.getType() != MessageTypeDecider.msgType.REALTIME_LOG) {
+    		mmsLog.info(logger, this.sessionId, "Reply to sender.");
 		}
     	
     	long responseLen = data.length;
@@ -251,6 +250,8 @@ public class MRH_MessageOutputChannel{
     	
     	HttpUtil.setContentLength(res, responseLen);
  
+    	
+    	ChannelHandlerContext ctx = bean.getCtx();
     	final ChannelFuture f = ctx.writeAndFlush(res);
     	f.addListener(new ChannelFutureListener() {
             @Override
@@ -261,9 +262,9 @@ public class MRH_MessageOutputChannel{
             }
         });
     	
-        SessionManager.removeSessionInfo(SESSION_ID);
+        SessionManager.removeSessionInfo(sessionId);
         if (logger.isTraceEnabled()) {
-        	mmsLog.trace(logger, this.SESSION_ID, "Message has been sent completely.");
+        	mmsLog.trace(logger, this.sessionId, "Message has been sent completely.");
         }
     }
 
@@ -271,7 +272,7 @@ public class MRH_MessageOutputChannel{
 		String url = "http://" + IPAddress + ":" + port + uri;
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		mmsLog.info(logger, this.SESSION_ID, "Try connecting to url="+url);
+		mmsLog.info(logger, this.sessionId, "Try connecting to url="+url);
 
 		
 		//		Setting HTTP method
@@ -289,7 +290,7 @@ public class MRH_MessageOutputChannel{
 
 		// get request doesn't have http body
 		 if (logger.isTraceEnabled()) {
-			 mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+			 mmsLog.trace(logger, this.sessionId, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (httpMethod==httpMethod.POST?"POST":"GET")+"\n");
 		 }
 		return con;
@@ -300,7 +301,7 @@ public class MRH_MessageOutputChannel{
 		String url = "http://" + bean.getParser().getDstIP() + ":" + bean.getParser().getDstPort() + bean.getReq().uri();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		mmsLog.info(logger, this.SESSION_ID, "Try connecting to url="+url);
+		mmsLog.info(logger, this.sessionId, "Try connecting to url="+url);
 
 		HttpHeaders httpHeaders = bean.getReq().headers();
 		
@@ -335,7 +336,7 @@ public class MRH_MessageOutputChannel{
 		
 		// get request doesn't have http body
 		 if (logger.isTraceEnabled()) {
-			 mmsLog.trace(logger, this.SESSION_ID, (bean.getParser().getHttpMethod()==HttpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+			 mmsLog.trace(logger, this.sessionId, (bean.getParser().getHttpMethod()==HttpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (bean.getParser().getHttpMethod()==HttpMethod.POST?"POST":"GET")+" parameters=" + urlParameters+"\n");
 		 }
 		return con;
@@ -350,7 +351,7 @@ public class MRH_MessageOutputChannel{
 		
 		URL obj = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-		mmsLog.info(logger, this.SESSION_ID, "Try connecting to url="+url);
+		mmsLog.info(logger, this.sessionId, "Try connecting to url="+url);
 
 		con.setHostnameVerifier(hv);
 		
@@ -388,7 +389,7 @@ public class MRH_MessageOutputChannel{
 			wr.close();
 		} 
 		 if (logger.isTraceEnabled()) {
-			 mmsLog.trace(logger, this.SESSION_ID, (bean.getParser().getHttpMethod()==HttpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+			 mmsLog.trace(logger, this.sessionId, (bean.getParser().getHttpMethod()==HttpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (bean.getParser().getHttpMethod()==HttpMethod.POST?"POST":"GET")+" parameters=" + urlParameters+"\n");
 		 }
 		
@@ -402,7 +403,7 @@ public class MRH_MessageOutputChannel{
 		String url = "https://" + IPAddress + ":" + port + uri;
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		mmsLog.info(logger, this.SESSION_ID, "Try connecting to url="+url);
+		mmsLog.info(logger, this.sessionId, "Try connecting to url="+url);
 		
 		//		Setting HTTP method
 		if (httpMethod == httpMethod.POST) {
@@ -419,7 +420,7 @@ public class MRH_MessageOutputChannel{
 
 		// get request doesn't have http body
 		 if (logger.isTraceEnabled()) {
-			 mmsLog.trace(logger, this.SESSION_ID, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
+			 mmsLog.trace(logger, this.sessionId, (httpMethod==httpMethod.POST?"POST":"GET")+" request to URL=" + url + "\n"
 				+ (httpMethod==httpMethod.POST?"POST":"GET")+"\n");
 		 }
 		return con;
@@ -447,7 +448,7 @@ public class MRH_MessageOutputChannel{
         byte[] retBuffer = byteOS.toByteArray();
         
 		is.close();
-		mmsLog.info(logger, this.SESSION_ID, "Receive a response." + " Response Code=" + responseCode);
+		mmsLog.info(logger, this.sessionId, "Receive a response." + " Response Code=" + responseCode);
 
 		return retBuffer;
 	}
@@ -507,14 +508,14 @@ public class MRH_MessageOutputChannel{
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (NoSuchAlgorithmException e) {
-        	mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+        	mmsLog.warnException(logger, sessionId, "", e, 5);
 		} catch (KeyManagementException e) {
-			mmsLog.warnException(logger, SESSION_ID, "", e, 5);
+			mmsLog.warnException(logger, sessionId, "", e, 5);
 		}
         
         HostnameVerifier hv = new HostnameVerifier() {
             public boolean verify(String urlHostName, SSLSession session) {
-            	mmsLog.info(logger, SESSION_ID, "URL Host=" + urlHostName + " vs " + session.getPeerHost()+".");
+            	mmsLog.info(logger, sessionId, "URL Host=" + urlHostName + " vs " + session.getPeerHost()+".");
                 return true;
             }
         };
@@ -649,7 +650,7 @@ public class MRH_MessageOutputChannel{
 				con = null;
 			} 
 	       	catch (IOException e) {
-	       		mmsLog.info(logger, SESSION_ID, ErrorCode.MESSAGE_RELAYING_FAIL_DISCONNECT.toString());
+	       		mmsLog.info(logger, sessionId, ErrorCode.MESSAGE_RELAYING_FAIL_DISCONNECT.toString());
 			}
 	    }
 		public byte[] getData() {
@@ -667,21 +668,21 @@ public class MRH_MessageOutputChannel{
 				data = getResponseMessage(con);
 			} 
 			catch (IOException e) {
-	    		mmsLog.info(logger, SESSION_ID, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString());
+	    		mmsLog.info(logger, sessionId, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString());
 			} 
 			finally {
 				if (data == null) {
 					data = ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.getUTF8Bytes();
 				}
 				try {
-					replyToSender(bean.getCtx(), data);
+					replyToSender(bean, data);
 					if (bean != null && bean.refCnt() > 0) {
 						bean.release();
 						bean = null;
 					}
 					con = null;
 				} catch (IOException e) {
-					mmsLog.infoException(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+					mmsLog.infoException(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 				}
 
 			}

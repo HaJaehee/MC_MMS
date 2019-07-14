@@ -75,6 +75,11 @@ Rev. history : 2019-07-14
 Version : 0.9.4
 	Introduced MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Updated MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -104,7 +109,7 @@ import org.slf4j.LoggerFactory;
 public class SeamlessRoamingHandler {
 
 	private static final Logger logger = LoggerFactory.getLogger(SeamlessRoamingHandler.class);
-	private String SESSION_ID = "";
+	private String sessionId = "";
 
 	private PollingMessageHandler pmh = null;
 	private SCMessageHandler scmh = null;
@@ -118,7 +123,7 @@ public class SeamlessRoamingHandler {
 	
 
 	public SeamlessRoamingHandler(String sessionId) {
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 
 		initializeModule();
 		initializeSubModule();
@@ -126,14 +131,14 @@ public class SeamlessRoamingHandler {
 	
 	
 	private void initializeModule() {
-		mih = new MNSInteractionHandler(this.SESSION_ID);
-		cltVerifier = new ClientVerifier(this.SESSION_ID);
+		mih = new MNSInteractionHandler(this.sessionId);
+		cltVerifier = new ClientVerifier(this.sessionId);
 
 	}
 
 	private void initializeSubModule() {
-		pmh = new PollingMessageHandler(this.SESSION_ID);
-		scmh = new SCMessageHandler(this.SESSION_ID);
+		pmh = new PollingMessageHandler(this.sessionId);
+		scmh = new SCMessageHandler(this.sessionId);
 		mmsLog = MMSLog.getInstance();
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
@@ -158,12 +163,12 @@ public class SeamlessRoamingHandler {
 			return message;
 		}
 		
-		mmsLog.debug(logger, this.SESSION_ID, "This is a polling request and the service MRN is " + bean.getParser().getSvcMRN());
+		mmsLog.debug(logger, this.sessionId, "This is a polling request and the service MRN is " + bean.getParser().getSvcMRN());
 
 		//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
 		if (bean.getParser().getHexSignedData() != null) { //In this version 0.8.0, polling client verification is optional. 
 			
-			mmsLog.debug(logger, this.SESSION_ID, " Client verification using MRN="+srcMRN+" and signed data.");
+			mmsLog.debug(logger, this.sessionId, " Client verification using MRN="+srcMRN+" and signed data.");
 
 			isClientVerified = cltVerifier.verifyClient(srcMRN, bean.getParser().getHexSignedData());
 			
@@ -174,11 +179,11 @@ public class SeamlessRoamingHandler {
 			
 			if (isClientVerified) {
 				//Success verifying the client.
-				mmsLog.debug(logger, this.SESSION_ID, "Client verification is succeeded.");
+				mmsLog.debug(logger, this.sessionId, "Client verification is succeeded.");
 
 			} else {
 				//Fail to verify the client.
-				mmsLog.debug(logger, this.SESSION_ID, ErrorCode.AUTHENTICATE_FAIL.toString());
+				mmsLog.debug(logger, this.sessionId, ErrorCode.AUTHENTICATE_FAIL.toString());
 				
 				if (cltVerifier.isMatching() == false) {
 					// message = ErrorCode.AUTHENTICATION_FAIL_NOTMATCHING.getJSONFormattedUTF8Bytes();
@@ -193,16 +198,16 @@ public class SeamlessRoamingHandler {
 			}
 		}
 		else {
-			mmsLog.debug(logger, this.SESSION_ID, ErrorCode.NULL_CERTIFICATE.toString());
+			mmsLog.debug(logger, this.sessionId, ErrorCode.NULL_CERTIFICATE.toString());
 			
 			message = ErrorCode.NULL_CERTIFICATE.getJSONFormattedUTF8Bytes();		
 //				String msg = "The certificate is not inlcuded.";
 //				try {
 //					msg = "[\""+URLEncoder.encode(msg,"UTF-8")+"\"]";
 //				} catch (UnsupportedEncodingException e) {
-//					logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".");
+//					logger.warn("SessionID="+sessionId+" "+e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".");
 //					for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-//						logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+//						logger.warn("SessionID="+sessionId+" "+e.getStackTrace()[i]+".");
 //					}
 //				}
 			return message;
@@ -211,20 +216,20 @@ public class SeamlessRoamingHandler {
 		String svcMRN = bean.getParser().getSvcMRN();
 	
 		try {
-			mmsLogForDebug.addSessionId(svcMRN, this.SESSION_ID);
+			mmsLogForDebug.addSessionId(svcMRN, this.sessionId);
 		}
 		catch (NullPointerException e){
-			mmsLog.info(logger, this.SESSION_ID, "Detected MMSLogForDebug problem with MRN="+svcMRN+".");
+			mmsLog.info(logger, this.sessionId, "Detected MMSLogForDebug problem with MRN="+svcMRN+".");
 			mmsLogForDebug.removeMrn(svcMRN);
 			mmsLogForDebug.addMrn(svcMRN);
 			
 		}
 		finally {
-			mmsLogForDebug.addSessionId(svcMRN, this.SESSION_ID);
+			mmsLogForDebug.addSessionId(svcMRN, this.sessionId);
 		}
 		
-		if(mmsLogForDebug.isItsLogListEmtpy(this.SESSION_ID)) {
-			mmsLog.debug(logger, this.SESSION_ID, "In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
+		if(mmsLogForDebug.isItsLogListEmtpy(this.sessionId)) {
+			mmsLog.debug(logger, this.sessionId, "In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
 		}
 		
 
@@ -241,12 +246,12 @@ public class SeamlessRoamingHandler {
 
 		byte[] message = null;
 		if (bean.getType() == MessageTypeDecider.msgType.POLLING)	{
-			SessionManager.putSessionInfo(SESSION_ID, "p");
+			SessionManager.putSessionInfo(sessionId, "p");
 			SessionManager.incPollingSessionCount();
 			pmh.dequeueSCMessage(bean);
 		}
 		else if (bean.getType() == MessageTypeDecider.msgType.LONG_POLLING) {
-			SessionManager.putSessionInfo(SESSION_ID, "lp");
+			SessionManager.putSessionInfo(sessionId, "lp");
 			SessionManager.incPollingSessionCount();
 			
 			// Youngjin code
@@ -260,7 +265,7 @@ public class SeamlessRoamingHandler {
 				
 				// TODO: To define error message.
 				message = ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes();
-				mmsLog.debug(logger, SESSION_ID, ErrorCode.DUPLICATED_POLLING.toString());
+				mmsLog.debug(logger, sessionId, ErrorCode.DUPLICATED_POLLING.toString());
 				if (bean != null && bean.refCnt()>0) {
 					bean.release();
 				}
@@ -280,8 +285,8 @@ public class SeamlessRoamingHandler {
 	}
 
 //	save SC message into queue
-	public void putSCMessage(MRH_MessageInputChannel.ChannelBean bean, String message) {
-		scmh.enqueueSCMessage(bean, message);
+	public void putSCMessage(MRH_MessageInputChannel.ChannelBean bean) {
+		scmh.enqueueSCMessage(bean);
 	}
 
 	

@@ -59,7 +59,7 @@ Version : 0.6.0
 	Added adding mrn entry case.
 	Added removing polling method of mrn case.
 	Added enum msgType and removed public integers.
-	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+	Replaced from random int sessionId to String sessionId as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-29
@@ -264,6 +264,11 @@ Rev. history : 2019-07-14
 Version : 0.9.4
 	Introduced MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Updated MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -354,7 +359,6 @@ public class MessageRelayingHandler  {
 			throws ErrorResponseException {
 
 		byte[] message = null;
-		boolean isRealtimeLog = false;
 		
 		
 		String srcMRN = bean.getParser().getSrcMRN();
@@ -442,7 +446,7 @@ public class MessageRelayingHandler  {
 
 			if (message != null) { 
 				try {
-					bean.getOutputChannel().replyToSender(bean.getCtx(), message, isRealtimeLog);
+					bean.getOutputChannel().replyToSender(bean, message);
 				} catch (IOException e) {
 					mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 				}
@@ -456,11 +460,11 @@ public class MessageRelayingHandler  {
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC) {
 			srh = new SeamlessRoamingHandler(bean.getSessionId());
-			srh.putSCMessage(bean, bean.getReq().content().toString(Charset.forName("UTF-8")).trim());
+			srh.putSCMessage(bean);
     		message = "OK".getBytes(Charset.forName("UTF-8"));
     		
     		try {
-				bean.getOutputChannel().replyToSender(bean.getCtx(), message, isRealtimeLog);
+				bean.getOutputChannel().replyToSender(bean, message);
 			} catch (IOException e) {
 				mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 			}
@@ -504,7 +508,6 @@ public class MessageRelayingHandler  {
 		}
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (bean.getType() == MessageTypeDecider.msgType.REALTIME_LOG){
-			isRealtimeLog = true;
 			mmsRestApiHandler = new MMSRestAPIHandler(bean.getSessionId());
 			message = mmsRestApiHandler.getRealtimeLog(bean.getReq());
 			
@@ -570,7 +573,7 @@ public class MessageRelayingHandler  {
 					message = ErrorCode.UNKNOWN_ERR.getBytes();
 					mmsLog.info(logger, bean.getSessionId(), ErrorCode.UNKNOWN_ERR.toString());
 					try {
-						bean.getOutputChannel().replyToSender(bean.getCtx(), message, isRealtimeLog);
+						bean.getOutputChannel().replyToSender(bean, message);
 					} catch (IOException e) {
 						mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 					} //TODO: MUST HAVE MORE DEFINED EXCEPTION MESSAGES.
@@ -578,7 +581,7 @@ public class MessageRelayingHandler  {
 				}
 				else {
 					try {
-						bean.getOutputChannel().replyToSender(bean.getCtx(), message, isRealtimeLog);
+						bean.getOutputChannel().replyToSender(bean, message);
 					} catch (IOException e) {
 						mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 					}
@@ -587,7 +590,7 @@ public class MessageRelayingHandler  {
 			}
 			else if (isErrorOccured || message != null) {
 				try {
-					bean.getOutputChannel().replyToSender(bean.getCtx(), message, isRealtimeLog);
+					bean.getOutputChannel().replyToSender(bean, message);
 				} catch (IOException e) {
 					mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 				}
@@ -597,7 +600,7 @@ public class MessageRelayingHandler  {
 				message = ErrorCode.UNKNOWN_ERR.getBytes();
 				mmsLog.info(logger, bean.getSessionId(), ErrorCode.UNKNOWN_ERR.toString());
 				try {
-					bean.getOutputChannel().replyToSender(bean.getCtx(), message, isRealtimeLog);
+					bean.getOutputChannel().replyToSender(bean, message);
 				} catch (IOException e) {
 					mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 				} //TODO: MUST HAVE MORE DEFINED EXCEPTION MESSAGES.

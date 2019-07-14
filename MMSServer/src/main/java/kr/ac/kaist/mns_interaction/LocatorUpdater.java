@@ -40,15 +40,15 @@ import kr.ac.kaist.mms_server.MMSConfiguration;
 public class LocatorUpdater {
 	
 	private static final Logger logger = LoggerFactory.getLogger(LocatorUpdater.class);
-	private String SESSION_ID = "";
+	private String sessionId = "";
 	
 	LocatorUpdater (String sessionId){
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 	}
 	String buildUpdate(String MRN, String IP) {
 		String msg = "Location-Update:" + IP + "," + MRN + ",0,1";
 
-		logger.debug("SessionID="+this.SESSION_ID+" "+msg+".");
+		logger.debug("SessionID="+this.sessionId+" "+msg+".");
 		return msg;
 	}
 }

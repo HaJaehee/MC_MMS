@@ -49,7 +49,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2017-09-13
 Version : 0.6.0
 	An unused logger statement removed 
-	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+	Replaced from random int sessionId to String sessionId as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-29
@@ -117,6 +117,11 @@ Rev. history : 2019-07-14
 Version : 0.9.4
 	Introduced MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Updated MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 
 /* -------------------------------------------------------- */
@@ -124,7 +129,7 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 class MessageQueueEnqueuer {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueEnqueuer.class);
-	private String SESSION_ID = "";
+	private String sessionId = "";
 	
 	private MMSLog mmsLog = null;
 	
@@ -132,21 +137,21 @@ class MessageQueueEnqueuer {
 	
 	
 	public MessageQueueEnqueuer (String sessionId) {
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 		mmsLog = MMSLog.getInstance();
 		
 	}
 	
 	
-	void enqueueMessage(MRH_MessageInputChannel.ChannelBean bean, String message) {
+	void enqueueMessage(MRH_MessageInputChannel.ChannelBean bean) {
 		Connection connection = null;
 		Channel channel = null;
 		String queueName = bean.getParser().getDstMRN()+"::"+bean.getParser().getSrcMRN();
 		if(logger.isTraceEnabled()) {
-			mmsLog.trace(logger, this.SESSION_ID, "Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(message));
+			mmsLog.trace(logger, this.sessionId, "Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(bean.getReq().content().toString(Charset.forName("UTF-8")).trim()));
 		 }
 		 else {
-			 mmsLog.debug(logger, this.SESSION_ID, "Enqueue="+queueName+".");
+			 mmsLog.debug(logger, this.sessionId, "Enqueue="+queueName+".");
 		 }
 		
 		try {
@@ -162,31 +167,31 @@ class MessageQueueEnqueuer {
 			channel = connection.createChannel();
 			channel.queueDeclare(queueName, true, false, false, null);
 			
-			channel.basicPublish("", queueName, null, message.getBytes());
+			channel.basicPublish("", queueName, null, bean.getReq().content().toString(Charset.forName("UTF-8")).trim().getBytes());
 			channel.close(320, "Service stopped.");
 			connection.close(320, "Service stopped.", 1000);
 			
 		} 
 		catch (IOException e) {
-			mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
+			mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
 			
 		} 
 		catch (TimeoutException e) {
-			mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
+			mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
 		}
 		finally {
     		if (channel != null && channel.isOpen()) {
 	    		try {
 					channel.close(320, "Service stopped.");
 				} catch (IOException | TimeoutException e) {
-					mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
+					mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
 				}
 	    	}
     		if (connection != null && channel.isOpen()) {
 	    		try {
 	    			connection.close(320, "Service stopped.",1000);
 				} catch (IOException e) {
-					mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_CONNECTION_CLOSE_ERROR.toString(), e, 5);
+					mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CONNECTION_CLOSE_ERROR.toString(), e, 5);
 				}
 	    	}
 		}

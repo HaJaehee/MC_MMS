@@ -19,7 +19,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-26
 Version : 0.6.0
-	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+	Replaced from random int sessionId to String sessionId as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-06-06
@@ -43,6 +43,11 @@ Rev. history : 2019-07-14
 Version : 0.9.4
 	Introduced MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Updated MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -58,17 +63,17 @@ import org.slf4j.LoggerFactory;
 class PollingMessageHandler {
 
 	private static final Logger logger = LoggerFactory.getLogger(PollingMessageHandler.class);
-	private String SESSION_ID = "";
+	private String sessionId = "";
 	private MessageQueueManager mqm = null;
 	
 	public PollingMessageHandler(String sessionId) {
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 		
 		initializeModule();
 	}
 	
 	private void initializeModule() {
-		mqm = new MessageQueueManager(this.SESSION_ID);
+		mqm = new MessageQueueManager(this.sessionId);
 	}
 	
 	@Deprecated

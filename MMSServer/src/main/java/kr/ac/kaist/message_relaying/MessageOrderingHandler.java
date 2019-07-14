@@ -31,6 +31,11 @@ Rev. history : 2019-07-14
 Version : 0.9.4
 	Introduced MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Updated MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */
 
@@ -246,7 +251,7 @@ class MessageOrderingHandler {
 	
 	private byte[] processThisThread (List<SessionIdAndThr> itemList, MRH_MessageInputChannel.ChannelBean bean, MessageCastingHandler mch) {
 		byte[] message = null;
-		//System.out.println("Interrupted! This session ID="+SESSION_ID+", Session ID in list="+itemList.get(0).getSessionId()+", isExceptionOccured="+itemList.get(0).isExceptionOccured()+", seq num="+seqNum+", last seq num="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
+		//System.out.println("Interrupted! This session ID="+sessionId+", Session ID in list="+itemList.get(0).getSessionId()+", isExceptionOccured="+itemList.get(0).isExceptionOccured()+", seq num="+seqNum+", last seq num="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
 		if (itemList.size()>0 && itemList.get(0).getSessionId().equals(bean.getSessionId())) { //MUST be THIS session.
 			if ((itemList.get(0).getPreSeqNum() == SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair) && 
 					!itemList.get(0).isExceptionOccured()) || itemList.get(0).getWaitingCount() > 0){
@@ -261,7 +266,7 @@ class MessageOrderingHandler {
 				}
 				else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 					SeamlessRoamingHandler srh = new SeamlessRoamingHandler(bean.getSessionId());
-					srh.putSCMessage(bean, bean.getReq().content().toString(Charset.forName("UTF-8")).trim());
+					srh.putSCMessage(bean);
 		    		message = "OK".getBytes(Charset.forName("UTF-8"));
 				}
 				message = rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcDstPair, bean.getSessionId());
