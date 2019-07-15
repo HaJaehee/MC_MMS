@@ -345,6 +345,9 @@ public class SessionManager {
 						
 						try {
 							synchronized (f) {
+								if (!f.exists()) {
+									f.createNewFile();
+								}
 								if (f.exists()) {
 									fw = new FileWriter(f, true);
 									bw = new BufferedWriter(fw);
