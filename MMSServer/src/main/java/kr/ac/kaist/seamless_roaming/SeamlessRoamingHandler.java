@@ -320,7 +320,7 @@ public class SeamlessRoamingHandler {
 	public static void releaseDuplicateInfo(String duplicate_id) {
 		synchronized(duplicateInfo) {
 
-			System.out.println("Release Dup");
+			//System.out.println("Release Dup");
 			Integer refCnt = duplicateInfo.get(duplicate_id);
 			if (refCnt != null) {
 				if (refCnt.intValue() == 1) {
