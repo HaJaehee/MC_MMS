@@ -29,14 +29,14 @@ public class SCPoulLowenorn {
 		String myMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 		//myMRN = args[0];
 		
-		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
+		MMSConfiguration.MMS_URL="localhost:8088";
 //		MMSConfiguration.MMS_URL="127.0.0.1:8088";
 		MMSConfiguration.DEBUG = true; // If you are debugging client, set this variable true.
 		
 		//Service Consumer cannot be HTTP server and should poll from MMS. 
 		MMSClientHandler polling = new MMSClientHandler(myMRN);
 		
-		int pollInterval = 1000; // The unit is millisecond. 
+		int pollInterval = 0; // The unit is millisecond. 
 		String dstMRN = "urn:mrn:smart-navi:device:mms1";
 		String svcMRN = "urn:mrn:smart-navi:device:service-provider";
 		

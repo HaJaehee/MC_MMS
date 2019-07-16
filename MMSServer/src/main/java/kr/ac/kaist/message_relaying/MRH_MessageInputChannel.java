@@ -137,6 +137,11 @@ Rev. history : 2019-07-14
 Version : 0.9.4
 	Introduced MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+ Rev. history : 2019-07-16
+ Version : 0.9.4
+ 	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
+ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -164,6 +169,7 @@ import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
+import io.netty.util.ReferenceCountUtil;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 import java.io.IOException;
@@ -239,6 +245,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			this.parser = new MessageParser(sessionId);
 			bean = new ChannelBean(protocol, ctx, req, sessionId, parser);
 			bean.retain();
+			//System.out.println("0-"+bean.refCnt());
+			//System.out.println("0-"+bean.getReq().refCnt());
 			try {
 				parser.parseMessage(ctx, req);
 				
@@ -259,8 +267,14 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     		
     		
             relayingHandler = new MessageRelayingHandler(bean);
-		} 	finally {
+			//System.out.println("Successfully processed");
+		}
+		/*catch (Exception e) {
+			e.printStackTrace();
+		}*/
+		finally {
 			bean.release();
+
 		}
 	}
 	
@@ -271,21 +285,26 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 
-        super.channelInactive(ctx);
-        
+    	super.channelInactive(ctx);
+
+        //System.out.println(sessionId +", ChannelInactive");
+		//System.out.println(sessionId +", REFERENCE COUNT="+bean.getReq().refCnt());
+
         if (relayingHandler != null) {
         	ConnectionThread thread = relayingHandler.getConnectionThread();
         	if (thread != null) {
-            	mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
+            	if (bean.refCnt() > 0) {
+					mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
+					bean.release();
+				}
+
                 thread.terminate();
             }
         	relayingHandler = null;
         	
         }
         
-        if (bean != null) {
-        	bean = null;
-        }
+
         
         LinkedList<ChannelTerminateListener> listeners = ctx.channel().attr(TERMINATOR).get();
         for(ChannelTerminateListener listener: listeners) {
@@ -295,6 +314,10 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         //if (isRemainJob(ctx)) {
         //    ReferenceCountUtil.release(imsg);
         //}
+
+		if (bean != null) {
+			bean = null;
+		}
         ctx.close();
     }
 
@@ -348,7 +371,6 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 
 //    	ctx.channel().
     	String clientType = SessionManager.getSessionType(sessionId);
-    	Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicateInfoCnt(DUPLICATE_ID);
 //    	ctx.pipeline().get(HttpHeaderValues.class);
 //    	channels.
     	
@@ -396,12 +418,11 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     	if (clientType != null) {
     		SessionManager.removeSessionInfo(sessionId);    		
       }
-    	if(duplicateInfoCnt!=null) {
-    		SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);	
-    	}
+
     	if (!ctx.isRemoved()){
     		  ctx.close();
       }
+
     }
     
     private void printError(String channelID, String[] reqInfo, String clientType){
@@ -463,6 +484,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     		this.req = req;
     		this.sessionId = sessionId;
     		this.parser = parser;
+    		this.refCnt = this.req.refCnt();
     	}
     	
     	public void setOutputChannel(MRH_MessageOutputChannel moc) {
@@ -503,18 +525,15 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     	
  
     	public synchronized void release() {
-    		if (req != null && req.refCnt() > 0 && refCnt > 0) { 
+    		//System.out.print(sessionId+", ");
+    		if (req != null && req.refCnt() > 0 && refCnt > 0) {
 	    		req.release();
 	    		refCnt--;
+				//System.out.println("REFERENCE COUNT="+req.refCnt());
     		}
-    		if (req != null && req.refCnt() == 0 && refCnt == 0) {
-    	    	req = null;
-    	    	ctx = null;
-    	    	sessionId = null;
-    	    	protocol = null;
-    	    	parser = null;
-    	    	moc = null;
-    	    	type = null;
+    		if (req != null && req.refCnt() == 0 && refCnt == 1) {
+    	    	refCnt = 0;
+    	    	//System.out.println("REFERENCE COUNT=0");
     		}
     	}
     	

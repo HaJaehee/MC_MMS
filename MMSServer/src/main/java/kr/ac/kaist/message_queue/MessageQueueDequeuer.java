@@ -173,6 +173,11 @@ Rev. history : 2019-07-14
 Version : 0.9.4
 	Updated MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+ Rev. history : 2019-07-16
+ Version : 0.9.4
+ 	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
+ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -401,22 +406,13 @@ public class MessageQueueDequeuer extends Thread{
 		    		SessionManager.removeSessionInfo(this.sessionId);
 		    	}
 
-		    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(DUPLICATE_ID)!=null) {
-		    		SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);
-		    	}
 		    	try {
 		    		bean.getOutputChannel().replyToSender(bean, "".getBytes());
-		    		if(bean != null && bean.refCnt() > 0) {
-						//System.out.println("The request is released.");
-		    			bean.release();
-		    			bean = null;
-					}
 		    	}
 		    	catch (IOException e) {
 		    		mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
-		    		clear(true, true);
-		    		return;
 		    	}
+
 		    	
 		    	try {
 		    		if (mqChannel != null && mqChannel.isOpen()) {
@@ -428,9 +424,10 @@ public class MessageQueueDequeuer extends Thread{
 		    		mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString());
 		    		return;
 		    	}
-		    	finally {
-		    		clear(true, true);
-		    	}
+				finally {
+					clear(true, true);
+				}
+
 			}
 			
 			else if (pollingMethod == MessageTypeDecider.msgType.LONG_POLLING){ //If polling method is long polling
@@ -531,31 +528,41 @@ public class MessageQueueDequeuer extends Thread{
 					
 					@Override
 					public void terminate(ChannelHandlerContext ctx) {
-						
-						mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
+
 						Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicateInfoCnt(DUPLICATE_ID);
-		    			if(duplicateInfoCnt!=null) {
-		    	    		SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);	
-		    	    	}
-						try {
-							//System.out.println(consumerTag);
-							if(consumerTag != null && mqChannel != null && mqChannel.isOpen()) {
-								//System.out.println(mqChannel.getDefaultConsumer());
-								if (mqChannel.getDefaultConsumer() != null) {
-									mqChannel.basicCancel(consumerTag);
-									try {
-										mqChannel.close(320, "Service stoppted.");
-									}
-									catch (AlreadyClosedException | IOException | TimeoutException e) {
-										mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
-										return;
+						if (duplicateInfoCnt != null) {
+							SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);
+						}
+						if (bean != null && bean.refCnt() > 0) {
+							//mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
+							try {
+								//System.out.println(consumerTag);
+								if(consumerTag != null && mqChannel != null && mqChannel.isOpen()) {
+									//System.out.println(mqChannel.getDefaultConsumer());
+									if (mqChannel.getDefaultConsumer() != null) {
+										mqChannel.basicCancel(consumerTag);
 									}
 								}
+
 							}
-						} catch (IOException e) {
-							mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
-							return;
-						} 
+							catch (IOException e) {
+								mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString(), e, 5);
+							}
+							try {
+								if(mqChannel != null && mqChannel.isOpen()){
+									mqChannel.close(320, "Service stoppted.");
+								}
+							}
+							catch (AlreadyClosedException | IOException | TimeoutException e) {
+								mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
+								return;
+							}
+							finally {
+								clear(true, true);
+							}
+						}
+
+
 					}
 				});
 			}
@@ -675,6 +682,8 @@ public class MessageQueueDequeuer extends Thread{
 		if (clearMqChannel) {
 			if(bean != null && bean.refCnt() > 0) {
 				//System.out.println("The request is released.");
+				//System.out.println("5-"+bean.refCnt());
+				//System.out.println("5-"+bean.getReq().refCnt());
 				bean.release();
 				bean = null;
 			}

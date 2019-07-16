@@ -269,6 +269,11 @@ Rev. history : 2019-07-14
 Version : 0.9.4
 	Updated MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+ Rev. history : 2019-07-16
+ Version : 0.9.4
+	 Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
+ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -329,8 +334,15 @@ public class MessageRelayingHandler  {
 		}
 		try {
 			processRelaying(bean);
-		} catch(ErrorResponseException e) {
-			e.replyToSender(bean);
+		}
+		catch(Exception e1) {
+			try {
+				bean.getOutputChannel().replyToSender(bean, ErrorCode.UNKNOWN_ERR.getUTF8Bytes(), 400);
+				mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.UNKNOWN_ERR.toString(), e1, 5);
+			}
+			catch (IOException e2) {
+				mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e2, 5);
+			}
 		}
 	}
 	
@@ -355,8 +367,7 @@ public class MessageRelayingHandler  {
         return thread;
     }
 
-	private void processRelaying(MRH_MessageInputChannel.ChannelBean bean)
-			throws ErrorResponseException {
+	private void processRelaying(MRH_MessageInputChannel.ChannelBean bean) {
 
 		byte[] message = null;
 		
@@ -417,8 +428,14 @@ public class MessageRelayingHandler  {
 		else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 			moh = new MessageOrderingHandler();
 			message = moh.initializeAndGetError(bean);
-			if (message != null) {
-				isErrorOccured = true;
+			if (message != null) { // message is an ErrorCode.
+				try {
+					bean.getOutputChannel().replyToSender(bean, message);
+				}
+				catch (IOException e) {
+					mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+				}
+				return;
 			}
 		}
 		
@@ -440,21 +457,18 @@ public class MessageRelayingHandler  {
 		// TODO: Youngjin Kim must inspect this following code.
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (bean.getType() == MessageTypeDecider.msgType.POLLING || bean.getType() == MessageTypeDecider.msgType.LONG_POLLING) {
-			bean.retain(); // The (MRH_MessageInputChannel.ChannelBean) bean MUST be released in these logic A or B. 
-			srh = new SeamlessRoamingHandler(bean.getSessionId());
-			message = srh.initializeAndGetError(bean); // logic A.
 
-			if (message != null) { 
+			srh = new SeamlessRoamingHandler(bean.getSessionId());
+			message = srh.initializeAndGetError(bean);
+
+			if (message != null) {
 				try {
 					bean.getOutputChannel().replyToSender(bean, message);
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 				}
-				finally {
-					bean.release(); // logic B.
-				}
 			}
-
 			return;
 		} 
 		//This code MUST be 'else if' statement not 'if'. 
@@ -480,14 +494,14 @@ public class MessageRelayingHandler  {
 		//Below code MUST be 'if' statement not 'else if'. 
 		if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 			message = moh.processMessage(bean, mch); // The (FullHttpRequest) req MUST be released in this logic.
-			if (message != null) {
-				isErrorOccured = true;
-			}
-			else {
-				thread = moh.getConnectionThread();
-				if (thread != null) {
-					bean.retain();
+			if (message != null) { // message is OK from SeamlessRoamingHandler or an ErrorCode.
+				try {
+					bean.getOutputChannel().replyToSender(bean, message);
 				}
+				catch (IOException e) {
+					mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
+				}
+				return;
 			}
 		}
 		//This code MUST be 'else if' statement not 'if'. 
@@ -496,6 +510,8 @@ public class MessageRelayingHandler  {
 			if (thread != null) {
 				bean.retain();
 			}
+
+			return;
 		}
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (bean.getType() == MessageTypeDecider.msgType.GEOCASTING_CIRCLE || bean.getType() == MessageTypeDecider.msgType.GEOCASTING_POLYGON) {
@@ -565,48 +581,13 @@ public class MessageRelayingHandler  {
 			//logger.info("test "+message);
 		} 
 
-		//This code MUST be 'if' statement not 'else if'.
-		if (bean.getType() != MessageTypeDecider.msgType.POLLING && bean.getType() != MessageTypeDecider.msgType.LONG_POLLING) {
-
-			if ((bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER) && thread == null) {
-				if (message == null) {
-					message = ErrorCode.UNKNOWN_ERR.getBytes();
-					mmsLog.info(logger, bean.getSessionId(), ErrorCode.UNKNOWN_ERR.toString());
-					try {
-						bean.getOutputChannel().replyToSender(bean, message);
-					} catch (IOException e) {
-						mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
-					} //TODO: MUST HAVE MORE DEFINED EXCEPTION MESSAGES.
-					return;
-				}
-				else {
-					try {
-						bean.getOutputChannel().replyToSender(bean, message);
-					} catch (IOException e) {
-						mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
-					}
-					return;
-				}
+		if (isErrorOccured || message != null) {
+			try {
+				bean.getOutputChannel().replyToSender(bean, message);
+			} catch (IOException e) {
+				mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 			}
-			else if (isErrorOccured || message != null) {
-				try {
-					bean.getOutputChannel().replyToSender(bean, message);
-				} catch (IOException e) {
-					mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
-				}
-				return;
-			}
-			else if (!isErrorOccured && message == null && !(bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER)) {
-				message = ErrorCode.UNKNOWN_ERR.getBytes();
-				mmsLog.info(logger, bean.getSessionId(), ErrorCode.UNKNOWN_ERR.toString());
-				try {
-					bean.getOutputChannel().replyToSender(bean, message);
-				} catch (IOException e) {
-					mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
-				} //TODO: MUST HAVE MORE DEFINED EXCEPTION MESSAGES.
-				return;
-			}
+			return;
 		}
-
 	}
 }

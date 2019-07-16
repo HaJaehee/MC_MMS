@@ -36,6 +36,11 @@ Rev. history : 2019-07-14
 Version : 0.9.4
 	Updated MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+ Rev. history : 2019-07-16
+ Version : 0.9.4
+ 	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
+ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */
 
@@ -183,27 +188,26 @@ class MessageOrderingHandler {
 		
 		List<SessionIdAndThr> itemList = SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair);
 		boolean escapeLoop = false;
-		while (!escapeLoop) { 
-			if (itemList == null || 
-					itemList.size() == 0 ||
-					itemList.get(0) == null ||
-					itemList.get(0).getSessionBlocker() == null) { //Check null pointer exception.
+		int numCheckingItemList = 0;
+		while (!escapeLoop) {
+			if (numCheckingItemList > 0 && (itemList == null || itemList.size() == 0 || itemList.get(0).getSessionId() == null))  { //Check null pointer exception.
 				// This condition is required for safe coding when using multi-threads.
 				
-				message = ErrorCode.SEQUENTIAL_RELAYING_INITIALIZATION_ERROR.getUTF8Bytes();
-				
-				return message;
+				return ErrorCode.SEQUENTIAL_RELAYING_INITIALIZATION_ERROR.getUTF8Bytes();
 			}
 			try {
 				//System.out.println("RELAYING_TO_SERVER_SEQUENTIALLY getSessionID="+itemList.get(0).getSessionId());
-				if (itemList.size()>0 && itemList.get(0).getSessionId().equals(bean.getSessionId())) { //MUST be THIS session.
+				if (itemList != null && itemList.size()>0 && itemList.get(0).getSessionId().equals(bean.getSessionId())) { //MUST be THIS session.
 					if (SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair) == itemList.get(0).getPreSeqNum() || 
 							itemList.get(0).getWaitingCount() > 0 ||
 							itemList.get(0).isExceptionOccured()) {
 						// If this session is interrupted, process its message.
 						message = processThisThread(itemList, bean, mch);
 						if (message != null) {
-							escapeLoop = true;
+							return message;
+						}
+						else {
+							return null;
 						}
 						
 					}
@@ -218,12 +222,16 @@ class MessageOrderingHandler {
 				else {
 					//System.out.println("Block (by sleep) this relaying process if it's not this session's turn.");
 					sessionBlocker.sleep(MMSConfiguration.getWaitingMessageTimeout()); //Block (by sleep) this relaying process if it's not this session's turn.
+					numCheckingItemList++;
 				}
 			} 
 			catch (InterruptedException e) {
 				message = processThisThread(itemList, bean, mch);
 				if (message != null) {
-					escapeLoop = true;
+					return message;
+				}
+				else {
+					return null;
 				}
 			}
 		}
@@ -263,6 +271,7 @@ class MessageOrderingHandler {
 				}
 				if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
 					thread = mch.asynchronizedUnicast(bean); // Execute this relaying process
+					bean.retain();
 				}
 				else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 					SeamlessRoamingHandler srh = new SeamlessRoamingHandler(bean.getSessionId());

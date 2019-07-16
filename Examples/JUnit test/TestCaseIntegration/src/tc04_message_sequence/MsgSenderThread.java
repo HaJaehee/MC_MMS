@@ -45,7 +45,7 @@ public class MsgSenderThread extends Thread{
 						String key = iter.next();
 						//System.out.println(key+":"+headerField.get(key).toString());// Print the matched header field and the header contents.
 					}
-					//System.out.println(message);
+					System.out.println(message);
 				}
 				
 			});

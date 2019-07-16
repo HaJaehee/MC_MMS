@@ -80,6 +80,11 @@ Rev. history : 2019-07-14
 Version : 0.9.4
 	Updated MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+ Rev. history : 2019-07-16
+ Version : 0.9.4
+ 	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
+ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -246,6 +251,7 @@ public class SeamlessRoamingHandler {
 
 		byte[] message = null;
 		if (bean.getType() == MessageTypeDecider.msgType.POLLING)	{
+			bean.retain();
 			SessionManager.putSessionInfo(sessionId, "p");
 			SessionManager.incPollingSessionCount();
 			pmh.dequeueSCMessage(bean);
@@ -266,12 +272,12 @@ public class SeamlessRoamingHandler {
 				// TODO: To define error message.
 				message = ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes();
 				mmsLog.debug(logger, sessionId, ErrorCode.DUPLICATED_POLLING.toString());
-				if (bean != null && bean.refCnt()>0) {
-					bean.release();
-				}
+
+				releaseDuplicateInfo(DUPLICATE_ID);
 				return message;
 				
 			} else {
+				bean.retain();
 				pmh.dequeueSCMessage(bean);
 			}
 		}
@@ -304,6 +310,8 @@ public class SeamlessRoamingHandler {
 	
 	public static void retainDuplicateInfo(String duplicate_id) {
 		synchronized(duplicateInfo) {
+
+			//System.out.println("Retain Dup");
 			Integer refCnt = duplicateInfo.get(duplicate_id);
 			duplicateInfo.put(duplicate_id, refCnt == null? new Integer(1) : (Integer) (refCnt.intValue() + 1));
 		}
@@ -311,6 +319,8 @@ public class SeamlessRoamingHandler {
 	
 	public static void releaseDuplicateInfo(String duplicate_id) {
 		synchronized(duplicateInfo) {
+
+			System.out.println("Release Dup");
 			Integer refCnt = duplicateInfo.get(duplicate_id);
 			if (refCnt != null) {
 				if (refCnt.intValue() == 1) {
