@@ -6,6 +6,8 @@ MMSServer/target/classes/META-INF/maven/ch.qos.logback/logback-classic/pom.prope
 .idea/*
 session-count.csv
 /.metadata/
+
+**/.idea/*
 **/MC_MMS.iml
 **/target/lib/**
 **/target/generated-sources/**
