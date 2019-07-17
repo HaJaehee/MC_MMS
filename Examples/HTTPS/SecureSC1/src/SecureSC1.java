@@ -38,7 +38,7 @@ public class SecureSC1 {
 		String myMRN = "urn:mrn:imo:imo-no:secure-1000001";
 		//myMRN = args[0];
 		
-		MMSConfiguration.MMS_URL="127.0.0.1:444";
+		MMSConfiguration.MMS_URL="mms.smartnav.org:444";
 		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 		
 		

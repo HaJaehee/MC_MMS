@@ -37,9 +37,9 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 public class SecureServiceProvider {
 	public static void main(String args[]) throws Exception{
 		String myMRN = "urn:mrn:smart-navi:device:secure-tm-server";
-		int port = 8902;
+		int port = 8907;
 		
-		MMSConfiguration.MMS_URL="127.0.0.1:444";
+		MMSConfiguration.MMS_URL="mms.smartnav.org:444";
 		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 		
 		
