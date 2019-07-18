@@ -474,11 +474,15 @@ public class MessageRelayingHandler  {
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC) {
 			srh = new SeamlessRoamingHandler(bean.getSessionId());
-			srh.putSCMessage(bean);
-    		message = "OK".getBytes(Charset.forName("UTF-8"));
+			message = srh.putSCMessage(bean);
     		
     		try {
-				bean.getOutputChannel().replyToSender(bean, message);
+    			if (message != null) {
+					bean.getOutputChannel().replyToSender(bean, message);
+				}
+    			else {
+    				bean.getOutputChannel().replyToSender(bean, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.getUTF8Bytes());
+				}
 			} catch (IOException e) {
 				mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 			}

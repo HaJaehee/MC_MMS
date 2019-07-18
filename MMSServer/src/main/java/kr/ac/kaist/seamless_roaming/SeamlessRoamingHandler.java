@@ -291,8 +291,8 @@ public class SeamlessRoamingHandler {
 	}
 
 //	save SC message into queue
-	public void putSCMessage(MRH_MessageInputChannel.ChannelBean bean) {
-		scmh.enqueueSCMessage(bean);
+	public byte[] putSCMessage(MRH_MessageInputChannel.ChannelBean bean) {
+		return scmh.enqueueSCMessage(bean);
 	}
 
 	

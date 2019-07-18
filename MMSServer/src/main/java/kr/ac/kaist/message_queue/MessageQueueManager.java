@@ -100,9 +100,9 @@ public class MessageQueueManager {
 		mqd.dequeueMessage(bean);
 	}
 	
-	public void enqueueMessage (MRH_MessageInputChannel.ChannelBean bean) {
+	public byte[] enqueueMessage (MRH_MessageInputChannel.ChannelBean bean) {
 		MessageQueueEnqueuer mqe = new MessageQueueEnqueuer(this.sessionId);
-		mqe.enqueueMessage(bean);
+		return mqe.enqueueMessage(bean);
 	}
 	
 	public long getTotalQueueNumber ()  {

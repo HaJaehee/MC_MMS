@@ -275,8 +275,7 @@ class MessageOrderingHandler {
 				}
 				else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
 					SeamlessRoamingHandler srh = new SeamlessRoamingHandler(bean.getSessionId());
-					srh.putSCMessage(bean);
-		    		message = "OK".getBytes(Charset.forName("UTF-8"));
+					return srh.putSCMessage(bean);
 				}
 				message = rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcDstPair, bean.getSessionId());
 				if (message != null) {

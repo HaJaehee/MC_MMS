@@ -41,8 +41,8 @@ class SCMessageHandler {
 		this.sessionId = sessionId;
 	}
 	
-	void enqueueSCMessage(MRH_MessageInputChannel.ChannelBean bean){
+	byte[] enqueueSCMessage(MRH_MessageInputChannel.ChannelBean bean){
 		MessageQueueManager mqm = new MessageQueueManager(this.sessionId);
-		mqm.enqueueMessage(bean);
+		return mqm.enqueueMessage(bean);
 	}
 }

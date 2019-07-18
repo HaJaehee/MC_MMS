@@ -143,7 +143,9 @@ class MessageQueueEnqueuer {
 	}
 	
 	
-	void enqueueMessage(MRH_MessageInputChannel.ChannelBean bean) {
+	byte[] enqueueMessage(MRH_MessageInputChannel.ChannelBean bean) {
+
+		byte[] message = null;
 		Connection connection = null;
 		Channel channel = null;
 		String queueName = bean.getParser().getDstMRN()+"::"+bean.getParser().getSrcMRN();
@@ -170,14 +172,17 @@ class MessageQueueEnqueuer {
 			channel.basicPublish("", queueName, null, bean.getReq().content().toString(Charset.forName("UTF-8")).trim().getBytes());
 			channel.close(320, "Service stopped.");
 			connection.close(320, "Service stopped.", 1000);
-			
+
+
 		} 
 		catch (IOException e) {
 			mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
+			return ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.getUTF8Bytes();
 			
 		} 
 		catch (TimeoutException e) {
 			mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
+			return ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.getUTF8Bytes();
 		}
 		finally {
     		if (channel != null && channel.isOpen()) {
@@ -185,6 +190,7 @@ class MessageQueueEnqueuer {
 					channel.close(320, "Service stopped.");
 				} catch (IOException | TimeoutException e) {
 					mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
+					return ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.getUTF8Bytes();
 				}
 	    	}
     		if (connection != null && channel.isOpen()) {
@@ -192,8 +198,11 @@ class MessageQueueEnqueuer {
 	    			connection.close(320, "Service stopped.",1000);
 				} catch (IOException e) {
 					mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CONNECTION_CLOSE_ERROR.toString(), e, 5);
+					return ErrorCode.RABBITMQ_CONNECTION_CLOSE_ERROR.getUTF8Bytes();
 				}
 	    	}
 		}
+
+		return "OK".getBytes(Charset.forName("UTF-8"));
 	}
 }
