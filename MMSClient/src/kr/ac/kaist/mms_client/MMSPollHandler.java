@@ -49,6 +49,11 @@ Rev. history: 2019-03-19
 Version : 0.8.2
 	MMS Client sends a polling request message which is a JSON format.
 Modifier : Jin Jung (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-07-21
+Version : 0.9.4
+	Moved write stream close() to the line before input stream close().
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -210,7 +215,7 @@ class MMSPollHandler {
 						new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
 				wr.write(urlParameters);
 				wr.flush();
-				wr.close();
+				//wr.close();
 	
 				int responseCode = con.getResponseCode();
 				List<String> responseCodes = new ArrayList<String>();
@@ -246,6 +251,7 @@ class MMSPollHandler {
 					
 				}
 
+				wr.close();
 				inB.close();
 				
 				receiveResponse(inH, resList);

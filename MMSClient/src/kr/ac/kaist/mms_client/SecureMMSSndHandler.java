@@ -52,6 +52,11 @@ Rev. history : 2019-07-11
 Version : 0.9.3
 	Updated exception throw-catch phrases.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-21
+Version : 0.9.4
+	Moved write stream close() to the line before input stream close().
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -145,7 +150,7 @@ class SecureMMSSndHandler {
 				new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
 		wr.write(urlParameters);
 		wr.flush();
-		wr.close();
+		//wr.close();
 
 		Map<String,List<String>> inH = con.getHeaderFields();
 		inH = getModifiableMap(inH);
@@ -176,6 +181,7 @@ class SecureMMSSndHandler {
 			response.append(inputLine);
 		}
 		
+		wr.close();
 		in.close();
 		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Response: " + response.toString() + "\n");}
 		

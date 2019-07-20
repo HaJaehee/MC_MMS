@@ -42,6 +42,11 @@ Rev. history: 2019-03-09
 Version : 0.8.1
 	MMS Client is able to choose its polling method.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-21
+Version : 0.9.4
+	Moved write stream close() to the line before input stream close().
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -215,7 +220,7 @@ class SecureMMSPollHandler {
 					new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
 			wr.write(urlParameters);
 			wr.flush();
-			wr.close();
+			//wr.close();
 
 			int responseCode = con.getResponseCode();
 			List<String> responseCodes = new ArrayList<String>();
@@ -249,6 +254,7 @@ class SecureMMSPollHandler {
 				}
 			}
 			
+			wr.close();
 			inB.close();
 			
 			processResponse(inH, resList);
