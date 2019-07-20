@@ -142,6 +142,11 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
  Version : 0.9.4
  	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
  Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+ 
+ Rev. history : 2019-07-16
+ Version : 0.9.4
+ 	Added bean release() in channelInactive().
+ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -189,7 +194,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     
     private ChannelBean bean = null;
 	
-    private String DUPLICATE_ID="";
+    private String duplicateId="";
 
 	public MRH_MessageInputChannel(String protocol) {
 		super();
@@ -260,7 +265,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			
 			String svcMRN = parser.getSvcMRN();
     		String srcMRN = parser.getSrcMRN();
-    		DUPLICATE_ID = srcMRN+svcMRN;
+    		duplicateId = srcMRN+svcMRN;
 
     		ctx.channel().attr(TERMINATOR).set(new LinkedList<ChannelTerminateListener>());
     		
@@ -274,7 +279,6 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		}*/
 		finally {
 			bean.release();
-
 		}
 	}
 	
@@ -311,14 +315,16 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         	listener.terminate(ctx);
         }
         
-        //if (isRemainJob(ctx)) {
-        //    ReferenceCountUtil.release(imsg);
-        //}
-
 		if (bean != null) {
+			while (bean.refCnt() > 0) {
+				bean.release();
+			}
 			bean = null;
 		}
-        ctx.close();
+		
+		if (!ctx.isRemoved()) {
+			ctx.close();
+		}
     }
 
 	

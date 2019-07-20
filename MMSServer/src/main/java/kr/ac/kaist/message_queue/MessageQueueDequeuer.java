@@ -223,7 +223,7 @@ public class MessageQueueDequeuer extends Thread{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueDequeuer.class);
 	private String sessionId = "";
-	private String DUPLICATE_ID="";
+	private String duplicateId="";
 	private MRH_MessageInputChannel.ChannelBean bean = null;
 	private String queueName = null;
 	private String srcMRN = null;
@@ -250,7 +250,7 @@ public class MessageQueueDequeuer extends Thread{
 		this.bean = bean;
 		this.queueName = srcMRN+"::"+svcMRN;
 		this.pollingMethod = bean.getType();
-		this.DUPLICATE_ID = srcMRN+svcMRN;		
+		this.duplicateId = srcMRN+svcMRN;		
 		
 		this.start();
 
@@ -355,8 +355,8 @@ public class MessageQueueDequeuer extends Thread{
 	    	if (SessionManager.getSessionType(this.sessionId) != null) {
 	    		SessionManager.removeSessionInfo(this.sessionId);
 	    	}
-	    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(DUPLICATE_ID)!=null) {
-	    		SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);
+	    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId)!=null) {
+	    		SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
 	    	}
 	    	try {
 	    		bean.getOutputChannel().replyToSender(bean, message.toString().getBytes());
@@ -455,8 +455,8 @@ public class MessageQueueDequeuer extends Thread{
 							    		SessionManager.removeSessionInfo(sessionId);
 							    	}
 							    	
-							    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(DUPLICATE_ID)!=null) {
-							    		SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);
+							    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId)!=null) {
+							    		SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
 							    	}
 							    	
 							    	try {
@@ -529,9 +529,9 @@ public class MessageQueueDequeuer extends Thread{
 					@Override
 					public void terminate(ChannelHandlerContext ctx) {
 
-						Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicateInfoCnt(DUPLICATE_ID);
+						Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId);
 						if (duplicateInfoCnt != null) {
-							SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);
+							SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
 						}
 						if (bean != null && bean.refCnt() > 0) {
 							//mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
@@ -673,7 +673,7 @@ public class MessageQueueDequeuer extends Thread{
 
 	public void clear(boolean clearMqChannel, boolean clearMrns) {
 		this.pollingMethod = null;
-		this.DUPLICATE_ID = null;
+		this.duplicateId = null;
 		if (clearMrns) {
 			this.srcMRN = null;
 			this.svcMRN = null;

@@ -262,10 +262,10 @@ public class SeamlessRoamingHandler {
 			
 			// Youngjin code
 			// Duplicated polling request is not allowed.
-			String DUPLICATE_ID = bean.getParser().getSrcMRN() + bean.getParser().getSvcMRN();
-			retainDuplicateInfo(DUPLICATE_ID);
+			String duplicateId = bean.getParser().getSrcMRN() + bean.getParser().getSvcMRN();
+			retainDuplicateInfo(duplicateId);
 			
-			if (getDuplicateInfoCnt(DUPLICATE_ID) > 1) {
+			if (getDuplicateInfoCnt(duplicateId) > 1) {
 				
 //					System.out.println("duplicate long polling request");
 				
@@ -273,7 +273,7 @@ public class SeamlessRoamingHandler {
 				message = ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes();
 				mmsLog.debug(logger, sessionId, ErrorCode.DUPLICATED_POLLING.toString());
 
-				releaseDuplicateInfo(DUPLICATE_ID);
+				releaseDuplicateInfo(duplicateId);
 				return message;
 				
 			} else {
@@ -302,32 +302,32 @@ public class SeamlessRoamingHandler {
 		}
 	}
 	
-	public static Integer getDuplicateInfoCnt(String duplicate_id) {
+	public static Integer getDuplicateInfoCnt(String duplicateId) {
 		synchronized(duplicateInfo) {
-			return duplicateInfo.get(duplicate_id);
+			return duplicateInfo.get(duplicateId);
 		}
 	}
 	
-	public static void retainDuplicateInfo(String duplicate_id) {
+	public static void retainDuplicateInfo(String duplicateId) {
 		synchronized(duplicateInfo) {
 
 			//System.out.println("Retain Dup");
-			Integer refCnt = duplicateInfo.get(duplicate_id);
-			duplicateInfo.put(duplicate_id, refCnt == null? new Integer(1) : (Integer) (refCnt.intValue() + 1));
+			Integer refCnt = duplicateInfo.get(duplicateId);
+			duplicateInfo.put(duplicateId, refCnt == null? new Integer(1) : (Integer) (refCnt.intValue() + 1));
 		}
 	}
 	
-	public static void releaseDuplicateInfo(String duplicate_id) {
+	public static void releaseDuplicateInfo(String duplicateId) {
 		synchronized(duplicateInfo) {
 
 			//System.out.println("Release Dup");
-			Integer refCnt = duplicateInfo.get(duplicate_id);
+			Integer refCnt = duplicateInfo.get(duplicateId);
 			if (refCnt != null) {
 				if (refCnt.intValue() == 1) {
-					duplicateInfo.remove(duplicate_id);
+					duplicateInfo.remove(duplicateId);
 				}
 				else {
-					duplicateInfo.put(duplicate_id, (Integer) (refCnt.intValue() - 1));
+					duplicateInfo.put(duplicateId, (Integer) (refCnt.intValue() - 1));
 				}
 			}
 		}

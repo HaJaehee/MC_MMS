@@ -259,19 +259,18 @@ public class MRH_MessageOutputChannel{
  
     	
     	ChannelHandlerContext ctx = bean.getCtx();
-    	/*final ChannelFuture f = ctx.writeAndFlush(res);
+    	final ChannelFuture f = ctx.writeAndFlush(res);
     	f.addListener(new ChannelFutureListener() { //This code would not release a socket for 1 minute.
             @Override
             public void operationComplete(ChannelFuture future) {
                 assert f == future;
                 
                 ctx.close();
-            }
-        });*/
-    	ctx.writeAndFlush(res); // ctx MUST be closed at MRH_MessageInputChannel.channelInactive().
-
+            }  
+        });
+    	// ctx MUST be checked if it is closed at MRH_MessageInputChannel.channelInactive().
+    	
     	bean.release();
-
 
         SessionManager.removeSessionInfo(sessionId);
         if (logger.isTraceEnabled()) {
