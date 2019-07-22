@@ -274,6 +274,11 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
  Version : 0.9.4
 	 Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
  Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+ 
+  Rev. history : 2019-07-22
+ Version : 0.9.4
+	 Added exception safety codes around decideType() and processRelaying().
+ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -331,6 +336,14 @@ public class MessageRelayingHandler  {
 		} 
 		catch (ParseException e) {
 			mmsLog.info(logger, bean.getSessionId(), ErrorCode.MESSAGE_PARSING_ERROR.toString());
+			try {
+				bean.getOutputChannel().replyToSender(bean, ErrorCode.MESSAGE_PARSING_ERROR.getUTF8Bytes(), 400);
+			} catch (IOException e1) {
+				mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e1, 5);
+				while (bean.refCnt() > 0) {
+					bean.release();
+				}
+			}
 		}
 		try {
 			processRelaying(bean);
@@ -342,6 +355,9 @@ public class MessageRelayingHandler  {
 			}
 			catch (IOException e2) {
 				mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e2, 5);
+				while (bean.refCnt() > 0) {
+					bean.release();
+				}
 			}
 		}
 	}
