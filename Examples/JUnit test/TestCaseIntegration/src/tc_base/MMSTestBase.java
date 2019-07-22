@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import kr.ac.kaist.mms_client.MMSConfiguration;
 
 public class MMSTestBase {
+	//public static String MMS_URL = "127.0.0.1:8088";
 	public static String MMS_URL = "mms-kaist.com:8088";
 	@BeforeClass
 	public static void configuration() {

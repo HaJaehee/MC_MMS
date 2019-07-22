@@ -144,6 +144,12 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
  Version : 0.9.4
  	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
  Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+ 
+Rev. history : 2019-07-22
+Version : 0.9.4
+	Set HTTP URL connection timeout.
+	Add null safety code.
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -323,6 +329,10 @@ public class MRH_MessageOutputChannel{
 	HttpURLConnection connectToServer (String url, String ipAddress, int port, HttpMethod httpMethod, String uri, String username, String password ) throws IOException {
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+		
+		// set connection configuration
+		con.setConnectTimeout(MMSConfiguration.getWaitingMessageTimeout());
+		
 		mmsLog.info(logger, this.sessionId, "Try connecting to url="+url);
 
 		//		Setting HTTP method
@@ -348,6 +358,9 @@ public class MRH_MessageOutputChannel{
 
 	HttpURLConnection connectToServer (HttpURLConnection con, String url, MRH_MessageInputChannel.ChannelBean bean) throws  IOException{
 
+		// set connection configuration
+		con.setConnectTimeout(MMSConfiguration.getWaitingMessageTimeout());
+		
 //		Setting HTTP method
 		if (bean.getParser().getHttpMethod() == HttpMethod.POST) {
 			con.setRequestMethod("POST");
@@ -605,13 +618,15 @@ public class MRH_MessageOutputChannel{
 		public void terminate() {
 			//System.out.println(bean.getSessionId()+", Terminate.");
 			data = null;
-	       	con.disconnect();
-	       	try {
-				con.getInputStream().close();
-				con = null;
-			} 
-	       	catch (IOException e) {
-	       		mmsLog.info(logger, sessionId, ErrorCode.MESSAGE_RELAYING_FAIL_DISCONNECT.toString());
+			if(con != null) {
+		       	con.disconnect();
+		       	try {
+					con.getInputStream().close();
+					con = null;
+				} 
+		       	catch (IOException e) {
+		       		mmsLog.info(logger, sessionId, ErrorCode.MESSAGE_RELAYING_FAIL_DISCONNECT.toString());
+				}
 			}
 	    }
 		public byte[] getData() {
