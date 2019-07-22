@@ -340,6 +340,8 @@ public class MessageRelayingHandler  {
 				bean.getOutputChannel().replyToSender(bean, ErrorCode.MESSAGE_PARSING_ERROR.getUTF8Bytes(), 400);
 			} catch (IOException e1) {
 				mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e1, 5);
+			}
+			finally {
 				while (bean.refCnt() > 0) {
 					bean.release();
 				}
@@ -355,6 +357,8 @@ public class MessageRelayingHandler  {
 			}
 			catch (IOException e2) {
 				mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e2, 5);
+			}
+			finally {
 				while (bean.refCnt() > 0) {
 					bean.release();
 				}
