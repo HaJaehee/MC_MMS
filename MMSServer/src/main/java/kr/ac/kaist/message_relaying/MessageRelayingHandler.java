@@ -356,9 +356,9 @@ public class MessageRelayingHandler  {
 			processRelaying(bean);
 		}
 		catch(Exception e1) {
+			mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.UNKNOWN_ERR.toString(), e1, 5);
 			try {
 				bean.getOutputChannel().replyToSender(bean, ErrorCode.UNKNOWN_ERR.getUTF8Bytes(), 400);
-				mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.UNKNOWN_ERR.toString(), e1, 5);
 			}
 			catch (IOException e2) {
 				mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e2, 5);
