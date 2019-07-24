@@ -39,7 +39,7 @@ public class SecureSC2 {
 		String myMRN = "urn:mrn:imo:imo-no:secure-1000002";
 		//myMRN = args[0];
 
-		MMSConfiguration.MMS_URL="mms.smartnav.org:444";
+		MMSConfiguration.MMS_URL="mms-kaist.com:444";
 		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 		
 		
