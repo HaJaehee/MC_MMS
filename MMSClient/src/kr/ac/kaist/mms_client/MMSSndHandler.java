@@ -69,6 +69,11 @@ Rev. history : 2019-07-21
 Version : 0.9.4
 	Moved write stream close() to the line before input stream close().
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-24
+Version : 0.9.4
+	Added timeout parameter to sendPostMsgWithTimeout() methods.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -110,16 +115,17 @@ class MMSSndHandler {
 	}
 
 	void sendHttpPostWithTimeout(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int timeout) throws IOException  {
-		sendHttpPost(dstMRN, loc, data, headerField, -1, timeout);
+		sendHttpPostWithTimeout(dstMRN, loc, data, headerField, -1, timeout);
 	}
 	
 	void sendHttpPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws IOException  {
-		sendHttpPost(dstMRN, loc, data, headerField, -1);
+		sendHttpPostWithTimeout(dstMRN, loc, data, headerField, -1, -1);
 	}
 	void sendHttpPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int seqNum) throws IOException  {
-		sendHttpPost(dstMRN, loc, data, headerField, seqNum, -1);
+		sendHttpPostWithTimeout(dstMRN, loc, data, headerField, seqNum, -1);
 	}
-	void sendHttpPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int seqNum, int timeout) throws IOException  {
+	
+	void sendHttpPostWithTimeout(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int seqNum, int timeout) throws IOException  {
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
 			loc = "/" + loc;

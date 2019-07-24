@@ -57,6 +57,11 @@ Rev. history : 2019-07-21
 Version : 0.9.4
 	Moved write stream close() to the line before input stream close().
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-24
+Version : 0.9.4
+	Added timeout parameter to sendPostMsgWithTimeout() methods.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -105,11 +110,18 @@ class SecureMMSSndHandler {
 		this.myCallback = callback;
 	}
 	
-
-	void sendHttpsPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws IOException{
-		sendHttpsPost(dstMRN, loc, data, headerField, -1);
+	void sendHttpsPostWithTimeout(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int timeout) throws IOException{
+		sendHttpsPostWithTimeout(dstMRN, loc, data, headerField, -1, timeout);
 	}
+	void sendHttpsPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws IOException{
+		sendHttpsPostWithTimeout(dstMRN, loc, data, headerField, -1, -1);
+	}
+	
 	void sendHttpsPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int seqNum) throws IOException{
+		sendHttpsPostWithTimeout(dstMRN, loc, data, headerField, seqNum, -1);
+	}
+	
+	void sendHttpsPostWithTimeout(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int seqNum, int timeout) throws IOException{
         
 		String url = "https://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
@@ -137,6 +149,11 @@ class SecureMMSSndHandler {
 		if (headerField != null) {
 			con = addCustomHeaderField(con, headerField);
 		} 
+		
+		if (timeout > 0) {
+			con.setConnectTimeout(timeout);
+			con.setReadTimeout(timeout);
+		}
 		
 		//load contents
 		String urlParameters = data;
