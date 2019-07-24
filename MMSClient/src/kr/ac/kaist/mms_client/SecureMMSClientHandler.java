@@ -117,6 +117,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import kr.ac.kaist.mms_client.MMSClientHandler.RequestCallback;
 import kr.ac.kaist.mms_client.MMSClientHandler.ResponseCallback;
 
 
@@ -383,6 +384,24 @@ public class SecureMMSClientHandler {
 			System.out.println(TAG+"Failed! HTTP file server is required! Do setFileServerPort()");
 		}
 	}
+	
+
+	/**
+	 * Terminates the servers.
+	 * 
+	 * @see #setServerPort(int, RequestCallback)
+	 * @see #setServerPort(int, String, RequestCallback)
+	 * @see #setFileServerPort(int, String, String)
+	 */
+	public void terminateServer() {
+		if (this.rcvHandler != null) {
+			this.rcvHandler.stopRcv(0);
+			this.rcvHandler = null;
+		} else {
+			System.out.println(TAG + "Failed! HTTP file server is required! Do setFileServerPort()");
+		}
+	}
+	
 	
 	/**
 	 * This method is used to set in MMS client in order to send message. If using this method, it is possible 
