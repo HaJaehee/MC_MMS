@@ -197,7 +197,7 @@ public class MessageCastingHandler {
     		}
 		} 
     	catch (IOException e) {
-    		mmsLog.info(logger, this.sessionId, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString());
+			mmsLog.infoException(logger, this.sessionId, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString(), e, 5);
 		}
 		
 		return message;
@@ -209,7 +209,6 @@ public class MessageCastingHandler {
     		if (bean.getProtocol().equals("http")) {
     			thread = bean.getOutputChannel().asynchronizeSendMessage(bean);
     			thread.start();
-    			
     			mmsLog.info(logger, this.sessionId, "Protocol=HTTP.");
     		} 
     		else if (bean.getProtocol().equals("https")) { 
@@ -223,7 +222,7 @@ public class MessageCastingHandler {
     		
 		} 
     	catch (IOException e) {
-    		mmsLog.infoException(logger, this.sessionId, "", e, 5);
+    		mmsLog.infoException(logger, this.sessionId, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString(), e, 5);
 		}
 		return thread;
 	}
@@ -272,7 +271,7 @@ public class MessageCastingHandler {
 		        		}
 					} 
 		        	catch (IOException e) {
-		        		mmsLog.infoException(logger, this.sessionId, "", e, 5);
+		        		mmsLog.infoException(logger, this.sessionId, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString(), e, 5);
 					}
 				}
 				
