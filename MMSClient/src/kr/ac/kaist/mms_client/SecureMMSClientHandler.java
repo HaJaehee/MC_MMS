@@ -106,7 +106,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2019-07-24
 Version : 0.9.4
-	Added timeout parameter to sendPostMsg() methods.
+	Added timeout parameter to sendPostMsgWithTimeout() methods.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 
