@@ -147,7 +147,7 @@ import java.util.Map;
  * It is an object that can communicate to MMS through HTTP and send or receive
  * messages of other objects.
  * 
- * @version 0.9.3
+ * @version 0.9.4
  * @see SecureMMSClientHandler
  */
 public class MMSClientHandler {
