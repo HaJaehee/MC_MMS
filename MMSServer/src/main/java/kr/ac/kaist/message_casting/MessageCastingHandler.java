@@ -223,7 +223,7 @@ public class MessageCastingHandler {
     		
 		} 
     	catch (IOException e) {
-    		mmsLog.warnException(logger, this.sessionId, "", e, 5);
+    		mmsLog.infoException(logger, this.sessionId, "", e, 5);
 		}
 		return thread;
 	}
@@ -240,7 +240,7 @@ public class MessageCastingHandler {
 				if (connType == null) {
 					String exc = (String) obj.get("exception");
 					if (exc != null) {
-						mmsLog.warnException(logger, this.sessionId, "MNS query exception occured=\""+exc+"\".", new ConnectException(), 5);
+						mmsLog.infoException(logger, this.sessionId, "MNS query exception occured=\""+exc+"\".", new ConnectException(), 5);
 						return null;
 					}
 				}
@@ -272,7 +272,7 @@ public class MessageCastingHandler {
 		        		}
 					} 
 		        	catch (IOException e) {
-		        		mmsLog.warnException(logger, this.sessionId, "", e, 5);
+		        		mmsLog.infoException(logger, this.sessionId, "", e, 5);
 					}
 				}
 				
