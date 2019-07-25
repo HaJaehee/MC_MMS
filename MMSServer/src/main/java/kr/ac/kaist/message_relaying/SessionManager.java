@@ -209,9 +209,9 @@ public class SessionManager {
 						long curTimeMillis = System.currentTimeMillis();
 						
 						while ((line=br.readLine()) != null) {
-							if (lineCount > 0) {
+							if (lineCount > 0) { // More than 24 hours,
 								lineCount--;
-								continue;
+								continue; // ignore.
 							}
 							
 							
