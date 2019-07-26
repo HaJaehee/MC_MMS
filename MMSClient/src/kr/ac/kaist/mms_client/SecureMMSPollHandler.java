@@ -47,6 +47,11 @@ Rev. history : 2019-07-21
 Version : 0.9.4
 	Moved write stream close() to the line before input stream close().
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+ Rev. history : 2019-07-26
+ Version : 0.9.4
+ 	Let methods have timeout parameter default.
+ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -92,14 +97,14 @@ class SecureMMSPollHandler {
 	private String clientMRN = null;
 	private PollingRequestContents contents = null;
 	
-	SecureMMSPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, String pollingMethod, Map<String,List<String>> headerField) throws IOException{
+	SecureMMSPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, String pollingMethod, int timeout, Map<String,List<String>> headerField) throws IOException{
 		String svcMRNWithHexSign = svcMRN;
 //		if (hexSignedData != null) {
 //			svcMRNWithHexSign = svcMRNWithHexSign+"\n"+hexSignedData;
 //		}
 		
 		contents = new PollingRequestContents(svcMRN, hexSignedData);
-		ph = new SecurePollingHandler(clientMRN, dstMRN, svcMRNWithHexSign, interval, pollingMethod, headerField);
+		ph = new SecurePollingHandler(clientMRN, dstMRN, svcMRNWithHexSign, interval, pollingMethod, timeout, headerField);
 		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Polling handler is created");}
 	}
 	
@@ -151,14 +156,16 @@ class SecureMMSPollHandler {
 		SecureMMSClientHandler.PollingResponseCallback myCallback = null;
 		private HostnameVerifier hv = null;
 		private boolean interrupted=false;
+		private int timeout = -1;
 		
-    	SecurePollingHandler (String clientMRN, String dstMRN, String svcMRNWithHexSign, int interval, String pollingMethod, Map<String,List<String>> headerField){
+    	SecurePollingHandler (String clientMRN, String dstMRN, String svcMRNWithHexSign, int interval, String pollingMethod, int timeout, Map<String,List<String>> headerField){
     		this.interval = interval;
     		this.clientMRN = clientMRN;
     		this.dstMRN = dstMRN;
     		this.svcMRNWithHexSign = svcMRNWithHexSign;
     		this.pollingMethod = pollingMethod;
     		this.headerField = headerField;
+    		this.timeout = timeout;
     	}
     	
     	void setPollingResponseCallback(SecureMMSClientHandler.PollingResponseCallback callback){
@@ -200,6 +207,15 @@ class SecureMMSPollHandler {
 			String data = contents.toString(); 
 			
 			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+
+			if (timeout > 0 && (pollingMethod == null || pollingMethod.equals("normal"))) {
+				con.setConnectTimeout(timeout);
+				con.setReadTimeout(timeout);
+			}
+			else if (timeout > 0 && pollingMethod.equals("long")) {
+				con.setConnectTimeout(timeout);
+			}
+
 			con.setHostnameVerifier(hv);
 			
 			//add request header

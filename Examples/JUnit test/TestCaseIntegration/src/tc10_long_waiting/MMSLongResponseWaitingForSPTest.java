@@ -63,7 +63,7 @@ public class MMSLongResponseWaitingForSPTest extends MMSTestBase {
 			}
 		});
 		
-		client.sendPostMsgWithTimeout(dst, message, timeout);
+		client.sendPostMsg(dst, message, timeout);
 	}
 	
 	public static void runServer(String mrn, int port, long sleepTime, boolean isError) {

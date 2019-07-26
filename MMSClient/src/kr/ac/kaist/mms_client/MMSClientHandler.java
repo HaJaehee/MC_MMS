@@ -136,6 +136,11 @@ Version : 0.9.4
 	Added timeout parameter to sendPostMsgWithTimeout() methods.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
+ Rev. history : 2019-07-26
+ Version : 0.9.4
+ 	Let methods have timeout parameter default.
+ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 */
 /* -------------------------------------------------------- */
 
@@ -193,7 +198,7 @@ public class MMSClientHandler {
 	/**
 	 * This interface is used to handle the response to polling request.
 	 * 
-	 * @see MMSClientHandler#startPolling(String, String, int,
+	 * @see MMSClientHandler#startPolling(String, String, int, int,
 	 *      PollingResponseCallback)
 	 */
 	public interface PollingResponseCallback {
@@ -285,14 +290,16 @@ public class MMSClientHandler {
 	 * @param svcMRN   the MRN of service, which may send to client
 	 * @param interval the frequency of polling (unit of time: ms). If interval is
 	 *                 0, the client does long polling.
+	 * @param timeout  set timeout parameter to Connection Timeout and Read Timeout. When long polling, Read Timeout is
+	 * 	               ignored.
 	 * @param callback the callback interface of {@link PollingResponseCallback}
 	 * @throws IOException if exception occurs
 	 * @see PollingResponseCallback
 	 */
 	@Deprecated
-	public void startPolling(String dstMRN, String svcMRN, int interval, PollingResponseCallback callback)
+	public void startPolling(String dstMRN, String svcMRN, int interval, int timeout, PollingResponseCallback callback)
 			throws IOException {
-		startPolling(dstMRN, svcMRN, null, interval, callback);
+		startPolling(dstMRN, svcMRN, null, interval, timeout, callback);
 	}
 
 	// TODO: Youngjin Kim must inspect this following code.
@@ -309,6 +316,8 @@ public class MMSClientHandler {
 	 * @param hexSignedData the hex signed data for client verification
 	 * @param interval      the frequency of polling (unit of time: ms). If the
 	 *                      interval is 0, the client does long polling.
+	 * @param timeout	    set timeout parameter to Connection Timeout and Read Timeout.. When long polling, Read Timeout is
+	 *                      ignored.
 	 * @param callback      the callback interface of
 	 *                      {@link PollingResponseCallback}
 	 * @throws IOException if exception occurs
@@ -316,7 +325,7 @@ public class MMSClientHandler {
 	 * @see PollingResponseCallback
 	 */
 	public void startPolling(String dstMRN, String svcMRN, String hexSignedData, int interval,
-			PollingResponseCallback callback) throws IOException, NullPointerException {
+							 int timeout, PollingResponseCallback callback) throws IOException, NullPointerException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
 			throw new NullPointerException();
@@ -332,13 +341,13 @@ public class MMSClientHandler {
 			if (interval == 0) {
 				System.out.println(TAG + "Long-polling mode"); // TODO: Long-polling could have trouble when session
 																// disconnect.
-				this.pollHandler = new LongPollHandler(clientMRN, dstMRN, svcMRN, hexSignedData, interval, headerField);
+				this.pollHandler = new LongPollHandler(clientMRN, dstMRN, svcMRN, hexSignedData, interval, timeout, headerField);
 				longChecker = true;
 			} else if (interval < 0) {
 				System.out.println(TAG + "Failed! Polling interval must be 0 or positive integer");
 				return;
 			} else {
-				this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, hexSignedData, interval, headerField);
+				this.pollHandler = new PollHandler(clientMRN, dstMRN, svcMRN, hexSignedData, interval, timeout, headerField);
 				normalChecker = true;
 			}
 			this.pollHandler.ph.setPollingResponseCallback(callback);
@@ -489,10 +498,10 @@ public class MMSClientHandler {
 	 * callback interface.
 	 * 
 	 * @param callback the callback interface of {@link ResponseCallback}
-	 * @see #sendGetMsg(String)
-	 * @see #sendGetMsg(String, String, String)
-	 * @see #sendPostMsg(String, String)
-	 * @see #sendPostMsg(String, String, String)
+	 * @see #sendGetMsg(String, int)
+	 * @see #sendGetMsg(String, String, String, int)
+	 * @see #sendPostMsg(String, String, int)
+	 * @see #sendPostMsg(String, String, String, int, int)
 	 * @see ResponseCallback
 	 */
 	public void setSender(ResponseCallback callback) {
@@ -531,6 +540,8 @@ public class MMSClientHandler {
 	 * @see #sendPostMsg(String, String)
 	 * @see #setSender(ResponseCallback)
 	 */
+	/*
+	@Deprecated
 	public void sendPostMsg(String dstMRN, String loc, String data) throws NullPointerException, NullPointerException, IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
@@ -541,7 +552,7 @@ public class MMSClientHandler {
 		} else {
 			this.sendHandler.sendHttpPost(dstMRN, loc, data, headerField);
 		}
-	}
+	}*/
 
 	/**
 	 * Send a POST message to the destination MRN via MMS
@@ -553,6 +564,8 @@ public class MMSClientHandler {
 	 * @see #sendPostMsg(String, String, String)
 	 * @see #setSender(ResponseCallback)
 	 */
+	/*
+	@Deprecated
 	public void sendPostMsg(String dstMRN, String data) throws NullPointerException, IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
@@ -563,18 +576,19 @@ public class MMSClientHandler {
 		} else {
 			this.sendHandler.sendHttpPost(dstMRN, "", data, headerField);
 		}
-	}
+	}*/
+
 	/**
 	 * Send a POST message to the destination MRN via MMS with timeout.
 	 * 
 	 * @param dstMRN the destination MRN to send data
 	 * @param data   the data to send
-	 * @param timeout set timeout parameter
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
 	 * @throws IOException if exception occurs
-	 * @see #sendPostMsg(String, String, String)
+	 * @see #sendPostMsg(String, String, String, int)
 	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendPostMsgWithTimeout(String dstMRN, String data, int timeout) throws IOException {
+	public void sendPostMsg(String dstMRN, String data, int timeout) throws IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
 			throw new NullPointerException();
@@ -592,12 +606,12 @@ public class MMSClientHandler {
 	 * @param dstMRN the destination MRN to send data
 	 * @param loc    url location
 	 * @param data   the data to send
-	 * @param timeout set timeout parameter
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
 	 * @throws IOException if exception occurs
-	 * @see #sendPostMsg(String, String, String)
+	 * @see #sendPostMsg(String, String, String, int)
 	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendPostMsgWithTimeout(String dstMRN, String loc, String data, int timeout) throws IOException {
+	public void sendPostMsg(String dstMRN, String loc, String data, int timeout) throws IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
 			throw new NullPointerException();
@@ -616,10 +630,9 @@ public class MMSClientHandler {
 	 * @param dstMRN the destination MRN
 	 * @throws IOException  if exception occurs
 	 * @throws NullPointerException if exception occurs
-	 * @see #sendGetMsg(String, String, String)
 	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendGetMsg(String dstMRN) throws NullPointerException, IOException {
+	public void sendGetMsg(String dstMRN, int timeout) throws NullPointerException, IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
 			throw new NullPointerException();
@@ -627,7 +640,7 @@ public class MMSClientHandler {
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else {
-			this.sendHandler.sendHttpGet(dstMRN, "", "", headerField);
+			this.sendHandler.sendHttpGet(dstMRN, "", "", headerField, timeout);
 		}
 	}
 
@@ -638,13 +651,13 @@ public class MMSClientHandler {
 	 * 
 	 * @param dstMRN the destination MRN
 	 * @param loc    url location
-	 * @param params parameter
+	 * @param params parameters
 	 * @throws NullPointerException if exception occurs
 	 * @throws IOException if exception occurs
-	 * @see #sendGetMsg(String)
+	 * @see #sendGetMsg(String, int)
 	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendGetMsg(String dstMRN, String loc, String params) throws NullPointerException, IOException {
+	public void sendGetMsg(String dstMRN, String loc, String params, int timeout) throws NullPointerException, IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
 			throw new NullPointerException();
@@ -652,7 +665,7 @@ public class MMSClientHandler {
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else {
-			this.sendHandler.sendHttpGet(dstMRN, loc, params, headerField);
+			this.sendHandler.sendHttpGet(dstMRN, loc, params, headerField, timeout);
 		}
 	}
 	
@@ -661,22 +674,23 @@ public class MMSClientHandler {
 	 * Send a restful API request message to MMS corresponding to the location and the URL parameter.
 	 * 
 	 * @param loc    url location
-	 * @param params parameter
+	 * @param params parameters
 	 * @throws IOException if exception occurs
-	 * @see #sendGetMsg(String)
+	 * @see #sendGetMsg(String, int)
 	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendApiReq(String loc, String params) throws IOException {
+	public void sendApiReq(String loc, String params, int timeout) throws IOException {
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else {
-			this.sendHandler.sendHttpGet(null, loc, params, headerField);
+			this.sendHandler.sendHttpGet(null, loc, params, headerField, timeout);
 		}
 	}
 
 	/*-----------------------------------------------------------------------------------
 	 * Message sender guarantees message sequence.
 	 -----------------------------------------------------------------------------------*/
+
 	/**
 	 * Send a POST message to the destination MRN that url matches the location via
 	 * MMS. Message sender guarantees message sequence.
@@ -690,6 +704,8 @@ public class MMSClientHandler {
 	 * @see #sendPostMsg(String, String)
 	 * @see #setSender(ResponseCallback)
 	 */
+	/*
+	@Deprecated
 	public void sendPostMsg(String dstMRN, String loc, String data, int seqNum) throws NullPointerException, IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
@@ -702,7 +718,7 @@ public class MMSClientHandler {
 		} else {
 			this.sendHandler.sendHttpPost(dstMRN, loc, data, headerField, seqNum);
 		}
-	}
+	}*/
 	
 	/**
 	 * Send a POST message to the destination MRN that url matches the location via
@@ -712,13 +728,14 @@ public class MMSClientHandler {
 	 * @param loc    url location
 	 * @param data   the data to send
 	 * @param seqNum sequence number of message
-	 * @param timeout set timeout parameter
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
 	 * @throws IOException  if exception occurs
 	 * @throws NullPointerException if exception occurs
-	 * @see #sendPostMsg(String, String)
+	 * @see #sendPostMsg(String, String, String, int)
 	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendPostMsgWithTimeout(String dstMRN, String loc, String data, int seqNum, int timeout) throws NullPointerException, IOException {
+
+	public void sendPostMsg(String dstMRN, String loc, String data, int seqNum, int timeout) throws NullPointerException, IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
 			throw new NullPointerException();
@@ -739,11 +756,14 @@ public class MMSClientHandler {
 	 * @param dstMRN the destination MRN to send data
 	 * @param data   the data to send
 	 * @param seqNum sequence number of message
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
 	 * @throws NullPointerException if exception occurs
 	 * @throws IOException if exception occurs
 	 * @see #sendPostMsg(String, String, String)
 	 * @see #setSender(ResponseCallback)
 	 */
+	/*
+	@Deprecated
 	public void sendPostMsg(String dstMRN, String data, int seqNum) throws NullPointerException, IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
@@ -756,7 +776,7 @@ public class MMSClientHandler {
 		} else {
 			this.sendHandler.sendHttpPost(dstMRN, "", data, headerField, seqNum);
 		}
-	}
+	}*/
 	
 	/**
 	 * Send a POST message to the destination MRN via MMS. Message sender guarantees
@@ -765,13 +785,13 @@ public class MMSClientHandler {
 	 * @param dstMRN the destination MRN to send data
 	 * @param data   the data to send
 	 * @param seqNum sequence number of message
-	 * @param timeout set timeout parameter
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
 	 * @throws NullPointerException if exception occurs
 	 * @throws IOException if exception occurs
-	 * @see #sendPostMsg(String, String, String)
+	 * @see #sendPostMsg(String, String, int)
 	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendPostMsgWithTimeout(String dstMRN, String data, int seqNum, int timeout) throws NullPointerException, IOException {
+	public void sendPostMsg(String dstMRN, String data, int seqNum, int timeout) throws NullPointerException, IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
 			throw new NullPointerException();
@@ -792,12 +812,13 @@ public class MMSClientHandler {
 	 * 
 	 * @param dstMRN the destination MRN
 	 * @param seqNum sequence number of message
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
 	 * @throws NullPointerException if exception occurs
 	 * @throws IOException if exception occurs
-	 * @see #sendGetMsg(String, String, String)
+	 * @see #sendGetMsg(String, int)
 	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendGetMsg(String dstMRN, int seqNum) throws NullPointerException, IOException {
+	public void sendGetMsg(String dstMRN, int seqNum, int timeout) throws NullPointerException, IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
 			throw new NullPointerException();
@@ -807,7 +828,7 @@ public class MMSClientHandler {
 		} else if (seqNum < 0) {
 			System.out.println(TAG + "Failed! seqNum must be equal to or greater than zero.");
 		} else {
-			this.sendHandler.sendHttpGet(dstMRN, "", "", headerField, seqNum);
+			this.sendHandler.sendHttpGet(dstMRN, "", "", headerField, seqNum, timeout);
 		}
 	}
 
@@ -818,14 +839,15 @@ public class MMSClientHandler {
 	 * 
 	 * @param dstMRN the destination MRN
 	 * @param loc    url location
-	 * @param params parameter
+	 * @param params parameters
 	 * @param seqNum sequence number of message
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
 	 * @throws NullPointerException if exception occurs
 	 * @throws IOException if exception occurs
-	 * @see #sendGetMsg(String)
+	 * @see #sendGetMsg(String, String, String, int)
 	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendGetMsg(String dstMRN, String loc, String params, int seqNum) throws NullPointerException, IOException {
+	public void sendGetMsg(String dstMRN, String loc, String params, int seqNum, int timeout) throws NullPointerException, IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
 			throw new NullPointerException();
@@ -835,7 +857,7 @@ public class MMSClientHandler {
 		} else if (seqNum < 0) {
 			System.out.println(TAG + "Failed! seqNum must be equal to or greater than zero.");
 		} else {
-			this.sendHandler.sendHttpGet(dstMRN, loc, params, headerField, seqNum);
+			this.sendHandler.sendHttpGet(dstMRN, loc, params, headerField, seqNum, timeout);
 		}
 	}
 	/*-----------------------------------------------------------------------------------
@@ -850,12 +872,13 @@ public class MMSClientHandler {
 	 * 
 	 * @param dstMRN   the destination MRN to send a message
 	 * @param fileName file path and name (e.g. "/get/test.xml")
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
 	 * @return returning result of saving file <code>null</code> if saving file is
 	 *         failed.
 	 * @throws IOException while requesting a file
 	 * @throws NullPointerException if exception occurs
 	 */
-	public String requestFile(String dstMRN, String fileName) throws NullPointerException, IOException {
+	public String requestFile(String dstMRN, String fileName, int timeout) throws NullPointerException, IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
 			throw new NullPointerException();
@@ -864,7 +887,7 @@ public class MMSClientHandler {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 			return null;
 		} else {
-			return this.sendHandler.sendHttpGetFile(dstMRN, fileName, headerField);
+			return this.sendHandler.sendHttpGetFileWithTimeout(dstMRN, fileName, headerField, timeout);
 		}
 	}
 
@@ -891,18 +914,18 @@ public class MMSClientHandler {
 	// TODO: Youngjin Kim must inspect this following code.
 	private class PollHandler extends MMSPollHandler {
 
-		PollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval,
+		PollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, int timeout,
 				Map<String, List<String>> headerField) throws IOException {
-			super(clientMRN, dstMRN, svcMRN, hexSignedData, interval, "normal", headerField);
+			super(clientMRN, dstMRN, svcMRN, hexSignedData, interval, "normal", timeout, headerField);
 		}
 	}
 
 	// TODO: Youngjin Kim must inspect this following code.
 	private class LongPollHandler extends MMSPollHandler {
 
-		LongPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval,
+		LongPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, int timeout,
 				Map<String, List<String>> headerField) throws IOException {
-			super(clientMRN, dstMRN, svcMRN, hexSignedData, interval, "long", headerField);
+			super(clientMRN, dstMRN, svcMRN, hexSignedData, interval, "long", timeout, headerField);
 		}
 	}
 

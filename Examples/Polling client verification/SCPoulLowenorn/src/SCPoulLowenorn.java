@@ -61,7 +61,7 @@ public class SCPoulLowenorn {
 //		byte[] signedData_revoked = clientPKILib.generateSignedData(content, privateKeyPath_revoked, certPath_revoked);
 //		String hexSignedData_revoked = byteConverter.byteArrToHexString(signedData_revoked);
 
-		polling.startPolling(dstMRN, svcMRN, hexSignedData_active, pollInterval, 
+		polling.startPolling(dstMRN, svcMRN, hexSignedData_active, pollInterval, 3000,  
 				new MMSClientHandler.PollingResponseCallback() {
 			//Response Callback from the polling message
 			//it is called when client receives a message

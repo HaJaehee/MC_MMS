@@ -52,7 +52,7 @@ public class ChoosePollingTypeServer {
 
 		String data = "aa"; // createDataSize(actual);				
 		try {
-			myHandler.sendPostMsg(dstMRN, data);
+			myHandler.sendPostMsg(dstMRN, data, 3000);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -150,6 +150,11 @@ Version : 0.9.4
 	Set HTTP URL connection timeout.
 	Add null safety code.
 Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
+ Rev. history : 2019-07-26
+ Version : 0.9.4
+	 Added HTTP URL read timeout.
+ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -332,6 +337,7 @@ public class MRH_MessageOutputChannel{
 		
 		// set connection configuration
 		con.setConnectTimeout(MMSConfiguration.getWaitingMessageTimeout());
+		con.setReadTimeout(MMSConfiguration.getWaitingMessageTimeout());
 		
 		mmsLog.info(logger, this.sessionId, "Try connecting to url="+url);
 
@@ -360,7 +366,9 @@ public class MRH_MessageOutputChannel{
 
 		// set connection configuration
 		con.setConnectTimeout(MMSConfiguration.getWaitingMessageTimeout());
-		
+		con.setReadTimeout(MMSConfiguration.getWaitingMessageTimeout());
+
+
 //		Setting HTTP method
 		if (bean.getParser().getHttpMethod() == HttpMethod.POST) {
 			con.setRequestMethod("POST");

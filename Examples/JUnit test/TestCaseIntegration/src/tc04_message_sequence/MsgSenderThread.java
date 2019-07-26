@@ -52,7 +52,7 @@ public class MsgSenderThread extends Thread{
 
 			
 			//sender.sendPostMsg(dstMRN, message);
-			sender.sendPostMsg(dstMRN, message, seqNum);
+			sender.sendPostMsg(dstMRN, message, seqNum, 10000);
 
 		}
 		catch (Exception e) {

@@ -74,6 +74,11 @@ Rev. history : 2019-07-24
 Version : 0.9.4
 	Added timeout parameter to sendPostMsgWithTimeout() methods.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+ Rev. history : 2019-07-26
+ Version : 0.9.4
+ 	Let methods have timeout parameter default.
+ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -114,15 +119,8 @@ class MMSSndHandler {
 		this.myCallback = callback;
 	}
 
-	void sendHttpPostWithTimeout(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int timeout) throws IOException  {
+	void sendHttpPostWithTimeout(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int timeout) throws IOException {
 		sendHttpPostWithTimeout(dstMRN, loc, data, headerField, -1, timeout);
-	}
-	
-	void sendHttpPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws IOException  {
-		sendHttpPostWithTimeout(dstMRN, loc, data, headerField, -1, -1);
-	}
-	void sendHttpPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int seqNum) throws IOException  {
-		sendHttpPostWithTimeout(dstMRN, loc, data, headerField, seqNum, -1);
 	}
 	
 	void sendHttpPostWithTimeout(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int seqNum, int timeout) throws IOException  {
@@ -214,7 +212,7 @@ class MMSSndHandler {
 	}
 	
 	//OONI
-	String sendHttpGetFile(String dstMRN, String fileName, Map<String,List<String>> headerField) throws IOException {
+	String sendHttpGetFileWithTimeout(String dstMRN, String fileName, Map<String,List<String>> headerField, int timeout) throws IOException {
 
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!fileName.startsWith("/")) {
@@ -224,6 +222,11 @@ class MMSSndHandler {
 		URL obj = new URL(url);
 		
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+		if (timeout > 0) {
+			con.setConnectTimeout(timeout);
+			con.setReadTimeout(timeout);
+		}
 		
 		//add request header
 		con.setRequestMethod("GET");
@@ -270,10 +273,10 @@ class MMSSndHandler {
 	//OONI end
 	
 	//HJH
-	void sendHttpGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField) throws IOException {
-		sendHttpGet(dstMRN, loc, params, headerField, -1);
+	void sendHttpGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField, int timeout) throws IOException {
+		sendHttpGet(dstMRN, loc, params, headerField, -1, timeout);
 	}
-	void sendHttpGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField, int seqNum) throws IOException {
+	void sendHttpGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField, int seqNum, int timeout) throws IOException {
 
 		String url = "http://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
@@ -293,7 +296,12 @@ class MMSSndHandler {
 		
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		
+
+		if (timeout > 0) {
+			con.setConnectTimeout(timeout);
+			con.setReadTimeout(timeout);
+		}
+
 		//add request header
 		con.setRequestMethod("GET");
 		con.setRequestProperty("User-Agent", USER_AGENT);

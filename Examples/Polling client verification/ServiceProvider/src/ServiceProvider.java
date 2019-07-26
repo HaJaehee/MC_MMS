@@ -37,7 +37,7 @@ public class ServiceProvider {
 		for (int i = 0; i < 1;i++){
 			String dstMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 			String message = "¾È³ç hi \"hello\" " + i;
-			sender.sendPostMsg(dstMRN, message);
+			sender.sendPostMsg(dstMRN, message, 3000);
 			Thread.sleep(1000);
 		}
 	}

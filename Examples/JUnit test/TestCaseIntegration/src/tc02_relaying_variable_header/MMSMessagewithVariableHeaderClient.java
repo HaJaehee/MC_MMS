@@ -69,7 +69,7 @@ public class MMSMessagewithVariableHeaderClient {
 		String data ="a";
 		
 		try {
-			sender.sendPostMsg(svcMRN, data);
+			sender.sendPostMsg(svcMRN, data, 3000);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -96,7 +96,7 @@ public class MMSMessagewithVariableHeaderClient {
 		String data ="a";
 		
 		try {
-			sender.sendPostMsg(svcMRN, data);
+			sender.sendPostMsg(svcMRN, data, 3000);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -118,7 +118,7 @@ public class MMSMessagewithVariableHeaderClient {
 		String data ="a";
 		
 		try {
-			empty_sender.sendPostMsg(null, data);
+			empty_sender.sendPostMsg(null, data, 3000);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
