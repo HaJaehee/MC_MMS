@@ -628,6 +628,7 @@ public class MMSClientHandler {
 	 * Send a GET message to the destination MRN via MMS
 	 * 
 	 * @param dstMRN the destination MRN
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
 	 * @throws IOException  if exception occurs
 	 * @throws NullPointerException if exception occurs
 	 * @see #setSender(ResponseCallback)
@@ -652,6 +653,7 @@ public class MMSClientHandler {
 	 * @param dstMRN the destination MRN
 	 * @param loc    url location
 	 * @param params parameters
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
 	 * @throws NullPointerException if exception occurs
 	 * @throws IOException if exception occurs
 	 * @see #sendGetMsg(String, int)
@@ -675,6 +677,7 @@ public class MMSClientHandler {
 	 * 
 	 * @param loc    url location
 	 * @param params parameters
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
 	 * @throws IOException if exception occurs
 	 * @see #sendGetMsg(String, int)
 	 * @see #setSender(ResponseCallback)
