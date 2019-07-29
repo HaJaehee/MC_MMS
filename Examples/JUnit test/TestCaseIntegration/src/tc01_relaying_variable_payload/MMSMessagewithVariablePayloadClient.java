@@ -69,7 +69,7 @@ public class MMSMessagewithVariablePayloadClient {
 			data = "";
 		}
 		try {
-			sender.sendPostMsg(svcMRN, data, 3000);
+			sender.sendPostMsg(svcMRN, data, 20000);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

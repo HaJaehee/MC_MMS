@@ -74,7 +74,7 @@ public class MMSPollingReturnedwithVariablePayloadClient {
 	public int pollingReqeust(){
 		int retLength = -1; 
 		try {
-			myHandler.startPolling(dstMRN, svcMRN, getSignedData(true) ,1000, 3000, callback);
+			myHandler.startPolling(dstMRN, svcMRN, getSignedData(true) ,1000, 10000, callback);
 
 			while(length==-1){ //busy waiting the content length		
 				try {

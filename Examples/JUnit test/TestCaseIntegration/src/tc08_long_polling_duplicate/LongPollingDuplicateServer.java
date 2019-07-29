@@ -63,7 +63,7 @@ public class LongPollingDuplicateServer {
 
 		String data = "aa"; // createDataSize(actual);				
 		try {
-			myHandler.sendPostMsg(dstMRN, data, 3000);
+			myHandler.sendPostMsg(dstMRN, data, 10000);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

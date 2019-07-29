@@ -125,7 +125,7 @@ class ThreadEX implements Runnable {
 		try {
 			myHandler = new MMSClientHandler(myMRN);
 
-			myHandler.startPolling(dstMRN, svcMRN, LongPollingDuplicateClient.hexSignedData_active, interval, 3000,
+			myHandler.startPolling(dstMRN, svcMRN, LongPollingDuplicateClient.hexSignedData_active, interval, 10000,
 					new MMSClientHandler.PollingResponseCallback() {
 
 						@Override

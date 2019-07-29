@@ -74,7 +74,7 @@ public class ChoosePollingTypeClient {
 		myHandler = new MMSClientHandler(myMRN);
 
 		try {
-			myHandler.startPolling(dstMRN, svcMRN, ChoosePollingTypeClient.hexSignedData_active, 1000, 3000,
+			myHandler.startPolling(dstMRN, svcMRN, ChoosePollingTypeClient.hexSignedData_active, 1000, 10000,
 					new MMSClientHandler.PollingResponseCallback() {
 
 						@Override
@@ -100,7 +100,7 @@ public class ChoosePollingTypeClient {
 		myHandler = new MMSClientHandler(myMRN);
 
 		try {
-			myHandler.startPolling(dstMRN, svcMRN, ChoosePollingTypeClient.hexSignedData_active, 0, 3000,
+			myHandler.startPolling(dstMRN, svcMRN, ChoosePollingTypeClient.hexSignedData_active, 0, 10000,
 					new MMSClientHandler.PollingResponseCallback() {
 
 						@Override

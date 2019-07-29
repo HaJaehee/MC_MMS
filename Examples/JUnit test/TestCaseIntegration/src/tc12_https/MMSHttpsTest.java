@@ -122,7 +122,7 @@ public class MMSHttpsTest extends MMSTestBase {
 						System.out.println(message);
 
 						//it only forwards messages to SC1_DUMMY
-						serverSender.sendPostMsg(SC1_DUMMY_MRN, message, 3000);
+						serverSender.sendPostMsg(SC1_DUMMY_MRN, message, 10000);
 
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -160,7 +160,7 @@ public class MMSHttpsTest extends MMSTestBase {
 		String hex = byteConverter.byteArrToHexString(signedData_active);
 		
 		// ==== start polling ----
-		SC1Sender.startPolling(MMS_MRN, SP_DUMMY_MRN, hex, 0, 3000, new SecureMMSClientHandler.PollingResponseCallback() {
+		SC1Sender.startPolling(MMS_MRN, SP_DUMMY_MRN, hex, 0, 10000, new SecureMMSClientHandler.PollingResponseCallback() {
 			//Response Callback from the polling message
 			//it is called when client receives a message
 			@Override
@@ -206,7 +206,7 @@ public class MMSHttpsTest extends MMSTestBase {
 		// ==== start sending ====
 		for (int i = 0; i < 10; i++){
 			String message = MESSAGE_PREFIX+ " " + i;
-			SC2Sender.sendPostMsg(SP_DUMMY_MRN, FOWARDING_CONTEXT, message, 3000);
+			SC2Sender.sendPostMsg(SP_DUMMY_MRN, FOWARDING_CONTEXT, message, 10000);
 			sendingMessages += message + "\n";
 		}
 	}
