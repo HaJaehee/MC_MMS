@@ -337,7 +337,7 @@ public class MRH_MessageOutputChannel{
 		
 		// set connection configuration
 		con.setConnectTimeout(MMSConfiguration.getWaitingMessageTimeout());
-		con.setReadTimeout(MMSConfiguration.getWaitingMessageTimeout());
+		//con.setReadTimeout(MMSConfiguration.getWaitingMessageTimeout());
 		
 		mmsLog.info(logger, this.sessionId, "Try connecting to url="+url);
 
@@ -366,7 +366,7 @@ public class MRH_MessageOutputChannel{
 
 		// set connection configuration
 		con.setConnectTimeout(MMSConfiguration.getWaitingMessageTimeout());
-		con.setReadTimeout(MMSConfiguration.getWaitingMessageTimeout());
+		//con.setReadTimeout(MMSConfiguration.getWaitingMessageTimeout());
 
 
 //		Setting HTTP method
