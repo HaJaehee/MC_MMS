@@ -39,7 +39,7 @@ public class SecureServiceProvider {
 		String myMRN = "urn:mrn:smart-navi:device:secure-tm-server";
 		int port = 8907;
 		
-		MMSConfiguration.MMS_URL="mms.smartnav.org:444";
+		MMSConfiguration.MMS_URL="mms-kaist.com:444";
 		MMSConfiguration.DEBUG = false; // If you are debugging client, set this variable true.
 		
 		
@@ -83,7 +83,7 @@ public class SecureServiceProvider {
 
 					//it only forwards messages to sc having urn:mrn:imo:imo-no:secure-1000001
 					String dstMRN = "urn:mrn:imo:imo-no:secure-1000001";
-					sender.sendPostMsg(dstMRN, message);
+					sender.sendPostMsg(dstMRN, message, 10000);
 
 				} catch (Exception e) {
 					e.printStackTrace();

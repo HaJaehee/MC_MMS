@@ -73,7 +73,7 @@ public class SecureSC2 {
 			String dstMRN = "urn:mrn:smart-navi:device:secure-tm-server";
 			String location = "/forwarding";
 			String message = "¾È³ç hi hello " + i;
-			sender.sendPostMsg(dstMRN, location, message);
+			sender.sendPostMsg(dstMRN, location, message, 10000);
 			//Thread.sleep(100);
 		}
 

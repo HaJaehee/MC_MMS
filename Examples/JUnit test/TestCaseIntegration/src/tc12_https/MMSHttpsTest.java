@@ -39,7 +39,7 @@ public class MMSHttpsTest extends MMSTestBase {
 	public static final String JKS_PASSWORD = "mmsclient";
 	
 	public static final String SC1_DUMMY_MRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn"; 
-	public static final String SC2_DUMMY_MRN = "urn:mrn:imo:imo-no:ts-mms-12-client2";
+	public static final String SC2_DUMMY_MRN = "urn:mrn:imo:imo-no:ts-mms-12-client";
 	public static final String SP_DUMMY_MRN = "urn:mrn:imo:imo-no:ts-mms-12-server";
 	public static final String MMS_MRN = "urn:mrn:smart-navi:device:mms1";
 	public static final int PORT = 8907;
