@@ -30,7 +30,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-26
 Version : 0.6.0
-	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+	Replaced from random int sessionId to String SessionId as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-11-15
@@ -132,6 +132,21 @@ Rev. history : 2019-07-10
 Version : 0.9.3
 	Updated resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Introduced MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+ Rev. history : 2019-07-16
+ Version : 0.9.4
+ 	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
+ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+ 
+ Rev. history : 2019-07-16
+ Version : 0.9.4
+ 	Added bean release() in channelInactive().
+ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -159,6 +174,7 @@ import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
+import io.netty.util.ReferenceCountUtil;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 import java.io.IOException;
@@ -168,15 +184,17 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	public static final AttributeKey<LinkedList<ChannelTerminateListener>> TERMINATOR = AttributeKey.newInstance("terminator");
 	private static final Logger logger = LoggerFactory.getLogger(MRH_MessageInputChannel.class); 
 
-	private String SESSION_ID = "";
+	private String sessionId = "";
 
 	private MessageParser parser;
 	private String protocol = "";
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
     private MessageRelayingHandler relayingHandler;
+    
+    private ChannelBean bean = null;
 	
-    private String DUPLICATE_ID="";
+    private String duplicateId="";
 
 	public MRH_MessageInputChannel(String protocol) {
 		super();
@@ -223,32 +241,44 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 		//System.out.println("Message in channelRead0");
 		
 		try {
-			req.retain();
 			mmsLog = MMSLog.getInstance();
 			mmsLogForDebug = MMSLogForDebug.getInstance();
 
-			SESSION_ID = ctx.channel().id().asShortText();
-			SessionManager.putSessionInfo(SESSION_ID, "");
+			sessionId = ctx.channel().id().asShortText();
+			SessionManager.putSessionInfo(sessionId, "");
 			
-			this.parser = new MessageParser(SESSION_ID);
+			this.parser = new MessageParser(sessionId);
+			bean = new ChannelBean(protocol, ctx, req, sessionId, parser);
+			bean.retain();
+			//System.out.println("0-"+bean.refCnt());
+			//System.out.println("0-"+bean.getReq().refCnt());
 			try {
 				parser.parseMessage(ctx, req);
+				
 			} catch (IOException | NumberFormatException | NullPointerException  e) {
-				mmsLog.info(logger, SESSION_ID, ErrorCode.MESSAGE_PARSING_ERROR.toString());
+				mmsLog.info(logger, sessionId, ErrorCode.MESSAGE_PARSING_ERROR.toString());
 				
 			} 
 			if (!parser.isRealtimeLogReq()) {
-				mmsLog.info(logger, SESSION_ID, "Receive a message."); 
+				mmsLog.info(logger, sessionId, "Receive a message."); 
 			}// If a request is not a realtime logging service request.
 			
 			String svcMRN = parser.getSvcMRN();
     		String srcMRN = parser.getSrcMRN();
-    		DUPLICATE_ID = srcMRN+svcMRN;
+    		duplicateId = srcMRN+svcMRN;
 
     		ctx.channel().attr(TERMINATOR).set(new LinkedList<ChannelTerminateListener>());
-            relayingHandler = new MessageRelayingHandler(ctx, req, protocol, parser, SESSION_ID);
-		} 	finally {
-			req.release();
+    		
+    		
+    		
+            relayingHandler = new MessageRelayingHandler(bean);
+			//System.out.println("Successfully processed");
+		}
+		/*catch (Exception e) {
+			e.printStackTrace();
+		}*/
+		finally {
+			bean.release();
 		}
 	}
 	
@@ -259,26 +289,42 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 
-        super.channelInactive(ctx);
-        
+    	super.channelInactive(ctx);
+
+        //System.out.println(sessionId +", ChannelInactive");
+		//System.out.println(sessionId +", REFERENCE COUNT="+bean.getReq().refCnt());
+
         if (relayingHandler != null) {
         	ConnectionThread thread = relayingHandler.getConnectionThread();
         	if (thread != null) {
-            	mmsLog.info(logger, SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
+            	if (bean.refCnt() > 0) {
+					mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
+					bean.release();
+				}
+
                 thread.terminate();
             }
         	relayingHandler = null;
+        	
         }
+        
+
         
         LinkedList<ChannelTerminateListener> listeners = ctx.channel().attr(TERMINATOR).get();
         for(ChannelTerminateListener listener: listeners) {
         	listener.terminate(ctx);
         }
         
-        //if (isRemainJob(ctx)) {
-        //    ReferenceCountUtil.release(imsg);
-        //}
-        ctx.close();
+		if (bean != null) {
+			while (bean.refCnt() > 0) {
+				bean.release();
+			}
+			bean = null;
+		}
+		
+		if (!ctx.isRemoved()) {
+			ctx.close();
+		}
     }
 
 	
@@ -307,18 +353,18 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 	// TODO: Youngjin Kim must inspect this following code.
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
-    	String clientType = SessionManager.getSessionType(SESSION_ID);
+    	String clientType = SessionManager.getSessionType(sessionId);
     	if (clientType != null) {
-    		SessionManager.removeSessionInfo(SESSION_ID);
+    		SessionManager.removeSessionInfo(sessionId);
 
     		if (clientType.equals("p")) {
-    			mmsLog.info(logger, this.SESSION_ID, ErrorCode.POLLING_CLIENT_DISCONNECTED.toString());
+    			mmsLog.info(logger, this.sessionId, ErrorCode.POLLING_CLIENT_DISCONNECTED.toString());
     		} 
     		else if (clientType.equals("lp")) {
-    			mmsLog.info(logger, this.SESSION_ID, ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
+    			mmsLog.info(logger, this.sessionId, ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
     		}
     		else {
-    			mmsLog.info(logger, this.SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString());
+    			mmsLog.info(logger, this.sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
     		}
     	}
     	if (!ctx.isRemoved()){
@@ -330,8 +376,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 
 //    	ctx.channel().
-    	String clientType = SessionManager.getSessionType(SESSION_ID);
-    	Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicateInfoCnt(DUPLICATE_ID);
+    	String clientType = SessionManager.getSessionType(sessionId);
 //    	ctx.pipeline().get(HttpHeaderValues.class);
 //    	channels.
     	
@@ -344,7 +389,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         	if (parser.getSrcIP() == null) {
             	InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
         	    InetAddress inetaddress = socketAddress.getAddress();
-        	    MNSInteractionHandler handler = new MNSInteractionHandler(SESSION_ID);
+        	    MNSInteractionHandler handler = new MNSInteractionHandler(sessionId);
         	    if (inetaddress != null) {
         	    	srcIP = inetaddress.getHostAddress(); // IP address of client
         	    }
@@ -377,14 +422,13 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     	    printError(srcIP, reqInfo, clientType);
     	}
     	if (clientType != null) {
-    		SessionManager.removeSessionInfo(SESSION_ID);    		
+    		SessionManager.removeSessionInfo(sessionId);    		
       }
-    	if(duplicateInfoCnt!=null) {
-    		SeamlessRoamingHandler.releaseDuplicateInfo(DUPLICATE_ID);	
-    	}
+
     	if (!ctx.isRemoved()){
     		  ctx.close();
       }
+
     }
     
     private void printError(String channelID, String[] reqInfo, String clientType){
@@ -425,7 +469,89 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
       }
   //  System.out.println("/*****************************************/");
 	
-      mmsLog.info(logger, this.SESSION_ID, ErrorCode.CLIENT_DISCONNECTED.toString() + " " + errorlog + ".");
+      mmsLog.info(logger, this.sessionId, ErrorCode.CLIENT_DISCONNECTED.toString() + " " + errorlog + ".");
      
+    }
+    
+    public class ChannelBean {
+    	private FullHttpRequest req = null;
+    	private ChannelHandlerContext ctx = null;
+    	private String sessionId = null;
+    	private String protocol = null;
+    	private MessageParser parser = null;
+    	private MRH_MessageOutputChannel moc = null;
+    	private MessageTypeDecider.msgType type = null;
+    	private int refCnt = 0;
+    	
+    	
+    	ChannelBean (String protocol, ChannelHandlerContext ctx, FullHttpRequest req, String sessionId, MessageParser parser){
+    		this.protocol = protocol;
+    		this.ctx = ctx;
+    		this.req = req;
+    		this.sessionId = sessionId;
+    		this.parser = parser;
+    		this.refCnt = this.req.refCnt();
+    	}
+    	
+    	public void setOutputChannel(MRH_MessageOutputChannel moc) {
+    		this.moc = moc;
+    	}
+    	
+    	public void setType(MessageTypeDecider.msgType type) {
+    		this.type = type;
+    	}
+    	
+    	public FullHttpRequest getReq() {
+    		return req;
+    	}
+    	
+    	public ChannelHandlerContext getCtx() {
+    		return ctx;
+    	}
+    	
+    	public MRH_MessageOutputChannel getOutputChannel() {
+    		return moc;
+    	}
+    	
+    	public String getProtocol() {
+    		return protocol;
+    	}
+    	
+    	public String getSessionId() {
+    		return sessionId;
+    	}
+    	
+    	public MessageParser getParser() {
+    		return parser;
+    	}
+    	
+    	public MessageTypeDecider.msgType getType(){
+    		return type;
+    	}
+    	
+ 
+    	public synchronized void release() {
+    		//System.out.print(sessionId+", ");
+    		if (req != null && req.refCnt() > 0 && refCnt > 0) {
+	    		req.release();
+	    		refCnt--;
+				//System.out.println("REFERENCE COUNT="+req.refCnt());
+    		}
+    		if (req != null && req.refCnt() == 0 && refCnt == 1) {
+    	    	refCnt = 0;
+    	    	//System.out.println("REFERENCE COUNT=0");
+    		}
+    	}
+    	
+    	public synchronized void retain() {
+    		if (req != null) {
+	    		req.retain();
+	    		refCnt++;
+    		}
+    	}
+    	
+    	public synchronized int refCnt() {
+    		return refCnt;
+    	}
     }
 }

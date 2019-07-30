@@ -18,7 +18,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-26
 Version : 0.6.0
-	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+	Replaced from random int sessionId to String sessionId as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-04-23
@@ -64,12 +64,12 @@ import kr.ac.kaist.mms_server.MMSLog;
 class MIH_MessageOutputChannel {
 
 	private static final Logger logger = LoggerFactory.getLogger(MIH_MessageOutputChannel.class);
-	private String SESSION_ID = "";
+	private String sessionId = "";
 	
 	private MMSLog mmsLog = null;
 	
 	MIH_MessageOutputChannel(String sessionId) {
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 		mmsLog = MMSLog.getInstance();
 	}
 	
@@ -92,7 +92,7 @@ class MIH_MessageOutputChannel {
 	    	String inputLine = null;
 			StringBuffer response = new StringBuffer();
 			
-	    	mmsLog.trace(logger, this.SESSION_ID, request+".");
+	    	mmsLog.trace(logger, this.sessionId, request+".");
 		
 		    pw.println(request);
 		    pw.flush();
@@ -107,13 +107,13 @@ class MIH_MessageOutputChannel {
 		    
 	    	
 	    	queryReply = response.toString();
-	    	mmsLog.trace(logger, this.SESSION_ID, "From MNS server=" + queryReply+".");
+	    	mmsLog.trace(logger, this.sessionId, "From MNS server=" + queryReply+".");
 
     	} catch (UnknownHostException e) {
-    		mmsLog.errorException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_OPEN_ERROR.toString(), e, 5);
+    		mmsLog.errorException(logger, sessionId, ErrorCode.MNS_CONNECTION_OPEN_ERROR.toString(), e, 5);
 
 		} catch (IOException e) {
-			mmsLog.errorException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_OPEN_ERROR.toString(), e, 5);
+			mmsLog.errorException(logger, sessionId, ErrorCode.MNS_CONNECTION_OPEN_ERROR.toString(), e, 5);
 		} finally {
     		if (pw != null) {
     			pw.close();
@@ -122,21 +122,21 @@ class MIH_MessageOutputChannel {
 				try {
 					isr.close();
 				} catch (IOException e) {
-					mmsLog.errorException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_CLOSE_ERROR.toString(), e, 5);
+					mmsLog.errorException(logger, sessionId, ErrorCode.MNS_CONNECTION_CLOSE_ERROR.toString(), e, 5);
 				}
 			}
 			if (br != null) {
 				try {
 					br.close();
 				} catch (IOException e) {
-					mmsLog.errorException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_CLOSE_ERROR.toString(), e, 5);
+					mmsLog.errorException(logger, sessionId, ErrorCode.MNS_CONNECTION_CLOSE_ERROR.toString(), e, 5);
 				}
 			}
     		if (MNSSocket != null) {
     			try {
 					MNSSocket.close();
 				} catch (IOException e) {
-					mmsLog.errorException(logger, SESSION_ID, ErrorCode.MNS_CONNECTION_CLOSE_ERROR.toString(), e, 5);
+					mmsLog.errorException(logger, sessionId, ErrorCode.MNS_CONNECTION_CLOSE_ERROR.toString(), e, 5);
 				}
     		}
 		}

@@ -54,7 +54,7 @@ public class MMSMessagewithVariablePayloadClient {
 			}
 		});
 	}
-	public void sendContentLength(String FileName ,int actual) throws IOException {
+	public void sendContentLength(String FileName ,int actual, int timeout) throws IOException {
 		
 		File file = new File(FileName);
 		
@@ -69,7 +69,7 @@ public class MMSMessagewithVariablePayloadClient {
 			data = "";
 		}
 		try {
-			sender.sendPostMsg(svcMRN, data);
+			sender.sendPostMsg(svcMRN, data, timeout);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -1,7 +1,7 @@
 # MC_MMS
-[![Build Status](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS.svg?branch=master)](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS)<br/>
-Beta Version 0.9.3 <br/>
-2019.07.12 <br/>
+[![Build Status](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS.svg?branch=beta-0.9.4-closed)](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS)<br/>
+Beta Version 0.9.4 <br/>
+2019.07.30 <br/>
 
 # Web Site
 https://www.mms-kaist.com <br/>
@@ -41,20 +41,20 @@ First of all, MMS Server including MMS Monitoring Module depends on Ubuntu 16.04
 RabbitMQ 3.7.14, erlang/OTP 22.0, Maven 3.3.9 and Docker 18.09.2.<br/>
 Also, MMS Server is compilable and runnable on Windows 10.<br/>
 When using Debian/Ubuntu Linux, follow instructions below and install dependencies before executing <br/>
-script [MMSServer/scripts/deploy-mms.sh]:<br/>
+script [MC_MMS/scripts/deploy-mms.sh]:<br/>
 <code>sudo apt update</code><br/>
 <code>sudo apt install default-jdk maven rabbitmq-server docker docker-compose</code> <br/>
-Before building MMS Server, specify configuration files in [MMSServer/MMS-configuration] directory.<br/>
+Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration] directory.<br/>
 
-<b>QUICK DEPLOY:</b> run the script [deploy-mms.sh] at the directory [MMSServer/scripts/]. <br/>
-<code>cd MMSServer/scripts </code><br/>
+<b>QUICK DEPLOY:</b> run the script [deploy-mms.sh] at the directory [MC_MMS/scripts/]. <br/>
+<code>cd MC_MMS/scripts </code><br/>
 <code>sudo sh deploy-mms.sh [domain name]</code><br/>
 It will automatically build and run MMS Server, MMS Monitoring Module and related services.<br/>
 After running MMS Monitoring Module docker container, re-configure detailed configurations of <br/>
 apache2 in [/etc/apache2/] in the docker container.<br/>
 
-<b>ONLY BUILD AND START MMS SERVER:</b> run the scripts at the directory [MMSServer/Linux/].<br/>
-<code>cd MMSServer/Linux </code><br/>
+<b>ONLY BUILD AND START MMS SERVER:</b> run the scripts at the directory [MC_MMS/MMSServer/Linux/].<br/>
+<code>cd MC_MMS/MMSServer/Linux </code><br/>
 <code>sudo sh build_mms.sh </code><br/>
 <code>sudo sh start_mms.sh </code><br/>
 <code>sudo sh start_mns.sh </code><br/>
@@ -71,9 +71,9 @@ Default admin account of MMS Monitoring Module (WordPress wp-login.php) is Admin
 [HTTPS for WordPress](https://make.wordpress.org/support/user-manual/web-publishing/https-for-wordpress/) <br/>
 <b>MMS SERVER TLS SUPPORT:</b> check instructions below:<br/>
 [Import Individual Certificates into your Keystore](https://www.attachmate.com/documentation/gateway-1-1/gateway-admin-guide/data/fxg_keytool_importcert.htm)<br/>
-In order to get Base64 endcoded keystore for SSL enabled MMS Server from the jks, use [MMSKeystoreCoder] <br/>
+In order to get Base64 endcoded keystore for SSL enabled MMS Server from the jks, use [MC_MMS/MMSKeystoreCoder] <br/>
 and get Base64 encoded string that is printed out to the console. <br/>
-Copy the string and paste it to a value of "KEYSTORE" in [MMSServer/target/MMS-configuration/MMS.conf]. <br/>
+Copy the string and paste it to a value of "KEYSTORE" in [MC_MMS/MMSServer/target/MMS-configuration/MMS.conf]. <br/>
 After then, restart the MMS Server.<br/>
 
 <br/>

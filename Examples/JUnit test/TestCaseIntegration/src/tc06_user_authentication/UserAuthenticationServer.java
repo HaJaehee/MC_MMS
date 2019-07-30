@@ -79,7 +79,7 @@ public class UserAuthenticationServer {
 	}
 	public void sendMessage(String data) {
 		try {
-			sender.sendPostMsg(dstMRN, data);
+			sender.sendPostMsg(dstMRN, data, 10000);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

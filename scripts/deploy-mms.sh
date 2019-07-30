@@ -19,6 +19,9 @@ while true; do
 	echo ""
 	case $yn in
 		[Yy]* )
+		echo "Install dependencies."
+		sudo apt install -y mysql-client maven docker docker-compose
+		
 		echo "Remove existing docker containers."
 		#echo "Swipe docker containers and images related to MMS Monitoring."
 		#sudo docker stop $(sudo docker ps | grep -E "mcp_mms_monitoring|mcp_mms_monitoring_mariadb|mcp_mms_monitoring_rabbitmq" | cut -c1-12)

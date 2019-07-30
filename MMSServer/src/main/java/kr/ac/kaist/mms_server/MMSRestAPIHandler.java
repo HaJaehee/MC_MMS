@@ -90,7 +90,7 @@ import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 
 public class MMSRestAPIHandler {
-	String SESSION_ID = "";
+	String sessionId = "";
 	private static final Logger logger = LoggerFactory.getLogger(MMSRestAPIHandler.class);
 	
 	private MMSLog mmsLog = null;
@@ -116,13 +116,13 @@ public class MMSRestAPIHandler {
 
 	
 	public MMSRestAPIHandler (String sessionId){
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 		initializeModule();
 		setApiList();
 	}
 	
 	private void initializeModule () {
-		mqm = new MessageQueueManager(SESSION_ID);
+		mqm = new MessageQueueManager(sessionId);
 		mmsLog = MMSLog.getInstance();
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
@@ -382,7 +382,7 @@ public class MMSRestAPIHandler {
 		Map<String,List<String>> params = qsd.parameters();
 		if (params.get("id") != null & params.get("callback") != null) {
 			callback = params.get("callback").get(0);
-			realtimeLog = mmsLog.getRealtimeLog(params.get("id").get(0), this.SESSION_ID);
+			realtimeLog = mmsLog.getRealtimeLog(params.get("id").get(0), this.sessionId);
 			message = (callback+"("+realtimeLog+")").getBytes(Charset.forName("UTF-8"));
 		}
 		else {
@@ -399,7 +399,7 @@ public class MMSRestAPIHandler {
 		String status;
 		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 		Map<String,List<String>> params = qsd.parameters();
-		mmsLog.info(logger, this.SESSION_ID, "Get MMS status and logs.");
+		mmsLog.info(logger, this.sessionId, "Get MMS status and logs.");
 
 		if (params.get("mrn") == null) {
 			try {
@@ -408,11 +408,11 @@ public class MMSRestAPIHandler {
 			} 
 			catch (UnknownHostException e) {
 				message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
-				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
+				mmsLog.warnException(logger, this.sessionId, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
 			} 
 			catch (IOException e) {
 				message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
-				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
+				mmsLog.warnException(logger, this.sessionId, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
 			}
 		}
 		else {
@@ -423,11 +423,11 @@ public class MMSRestAPIHandler {
 			} 
 			catch (UnknownHostException e) {
 				message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
-				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
+				mmsLog.warnException(logger, this.sessionId, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
 			} 
 			catch (IOException e) {
 				message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
-				mmsLog.warnException(logger, this.SESSION_ID, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
+				mmsLog.warnException(logger, this.sessionId, ErrorCode.DUMPMNS_LOGGING_ERROR.toString(), e, 5);
 			}
 		}
 		
@@ -441,11 +441,11 @@ public class MMSRestAPIHandler {
 		Map<String,List<String>> params = qsd.parameters();
 		if (params.get("id") != null) {
 			mmsLog.addIdToBriefRealtimeLogEachIDs(params.get("id").get(0));
-			mmsLog.warn(logger, this.SESSION_ID, "Added an ID using realtime log service="+params.get("id").get(0)+".");
+			mmsLog.warn(logger, this.sessionId, "Added an ID using realtime log service="+params.get("id").get(0)+".");
 			message = "OK".getBytes(Charset.forName("UTF-8"));
 		}
 		else {
-			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
+			mmsLog.warn(logger, this.sessionId, ErrorCode.WRONG_PARAM.toString());
 			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 		}
 		
@@ -459,11 +459,11 @@ public class MMSRestAPIHandler {
 		Map<String,List<String>> params = qsd.parameters();
 		if (params.get("id") != null) {
 			mmsLog.removeIdFromBriefRealtimeLogEachIDs(params.get("id").get(0));
-			mmsLog.warn(logger, this.SESSION_ID, "Removed an ID using realtime log service="+params.get("id").get(0)+".");
+			mmsLog.warn(logger, this.sessionId, "Removed an ID using realtime log service="+params.get("id").get(0)+".");
 			message = "OK".getBytes(Charset.forName("UTF-8"));
 		}
 		else {
-			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
+			mmsLog.warn(logger, this.sessionId, ErrorCode.WRONG_PARAM.toString());
 			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 		}
 		
@@ -479,16 +479,16 @@ public class MMSRestAPIHandler {
 			String mrn = params.get("mrn").get(0);
 			if (mrn != null) {
 				mmsLogForDebug.addMrn(mrn);
-				mmsLog.warn(logger, this.SESSION_ID, "Added a MRN being debugged="+mrn+".");
+				mmsLog.warn(logger, this.sessionId, "Added a MRN being debugged="+mrn+".");
 				message = "OK".getBytes(Charset.forName("UTF-8"));
 			}
 			else {
-				mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
+				mmsLog.warn(logger, this.sessionId, ErrorCode.WRONG_PARAM.toString());
 				message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 			}
 		}
 		else {
-			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
+			mmsLog.warn(logger, this.sessionId, ErrorCode.WRONG_PARAM.toString());
 			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 		}
 		
@@ -503,11 +503,11 @@ public class MMSRestAPIHandler {
 		if (params.get("mrn")!=null) {
 			String mrn = params.get("mrn").get(0);
 			mmsLogForDebug.removeMrn(mrn);
-			mmsLog.warn(logger, this.SESSION_ID, "Removed debug MRN="+mrn+".");
+			mmsLog.warn(logger, this.sessionId, "Removed debug MRN="+mrn+".");
 			message = "OK".getBytes(Charset.forName("UTF-8"));
 		}
 		else {
-			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
+			mmsLog.warn(logger, this.sessionId, ErrorCode.WRONG_PARAM.toString());
 			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 		}
 		
@@ -521,7 +521,7 @@ public class MMSRestAPIHandler {
 		
 		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 		Map<String,List<String>> params = qsd.parameters();
-		mmsLog.warn(logger, this.SESSION_ID, "Add MRN=" + params.get("mrn").get(0) + " IP=" + params.get("ip").get(0) + " Port=" + params.get("port").get(0) + " Model=" + params.get("model").get(0)+".");
+		mmsLog.warn(logger, this.sessionId, "Add MRN=" + params.get("mrn").get(0) + " IP=" + params.get("ip").get(0) + " Port=" + params.get("port").get(0) + " Model=" + params.get("model").get(0)+".");
 		if (params.get("mrn")!=null && !params.get("mrn").get(0).equals(MMSConfiguration.getMmsMrn())) {
 			try {
 				addEntryMNS(params.get("mrn").get(0), params.get("ip").get(0), params.get("port").get(0), params.get("model").get(0));
@@ -530,16 +530,16 @@ public class MMSRestAPIHandler {
 			catch (UnknownHostException e) {
 				// This code block will be deprecated, so there is no definition of error code.
 				
-				mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+				mmsLog.errorException(logger, this.sessionId, "", e, 5);
 			} 
     		catch (IOException e) {
     			ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
     			
-    			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+    			mmsLog.errorException(logger, this.sessionId, "", e, 5);
 			} 
 		}
 		else {
-			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
+			mmsLog.warn(logger, this.sessionId, ErrorCode.WRONG_PARAM.toString());
 			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 		}
 		return message;
@@ -551,7 +551,7 @@ public class MMSRestAPIHandler {
 		
 		QueryStringDecoder qsd = new QueryStringDecoder(req.uri(),Charset.forName("UTF-8"));
 		Map<String,List<String>> params = qsd.parameters();
-		mmsLog.warn(logger, this.SESSION_ID, "Remove MRN=" + params.get("mrn").get(0)+".");
+		mmsLog.warn(logger, this.sessionId, "Remove MRN=" + params.get("mrn").get(0)+".");
 		if (params.get("mrn")!=null && !params.get("mrn").get(0).equals(MMSConfiguration.getMmsMrn())) {
 			try {
 				removeEntryMNS(params.get("mrn").get(0));
@@ -560,16 +560,16 @@ public class MMSRestAPIHandler {
     		catch (UnknownHostException e) {
 				// This code block will be deprecated, so there is no definition of error code.
     			
-    			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+    			mmsLog.errorException(logger, this.sessionId, "", e, 5);
 			} 
     		catch (IOException e) {
     			message = ErrorCode.DUMPMNS_LOGGING_ERROR.getUTF8Bytes();
     			
-    			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+    			mmsLog.errorException(logger, this.sessionId, "", e, 5);
 			} 
 		}
 		else {
-			mmsLog.warn(logger, this.SESSION_ID, ErrorCode.WRONG_PARAM.toString());
+			mmsLog.warn(logger, this.sessionId, ErrorCode.WRONG_PARAM.toString());
 			message = ErrorCode.WRONG_PARAM.getUTF8Bytes();
 		}
 		
@@ -597,7 +597,7 @@ public class MMSRestAPIHandler {
 			String inputLine = null;
 			StringBuffer response = new StringBuffer();
 	
-			mmsLog.warn(logger, this.SESSION_ID, "Remove Entry="+mrn+".");
+			mmsLog.warn(logger, this.sessionId, "Remove Entry="+mrn+".");
 	
 			pw.println("Remove-Entry:"+mrn);
 			pw.flush();
@@ -612,14 +612,14 @@ public class MMSRestAPIHandler {
 	
 	
 			queryReply = response.toString();
-			mmsLog.trace(logger, this.SESSION_ID, "From server="+queryReply+".");
+			mmsLog.trace(logger, this.sessionId, "From server="+queryReply+".");
 	
 	
 		} catch (UnknownHostException e) {
-			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+			mmsLog.errorException(logger, this.sessionId, "", e, 5);
 			
 		} catch (IOException e) {
-			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+			mmsLog.errorException(logger, this.sessionId, "", e, 5);
 			
 		} finally {
 			if (pw != null) {
@@ -629,21 +629,21 @@ public class MMSRestAPIHandler {
 				try {
 					isr.close();
 				} catch (IOException e) {
-					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+					mmsLog.errorException(logger, this.sessionId, "", e, 5);
 				}
 			}
 			if (br != null) {
 				try {
 					br.close();
 				} catch (IOException e) {
-					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+					mmsLog.errorException(logger, this.sessionId, "", e, 5);
 				}
 			}
 			if (MNSSocket != null) {
 				try {
 					MNSSocket.close();
 				} catch (IOException e) {
-					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+					mmsLog.errorException(logger, this.sessionId, "", e, 5);
 				}
 			}
 		}
@@ -671,7 +671,7 @@ public class MMSRestAPIHandler {
 			String inputLine = null;
 			StringBuffer response = new StringBuffer();
 
-			mmsLog.warn(logger, this.SESSION_ID, "Add Entry="+mrn+".");
+			mmsLog.warn(logger, this.sessionId, "Add Entry="+mrn+".");
 
 			pw.println("Add-Entry:"+mrn+","+ip+","+port+","+model);
 			pw.flush();
@@ -686,13 +686,13 @@ public class MMSRestAPIHandler {
 
 
 			queryReply = response.toString();
-			mmsLog.trace(logger, this.SESSION_ID, "From server=" + queryReply+".");
+			mmsLog.trace(logger, this.sessionId, "From server=" + queryReply+".");
 
 		} catch (UnknownHostException e) {
-			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+			mmsLog.errorException(logger, this.sessionId, "", e, 5);
 			 
 		} catch (IOException e) {
-			mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+			mmsLog.errorException(logger, this.sessionId, "", e, 5);
 			
 		} finally {
 			if (pw != null) {
@@ -702,21 +702,21 @@ public class MMSRestAPIHandler {
 				try {
 					isr.close();
 				} catch (IOException e) {
-					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+					mmsLog.errorException(logger, this.sessionId, "", e, 5);
 				}
 			}
 			if (br != null) {
 				try {
 					br.close();
 				} catch (IOException e) {
-					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+					mmsLog.errorException(logger, this.sessionId, "", e, 5);
 				}
 			}
 			if (MNSSocket != null) {
 				try {
 					MNSSocket.close();
 				} catch (IOException e) {
-					mmsLog.errorException(logger, this.SESSION_ID, "", e, 5);
+					mmsLog.errorException(logger, this.sessionId, "", e, 5);
 				}
 			}
 		}

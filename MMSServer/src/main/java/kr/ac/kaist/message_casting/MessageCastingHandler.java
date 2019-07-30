@@ -31,7 +31,7 @@ Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 
 Rev. history : 2017-09-26
 Version : 0.6.0
-	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+	Replaced from random int sessionId to String sessionId as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-04-23
@@ -80,9 +80,20 @@ Rev. history : 2019-07-10
 Version : 0.9.3
 	Added resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Introduced MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Updated MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel.ConnectionThread;
 import kr.ac.kaist.mms_server.ErrorCode;
@@ -110,7 +121,7 @@ import io.netty.handler.codec.http.HttpMethod;
 public class MessageCastingHandler {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageCastingHandler.class);
-	private String SESSION_ID = "";
+	private String sessionId = "";
 	
 	private MNSInteractionHandler mih = null;
 	private SeamlessRoamingHandler srh = null;
@@ -118,14 +129,14 @@ public class MessageCastingHandler {
 	private MMSLog mmsLog = null; 
 	
 	public MessageCastingHandler(String sessionId) {
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 	
 		initializeModule();
 	}
 	
 	private void initializeModule() {
-		mih = new MNSInteractionHandler(this.SESSION_ID);
-		srh = new SeamlessRoamingHandler(this.SESSION_ID);
+		mih = new MNSInteractionHandler(this.sessionId);
+		srh = new SeamlessRoamingHandler(this.sessionId);
 		mmsLog = MMSLog.getInstance();
 	}
 	
@@ -145,7 +156,7 @@ public class MessageCastingHandler {
 					
 	
 		if (dstInfo != null && dstInfo.regionMatches(2, "poll", 0, 4)){ // if the returned dstInfo contains json format do parsing.
-			mmsLog.debug(logger, this.SESSION_ID, "Multicasting occured.");
+			mmsLog.debug(logger, this.sessionId, "Multicasting occured.");
 			JSONObject jo = (JSONObject)JSONValue.parse(dstInfo);
 			JSONArray jl = (JSONArray)jo.get("poll");
 			String ret = "MULTIPLE_MRN,";
@@ -161,66 +172,66 @@ public class MessageCastingHandler {
 		
 	}
 	
-	public byte[] castMsgsToMultipleCS (String srcMRN, String[] dstMRNs, String content) {
-		mmsLog.debug(logger, this.SESSION_ID, "multicast.");
+	/*public byte[] castMsgsToMultipleCS (MRH_MessageInputChannel.ChannelBean bean, String content) {
+		mmsLog.debug(logger, this.sessionId, "multicast.");
+		String [] dstMRNs = bean.getParser().getMultiDstMRN();
 		for (int i = 0; i < dstMRNs.length;i++){
 			srh.putSCMessage(srcMRN, dstMRNs[i], content);
 		}
 		return "OK".getBytes(Charset.forName("UTF-8"));
-	}
-	public byte[] unicast (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx,  FullHttpRequest req, String dstIP, int dstPort, String protocol, HttpMethod httpMethod, String srcMRN, String dstMRN) {
+	}*/
+	public byte[] unicast (MRH_MessageInputChannel.ChannelBean bean) {
 		
 		byte[] message = null;
 		try {
-    		if (protocol.equals("http")) {
-    			message = outputChannel.sendMessage(ctx, req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
-    			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTP.");
+    		if (bean.getProtocol().equals("http")) {
+    			message = bean.getOutputChannel().sendMessage(bean);
+    			mmsLog.info(logger, this.sessionId, "Protocol=HTTP.");
     		} 
-    		else if (protocol.equals("https")) { 
-    			message = outputChannel.secureSendMessage(ctx, req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
-    			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTPS.");
+    		else if (bean.getProtocol().equals("https")) { 
+    			message = bean.getOutputChannel().secureSendMessage(bean);
+    			mmsLog.info(logger, this.sessionId, "Protocol=HTTPS.");
     		} 
     		else {
-    			mmsLog.info(logger, this.SESSION_ID, "No protocol.");
+    			mmsLog.info(logger, this.sessionId, "No protocol.");
     		}
 		} 
     	catch (IOException e) {
-    		mmsLog.info(logger, this.SESSION_ID, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString());
+			mmsLog.infoException(logger, this.sessionId, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString(), e, 5);
 		}
 		
 		return message;
 	}
 	
-	public ConnectionThread asynchronizedUnicast(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String dstIP, int dstPort, String protocol, HttpMethod httpMethod, String srcMRN, String dstMRN) {
+	public ConnectionThread asynchronizedUnicast(MRH_MessageInputChannel.ChannelBean bean) {
 		ConnectionThread thread = null;
 		try {
-    		if (protocol.equals("http")) {
-    			thread = outputChannel.asynchronizeSendMessage(ctx, req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    		if (bean.getProtocol().equals("http")) {
+    			thread = bean.getOutputChannel().asynchronizeSendMessage(bean);
     			thread.start();
-    			
-    			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTP.");
+    			mmsLog.info(logger, this.sessionId, "Protocol=HTTP.");
     		} 
-    		else if (protocol.equals("https")) { 
-    			thread = outputChannel.asynchronizeSendSecureMessage(ctx, req, dstIP, dstPort, httpMethod, srcMRN, dstMRN);
+    		else if (bean.getProtocol().equals("https")) { 
+    			thread = bean.getOutputChannel().asynchronizeSendSecureMessage(bean);
     			thread.start();
-    			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTPS.");
+    			mmsLog.info(logger, this.sessionId, "Protocol=HTTPS.");
     		} 
     		else {
-    			mmsLog.info(logger, this.SESSION_ID, "No protocol.");
+    			mmsLog.info(logger, this.sessionId, "No protocol.");
     		}
     		
 		} 
     	catch (IOException e) {
-    		mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+    		mmsLog.infoException(logger, this.sessionId, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString(), e, 5);
 		}
 		return thread;
 	}
 	
 	
-	public byte[] geocast (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String srcMRN, JSONArray geoDstInfo, String protocol, HttpMethod httpMethod) {
+	public byte[] geocast (MRH_MessageInputChannel.ChannelBean bean) {
 		
-		if (geoDstInfo != null) {
-			Iterator iter = geoDstInfo.iterator();
+		if (bean.getParser().getGeoDstInfo() != null) {
+			Iterator iter = bean.getParser().getGeoDstInfo().iterator();
 			while (iter.hasNext()) {
 				JSONObject obj = (JSONObject) iter.next(); 
 				String connType = (String) obj.get("connType");
@@ -228,7 +239,7 @@ public class MessageCastingHandler {
 				if (connType == null) {
 					String exc = (String) obj.get("exception");
 					if (exc != null) {
-						mmsLog.warnException(logger, this.SESSION_ID, "MNS query exception occured=\""+exc+"\".", new ConnectException(), 5);
+						mmsLog.infoException(logger, this.sessionId, "MNS query exception occured=\""+exc+"\".", new ConnectException(), 5);
 						return null;
 					}
 				}
@@ -237,7 +248,7 @@ public class MessageCastingHandler {
 					
 					String dstMRNInGeoDstInfo = (String) obj.get("dstMRN");
 					String netTypeInGeoDstInfo = (String) obj.get("netType");
-					srh.putSCMessage(srcMRN, dstMRNInGeoDstInfo, req.content().toString(Charset.forName("UTF-8")).trim());
+					return srh.putSCMessage(bean);
 		    		
 				}
 				else if (connType.equals("push")) {
@@ -247,20 +258,20 @@ public class MessageCastingHandler {
 		        		String dstIPInGeoDstInfo = (String) obj.get("IPAddr");
 		        		int dstPortInGeoDstInfo = Integer.parseInt((String) obj.get("portNum"));
 		        		
-		        		if (protocol.equals("http")) {
-						    outputChannel.sendMessage(ctx, req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
-						    mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTP.");
+		        		if (bean.getProtocol().equals("http")) {
+						    bean.getOutputChannel().sendMessage(bean);
+						    mmsLog.info(logger, this.sessionId, "Protocol=HTTP.");
 		        		} 
-		        		else if (protocol.equals("https")) { 
-		        			outputChannel.secureSendMessage(ctx, req, dstIPInGeoDstInfo, dstPortInGeoDstInfo, httpMethod, srcMRN, dstMRNInGeoDstInfo);
-		        			mmsLog.info(logger, this.SESSION_ID, "Protocol=HTTPS.");
+		        		else if (bean.getProtocol().equals("https")) { 
+		        			bean.getOutputChannel().secureSendMessage(bean);
+		        			mmsLog.info(logger, this.sessionId, "Protocol=HTTPS.");
 		        		} 
 		        		else {
-		        			mmsLog.info(logger, this.SESSION_ID, "No protocol.");
+		        			mmsLog.info(logger, this.sessionId, "No protocol.");
 		        		}
 					} 
 		        	catch (IOException e) {
-		        		mmsLog.warnException(logger, this.SESSION_ID, "", e, 5);
+		        		mmsLog.infoException(logger, this.sessionId, ErrorCode.MESSAGE_RELAYING_FAIL_UNREACHABLE.toString(), e, 5);
 					}
 				}
 				

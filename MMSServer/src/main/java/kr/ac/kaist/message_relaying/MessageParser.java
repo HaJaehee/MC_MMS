@@ -25,7 +25,7 @@ Modifier : Jaehyun Park (jae519@kaist.ac.kr)
 
 Rev. history : 2017-09-26
 Version : 0.6.0
-	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+	Replaced from random int sessionId to String sessionId as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-04-23
@@ -142,7 +142,7 @@ public class MessageParser {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageParser.class);
 
-	private String SESSION_ID = "";
+	private String sessionId = "";
 	private String srcIP = null;
 	private String srcMRN = null;
 	private String dstIP = null;
@@ -168,7 +168,7 @@ public class MessageParser {
 
 
 	MessageParser(String sessionId){
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 		srcIP = null;
 		srcMRN = null;
 		dstIP = null;
@@ -222,22 +222,22 @@ public class MessageParser {
 			seqNum = Long.parseLong(o);
 			new BigInteger(o);
 			if (seqNum < 0) {
-				mmsLog.info(logger, SESSION_ID, ErrorCode.SEQUENCE_NUMBER_IS_NEGATIVE.toString());
+				mmsLog.info(logger, sessionId, ErrorCode.SEQUENCE_NUMBER_IS_NEGATIVE.toString());
 				throw new NumberFormatException();
 			}
 		}
 
-		if (this.SESSION_ID != null && req.headers().get("geocasting") != null) {
+		if (this.sessionId != null && req.headers().get("geocasting") != null) {
 			if (req.headers().get("geocasting").equals("circle")) {
 				isGeocasting = true;	
 				String msg = setGeoCircleInfo(req);
 				if (msg == null) {
 					if (logger.isDebugEnabled()) {
-						mmsLog.debug(logger, this.SESSION_ID, "Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".");
+						mmsLog.debug(logger, this.sessionId, "Geocasting circle request. In header, Lat="+geoCircleInfo.getGeoLat()+", Long="+geoCircleInfo.getGeoLong()+", Radius="+geoCircleInfo.getGeoRadius()+".");
 					}
 				}
 				else {
-					mmsLog.info(logger, this.SESSION_ID, msg);
+					mmsLog.info(logger, this.sessionId, msg);
 				}
 			} 
 			else if (req.headers().get("geocasting").equals("polygon")) {
@@ -264,12 +264,12 @@ public class MessageParser {
 							}
 						}
 						strGeoPolyInfo.append("]");
-						mmsLog.debug(logger, this.SESSION_ID, "Geocasting polygon request. "+strGeoPolyInfo.toString()+".");
+						mmsLog.debug(logger, this.sessionId, "Geocasting polygon request. "+strGeoPolyInfo.toString()+".");
 
 					}
 				}
 				else {
-					mmsLog.info(logger, this.SESSION_ID, msg);
+					mmsLog.info(logger, this.sessionId, msg);
 				}
 			} 
 			else {
@@ -294,11 +294,11 @@ public class MessageParser {
 			if (keyStr.equals("svcMRN")) {
 				svcMRN = (String) pollingRequestContents.get("svcMRN");
 //				System.out.println("[Parser] serviceMRN=" + svcMRN);
-				mmsLog.debug(logger, this.SESSION_ID, "Service MRN=" + svcMRN + ".");
+				mmsLog.debug(logger, this.sessionId, "Service MRN=" + svcMRN + ".");
 			}
 			else if (keyStr.equals("certificate")) {
 				hexSignedData = (String) pollingRequestContents.get("certificate");
-				mmsLog.debug(logger, this.SESSION_ID, "Client's certificate is included.");
+				mmsLog.debug(logger, this.sessionId, "Client's certificate is included.");
 			}
 		}
 	}
@@ -341,14 +341,14 @@ public class MessageParser {
 			isJSONOfPollingFormat = true;
 			if (this.svcMRN == null) {
 
-				mmsLog.info(logger, this.SESSION_ID, ErrorCode.NULL_SVC_MRN.toString());
+				mmsLog.info(logger, this.sessionId, ErrorCode.NULL_SVC_MRN.toString());
 
 			}
 			
 			return ;
 		} 
 		catch (org.json.simple.parser.ParseException e) {
-			mmsLog.info(logger, this.SESSION_ID, ErrorCode.JSON_FORMAT_ERROR.toString());
+			mmsLog.info(logger, this.sessionId, ErrorCode.JSON_FORMAT_ERROR.toString());
 			
 			isJSONOfPollingFormat = false;
 		}
@@ -377,7 +377,7 @@ public class MessageParser {
     	
 		}
 		catch (org.json.simple.parser.ParseException e) {
-			mmsLog.info(logger, this.SESSION_ID, ErrorCode.MNS_WRONG_FORMAT_ERROR.toString());
+			mmsLog.info(logger, this.sessionId, ErrorCode.MNS_WRONG_FORMAT_ERROR.toString());
 		}
 	}
 	
@@ -388,12 +388,12 @@ public class MessageParser {
 			geoDstInfo = (JSONArray) parser.parse(geocastInfo);
 			
 		} catch (org.json.simple.parser.ParseException e) {
-			mmsLog.info(logger, this.SESSION_ID, ErrorCode.WRONG_GEOCASTING_INFO.toString());
+			mmsLog.info(logger, this.sessionId, ErrorCode.WRONG_GEOCASTING_INFO.toString());
 		}
 	}
 	
 	void parseMultiDstInfo(String dstInfo){
-		mmsLog.debug(logger, this.SESSION_ID, "Destination info="+dstInfo+".");
+		mmsLog.debug(logger, this.sessionId, "Destination info="+dstInfo+".");
 		String[] dstMRNs = dstInfo.substring(13).split(",");
 		multiDstMRN = dstMRNs;
 	}
@@ -409,13 +409,13 @@ public class MessageParser {
 	String getDstModel() { return dstModel; }
 	long getSeqNum() { return seqNum;	}
 	
-	// Destination Special Information //
-	String[] getMultiDstMRN() { 
+	/*// Destination Special Information //
+	public String[] getMultiDstMRN() { 
 		String[] ret = null;
 		ret = Arrays.copyOf(this.multiDstMRN, this.multiDstMRN.length);
 		
 		return ret; 
-	}
+	}*/
 	
 	// Source Information //
 	public String getSrcIP(){ return srcIP; }
@@ -474,7 +474,7 @@ public class MessageParser {
 		}
 		if (geoLatList != null && geoLongList != null) {
 			if (geoLatList.length < 3 || geoLongList.length < 3 || geoLatList.length != geoLongList.length) {
-				mmsLog.info(logger, SESSION_ID, ErrorCode.WRONG_GEOCASTING_INFO.toString());
+				mmsLog.info(logger, sessionId, ErrorCode.WRONG_GEOCASTING_INFO.toString());
 			}
 			
 			geoPolygonInfo.setGeoLatList(geoLatList);

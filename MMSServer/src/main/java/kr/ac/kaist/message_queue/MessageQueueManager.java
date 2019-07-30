@@ -19,7 +19,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-26
 Version : 0.6.0
-	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+	Replaced from random int sessionId to String sessionId as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history: 2019-03-09
@@ -48,6 +48,16 @@ Rev. history : 2019-07-07
 Version : 0.9.3
 	Added resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Introduced MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Updated MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -62,6 +72,7 @@ import org.slf4j.LoggerFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
+import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
@@ -70,28 +81,28 @@ import kr.ac.kaist.mms_server.MMSLog;
 
 public class MessageQueueManager {
 	
-	private String SESSION_ID = "";
+	private String sessionId = "";
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueManager.class);
 	private MRH_MessageOutputChannel outputChannel = null;
 	
 	public MessageQueueManager(String sessionId) {
 		
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 		initializeModule();
 	}
 	
 	private void initializeModule () {
-		outputChannel = new MRH_MessageOutputChannel(SESSION_ID);
+		outputChannel = new MRH_MessageOutputChannel(sessionId);
 	}
 	
-	public void dequeueMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String srcMRN, String svcMRN, String pollingMethod) {
-		MessageQueueDequeuer mqd = new MessageQueueDequeuer(this.SESSION_ID);
-		mqd.dequeueMessage(outputChannel, ctx, req, srcMRN, svcMRN, pollingMethod);
+	public void dequeueMessage (MRH_MessageInputChannel.ChannelBean bean) {
+		MessageQueueDequeuer mqd = new MessageQueueDequeuer(this.sessionId);
+		mqd.dequeueMessage(bean);
 	}
 	
-	public void enqueueMessage (String srcMRN, String dstMRN, String message) {
-		MessageQueueEnqueuer mqe = new MessageQueueEnqueuer(this.SESSION_ID);
-		mqe.enqueueMessage(srcMRN, dstMRN, message);
+	public byte[] enqueueMessage (MRH_MessageInputChannel.ChannelBean bean) {
+		MessageQueueEnqueuer mqe = new MessageQueueEnqueuer(this.sessionId);
+		return mqe.enqueueMessage(bean);
 	}
 	
 	public long getTotalQueueNumber ()  {
@@ -129,12 +140,12 @@ public class MessageQueueManager {
 		} 
 		catch (IOException e) {
 			MMSLog mmsLog = MMSLog.getInstance();
-			mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_MANAGEMENT_CONNECTION_OPEN_ERROR.toString(), e, 5);
+			mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_MANAGEMENT_CONNECTION_OPEN_ERROR.toString(), e, 5);
 
 		} 
 		catch (ParseException e) {
 			MMSLog mmsLog = MMSLog.getInstance();
-			mmsLog.warnException(logger, SESSION_ID, ErrorCode.RABBITMQ_MANAGEMENT_CONNECTION_OPEN_ERROR.toString(), e, 5);
+			mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_MANAGEMENT_CONNECTION_OPEN_ERROR.toString(), e, 5);
 
 		}
 		
@@ -147,10 +158,10 @@ public class MessageQueueManager {
 		try {
 			processOutput = pr.runProcess();
 		} catch (IOException | InterruptedException e) {
-			logger.warn("SessionID="+SESSION_ID+" MessageQueueManager has a problem when executing rabbitmqadmin.");
-			logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
+			logger.warn("SessionID="+sessionId+" MessageQueueManager has a problem when executing rabbitmqadmin.");
+			logger.warn("SessionID="+sessionId+" "+e.getClass().getName()+" "+e.getStackTrace()[0]+".");
 			for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-				logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+				logger.warn("SessionID="+sessionId+" "+e.getStackTrace()[i]+".");
 			}
 		} 
 		

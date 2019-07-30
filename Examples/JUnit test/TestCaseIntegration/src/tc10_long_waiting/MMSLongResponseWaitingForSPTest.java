@@ -28,6 +28,13 @@ Version : 0.9.2
 	
 	** And this test is succeeded
 Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
+Rev.history :2019-07-22
+Version : 0.9.4
+	Change testcase to test multiple request.
+	
+	** And this test is succeeded
+Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 */
 
 @FixMethodOrder(MethodSorters.DEFAULT)
@@ -56,7 +63,7 @@ public class MMSLongResponseWaitingForSPTest extends MMSTestBase {
 			}
 		});
 		
-		client.sendPostMsgWithTimeout(dst, message, timeout);
+		client.sendPostMsg(dst, message, timeout);
 	}
 	
 	public static void runServer(String mrn, int port, long sleepTime, boolean isError) {
@@ -102,23 +109,47 @@ public class MMSLongResponseWaitingForSPTest extends MMSTestBase {
 
 	@Test
 	public void testOK() throws Exception {
-		runServer(dstMRN, PORT, 100, false);
-		try {
-			sendMessage(srcMRN, dstMRN, "123", "OK", 1000);
-		} catch(IOException e) {
-			assertTrue("this code have to unreachable", false);
+		runServer(dstMRN, PORT, 10, false);
+		for (int i = 0; i < 100; i++) {
+			Thread t = new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					try {
+						sendMessage(srcMRN, dstMRN, "123", "OK", 1000);
+					} catch(Exception e) {
+						assertTrue("this code have to unreachable", false);
+					}
+				}
+			});
+			t.start();
+			Thread.sleep(50);
 		}
+		Thread.sleep(1000);
 	}
 	
 	@Test
 	public void testTimeout() throws Exception {
 		runServer(dstMRN, PORT, 10000, true);
-		try {
-			sendMessage(srcMRN, dstMRN, "123", "OK", 1000);
-			assertTrue("this code have to unreachable", false);
-		} catch(IOException e) {
-			
+		for (int i = 0; i < 100; i++) {
+			Thread t = new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					try {
+						sendMessage(srcMRN, dstMRN, "123", "OK", 1000);
+						assertTrue("this code have to unreachable", false);
+					} catch(Exception e) {
+						
+					}
+				}
+			});
+			t.start();
+			Thread.sleep(50);
 		}
+		Thread.sleep(1000);
 	}
 }
 

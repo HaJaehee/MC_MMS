@@ -52,6 +52,21 @@ Rev. history : 2019-07-11
 Version : 0.9.3
 	Updated exception throw-catch phrases.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-21
+Version : 0.9.4
+	Moved write stream close() to the line before input stream close().
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-24
+Version : 0.9.4
+	Added timeout parameter to sendPostMsgWithTimeout() methods.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+ Rev. history : 2019-07-26
+ Version : 0.9.4
+ 	Let methods have timeout parameter default.
+ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -100,11 +115,10 @@ class SecureMMSSndHandler {
 		this.myCallback = callback;
 	}
 	
-
-	void sendHttpsPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField) throws IOException{
-		sendHttpsPost(dstMRN, loc, data, headerField, -1);
+	void sendHttpsPostWithTimeout(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int timeout) throws IOException{
+		sendHttpsPostWithTimeout(dstMRN, loc, data, headerField, -1, timeout);
 	}
-	void sendHttpsPost(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int seqNum) throws IOException{
+	void sendHttpsPostWithTimeout(String dstMRN, String loc, String data, Map<String,List<String>> headerField, int seqNum, int timeout) throws IOException{
         
 		String url = "https://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
@@ -133,6 +147,11 @@ class SecureMMSSndHandler {
 			con = addCustomHeaderField(con, headerField);
 		} 
 		
+		if (timeout > 0) {
+			con.setConnectTimeout(timeout);
+			con.setReadTimeout(timeout);
+		}
+		
 		//load contents
 		String urlParameters = data;
 		
@@ -145,7 +164,7 @@ class SecureMMSSndHandler {
 				new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
 		wr.write(urlParameters);
 		wr.flush();
-		wr.close();
+		//wr.close();
 
 		Map<String,List<String>> inH = con.getHeaderFields();
 		inH = getModifiableMap(inH);
@@ -176,6 +195,7 @@ class SecureMMSSndHandler {
 			response.append(inputLine);
 		}
 		
+		wr.close();
 		in.close();
 		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Response: " + response.toString() + "\n");}
 		
@@ -186,7 +206,7 @@ class SecureMMSSndHandler {
     } 
 	
 	//OONI
-	String sendHttpsGetFile(String dstMRN, String fileName, Map<String,List<String>> headerField) throws IOException {
+	String sendHttpsGetFileWithTimeout(String dstMRN, String fileName, Map<String,List<String>> headerField, int timeout) throws IOException {
 
 		String url = "https://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!fileName.startsWith("/")) {
@@ -196,6 +216,12 @@ class SecureMMSSndHandler {
 		URL obj = new URL(url);
 		
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+
+		if (timeout > 0) {
+			con.setConnectTimeout(timeout);
+			con.setReadTimeout(timeout);
+		}
+
 		con.setHostnameVerifier(hv);
 		
 		
@@ -244,10 +270,10 @@ class SecureMMSSndHandler {
 	//OONI end
 	
 	//HJH
-	void sendHttpsGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField) throws IOException {
-		sendHttpsGet(dstMRN, loc, params, headerField, -1);
+	void sendHttpsGetWithTimeout(String dstMRN, String loc, String params, Map<String,List<String>> headerField, int timeout) throws IOException {
+		sendHttpsGetWithTimeout(dstMRN, loc, params, headerField, -1, timeout);
 	}
-	void sendHttpsGet(String dstMRN, String loc, String params, Map<String,List<String>> headerField, int seqNum) throws IOException {
+	void sendHttpsGetWithTimeout(String dstMRN, String loc, String params, Map<String,List<String>> headerField, int seqNum, int timeout) throws IOException {
 
 		String url = "https://"+MMSConfiguration.MMS_URL; // MMS Server
 		if (!loc.startsWith("/")) {
@@ -267,6 +293,12 @@ class SecureMMSSndHandler {
 		
 		URL obj = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+
+		if (timeout > 0) {
+			con.setConnectTimeout(timeout);
+			con.setReadTimeout(timeout);
+		}
+
 		con.setHostnameVerifier(hv);
 		
 		//add request header

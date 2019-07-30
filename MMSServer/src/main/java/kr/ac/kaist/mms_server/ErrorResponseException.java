@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.channel.ChannelHandlerContext;
+import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 
 public class ErrorResponseException extends MMSBaseException {
@@ -13,19 +14,14 @@ public class ErrorResponseException extends MMSBaseException {
 
 	private byte[] message;
 	private int responseCode;
-	private boolean realtimeLog;
 	public ErrorResponseException() {
 		this(null, 400);
 	}
-	public ErrorResponseException(byte[] message, int responseCode, boolean realtimeLog) {
+	public ErrorResponseException(byte[] message, int responseCode) {
 		this.message = message;
 		this.responseCode = responseCode;
-		this.realtimeLog = realtimeLog;
 	}
 
-	public ErrorResponseException(byte[] message, int responseCode) {
-		this(message, responseCode, false);
-	}
 	public ErrorResponseException(StringBuffer message) {
 		this(message.toString().getBytes(), 400);
 	}
@@ -38,9 +34,9 @@ public class ErrorResponseException extends MMSBaseException {
 	public ErrorResponseException(int responseCode) {
 		this(null, responseCode);
 	}
-	public void replyToSender(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx) {
+	public void replyToSender(MRH_MessageInputChannel.ChannelBean bean) {
 		try {
-			outputChannel.replyToSender(ctx, message, realtimeLog, responseCode);
+			bean.getOutputChannel().replyToSender(bean, message, responseCode);
 		} catch (IOException e) {
 			MMSLog.getInstance().infoException(logger, "", ErrorCode.CLIENT_DISCONNECTED.toString(), e, 5);
 		}
