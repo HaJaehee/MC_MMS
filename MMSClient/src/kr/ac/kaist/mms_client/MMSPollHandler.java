@@ -49,6 +49,16 @@ Rev. history: 2019-03-19
 Version : 0.8.2
 	MMS Client sends a polling request message which is a JSON format.
 Modifier : Jin Jung (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-07-21
+Version : 0.9.4
+	Moved write stream close() to the line before input stream close().
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+ Rev. history : 2019-07-26
+ Version : 0.9.4
+ 	Let methods have timeout parameter default.
+ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -81,14 +91,16 @@ class MMSPollHandler {
 	private String clientMRN = null;
 	private PollingRequestContents contents = null;
 
-	MMSPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, String pollingMethod, Map<String,List<String>> headerField) throws IOException{
+
+	MMSPollHandler(String clientMRN, String dstMRN, String svcMRN, String hexSignedData, int interval, String pollingMethod, int timeout, Map<String,List<String>> headerField) throws IOException{
 //		String svcMRNWithHexSign = svcMRN;
 //		if (hexSignedData != null) {
 //			svcMRNWithHexSign = svcMRNWithHexSign+"\n"+hexSignedData;
 //		}
 		contents = new PollingRequestContents(svcMRN, hexSignedData);
-		ph = new PollHandler(clientMRN, dstMRN, interval, pollingMethod, headerField);
+		ph = new PollHandler(clientMRN, dstMRN, interval, pollingMethod, timeout, headerField);
 		if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Polling handler is created");}
+
 	}
 	//HJH
 	
@@ -135,18 +147,20 @@ class MMSPollHandler {
 		private String pollingRequestContents = null;
 		private String pollingMethod = null;
 		private boolean interrupted=false;
-		private Map<String,List<String>> headerField = null;	
+		private Map<String,List<String>> headerField = null;
+		private int timeout = -1;
 		
 	
 		MMSClientHandler.PollingResponseCallback myCallback = null;
 
-    	PollHandler (String clientMRN, String dstMRN, int interval, String pollingMethod, Map<String,List<String>> headerField){
+    	PollHandler (String clientMRN, String dstMRN, int interval, String pollingMethod, int timeout, Map<String,List<String>> headerField){
     		this.interval = interval;
     		this.clientMRN = clientMRN;
     		this.dstMRN = dstMRN;
     		this.pollingMethod = pollingMethod;
     		this.headerField = headerField;
     		interrupted=false;
+    		this.timeout = timeout;
     	}
     	
     	void setPollingResponseCallback(MMSClientHandler.PollingResponseCallback callback){
@@ -182,16 +196,25 @@ class MMSPollHandler {
 				String url = "http://"+MMSConfiguration.MMS_URL;
 			
 				if (pollingMethod == null || pollingMethod.equals("normal")) {
-					url = url+"/polling"; // Polling request to MMS server.				
+					url = url+"/polling"; // Polling request to MMS server.
+
 				}
 				else if (pollingMethod.equals("long")) {
-					url = url+"/long-polling"; // Long polling request to MMS server.					
+					url = url+"/long-polling"; // Long polling request to MMS server.
 				}
 				URL obj = new URL(url);
 				String data = contents.toString(); 
 				
 				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-				
+
+				if (timeout > 0 && (pollingMethod == null || pollingMethod.equals("normal"))) {
+					con.setConnectTimeout(timeout);
+					con.setReadTimeout(timeout);
+				}
+				else if (timeout > 0 && pollingMethod.equals("long")) {
+					con.setConnectTimeout(timeout);
+				}
+
 				//add request header
 				con.setRequestMethod("POST");
 				con.setRequestProperty("User-Agent", USER_AGENT);
@@ -210,7 +233,7 @@ class MMSPollHandler {
 						new OutputStreamWriter(con.getOutputStream(),Charset.forName("UTF-8")));
 				wr.write(urlParameters);
 				wr.flush();
-				wr.close();
+				//wr.close();
 	
 				int responseCode = con.getResponseCode();
 				List<String> responseCodes = new ArrayList<String>();
@@ -246,6 +269,7 @@ class MMSPollHandler {
 					
 				}
 
+				wr.close();
 				inB.close();
 				
 				receiveResponse(inH, resList);

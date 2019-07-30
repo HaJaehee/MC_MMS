@@ -20,7 +20,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-26
 Version : 0.6.0
-	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+	Replaced from random int sessionId to String sessionId as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2018-07-27
@@ -62,7 +62,7 @@ import kr.ac.kaist.mms_server.MMSLogForDebug;
 public class MNSInteractionHandler {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MNSInteractionHandler.class);
-	private String SESSION_ID = "";
+	private String sessionId = "";
 	private LocatorUpdater locatorUpdater = null;
 	private MRNInformationQuerier MRNInfoQuerier = null;
 	private MIH_MessageOutputChannel messageOutput = null;
@@ -70,15 +70,15 @@ public class MNSInteractionHandler {
 	private MMSLogForDebug mmsLogForDebug = null;
 	
 	public MNSInteractionHandler(String sessionId) {
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 		
 		initializeModule();
 	}
 	
 	private void initializeModule(){
 		MRNInfoQuerier = new MRNInformationQuerier();
-		locatorUpdater = new LocatorUpdater(this.SESSION_ID);
-		messageOutput = new MIH_MessageOutputChannel(this.SESSION_ID);
+		locatorUpdater = new LocatorUpdater(this.sessionId);
+		messageOutput = new MIH_MessageOutputChannel(this.sessionId);
 		mmsLog = MMSLog.getInstance();
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
@@ -109,7 +109,7 @@ public class MNSInteractionHandler {
 	@Deprecated
 	public String updateClientInfo(String srcMRN, String srcIP){
 		String msg = locatorUpdater.buildUpdate(srcMRN, srcIP);
-		mmsLog.debug(logger, this.SESSION_ID, "Update client information.");
+		mmsLog.debug(logger, this.sessionId, "Update client information.");
 		return messageOutput.sendToMNS(msg);
 	}
 

@@ -70,14 +70,30 @@ Rev. history : 2019-07-10
 Version : 0.9.3
 	Updated resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Introduced MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Updated MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+ Rev. history : 2019-07-16
+ Version : 0.9.4
+ 	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
+ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
+import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.MessageParser;
-
+import kr.ac.kaist.message_relaying.MessageTypeDecider;
 import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.message_relaying.polling_auth.ClientVerifier;
 import kr.ac.kaist.mms_server.ErrorCode;
@@ -86,6 +102,7 @@ import kr.ac.kaist.mms_server.MMSLog;
 import kr.ac.kaist.mms_server.MMSLogForDebug;
 import kr.ac.kaist.mns_interaction.MNSInteractionHandler;
 
+import java.awt.TrayIcon.MessageType;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -97,7 +114,7 @@ import org.slf4j.LoggerFactory;
 public class SeamlessRoamingHandler {
 
 	private static final Logger logger = LoggerFactory.getLogger(SeamlessRoamingHandler.class);
-	private String SESSION_ID = "";
+	private String sessionId = "";
 
 	private PollingMessageHandler pmh = null;
 	private SCMessageHandler scmh = null;
@@ -111,7 +128,7 @@ public class SeamlessRoamingHandler {
 	
 
 	public SeamlessRoamingHandler(String sessionId) {
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 
 		initializeModule();
 		initializeSubModule();
@@ -119,46 +136,46 @@ public class SeamlessRoamingHandler {
 	
 	
 	private void initializeModule() {
-		mih = new MNSInteractionHandler(this.SESSION_ID);
-		cltVerifier = new ClientVerifier(this.SESSION_ID);
+		mih = new MNSInteractionHandler(this.sessionId);
+		cltVerifier = new ClientVerifier(this.sessionId);
 
 	}
 
 	private void initializeSubModule() {
-		pmh = new PollingMessageHandler(this.SESSION_ID);
-		scmh = new SCMessageHandler(this.SESSION_ID);
+		pmh = new PollingMessageHandler(this.sessionId);
+		scmh = new SCMessageHandler(this.sessionId);
 		mmsLog = MMSLog.getInstance();
 		mmsLogForDebug = MMSLogForDebug.getInstance();
 	}
 
-	public byte[] initializeAndGetError (MessageParser parser, MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String method) {
+	public byte[] initializeAndGetError (MRH_MessageInputChannel.ChannelBean bean) {
 		
 		byte[] message = null;
-		String srcMRN = parser.getSrcMRN();
-		String dstMRN = parser.getDstMRN();
-		String srcIP = parser.getSrcIP();
+		String srcMRN = bean.getParser().getSrcMRN();
+		String dstMRN = bean.getParser().getDstMRN();
+		String srcIP = bean.getParser().getSrcIP();
 		
 		boolean isClientVerified = false;
 		
-		if (parser.isJSONOfPollingMsg() == false){
+		if (bean.getParser().isJSONOfPollingMsg() == false){
 			message = ErrorCode.JSON_FORMAT_ERROR.getJSONFormattedUTF8Bytes();
 			return message;
 		}
 		
 
-		if(parser.getSvcMRN() == null) {
+		if(bean.getParser().getSvcMRN() == null) {
 			message = ErrorCode.NULL_SVC_MRN.getJSONFormattedUTF8Bytes();
 			return message;
 		}
 		
-		mmsLog.debug(logger, this.SESSION_ID, "This is a polling request and the service MRN is " + parser.getSvcMRN());
+		mmsLog.debug(logger, this.sessionId, "This is a polling request and the service MRN is " + bean.getParser().getSvcMRN());
 
 		//TODO: THIS VERIFICATION FUNCION SHOULD BE NECESSERY.
-		if (parser.getHexSignedData() != null) { //In this version 0.8.0, polling client verification is optional. 
+		if (bean.getParser().getHexSignedData() != null) { //In this version 0.8.0, polling client verification is optional. 
 			
-			mmsLog.debug(logger, this.SESSION_ID, " Client verification using MRN="+srcMRN+" and signed data.");
+			mmsLog.debug(logger, this.sessionId, " Client verification using MRN="+srcMRN+" and signed data.");
 
-			isClientVerified = cltVerifier.verifyClient(srcMRN, parser.getHexSignedData());
+			isClientVerified = cltVerifier.verifyClient(srcMRN, bean.getParser().getHexSignedData());
 			
 //				if (cltVerifier instanceof ClientVerifierTest) {
 //					byte[] verificationTime = ((ClientVerifierTest) cltVerifier).verificationTimeJSONString();
@@ -167,11 +184,11 @@ public class SeamlessRoamingHandler {
 			
 			if (isClientVerified) {
 				//Success verifying the client.
-				mmsLog.debug(logger, this.SESSION_ID, "Client verification is succeeded.");
+				mmsLog.debug(logger, this.sessionId, "Client verification is succeeded.");
 
 			} else {
 				//Fail to verify the client.
-				mmsLog.debug(logger, this.SESSION_ID, ErrorCode.AUTHENTICATE_FAIL.toString());
+				mmsLog.debug(logger, this.sessionId, ErrorCode.AUTHENTICATE_FAIL.toString());
 				
 				if (cltVerifier.isMatching() == false) {
 					// message = ErrorCode.AUTHENTICATION_FAIL_NOTMATCHING.getJSONFormattedUTF8Bytes();
@@ -186,42 +203,42 @@ public class SeamlessRoamingHandler {
 			}
 		}
 		else {
-			mmsLog.debug(logger, this.SESSION_ID, ErrorCode.NULL_CERTIFICATE.toString());
+			mmsLog.debug(logger, this.sessionId, ErrorCode.NULL_CERTIFICATE.toString());
 			
 			message = ErrorCode.NULL_CERTIFICATE.getJSONFormattedUTF8Bytes();		
 //				String msg = "The certificate is not inlcuded.";
 //				try {
 //					msg = "[\""+URLEncoder.encode(msg,"UTF-8")+"\"]";
 //				} catch (UnsupportedEncodingException e) {
-//					logger.warn("SessionID="+SESSION_ID+" "+e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".");
+//					logger.warn("SessionID="+sessionId+" "+e.getClass().getName()+" "+e.getMessage()+" "+e.getStackTrace()[0]+".");
 //					for (int i = 1 ; i < e.getStackTrace().length && i < 4 ; i++) {
-//						logger.warn("SessionID="+SESSION_ID+" "+e.getStackTrace()[i]+".");
+//						logger.warn("SessionID="+sessionId+" "+e.getStackTrace()[i]+".");
 //					}
 //				}
 			return message;
 		}
 
-		String svcMRN = parser.getSvcMRN();
+		String svcMRN = bean.getParser().getSvcMRN();
 	
 		try {
-			mmsLogForDebug.addSessionId(svcMRN, this.SESSION_ID);
+			mmsLogForDebug.addSessionId(svcMRN, this.sessionId);
 		}
 		catch (NullPointerException e){
-			mmsLog.info(logger, this.SESSION_ID, "Detected MMSLogForDebug problem with MRN="+svcMRN+".");
+			mmsLog.info(logger, this.sessionId, "Detected MMSLogForDebug problem with MRN="+svcMRN+".");
 			mmsLogForDebug.removeMrn(svcMRN);
 			mmsLogForDebug.addMrn(svcMRN);
 			
 		}
 		finally {
-			mmsLogForDebug.addSessionId(svcMRN, this.SESSION_ID);
+			mmsLogForDebug.addSessionId(svcMRN, this.sessionId);
 		}
 		
-		if(mmsLogForDebug.isItsLogListEmtpy(this.SESSION_ID)) {
-			mmsLog.debug(logger, this.SESSION_ID, "In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
+		if(mmsLogForDebug.isItsLogListEmtpy(this.sessionId)) {
+			mmsLog.debug(logger, this.sessionId, "In header, srcMRN="+srcMRN+", dstMRN="+dstMRN+".");
 		}
 		
 
-		message = processPollingMessage(outputChannel, ctx, req, srcMRN, srcIP, method, svcMRN);
+		message = processPollingMessage(bean);
 
 		
 		return message;
@@ -230,38 +247,38 @@ public class SeamlessRoamingHandler {
 	
 	// TODO: Youngjin Kim must inspect this following code.
 	// Poll SC message in queue.
-	public byte[] processPollingMessage(MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String srcMRN,
-			String srcIP, String pollingMethod, String svcMRN) {
+	public byte[] processPollingMessage(MRH_MessageInputChannel.ChannelBean bean) {
 
 		byte[] message = null;
-		if (pollingMethod.equals("normal"))	{
-			SessionManager.putSessionInfo(SESSION_ID, "p");
+		if (bean.getType() == MessageTypeDecider.msgType.POLLING)	{
+			bean.retain();
+			SessionManager.putSessionInfo(sessionId, "p");
 			SessionManager.incPollingSessionCount();
-			pmh.dequeueSCMessage(outputChannel, ctx, req, srcMRN, svcMRN, pollingMethod);
+			pmh.dequeueSCMessage(bean);
 		}
-		else if (pollingMethod.equals("long")) {
-			SessionManager.putSessionInfo(SESSION_ID, "lp");
+		else if (bean.getType() == MessageTypeDecider.msgType.LONG_POLLING) {
+			SessionManager.putSessionInfo(sessionId, "lp");
 			SessionManager.incPollingSessionCount();
 			
 			// Youngjin code
 			// Duplicated polling request is not allowed.
-			String DUPLICATE_ID = srcMRN + svcMRN;
-			retainDuplicateInfo(DUPLICATE_ID);
+			String duplicateId = bean.getParser().getSrcMRN() + bean.getParser().getSvcMRN();
+			retainDuplicateInfo(duplicateId);
 			
-			if (getDuplicateInfoCnt(DUPLICATE_ID) > 1) {
+			if (getDuplicateInfoCnt(duplicateId) > 1) {
 				
 //					System.out.println("duplicate long polling request");
 				
 				// TODO: To define error message.
 				message = ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes();
-				mmsLog.debug(logger, SESSION_ID, ErrorCode.DUPLICATED_POLLING.toString());
-				if (req != null && req.refCnt()>0) {
-					req.release();
-				}
+				mmsLog.debug(logger, sessionId, ErrorCode.DUPLICATED_POLLING.toString());
+
+				releaseDuplicateInfo(duplicateId);
 				return message;
 				
 			} else {
-				pmh.dequeueSCMessage(outputChannel, ctx, req, srcMRN, svcMRN, pollingMethod);
+				bean.retain();
+				pmh.dequeueSCMessage(bean);
 			}
 		}
 		
@@ -274,8 +291,8 @@ public class SeamlessRoamingHandler {
 	}
 
 //	save SC message into queue
-	public void putSCMessage(String srcMRN, String dstMRN, String message) {
-		scmh.enqueueSCMessage(srcMRN, dstMRN, message);
+	public byte[] putSCMessage(MRH_MessageInputChannel.ChannelBean bean) {
+		return scmh.enqueueSCMessage(bean);
 	}
 
 	
@@ -285,28 +302,32 @@ public class SeamlessRoamingHandler {
 		}
 	}
 	
-	public static Integer getDuplicateInfoCnt(String duplicate_id) {
+	public static Integer getDuplicateInfoCnt(String duplicateId) {
 		synchronized(duplicateInfo) {
-			return duplicateInfo.get(duplicate_id);
+			return duplicateInfo.get(duplicateId);
 		}
 	}
 	
-	public static void retainDuplicateInfo(String duplicate_id) {
+	public static void retainDuplicateInfo(String duplicateId) {
 		synchronized(duplicateInfo) {
-			Integer refCnt = duplicateInfo.get(duplicate_id);
-			duplicateInfo.put(duplicate_id, refCnt == null? new Integer(1) : (Integer) (refCnt.intValue() + 1));
+
+			//System.out.println("Retain Dup");
+			Integer refCnt = duplicateInfo.get(duplicateId);
+			duplicateInfo.put(duplicateId, refCnt == null? new Integer(1) : (Integer) (refCnt.intValue() + 1));
 		}
 	}
 	
-	public static void releaseDuplicateInfo(String duplicate_id) {
+	public static void releaseDuplicateInfo(String duplicateId) {
 		synchronized(duplicateInfo) {
-			Integer refCnt = duplicateInfo.get(duplicate_id);
+
+			//System.out.println("Release Dup");
+			Integer refCnt = duplicateInfo.get(duplicateId);
 			if (refCnt != null) {
 				if (refCnt.intValue() == 1) {
-					duplicateInfo.remove(duplicate_id);
+					duplicateInfo.remove(duplicateId);
 				}
 				else {
-					duplicateInfo.put(duplicate_id, (Integer) (refCnt.intValue() - 1));
+					duplicateInfo.put(duplicateId, (Integer) (refCnt.intValue() - 1));
 				}
 			}
 		}

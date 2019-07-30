@@ -50,7 +50,7 @@ Version : 0.6.0
 	Added adding mrn entry case.
 	Removed empty queue logs case.
 	Added enum msgType and removed public integers.
-	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+	Replaced from random int sessionId to String sessionId as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-29
@@ -128,10 +128,10 @@ import kr.ac.kaist.message_casting.GeolocationPolygonInfo;
 import kr.ac.kaist.message_casting.MessageCastingHandler;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 
-class MessageTypeDecider {
+public class MessageTypeDecider {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageTypeDecider.class);
-	private String SESSION_ID = "";
+	private String sessionId = "";
 	
 	
 	public static enum msgType {
@@ -168,7 +168,7 @@ class MessageTypeDecider {
 
 	
 	MessageTypeDecider(String sessionId) {
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 	}
 	
 	msgType decideType(MessageParser parser, MessageCastingHandler mch) throws ParseException{
@@ -304,12 +304,12 @@ class MessageTypeDecider {
 	        	if (dstInfo.equals("No")) {
 	        		return msgType.UNKNOWN_MRN;
 	        	}  
-	        	//TODO: This function must be defined.
+	        	/*//TODO: This function must be defined.
 	        	else if (dstInfo.regionMatches(0, "MULTIPLE_MRN,", 0, 9)){
 	        		SessionManager.incSessionCount();
 	        		parser.parseMultiDstInfo(dstInfo);
 	        		return msgType.RELAYING_TO_MULTIPLE_SC;
-	        	}
+	        	}*/
 	
 	        	parser.parseDstInfo(dstInfo);
 	        	String model = parser.getDstModel();

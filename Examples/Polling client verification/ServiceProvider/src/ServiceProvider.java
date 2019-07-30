@@ -18,7 +18,7 @@ Creation Date : 2018-10-05
 
 public class ServiceProvider {
 	public static void main(String args[]) throws Exception{
-		String myMRN = "urn:mrn:mcp:service:instance:sp-uni";
+		String myMRN = "urn:mrn:smart-navi:device:service-provider";
 
 //		MMSConfiguration.MMS_URL="mms-kaist.com:8088";
 		MMSConfiguration.MMS_URL="127.0.0.1:8088";
@@ -37,8 +37,8 @@ public class ServiceProvider {
 		for (int i = 0; i < 1;i++){
 			String dstMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 			String message = "¾È³ç hi \"hello\" " + i;
-			sender.sendPostMsg(dstMRN, message);
-			Thread.sleep(100);
+			sender.sendPostMsg(dstMRN, message, 3000);
+			Thread.sleep(1000);
 		}
 	}
 }

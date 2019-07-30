@@ -21,26 +21,28 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2017-09-26
 Version : 0.6.0
-	Replaced from random int SESSION_ID to String SESSION_ID as connection context channel id.
+	Replaced from random int sessionId to String sessionId as connection context channel id.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import kr.ac.kaist.message_queue.MessageQueueManager;
+import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class SCMessageHandler {
 
 	private static final Logger logger = LoggerFactory.getLogger(SCMessageHandler.class);
-	private String SESSION_ID = "";
+	private String sessionId = "";
 	
 	SCMessageHandler (String sessionId) {
-		this.SESSION_ID = sessionId;
+		this.sessionId = sessionId;
 	}
 	
-	void enqueueSCMessage(String srcMRN, String dstMRN, String message){
-		MessageQueueManager mqm = new MessageQueueManager(this.SESSION_ID);
-		mqm.enqueueMessage(srcMRN, dstMRN, message);
+	byte[] enqueueSCMessage(MRH_MessageInputChannel.ChannelBean bean){
+		MessageQueueManager mqm = new MessageQueueManager(this.sessionId);
+		return mqm.enqueueMessage(bean);
 	}
 }

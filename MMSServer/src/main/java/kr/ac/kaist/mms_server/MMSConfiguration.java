@@ -736,7 +736,7 @@ public class MMSConfiguration {
 			}
 			
 			if (RABBIT_MQ_CONN_POOL == 0) {
-				RABBIT_MQ_CONN_POOL = 1000; //Default is 1000.
+				RABBIT_MQ_CONN_POOL = 250; //Default is 250.
 			}
 			
 			if (MMS_MRN == null) {

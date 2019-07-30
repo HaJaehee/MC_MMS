@@ -30,7 +30,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 /**
  * It is an object that contains values for setting MMSClientHandler and SecureMMSClientHandler.
- * @version 0.9.3
+ * @version 0.9.4
  * @see MMSClientHandler
  * @see SecureMMSClientHandler
  */
@@ -38,6 +38,7 @@ public class MMSConfiguration {
 	private String TAG = "[MMSConfiguration] ";
 	public static String MMS_HOST = "127.0.0.1";
 	public static int MMS_PORT = 8088; //HTTPS port : 444, HTTP port : 8088
+	public static int MMS_SECURE_PORT = 444; //HTTPS port : 444, HTTP port : 8088
 	public static String MNS_HOST = "127.0.0.1";	
 	public static int MNS_PORT = 8588;
 	public static String MMS_URL = MMS_HOST+":"+MMS_PORT;

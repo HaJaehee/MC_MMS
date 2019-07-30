@@ -49,7 +49,7 @@ public class RestApiClient {
 		});
 		
 		try {
-			myHandler.sendApiReq("api", params);
+			myHandler.sendApiReq("api", params, 10000);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -26,6 +26,21 @@ Rev. history : 2019-07-10
 Version : 0.9.3
 	Added resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Introduced MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-14
+Version : 0.9.4
+	Updated MRH_MessageInputChannel.ChannelBean.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+ Rev. history : 2019-07-16
+ Version : 0.9.4
+ 	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
+ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */
 
@@ -59,7 +74,6 @@ class MessageOrderingHandler {
 	int dstPort = 0;
 	long seqNum = -1;
 	String srcDstPair = null;
-	private String SESSION_ID = "";
 	private Thread sessionBlocker = null;
 	private MMSLog mmsLog = null;
 	private ConnectionThread thread = null;
@@ -72,21 +86,20 @@ class MessageOrderingHandler {
 		this.mmsLog = MMSLog.getInstance();
 	}
 	
-	public byte[] initializeAndGetError (MessageParser parser, String sessionId) {
+	public byte[] initializeAndGetError (MRH_MessageInputChannel.ChannelBean bean) {
 		
 		byte[] message = null;
-		this.srcMRN = parser.getSrcMRN();
-		this.dstMRN = parser.getDstMRN();
-		this.dstIP = parser.getDstIP();
-		this.dstPort = parser.getDstPort();
-		this.httpMethod = parser.getHttpMethod();
-		this.uri = parser.getUri();
-		this.seqNum = parser.getSeqNum();
+		this.srcMRN = bean.getParser().getSrcMRN();
+		this.dstMRN = bean.getParser().getDstMRN();
+		this.dstIP = bean.getParser().getDstIP();
+		this.dstPort = bean.getParser().getDstPort();
+		this.httpMethod = bean.getParser().getHttpMethod();
+		this.uri = bean.getParser().getUri();
+		this.seqNum = bean.getParser().getSeqNum();
 		this.srcDstPair = srcMRN+"::"+dstMRN;
-		this.SESSION_ID = sessionId;
 		this.sessionBlocker = new Thread();
 
-		//System.out.println("SessionID="+this.SESSION_ID+" RELAYING_TO_SERVER_SEQUENTIALLY INIT");
+		//System.out.println("SessionID="+bean.getSessionId()+" RELAYING_TO_SERVER_SEQUENTIALLY INIT");
 		
 		if (SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair) == null ) { //Initialization
 			SessionManager.putItemToMapSrcDstPairAndSessionInfo(srcDstPair);	
@@ -99,7 +112,7 @@ class MessageOrderingHandler {
 		}
 		
 		List <SessionIdAndThr> itemList = SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair);
-		//System.out.println("SessionID="+this.SESSION_ID+" RELAYING_TO_SERVER_SEQUENTIALLY START");
+		//System.out.println("SessionID="+bean.getSessionId()+" RELAYING_TO_SERVER_SEQUENTIALLY START");
 		//printSessionsInSessionMng (srcDstPair);
 		if (seqNum == 0) {
 			
@@ -117,10 +130,10 @@ class MessageOrderingHandler {
 				itemList.clear();
 				
 				SessionManager.resetNumInMapSrcDstPairAndLastSeqNum(srcDstPair);
-				itemList.add(new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
+				itemList.add(new SessionIdAndThr(bean.getSessionId(), this.sessionBlocker, seqNum));
 			}
 			else { //SessionManager.getMapSrcDstPairAndLastSeqNum().get(srcDstPair) == -1
-				itemList.add(0, new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
+				itemList.add(0, new SessionIdAndThr(bean.getSessionId(), this.sessionBlocker, seqNum));
 			}
 
 			//System.out.println("SessionID="+itemList.get(0).getSessionId()+" seqNum="+itemList.get(0).getSeqNum());
@@ -141,61 +154,60 @@ class MessageOrderingHandler {
 						continue;
 					}
 					else if (seqNum < itemList.get(index).getSeqNum()) {
-						itemList.add(index, new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
+						itemList.add(index, new SessionIdAndThr(bean.getSessionId(), this.sessionBlocker, seqNum));
 						break;
 					}
 					else { //seqNum == itemList.get(index).getSeqNum()
 						//System.out.println("index="+index+", seqNum="+seqNum+", seqNum in List="+itemList.get(0).getSeqNum());
 						//System.out.println("Sequence number of message is duplicated.");
 						message = ErrorCode.SEQUENCE_NUMBER_IS_DUPLICATED.getUTF8Bytes();
-						mmsLog.info(logger, this.SESSION_ID, ErrorCode.SEQUENCE_NUMBER_IS_DUPLICATED.toString());
+						mmsLog.info(logger, bean.getSessionId(), ErrorCode.SEQUENCE_NUMBER_IS_DUPLICATED.toString());
 						return message;
 					}
 				}
 				if (index == itemListSize) { //This condition contains conditions "index == 0" and "itemListSize == 0".
-					itemList.add(index, new SessionIdAndThr(this.SESSION_ID, this.sessionBlocker, seqNum));
+					itemList.add(index, new SessionIdAndThr(bean.getSessionId(), this.sessionBlocker, seqNum));
 				}
 			}
 			else { //Drop message.
 				message = ErrorCode.SEQUENCE_NUMBER_IS_OUT_OF_ORDER.getUTF8Bytes();
-				mmsLog.info(logger, this.SESSION_ID, ErrorCode.SEQUENCE_NUMBER_IS_OUT_OF_ORDER.toString());
+				mmsLog.info(logger, bean.getSessionId(), ErrorCode.SEQUENCE_NUMBER_IS_OUT_OF_ORDER.toString());
 				return message;
 			}
 			//System.out.println("index="+index+", seqNum="+seqNum+", seqNum in List="+itemList.get(0).getSeqNum());
 		}
-		//System.out.println("SessionID="+this.SESSION_ID+" RELAYING_TO_SERVER_SEQUENTIALLY END");
+		//System.out.println("SessionID="+bean.getSessionId()+" RELAYING_TO_SERVER_SEQUENTIALLY END");
 		//printSessionsInSessionMng (srcDstPair);
 		
 		return message;
 	}
 	
 	
-	public byte[] processMessage (MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String protocol, MessageCastingHandler mch, MessageTypeDecider.msgType type) {
+	public byte[] processMessage (MRH_MessageInputChannel.ChannelBean bean, MessageCastingHandler mch) {
 		byte[] message = null;
 		
 		List<SessionIdAndThr> itemList = SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair);
 		boolean escapeLoop = false;
-		while (!escapeLoop) { 
-			if (itemList == null || 
-					itemList.size() == 0 ||
-					itemList.get(0) == null ||
-					itemList.get(0).getSessionBlocker() == null) { //Check null pointer exception.
+		int numCheckingItemList = 0;
+		while (!escapeLoop) {
+			if (numCheckingItemList > 0 && (itemList == null || itemList.size() == 0 || itemList.get(0).getSessionId() == null))  { //Check null pointer exception.
 				// This condition is required for safe coding when using multi-threads.
 				
-				message = ErrorCode.SEQUENTIAL_RELAYING_INITIALIZATION_ERROR.getUTF8Bytes();
-				
-				return message;
+				return ErrorCode.SEQUENTIAL_RELAYING_INITIALIZATION_ERROR.getUTF8Bytes();
 			}
 			try {
 				//System.out.println("RELAYING_TO_SERVER_SEQUENTIALLY getSessionID="+itemList.get(0).getSessionId());
-				if (itemList.size()>0 && itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
+				if (itemList != null && itemList.size()>0 && itemList.get(0).getSessionId().equals(bean.getSessionId())) { //MUST be THIS session.
 					if (SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair) == itemList.get(0).getPreSeqNum() || 
 							itemList.get(0).getWaitingCount() > 0 ||
 							itemList.get(0).isExceptionOccured()) {
 						// If this session is interrupted, process its message.
-						message = processThisThread(itemList, outputChannel, ctx, req, protocol, mch, type);
+						message = processThisThread(itemList, bean, mch);
 						if (message != null) {
-							escapeLoop = true;
+							return message;
+						}
+						else {
+							return null;
 						}
 						
 					}
@@ -210,12 +222,16 @@ class MessageOrderingHandler {
 				else {
 					//System.out.println("Block (by sleep) this relaying process if it's not this session's turn.");
 					sessionBlocker.sleep(MMSConfiguration.getWaitingMessageTimeout()); //Block (by sleep) this relaying process if it's not this session's turn.
+					numCheckingItemList++;
 				}
 			} 
 			catch (InterruptedException e) {
-				message = processThisThread(itemList, outputChannel, ctx, req, protocol, mch, type);
+				message = processThisThread(itemList, bean, mch);
 				if (message != null) {
-					escapeLoop = true;
+					return message;
+				}
+				else {
+					return null;
 				}
 			}
 		}
@@ -224,13 +240,13 @@ class MessageOrderingHandler {
 
 		// TODO Is there any risk for shutting down the process before replying to sender?
 		// HOTFIX: Resolved a bug related to message ordering.
-		if (itemList.size()>0 && itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
+		if (itemList.size()>0 && itemList.get(0).getSessionId().equals(bean.getSessionId())) { //MUST be THIS session.
 			if ((itemList.get(0).getPreSeqNum() == SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair) && 
 					!itemList.get(0).isExceptionOccured()) || itemList.get(0).getWaitingCount() > 0){
 				
-				message = rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcDstPair);
+				message = rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcDstPair, bean.getSessionId());
 				if (message != null) {
-					mmsLog.info(logger, this.SESSION_ID, new String(message));
+					mmsLog.info(logger, bean.getSessionId(), new String(message));
 					return message;
 				}
 			}
@@ -241,29 +257,29 @@ class MessageOrderingHandler {
 		return message;
 	}
 	
-	private byte[] processThisThread (List<SessionIdAndThr> itemList, MRH_MessageOutputChannel outputChannel, ChannelHandlerContext ctx, FullHttpRequest req, String protocol, MessageCastingHandler mch, MessageTypeDecider.msgType type) {
+	private byte[] processThisThread (List<SessionIdAndThr> itemList, MRH_MessageInputChannel.ChannelBean bean, MessageCastingHandler mch) {
 		byte[] message = null;
-		//System.out.println("Interrupted! This session ID="+SESSION_ID+", Session ID in list="+itemList.get(0).getSessionId()+", isExceptionOccured="+itemList.get(0).isExceptionOccured()+", seq num="+seqNum+", last seq num="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
-		if (itemList.size()>0 && itemList.get(0).getSessionId().equals(this.SESSION_ID)) { //MUST be THIS session.
+		//System.out.println("Interrupted! This session ID="+sessionId+", Session ID in list="+itemList.get(0).getSessionId()+", isExceptionOccured="+itemList.get(0).isExceptionOccured()+", seq num="+seqNum+", last seq num="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
+		if (itemList.size()>0 && itemList.get(0).getSessionId().equals(bean.getSessionId())) { //MUST be THIS session.
 			if ((itemList.get(0).getPreSeqNum() == SessionManager.getNumFromMapSrcDstPairAndLastSeqNum(srcDstPair) && 
 					!itemList.get(0).isExceptionOccured()) || itemList.get(0).getWaitingCount() > 0){
-				message = setThisSessionWaitingRes(srcDstPair);
+				message = setThisSessionWaitingRes(srcDstPair, bean.getSessionId());
 				if (message != null) {
-					mmsLog.info(logger, this.SESSION_ID, new String(message));
+					mmsLog.info(logger, bean.getSessionId(), new String(message));
 					itemList.remove(0);
 					return message;
 				}
-				if (type == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
-					thread = mch.asynchronizedUnicast(outputChannel, ctx, req, dstIP, dstPort, protocol, httpMethod, srcMRN, dstMRN); // Execute this relaying process
+				if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
+					thread = mch.asynchronizedUnicast(bean); // Execute this relaying process
+					bean.retain();
 				}
-				else if (type == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
-					SeamlessRoamingHandler srh = new SeamlessRoamingHandler(this.SESSION_ID);
-					srh.putSCMessage(srcMRN, dstMRN, req.content().toString(Charset.forName("UTF-8")).trim());
-		    		message = "OK".getBytes(Charset.forName("UTF-8"));
+				else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
+					SeamlessRoamingHandler srh = new SeamlessRoamingHandler(bean.getSessionId());
+					return srh.putSCMessage(bean);
 				}
-				message = rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcDstPair);
+				message = rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcDstPair, bean.getSessionId());
 				if (message != null) {
-					mmsLog.info(logger, this.SESSION_ID, new String(message));
+					mmsLog.info(logger, bean.getSessionId(), new String(message));
 					return message;
 				}
 				return message;
@@ -272,7 +288,7 @@ class MessageOrderingHandler {
 				message = ErrorCode.SEQUENTIAL_RELAYING_EXCEPTION_ERROR.getUTF8Bytes();
 				
 				printSessionsInSessionMng(srcDstPair);
-				mmsLog.info(logger, this.SESSION_ID, ErrorCode.SEQUENTIAL_RELAYING_EXCEPTION_ERROR.toString());
+				mmsLog.info(logger, bean.getSessionId(), ErrorCode.SEQUENTIAL_RELAYING_EXCEPTION_ERROR.toString());
 
 				itemList.remove(0);
 				return message;
@@ -294,7 +310,7 @@ class MessageOrderingHandler {
 		}*/
 	}
 	
-	private byte[] rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked (String srcDstPair){
+	private byte[] rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked (String srcDstPair, String sessionId){
 		
 		byte[] message = null;
 		List <SessionIdAndThr> listItem = SessionManager.getItemFromMapSrcDstPairAndSessionInfo(srcDstPair);
@@ -308,7 +324,7 @@ class MessageOrderingHandler {
 		//System.out.println("Seq number="+listItem.get(0).getSeqNum());
 		//System.out.println("Last seq number="+SessionManager.mapSrcDstPairAndLastSeqNum.get(srcDstPair));
 		//TODO MUST be implemented. MUST awake waitingDiscardingSessionThr if it is not null.
-		if (listItem.size() > 0 && listItem.get(0).getSessionId().equals(this.SESSION_ID)) { 
+		if (listItem.size() > 0 && listItem.get(0).getSessionId().equals(sessionId)) { 
 			//TODO Next message having successive seqNum will be relayed.
 			boolean checkNextSeq = false; 
 			if (listItem != null && 
@@ -335,7 +351,7 @@ class MessageOrderingHandler {
 		return message;
 	}
 	
-	private byte[] setThisSessionWaitingRes (String srcDstPair) {
+	private byte[] setThisSessionWaitingRes (String srcDstPair, String sessionId) {
 		
 		byte[] message = null;
 		
@@ -348,7 +364,7 @@ class MessageOrderingHandler {
 			return ErrorCode.SEQUENTIAL_RELAYING_NULL_POINTER_EXCEPTION.getUTF8Bytes();
 		}
 		
-		if (listItem.size()>0 && listItem.get(0).getSessionId().equals(this.SESSION_ID)) { //This session is waiting a respond.
+		if (listItem.size()>0 && listItem.get(0).getSessionId().equals(sessionId)) { //This session is waiting a respond.
 			listItem.get(0).setWaitingRes(true);
 		}
 		else {

@@ -118,7 +118,7 @@ public class UserAuthenticationClient {
 	
 	public void sendPollingMessage(String data) {
 		try {
-			handler.sendPostMsg(dstMRN, "polling", data);
+			handler.sendPostMsg(dstMRN, "polling", data, 10000);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -127,7 +127,7 @@ public class UserAuthenticationClient {
 	
 	public void sendPollingMessage(String dstMRN, String data) {
 		try {
-			handler.sendPostMsg(dstMRN, "polling", data);
+			handler.sendPostMsg(dstMRN, "polling", data, 10000);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -140,7 +140,7 @@ public class UserAuthenticationClient {
 		if (callback != null) {
 			int retLength = -1; 
 			try {
-				handler.startPolling(dstMRN, svcMRN, 1000, callback);
+				handler.startPolling(dstMRN, svcMRN, 1000, 10000, callback);
 	
 				while(length==-1){ //busy waiting the content length		
 					try {

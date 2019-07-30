@@ -209,9 +209,9 @@ public class SessionManager {
 						long curTimeMillis = System.currentTimeMillis();
 						
 						while ((line=br.readLine()) != null) {
-							if (lineCount > 0) {
+							if (lineCount > 0) { // More than 24 hours,
 								lineCount--;
-								continue;
+								continue; // ignore.
 							}
 							
 							
@@ -345,6 +345,9 @@ public class SessionManager {
 						
 						try {
 							synchronized (f) {
+								if (!f.exists()) {
+									f.createNewFile();
+								}
 								if (f.exists()) {
 									fw = new FileWriter(f, true);
 									bw = new BufferedWriter(fw);

@@ -35,6 +35,11 @@ Rev. history : 2019-07-11
 Version : 0.9.3
 	Updated exception throw-catch phrases.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-07-21
+Version : 0.9.4
+	Moved write stream close() to the line before input stream close().
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -61,6 +66,9 @@ import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
@@ -84,6 +92,8 @@ class SecureMMSRcvHandler {
 
 	private String TAG = "[SecureMMSRcvHandler] ";
 	private static final String USER_AGENT = MMSConfiguration.USER_AGENT;
+	private static final int NO_OF_THREADPOOL = 1;
+	private ExecutorService serverExecutor;
 	private String clientMRN = null;
 	
 	SecureMMSRcvHandler(int port, String jksDirectory, String jksPassword) throws IOException{
@@ -95,8 +105,9 @@ class SecureMMSRcvHandler {
 			throw new NullPointerException();
 		}
         if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \"/\" is created");}
-        
-        server.setExecutor(null); // creates a default executor
+
+        serverExecutor = Executors.newFixedThreadPool(NO_OF_THREADPOOL);
+        server.setExecutor(serverExecutor); 
         //HttpsServer is in java library. Cannot fix FORWARD_NULL
         server.start();
         //HttpsServer is in java library. Cannot fix FORWARD_NULL
@@ -111,7 +122,8 @@ class SecureMMSRcvHandler {
 		
         server.createContext(context, hrh);
         if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \""+context+"\" is created");}
-        server.setExecutor(null); // creates a default executor
+        serverExecutor = Executors.newFixedThreadPool(NO_OF_THREADPOOL);
+        server.setExecutor(serverExecutor); 
         server.start();
 	}
 	
@@ -131,7 +143,8 @@ class SecureMMSRcvHandler {
         server.createContext(fileDirectory+fileName, frh);
         if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is created");}
         //OONI
-        server.setExecutor(null); // creates a default executor
+        serverExecutor = Executors.newFixedThreadPool(NO_OF_THREADPOOL);
+        server.setExecutor(serverExecutor); 
         server.start();
 	}
 	
@@ -282,6 +295,15 @@ class SecureMMSRcvHandler {
         server.createContext(fileDirectory+fileName, frh);
         if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \""+fileDirectory+fileName+"\" is added");}
 	}
+
+	public void stopRcv(int arg0) {
+		if (server == null) {
+			System.out.println(TAG+"Server is not created!");
+			return;
+		}
+		server.stop(0); 
+		serverExecutor.shutdownNow();
+	}
 	
 	class HttpsReqHandler implements HttpHandler {
     	SecureMMSClientHandler.RequestCallback myReqCallback;
@@ -338,6 +360,7 @@ class SecureMMSRcvHandler {
     				new OutputStreamWriter(os,Charset.forName("UTF-8")));
             wr.write(response);
             wr.flush();
+            inB.close();
             wr.close();
             os.close();
         }
