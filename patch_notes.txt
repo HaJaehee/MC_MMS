@@ -1,5 +1,9 @@
 Patch Notes
 ***********
+30-July 2019
+MC_MMS 0.9.4-2 new features/enhancements & bug-fixes:
+1. Fixed several bugs.
+
 16-July 2019
 MC_MMS 0.9.4 new features/enhancements & bug-fixes:
 1. Fixed several bugs.
