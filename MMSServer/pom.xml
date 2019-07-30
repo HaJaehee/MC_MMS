@@ -7,7 +7,7 @@
 
 	<groupId>kr.ac.kaist.MMSServer</groupId>
 
-	<version>0.9.4-SNAPSHOT</version>
+	<version>0.9.5-SNAPSHOT</version>
 	<artifactId>MC_MMS</artifactId>
 	<packaging>jar</packaging>
 	<properties>
