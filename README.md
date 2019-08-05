@@ -52,7 +52,8 @@ sudo apt update
 sudo apt install default-jdk maven rabbitmq-server docker docker-compose
 ```
 
-**QUICK DEPLOY:** run the script [deploy-mms.sh] at the directory [MC_MMS/scripts/].   
+### Quick deploy
+Run the script [deploy-mms.sh] at the directory [MC_MMS/scripts/].   
 Please read it carefully. Port number **3306** will be mapped to mariadb container's port number and port numbers   
 **80 and 443** will be mapped to mms monitoring container's port numbers. If you want to remap port numbers, please   
 modify [docker-compose.yml] before executing this setup script. In addition, existing WordPress files and database   
@@ -68,7 +69,8 @@ It will automatically build and run MMS Server, MMS Monitoring Module and relate
 After running MMS Monitoring Module docker container, re-configure detailed configurations of   
 apache2 in [/etc/apache2/] in the docker container.  
 
-**ONLY BUILD AND START MMS SERVER:** run the scripts at the directory [MC_MMS/MMSServer/Linux/].  
+### Only bulid and start MMS Server
+Run the scripts at the directory [MC_MMS/MMSServer/Linux/].  
 Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration] directory.  
 After building MMS Server, MMS-configuration directory is copied into [MC_MMS/MMSServer/target/] directory.  
 **Default configuration** is loaded if MMS Server cannot find **[MMS.conf]** in [MC_MMS/MMSServer/target/MMS-configuration]   
