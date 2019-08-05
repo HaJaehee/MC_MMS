@@ -57,6 +57,7 @@ modify 'docker-compose.yml' before executing this setup script. In addition, exi
 will be overwritten after this setup. If you want not to overwrite WordPress files and database, just execute <br/>
 docker-compose with docker-compose.yml.
 Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration] directory.<br/>
+Do not use loopback, localhost, and 127.0.0.1 as a domain name.<br/>
 <code>cd MC_MMS/scripts </code><br/>
 <code>sudo sh deploy-mms.sh [domain name] [docker bridge IP address connecting database]</code><br/>
 It will automatically build and run MMS Server, MMS Monitoring Module and related services.<br/>
