@@ -3,7 +3,7 @@
 
 help()
 {
-	echo "Usage: $0 [domain name to run] [docker bridge connecting database]"
+	echo "Usage: $0 [domain name to run] [docker bridge IP address connecting database]"
 	echo "Do not use loopback, localhost, and 127.0.0.1 as a domain name."
 }
 

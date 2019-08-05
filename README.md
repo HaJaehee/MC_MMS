@@ -49,16 +49,30 @@ When using Debian/Ubuntu Linux, follow instructions below and install dependenci
 script [MC_MMS/scripts/deploy-mms.sh]:<br/>
 <code>sudo apt update</code><br/>
 <code>sudo apt install default-jdk maven rabbitmq-server docker docker-compose</code> <br/>
-Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration] directory.<br/>
 
 <b>QUICK DEPLOY:</b> run the script [deploy-mms.sh] at the directory [MC_MMS/scripts/]. <br/>
+Please read it carefully. Port number <b>3306</b> will be mapped to mariadb container's port number and port numbers <br/>
+<b>80 and 443</b> will be mapped to mms monitoring container's port numbers. If you want to remap port numbers, please <br/>
+modify 'docker-compose.yml' before executing this setup script. In addition, existing WordPress files and database <br/>
+will be overwritten after this setup. If you want not to overwrite WordPress files and database, just execute <br/>
+docker-compose with docker-compose.yml.
+Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration] directory.<br/>
 <code>cd MC_MMS/scripts </code><br/>
-<code>sudo sh deploy-mms.sh [domain name]</code><br/>
+<code>sudo sh deploy-mms.sh [domain name] [docker bridge IP address connecting database]</code><br/>
 It will automatically build and run MMS Server, MMS Monitoring Module and related services.<br/>
 After running MMS Monitoring Module docker container, re-configure detailed configurations of <br/>
 apache2 in [/etc/apache2/] in the docker container.<br/>
 
 <b>ONLY BUILD AND START MMS SERVER:</b> run the scripts at the directory [MC_MMS/MMSServer/Linux/].<br/>
+Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration] directory.<br/>
+After building MMS Server, MMS-configuration directory is copied in [MC_MMS/MMSServer/target/] directory.<br/>
+If you need learn MMS configuration options when you run MMS Server, please check [MC_MMS/MMSServer/README.md]. <br/>
+<b>Default configuration</b> is loaded if MMS Server cannot find <b>MMS.conf</b> in [MC_MMS/MMSServer/target/MMS-configuration] <br/>
+directory and user does not pass options to MMS Server.
+<b>MMS.conf</b> is loaded if MMS Server find <b>MMS.conf</b> in [MC_MMS/MMSServer/target/MMS-configuration] directory. <br/>
+Options in <b>MMS.conf</b> overwrite loaded options of <b>default configuration</b>.
+<b>MMS configuration options<b/> is loaded if user passes options to MMS Server.<br/>
+Options in <b>MMS configuration options<b/> overwrite loaded options of <b>MMS.conf</b> and <b>default configuration</b>. <br/>
 <code>cd MC_MMS/MMSServer/Linux </code><br/>
 <code>sudo sh build_mms.sh </code><br/>
 <code>sudo sh start_mms.sh </code><br/>
