@@ -79,7 +79,7 @@ directory and a user does not pass options to MMS Server when the user runs MMS 
 Loaded options of **default configuration** are overwritten by options of **[MMS.conf]**.  
 **MMS configuration options** are loaded if a user passes options to MMS Server when the user runs MMS Server.  
 Loaded options of **[MMS.conf]** and **default configuration** are overwritten by options of **MMS configuration options**.  
-```Priority of options: Default configuration < [MMS.conf] < MMS configuration options ```  
+```Priority of options: MMS configuration options > [MMS.conf] > default configuration```  
 You can pass options to MMS Server by adding options in [start_mms.sh]. If you need learn **MMS configuration options**,  
 please check [MC_MMS/MMSServer/README.md].   
 ```
