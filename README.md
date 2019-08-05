@@ -55,9 +55,9 @@ sudo apt install default-jdk maven rabbitmq-server docker docker-compose
 **QUICK DEPLOY:** run the script [deploy-mms.sh] at the directory [MC_MMS/scripts/].   
 Please read it carefully. Port number **3306** will be mapped to mariadb container's port number and port numbers   
 **80 and 443** will be mapped to mms monitoring container's port numbers. If you want to remap port numbers, please   
-modify 'docker-compose.yml' before executing this setup script. In addition, existing WordPress files and database   
+modify [docker-compose.yml] before executing this setup script. In addition, existing WordPress files and database   
 will be overwritten after this setup. If you want not to overwrite WordPress files and database, just execute   
-docker-compose with docker-compose.yml.
+docker-compose with [docker-compose.yml].
 Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration] directory.  
 Do not use loopback, localhost, and 127.0.0.1 as a domain name.  
 ```
@@ -70,13 +70,14 @@ apache2 in [/etc/apache2/] in the docker container.
 
 **ONLY BUILD AND START MMS SERVER:** run the scripts at the directory [MC_MMS/MMSServer/Linux/].  
 Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration] directory.  
-After building MMS Server, MMS-configuration directory is copied in [MC_MMS/MMSServer/target/] directory.  
-**Default configuration** is loaded if MMS Server cannot find **MMS.conf** in [MC_MMS/MMSServer/target/MMS-configuration]   
-directory and a user does not pass options to MMS Server when user runs MMS Server.  
+After building MMS Server, MMS-configuration directory is copied into [MC_MMS/MMSServer/target/] directory.  
+**Default configuration** is loaded if MMS Server cannot find **[MMS.conf]** in [MC_MMS/MMSServer/target/MMS-configuration]   
+directory and a user does not pass options to MMS Server when the user runs MMS Server.  
 **[MMS.conf]** is loaded if MMS Server find **[MMS.conf]** in [MC_MMS/MMSServer/target/MMS-configuration] directory.   
-Options of **[MMS.conf]** overwrite loaded options of **default configuration**.  
+Loaded options of **default configuration** are overwritten by options of **[MMS.conf]**.  
 **MMS configuration options** are loaded if a user passes options to MMS Server when the user runs MMS Server.  
-Options of **MMS configuration options** overwrite loaded options of **[MMS.conf]** and **default configuration**.   
+Loaded options of **[MMS.conf]** and **default configuration** are overwritten by options of **MMS configuration options**.  
+```Priority of options: Default configuration < [MMS.conf] < MMS configuration options ```  
 You can pass options to MMS Server by adding options in [start_mms.sh]. If you need learn **MMS configuration options**,  
 please check [MC_MMS/MMSServer/README.md].   
 ```
