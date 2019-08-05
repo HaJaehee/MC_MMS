@@ -78,7 +78,7 @@ Options in **MMS.conf** overwrite loaded options of **default configuration**.
 **MMS configuration options** is loaded if a user passes options to MMS Server when the user runs MMS Server.  
 Options in **MMS configuration options** overwrite loaded options of **MMS.conf** and **default configuration**.   
 You can pass options to MMS Server by adding options in start_mms.sh.  
-If you need learn MMS configuration options when you run MMS Server, please check [MC_MMS/MMSServer/README.md].   
+If you need learn **MMS configuration options** when you run MMS Server, please check [MC_MMS/MMSServer/README.md].   
 ```
 cd MC_MMS/MMSServer/Linux 
 sudo sh build_mms.sh 
