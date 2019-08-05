@@ -154,6 +154,7 @@ public class MessageTypeDecider {
 			NULL_MRN,
 			INVALID_SRC_MRN,
 			INVALID_DST_MRN,
+			INVALID_HTTP_METHOD,
 			DST_MRN_IS_THIS_MMS_MRN,
 			SRC_MRN_IS_THIS_MMS_MRN,
 			ADD_MRN_BEING_DEBUGGED,
@@ -259,36 +260,43 @@ public class MessageTypeDecider {
 		
 		// When geocasting
 		else if (parser.isGeocastingMsg()) {
-			SessionManager.incSessionCount();
 			
-			if (parser.getGeoCircleInfo() != null) {
-				GeolocationCircleInfo geo = parser.getGeoCircleInfo();
-				String geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geo.getGeoLat(), geo.getGeoLong(), geo.getGeoRadius());
-				parser.parseGeocastInfo(geocastInfo);
+			
+			if (httpMethod == HttpMethod.POST) {
+				SessionManager.incSessionCount();
 				
-				return msgType.GEOCASTING_CIRCLE;
-			}
-			
-			
-			else if (parser.getGeoPolygonInfo() != null) {
-				GeolocationPolygonInfo geo = parser.getGeoPolygonInfo();
-				float[] geoLatList = geo.getGeoLatList();
-				float[] geoLongList = geo.getGeoLongList();
-				String geocastInfo = null;
-				if (geoLatList != null && geoLongList != null) {
-					geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geoLatList, geoLongList);
-					if (geocastInfo != null) {
-						parser.parseGeocastInfo(geocastInfo);
-						return msgType.GEOCASTING_POLYGON;
-					} else {
+				if (parser.getGeoCircleInfo() != null) {
+					GeolocationCircleInfo geo = parser.getGeoCircleInfo();
+					String geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geo.getGeoLat(), geo.getGeoLong(), geo.getGeoRadius());
+					parser.parseGeocastInfo(geocastInfo);
+					
+					return msgType.GEOCASTING_CIRCLE;
+				}
+				
+				
+				else if (parser.getGeoPolygonInfo() != null) {
+					GeolocationPolygonInfo geo = parser.getGeoPolygonInfo();
+					float[] geoLatList = geo.getGeoLatList();
+					float[] geoLongList = geo.getGeoLongList();
+					String geocastInfo = null;
+					if (geoLatList != null && geoLongList != null) {
+						geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geoLatList, geoLongList);
+						if (geocastInfo != null) {
+							parser.parseGeocastInfo(geocastInfo);
+							return msgType.GEOCASTING_POLYGON;
+						} else {
+							//TODO: MUST define specific error code.
+							return msgType.UNKNOWN_MRN;
+						}
+					}
+					else {
 						//TODO: MUST define specific error code.
 						return msgType.UNKNOWN_MRN;
 					}
 				}
-				else {
-					//TODO: MUST define specific error code.
-					return msgType.UNKNOWN_MRN;
-				}
+			}
+			else { //httpMethod != HttpMethod.POST
+				return msgType.INVALID_HTTP_METHOD;
 			}
 		 	return msgType.UNKNOWN_MRN;
 		}
@@ -313,10 +321,11 @@ public class MessageTypeDecider {
 	
 	        	parser.parseDstInfo(dstInfo);
 	        	String model = parser.getDstModel();
-	        	SessionManager.incSessionCount();
+	        	
 				
 				
 	        	if (model.equals("push")) {//model B (destination MSR, MIR, or MSP as servers)
+	        		SessionManager.incSessionCount();
 	        		if (seqNum == -1) {
 	        			return msgType.RELAYING_TO_SERVER;
 	        		}
@@ -325,11 +334,17 @@ public class MessageTypeDecider {
 	        		}
 	        	} 
 	        	else if (model.equals("polling")){//when model A, it puts the message into the queue
-	        		if (seqNum == -1) {
-	        			return msgType.RELAYING_TO_SC;
+	        		if (httpMethod == HttpMethod.POST) {
+	        			SessionManager.incSessionCount();
+		        		if (seqNum == -1) {
+		        			return msgType.RELAYING_TO_SC;
+		        		}
+		        		else {
+		        			return msgType.RELAYING_TO_SC_SEQUENTIALLY;
+		        		}
 	        		}
-	        		else {
-	        			return msgType.RELAYING_TO_SC_SEQUENTIALLY;
+	        		else { //httpMethod != HttpMethod.POST
+	        			return msgType.INVALID_HTTP_METHOD;
 	        		}
 	        	}
     		}

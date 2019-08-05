@@ -60,6 +60,7 @@ public enum ErrorCode {
 	AUTHENTICATE_FAIL("10012", "Authentication is failed."),
 	MESSAGE_PARSING_ERROR("10013", "Message parsing error."),
 	MIR_API_ERROR("10014","MIR API error."),
+	INVALID_HTTP_METHOD("10015","Invalid HTTP method."),
 	
 	// Numbers greater than 10000 and lower than 20000 are internal error codes.
 	// Number 11XXX is related to configuration of MMS.

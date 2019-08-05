@@ -613,6 +613,13 @@ public class MessageRelayingHandler  {
 			message = ErrorCode.UNKNOWN_MRN.getUTF8Bytes();
 			//logger.info("test "+message);
 		} 
+		//This code MUST be 'else if' statement not 'if'. 
+		else if (bean.getType() == MessageTypeDecider.msgType.INVALID_HTTP_METHOD) {
+			isErrorOccured = true;
+			mmsLog.info(logger, bean.getSessionId(), ErrorCode.INVALID_HTTP_METHOD.toString());
+			message = ErrorCode.INVALID_HTTP_METHOD.getUTF8Bytes();
+			//logger.info("test "+message);
+		} 
 
 		if (isErrorOccured || message != null) {
 			try {
