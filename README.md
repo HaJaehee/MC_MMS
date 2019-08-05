@@ -94,12 +94,15 @@ In order to use email service, please reconfigure the WP Mail SMTP Plugin of Wor
 We recommend to use Google SSMTP service.  
 Default admin account of MMS Monitoring Module (WordPress wp-login.php) is Administrator/Administrator.  
 
-**TLS SUPPORT:** check web sites below:</br>
+#### TLS support
+Check web sites below:</br>
 [RabbitMQ TLS Support](https://www.rabbitmq.com/ssl.html)    
 [Docker Tutorial](https://www.tutorialspoint.com/docker/)  
 [Apache Install SSL Certificate](https://www.digicert.com/csr-ssl-installation/apache-openssl.htm)  
 [HTTPS for WordPress](https://make.wordpress.org/support/user-manual/web-publishing/https-for-wordpress/)   
-**MMS SERVER TLS SUPPORT:** check instructions below:  
+
+#### MMS Server TLS support
+Check instructions below:  
 [Import Individual Certificates into your Keystore](https://www.attachmate.com/documentation/gateway-1-1/gateway-admin-guide/data/fxg_keytool_importcert.htm)  
 In order to get Base64 endcoded keystore for SSL enabled MMS Server from the jks, use [MC_MMS/MMSKeystoreCoder]   
 and get Base64 encoded string that is printed out to the console.   
