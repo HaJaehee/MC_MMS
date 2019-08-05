@@ -73,11 +73,11 @@ Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS
 After building MMS Server, MMS-configuration directory is copied in [MC_MMS/MMSServer/target/] directory.  
 **Default configuration** is loaded if MMS Server cannot find **MMS.conf** in [MC_MMS/MMSServer/target/MMS-configuration]   
 directory and a user does not pass options to MMS Server when user runs MMS Server.  
-**MMS.conf** is loaded if MMS Server find **MMS.conf** in [MC_MMS/MMSServer/target/MMS-configuration] directory.   
-Options in **MMS.conf** overwrite loaded options of **default configuration**.  
+**[MMS.conf]** is loaded if MMS Server find **[MMS.conf]** in [MC_MMS/MMSServer/target/MMS-configuration] directory.   
+Options in **[MMS.conf]** overwrite loaded options of **default configuration**.  
 **MMS configuration options** is loaded if a user passes options to MMS Server when the user runs MMS Server.  
-Options in **MMS configuration options** overwrite loaded options of **MMS.conf** and **default configuration**.   
-You can pass options to MMS Server by adding options in start_mms.sh. If you need learn **MMS configuration options**,  
+Options in **MMS configuration options** overwrite loaded options of **[MMS.conf]** and **default configuration**.   
+You can pass options to MMS Server by adding options in [start_mms.sh]. If you need learn **MMS configuration options**,  
 please check [MC_MMS/MMSServer/README.md].   
 ```
 cd MC_MMS/MMSServer/Linux 
