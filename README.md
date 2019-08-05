@@ -70,9 +70,9 @@ If you need learn MMS configuration options when you run MMS Server, please chec
 <b>Default configuration</b> is loaded if MMS Server cannot find <b>MMS.conf</b> in [MC_MMS/MMSServer/target/MMS-configuration] <br/>
 directory and user does not pass options to MMS Server.<br/>
 <b>MMS.conf</b> is loaded if MMS Server find <b>MMS.conf</b> in [MC_MMS/MMSServer/target/MMS-configuration] directory. <br/>
-Options in <b>MMS.conf</b> overwrite loaded options of <b>default configuration</b>.
-<b>MMS configuration options<b/> is loaded if user passes options to MMS Server.<br/>
-Options in <b>MMS configuration options<b/> overwrite loaded options of <b>MMS.conf</b> and <b>default configuration</b>. <br/>
+Options in <b>MMS.conf</b> overwrite loaded options of <b>default configuration</b>.<br/>
+<b>MMS configuration options</b> is loaded if user passes options to MMS Server.<br/>
+Options in <b>MMS configuration options</b> overwrite loaded options of <b>MMS.conf</b> and <b>default configuration</b>. <br/>
 <code>cd MC_MMS/MMSServer/Linux </code><br/>
 <code>sudo sh build_mms.sh </code><br/>
 <code>sudo sh start_mms.sh </code><br/>
