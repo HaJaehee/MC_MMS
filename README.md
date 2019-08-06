@@ -68,14 +68,15 @@ apache2 in [/etc/apache2/] in the docker container.
 ### Only bulid and start MMS Server
 Run the scripts at the directory [MC_MMS/MMSServer/Linux/].  
 Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration] directory.  
-```MMS.conf, logback-Windows.xml and logback-Linux.xml```  
+```MMS.conf, logback-Linux.xml and logback-Windows.xml```  
 After building MMS Server, the [MMS-configuration] directory is copied into [MC_MMS/MMSServer/target/] directory and  
 MMS Server executable jar file is created in [MC_MMS/MMSServer/target] directory.  
 **Default configuration** is loaded if MMS Server cannot find [**MMS.conf**] in [MC_MMS/MMSServer/target/  
 MMS-configuration] directory and a user does not input options to MMS Server when the user runs MMS Server using command.  
 [**MMS.conf**] is loaded if MMS Server find [**MMS.conf**] in [MC_MMS/MMSServer/target/MMS-configuration] directory.  
 If MMS Server executable jar file is moved from [MC_MMS/MMSServer/target] directory to a different location, e.g.,  
-$HOME directory, MMS Server will find [$HOME/MMS-configuraiton/**MMS.conf**].  
+$HOME directory, MMS Server will find [$HOME/MMS-configuraiton/**MMS.conf** (also, logback-Linux.xml or  
+logback-Windows.xml)].  
 **CLI configuration options** are loaded if a user inputs options to MMS Server when the user runs MMS Server using command.  
 MMS Server configuration options works like this:
 1. ```Default configuration```; these values can be overridden by
