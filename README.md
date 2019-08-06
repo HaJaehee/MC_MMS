@@ -70,13 +70,15 @@ Run the scripts at the directory [MC_MMS/MMSServer/Linux/].
 Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration] directory.  
 After building MMS Server, MMS-configuration directory is copied into [MC_MMS/MMSServer/target/] directory.  
 **Default configuration** is loaded if MMS Server cannot find **[MMS.conf]** in [MC_MMS/MMSServer/target/MMS-configuration]   
-directory and a user does not input options to MMS Server when the user runs MMS Server.  
+directory and a user does not input options to MMS Server when the user runs MMS Server using command.  
 **[MMS.conf]** is loaded if MMS Server find **[MMS.conf]** in [MC_MMS/MMSServer/target/MMS-configuration] directory.   
-Loaded options of **default configuration** are overwritten by options of **[MMS.conf]**.  
-**MMS configuration options** are loaded if a user inputs options to MMS Server when the user runs MMS Server.  
-Loaded options of **[MMS.conf]** and **default configuration** are overwritten by options of **MMS configuration options**.  
-```Priority of options: MMS configuration options > [MMS.conf] > default configuration```  
-You can input options to MMS Server by adding options in [start_mms.sh]. If you need learn **MMS configuration options**,  
+**CLI configuration options** are loaded if a user inputs options to MMS Server when the user runs MMS Server using command.  
+MMS Server configuration options works like this:
+1. ```Default configuration```; these values can be overridden by
+2. ```[MC_MMS/MMSServer/target/MMS-configuration/MMS.conf]```; these values can be overridden by
+3. ```CLI configuration options```  
+
+The user can input options to MMS Server by adding options in [start_mms.sh]. If you need learn **CLI configuration options**,  
 please check [MC_MMS/MMSServer/README.md].   
 ```
 cd MC_MMS/MMSServer/Linux 
