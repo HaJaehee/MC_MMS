@@ -81,8 +81,8 @@ MMS Server configuration options works like this:
 2. ```[<MMS Server executable jar file location>/MMS-configuration/MMS.conf]```; these values can be overridden by
 3. ```CLI configuration options```  
 
-The user can input options to MMS Server by adding options in [start_mms.sh]. If you need learn **CLI configuration options**,  
-please check [MC_MMS/MMSServer/README.md].   
+The user can input options to MMS Server by adding options in [start_mms.sh]. If you need learn **CLI configuration  
+options**, please check [MC_MMS/MMSServer/README.md].   
 ```
 cd MC_MMS/MMSServer/Linux 
 sudo sh build_mms.sh 
