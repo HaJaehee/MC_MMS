@@ -13,21 +13,21 @@ https://www.mms-kaist.com
 https://mms.smartnav.org
 
 ## Features
-MMS Beta Version:  
-Supports Docker's setup environment.  
-Supports javadoc API documents.  
-Supports fully relaying HTTP(S) messages based on ID.  
-Supports fully HTTPS communication.  
-Supports long polling.  
-Supports switching polling method between long polling or normal polling.  
-Supports maintaining long polling client session.  
-Supports saving MMS logs automatically.  
-Supports displaying MMS logs on web browser.  
-Supports MMS web management.  
-Supports MMS REST API.  
-Has Maritime Name System Dummy.  
-Has Service Consumer Examples.  
-Has Service Provider Examples.  
+### MMS Beta Version      
+* Relaying HTTP(S) messages based on ID.  
+* Long polling method.  
+* Switching polling method between long polling or normal polling.  
+* Maintaining long polling client session.  
+* HTTPS communication.  
+* Saving MMS logs automatically.  
+* Displaying MMS logs on web browser.  
+* MMS web management.  
+* MMS REST API.  
+* Maritime Name System Dummy (will be depricated soon).  
+* Service Consumer examples.  
+* Service Provider examples.  
+* Javadoc documents of MMSClient examples.  
+* Docker setup scripts.
 
 ## Developing
 Jaehee Ha  
