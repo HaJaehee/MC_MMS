@@ -68,7 +68,7 @@ apache2 in [/etc/apache2/] in the docker container.
 ### Only bulid and start MMS Server
 Run the scripts at the directory [MC_MMS/MMSServer/Linux/].  
 Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration] directory.  
-After building MMS Server, MMS-configuration directory is copied into [MC_MMS/MMSServer/target/] directory and  
+After building MMS Server, the [MMS-configuration] directory is copied into [MC_MMS/MMSServer/target/] directory and  
 MMS Server executable jar file is created in [MC_MMS/MMSServer/target] directory.  
 **Default configuration** is loaded if MMS Server cannot find [**MMS.conf**] in [MC_MMS/MMSServer/target/  
 MMS-configuration] directory and a user does not input options to MMS Server when the user runs MMS Server using command.  
