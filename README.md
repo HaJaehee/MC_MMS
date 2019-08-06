@@ -75,7 +75,7 @@ MMS Server executable jar file is created in [MC_MMS/MMSServer/target] directory
 MMS-configuration] directory and a user does not input options to MMS Server when the user runs MMS Server using command.  
 [**MMS.conf**] is loaded if MMS Server find [**MMS.conf**] in [MC_MMS/MMSServer/target/MMS-configuration] directory.  
 If MMS Server executable jar file is moved from [MC_MMS/MMSServer/target] directory to a different location, e.g.,  
-$HOME directory, MMS Server will find [$HOME/MMS-configuraiton/**MMS.conf** (also, logback-Linux.xml or  
+$HOME directory, MMS Server will find [$HOME/MMS-configuraiton/**MMS.conf** (and logback-Linux.xml or  
 logback-Windows.xml)].  
 **CLI configuration options** are loaded if a user inputs options to MMS Server when the user runs MMS Server using command.  
 MMS Server configuration options works like this:
