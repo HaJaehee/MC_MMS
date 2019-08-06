@@ -68,14 +68,17 @@ apache2 in [/etc/apache2/] in the docker container.
 ### Only bulid and start MMS Server
 Run the scripts at the directory [MC_MMS/MMSServer/Linux/].  
 Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration] directory.  
-After building MMS Server, MMS-configuration directory is copied into [MC_MMS/MMSServer/target/] directory.  
-**Default configuration** is loaded if MMS Server cannot find **[MMS.conf]** in [MC_MMS/MMSServer/target/MMS-configuration]   
-directory and a user does not input options to MMS Server when the user runs MMS Server using command.  
-**[MMS.conf]** is loaded if MMS Server find **[MMS.conf]** in [MC_MMS/MMSServer/target/MMS-configuration] directory.   
+After building MMS Server, MMS-configuration directory is copied into [MC_MMS/MMSServer/target/] directory and  
+MMS Server executable jar file is created in [MC_MMS/MMSServer/target] directory.  
+**Default configuration** is loaded if MMS Server cannot find [**MMS.conf**] in [MC_MMS/MMSServer/target/  
+MMS-configuration] directory and a user does not input options to MMS Server when the user runs MMS Server using command.  
+[**MMS.conf**] is loaded if MMS Server find [**MMS.conf**] in [MC_MMS/MMSServer/target/MMS-configuration] directory.  
+If MMS Server executable jar file is moved from [MC_MMS/MMSServer/target] directory to a different location, e.g., $HOME  
+directory, MMS Server will find [$HOME/MMS-configuraiton/**MMS.conf**].  
 **CLI configuration options** are loaded if a user inputs options to MMS Server when the user runs MMS Server using command.  
 MMS Server configuration options works like this:
 1. ```Default configuration```; these values can be overridden by
-2. ```[MC_MMS/MMSServer/target/MMS-configuration/MMS.conf]```; these values can be overridden by
+2. ```[<MMS Server executable jar file location>/MMS-configuration/MMS.conf]```; these values can be overridden by
 3. ```CLI configuration options```  
 
 The user can input options to MMS Server by adding options in [start_mms.sh]. If you need learn **CLI configuration options**,  
