@@ -30,16 +30,12 @@ https://mms.smartnav.org
 * Docker setup scripts.
 
 ## Developing
-Jaehee Ha  
-email: jaehee.ha@kaist.ac.kr  
-Jin Jeong  
-email: jungst0001@kaist.ac.kr  
-Youngjin Kim  
-email: jcdad3000@kaist.ac.kr  
-Yoonho Choi  
-email: choiking10@kaist.ac.kr  
-Jaehyun Park  
-email: jae519@kaist.ac.kr  
+* Jaehee Ha  
+  - email: jaehee.ha@kaist.ac.kr  
+* Jin Jeong  
+  - email: jungst0001@kaist.ac.kr  
+* Yoonho Choi  
+  - email: choiking10@kaist.ac.kr  
 
 ## Usage
 First of all, MMS Server including MMS Monitoring Module depends on Ubuntu 16.04, OpenJDK 1.8,   
@@ -112,20 +108,20 @@ After then, restart the MMS Server.
   
 
 ### See also
-See [OpenJDK](https://openjdk.java.net/) https://openjdk.java.net   
-See [Maven](https://maven.apache.org/) https://maven.apache.org   
-See [RabbitMQ](https://www.rabbitmq.com/#getstarted) https://www.rabbitmq.com/#getstarted   
-See [Erlang/OTP](https://www.erlang.org/downloads) https://www.erlang.org/downloads   
-See [Docker](https://www.docker.com/) https://www.docker.com   
-See [WordPress](https://www.wordpress.com) https://www.wordpress.com   
-See [MariaDB](https://mariadb.com/) https://mariadb.com   
+* [OpenJDK](https://openjdk.java.net/) https://openjdk.java.net   
+* [Maven](https://maven.apache.org/) https://maven.apache.org   
+* [RabbitMQ](https://www.rabbitmq.com/#getstarted) https://www.rabbitmq.com/#getstarted   
+* [Erlang/OTP](https://www.erlang.org/downloads) https://www.erlang.org/downloads   
+* [Docker](https://www.docker.com/) https://www.docker.com   
+* [WordPress](https://www.wordpress.com) https://www.wordpress.com   
+* [MariaDB](https://mariadb.com/) https://mariadb.com   
   
 
 ## Tools and licenses
-**MMS is created with [Eclipse](https://www.eclipse.org/org/documents/epl-v10.php) https://www.eclipse.org/org/documents/epl-v10.php**  
+* **MMS is created with [Eclipse](https://www.eclipse.org/org/documents/epl-v10.php) https://www.eclipse.org/org/documents/epl-v10.php**  
   
 
-**MMS uses [Netty Project](http://netty.io/) http://netty.io/**  
+* **MMS uses [Netty Project](http://netty.io/) http://netty.io/**  
 Copyright 2014 The Netty Project  
 The Netty Project licenses this file to you under the Apache License,  
 version 2.0 (the "License"); you may not use this file except in compliance  
@@ -133,7 +129,7 @@ with the License. You may obtain a copy of the License at:
 http://www.apache.org/licenses/LICENSE-2.0  
   
    
-**MMS uses [RabbitMQ](https://www.rabbitmq.com/mpl.html) https://www.rabbitmq.com/mpl.html**  
+* **MMS uses [RabbitMQ](https://www.rabbitmq.com/mpl.html) https://www.rabbitmq.com/mpl.html**  
  Mozilla Public License.  
 ''The contents of this file are subject to the Mozilla Public License  
 Version 1.1 (the "License"); you may not use this file except in  
@@ -151,7 +147,7 @@ use the text of this Exhibit A rather than the text found in the
 Original Code Source Code for Your Modifications.]  
   
 
-**MMS uses [LogBack](https://logback.qos.ch/license.html) https://logback.qos.ch/license.html**  
+* **MMS uses [LogBack](https://logback.qos.ch/license.html) https://logback.qos.ch/license.html**  
 Logback License   
 As of release 0.9.18, logback source code and binaries are dual-licensed   
 under the EPL v1.0 and the LGPL 2.1, or more formally:   
@@ -165,7 +161,7 @@ under the terms of the GNU Lesser General Public License version 2.1
 as published by the Free Software Foundation.   
   
 
-**MMS uses [WordPress](https://wordpress.org/about/license/) https://wordpress.org/about/license/**  
+* **MMS uses [WordPress](https://wordpress.org/about/license/) https://wordpress.org/about/license/**  
 GNU Public License  
 The license under which the WordPress software is released is the GPLv2  
 (or later) from the Free Software Foundation. A copy of the license is  
@@ -183,7 +179,7 @@ consider a non-GPL platform such as Serendipity (BSD license) or Habari
 (Apache license) instead.  
   
 
-**MMS uses [MariaDB](https://mariadb.com/kb/en/library/mariadb-license/) https://mariadb.com/kb/en/library/mariadb-license/**  
+* **MMS uses [MariaDB](https://mariadb.com/kb/en/library/mariadb-license/) https://mariadb.com/kb/en/library/mariadb-license/**  
 MariaDB server license  
 The MariaDB server is available under the terms of the GNU General Public   
 License, version 2.  
@@ -192,5 +188,5 @@ GPL 2 license, including a FAQ and various translations.
   
 
 ## Databases
-[RabbitMQ](https://www.rabbitmq.com/) https://www.rabbitmq.com  
-[MariaDB](https://mariadb.com/) https://mariadb.com
+* [RabbitMQ](https://www.rabbitmq.com/) https://www.rabbitmq.com  
+* [MariaDB](https://mariadb.com/) https://mariadb.com
