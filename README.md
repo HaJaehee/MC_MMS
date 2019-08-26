@@ -55,7 +55,7 @@ Please read it carefully. Port number **3306** will be mapped to mariadb contain
 modify [docker-compose.yml] before executing this setup script. In addition, existing WordPress files and database   
 will be overwritten after this setup. If you want not to overwrite WordPress files and database, just execute   
 docker-compose with [docker-compose.yml].
-Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration] directory.  
+Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration/] directory.  
 Do not use loopback, localhost, and 127.0.0.1 as a domain name.  
 ```
 cd MC_MMS/scripts 
@@ -67,14 +67,14 @@ apache2 in [/etc/apache2/] in the docker container.
 
 ### Only bulid and start MMS Server
 Run the scripts at the directory [MC_MMS/MMSServer/Linux/].  
-Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration] directory.  
+Before building MMS Server, specify configuration files in [MC_MMS/MMSServer/MMS-configuration/] directory.  
 ```MMS.conf, logback-Linux.xml and logback-Windows.xml```  
 After building MMS Server, the [MMS-configuration] directory is copied into [MC_MMS/MMSServer/target/] directory and  
-MMS Server executable jar file is created in [MC_MMS/MMSServer/target] directory.  
+MMS Server executable jar file is created in [MC_MMS/MMSServer/target/] directory.  
 **Default configuration** is loaded if MMS Server cannot find [**MMS.conf**] in [MC_MMS/MMSServer/target/  
-MMS-configuration] directory and a user does not input options to MMS Server when the user runs MMS Server using command.  
-[**MMS.conf**] is loaded if MMS Server find [**MMS.conf**] in [MC_MMS/MMSServer/target/MMS-configuration] directory.  
-If MMS Server executable jar file is moved from [MC_MMS/MMSServer/target] directory to a different location, e.g.,  
+MMS-configuration/] directory and a user does not input options to MMS Server when the user runs MMS Server using command.  
+[**MMS.conf**] is loaded if MMS Server find [**MMS.conf**] in [MC_MMS/MMSServer/target/MMS-configuration/] directory.  
+If MMS Server executable jar file is moved from [MC_MMS/MMSServer/target/] directory to a different location, e.g.,  
 $HOME directory, MMS Server will find [$HOME/MMS-configuraiton/**MMS.conf** (and logback-Linux.xml or  
 logback-Windows.xml)].  
 **CLI configuration options** are loaded if a user inputs options to MMS Server when the user runs MMS Server using command.  
