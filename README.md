@@ -51,7 +51,7 @@ sudo apt install default-jdk maven rabbitmq-server docker docker-compose
 ### Quick deploy
 Run the script [deploy-mms.sh] at the directory [MC_MMS/scripts/].   
 Please read it carefully. Port number **3306** will be mapped to mariadb container's port number and port numbers   
-**80 and 443** will be mapped to mms monitoring container's port numbers. If you want to remap port numbers, please   
+**80 and 443** will be mapped to MMS Monitoring Module container's port numbers. If you want to remap port numbers, please   
 modify [docker-compose.yml] before executing this setup script. In addition, existing WordPress files and database   
 will be overwritten after this setup. If you want not to overwrite WordPress files and database, just execute   
 docker-compose with [docker-compose.yml].
