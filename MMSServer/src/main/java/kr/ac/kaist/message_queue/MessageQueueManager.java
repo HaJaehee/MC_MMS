@@ -81,9 +81,9 @@ import kr.ac.kaist.mms_server.MMSLog;
 
 public class MessageQueueManager {
 	
-	private String sessionId = "";
+	protected String sessionId = "";
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueManager.class);
-	private MRH_MessageOutputChannel outputChannel = null;
+	protected MRH_MessageOutputChannel outputChannel = null;
 	
 	public MessageQueueManager(String sessionId) {
 		

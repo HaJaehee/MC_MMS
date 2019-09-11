@@ -126,14 +126,14 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
 /* -------------------------------------------------------- */
 
-class MessageQueueEnqueuer {
+public class MessageQueueEnqueuer {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueEnqueuer.class);
-	private String sessionId = "";
+	protected String sessionId = "";
 	
-	private MMSLog mmsLog = null;
+	protected MMSLog mmsLog = null;
 	
-	private static ConnectionFactory connFac = null;
+	protected static ConnectionFactory connFac = null;
 	
 	
 	public MessageQueueEnqueuer (String sessionId) {
@@ -143,7 +143,7 @@ class MessageQueueEnqueuer {
 	}
 	
 	
-	byte[] enqueueMessage(MRH_MessageInputChannel.ChannelBean bean) {
+	protected byte[] enqueueMessage(MRH_MessageInputChannel.ChannelBean bean) {
 
 		byte[] message = null;
 		Connection connection = null;

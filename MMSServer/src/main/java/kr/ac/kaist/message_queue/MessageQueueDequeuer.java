@@ -174,10 +174,15 @@ Version : 0.9.4
 	Updated MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
- Rev. history : 2019-07-16
- Version : 0.9.4
+Rev. history : 2019-07-16
+Version : 0.9.4
  	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-09-11
+Version : 0.9.5
+ 	Added a function that message is split along the maximum message size.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -194,6 +199,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.AMQP.Basic;
 import com.rabbitmq.client.AlreadyClosedException;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -275,6 +281,44 @@ public class MessageQueueDequeuer extends Thread{
 		}
 	}
 	
+	private String buildMessage(GetResponse res) {
+		String content = null;
+		try {
+			content = "\""+URLEncoder.encode(new String(res.getBody()),"UTF-8")+"\"";
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			mmsLog.info(logger, sessionId, ErrorCode.MESSAGE_ENCODING_ERROR.toString());
+			return null;
+		}
+		
+		return content;
+	}
+	
+	
+	/**
+	 * 
+	 * @param messages	stored messages
+	 * @param res		dequeued message
+	 * @return			if the size of both stored messages and dequeued message exceeds the maximum contents,
+	 * 					return false
+	 */
+	private boolean checkMessageSize(StringBuffer messages, GetResponse res) {
+		final int MAX_SIZE = MMSConfiguration.getMaxContentSize();
+		
+		String input = buildMessage(res);
+		
+		if (input != null) {
+			int current_size = messages.toString().getBytes().length;
+			int input_size = input.getBytes().length;
+			
+			if (MAX_SIZE <= current_size + input_size) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	@Override
 	public void run() {
 		// TODO: Youngjin Kim must inspect this following code.
@@ -332,6 +376,11 @@ public class MessageQueueDequeuer extends Thread{
 			}
 			
 			if (res != null){
+				if (!checkMessageSize(message, res)) {
+					// TODO: requeue the message in the head of the queue.
+					break;
+				}
+				
 				if (msgCount > 0) {
 					message.append(",");
 				}
