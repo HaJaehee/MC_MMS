@@ -1,4 +1,4 @@
-package kr.ac.kaist.message_queue.priority_message;
+package kr.ac.kaist.message_queue.v2;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

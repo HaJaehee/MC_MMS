@@ -72,6 +72,7 @@ import org.slf4j.LoggerFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
+import kr.ac.kaist.message_queue.v2.MessageLimitSizeDequeuer;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.mms_server.ErrorCode;
@@ -96,7 +97,8 @@ public class MessageQueueManager {
 	}
 	
 	public void dequeueMessage (MRH_MessageInputChannel.ChannelBean bean) {
-		MessageQueueDequeuer mqd = new MessageQueueDequeuer(this.sessionId);
+//		MessageQueueDequeuer mqd = new MessageQueueDequeuer(this.sessionId);
+		MessageQueueDequeuer mqd = new MessageLimitSizeDequeuer(sessionId);
 		mqd.dequeueMessage(bean);
 	}
 	

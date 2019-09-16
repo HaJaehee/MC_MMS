@@ -33,6 +33,11 @@ Rev. history : 2019-06-18
 Version : 0.9.2
 	Added ErrorCode.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-09-16
+Version : 0.9.5
+	Added deqeueue fail error code.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -89,6 +94,7 @@ public enum ErrorCode {
 	RABBITMQ_CONNECTION_CLOSE_ERROR("20003","Rabbit MQ connection close error."),
 	RABBITMQ_CONNECTION_OPEN_ERROR("20004","Rabbit MQ connection open error."),
 	RABBITMQ_MANAGEMENT_CONNECTION_OPEN_ERROR("20005","Rabbit MQ management plugin connection open error."),
+	RABBITMQ_DEQUEUE_FAIL("20006", "Dequeue a message in a queue is failed"),
 	
 	// Number 21XXX is related to interface between MMS Server and MNS.
 	MNS_CONNECTION_CLOSE_ERROR("21001","MNS connection close error."),

@@ -1,4 +1,4 @@
-package kr.ac.kaist.message_queue.priority_message;
+package kr.ac.kaist.message_queue.v2;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

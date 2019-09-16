@@ -228,22 +228,23 @@ import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 public class MessageQueueDequeuer extends Thread{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueDequeuer.class);
-	private String sessionId = "";
-	private String duplicateId="";
-	private MRH_MessageInputChannel.ChannelBean bean = null;
-	private String queueName = null;
-	private String srcMRN = null;
-	private String svcMRN = null;
-	private MessageTypeDecider.msgType pollingMethod = MessageTypeDecider.msgType.POLLING;
-	private Channel mqChannel = null;
-	private String consumerTag = null;
-	private static ArrayList<Connection> connectionPool = null;
-	private static ConnectionFactory connFac = null;
-	private static int connectionPoolSize = 0;
+	protected String sessionId = "";
+	protected String duplicateId="";
+	protected MRH_MessageInputChannel.ChannelBean bean = null;
+	protected String queueName = null;
+	protected String srcMRN = null;
+	protected String svcMRN = null;
+	protected MessageTypeDecider.msgType pollingMethod = MessageTypeDecider.msgType.POLLING;
+	protected Channel mqChannel = null;
+	protected String consumerTag = null;
+	protected static ArrayList<Connection> connectionPool = null;
+	protected static ConnectionFactory connFac = null;
+	protected static int connectionPoolSize = 0;
 
 	
-	private MMSLog mmsLog = null;
-	MessageQueueDequeuer (String sessionId) {
+	protected MMSLog mmsLog = null;
+	
+	protected MessageQueueDequeuer (String sessionId) {
 		this.sessionId = sessionId;
 		mmsLog = MMSLog.getInstance();
 	}
@@ -279,44 +280,6 @@ public class MessageQueueDequeuer extends Thread{
 				connectionPool.add(null);
 			}
 		}
-	}
-	
-	private String buildMessage(GetResponse res) {
-		String content = null;
-		try {
-			content = "\""+URLEncoder.encode(new String(res.getBody()),"UTF-8")+"\"";
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			mmsLog.info(logger, sessionId, ErrorCode.MESSAGE_ENCODING_ERROR.toString());
-			return null;
-		}
-		
-		return content;
-	}
-	
-	
-	/**
-	 * 
-	 * @param messages	stored messages
-	 * @param res		dequeued message
-	 * @return			if the size of both stored messages and dequeued message exceeds the maximum contents,
-	 * 					return false
-	 */
-	private boolean checkMessageSize(StringBuffer messages, GetResponse res) {
-		final int MAX_SIZE = MMSConfiguration.getMaxContentSize();
-		
-		String input = buildMessage(res);
-		
-		if (input != null) {
-			int current_size = messages.toString().getBytes().length;
-			int input_size = input.getBytes().length;
-			
-			if (MAX_SIZE <= current_size + input_size) {
-				return true;
-			}
-		}
-		
-		return false;
 	}
 	
 	@Override
@@ -365,6 +328,7 @@ public class MessageQueueDequeuer extends Thread{
 		int msgCount = 0;
 		do { //Check that the queue having queueName has a message
 			try {
+				// TODO: requeue the message in the head of the queue.
 				res = mqChannel.basicGet(queueName, true);
 			}
 			catch (IOException e) {
@@ -376,11 +340,6 @@ public class MessageQueueDequeuer extends Thread{
 			}
 			
 			if (res != null){
-				if (!checkMessageSize(message, res)) {
-					// TODO: requeue the message in the head of the queue.
-					break;
-				}
-				
 				if (msgCount > 0) {
 					message.append(",");
 				}

@@ -27,7 +27,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 /* -------------------------------------------------------- */
 
 import kr.ac.kaist.message_queue.MessageQueueManager;
-import kr.ac.kaist.message_queue.priority_message.PriorityMessageQueueManager;
+import kr.ac.kaist.message_queue.v2.PriorityMessageQueueManager;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 
 import org.slf4j.Logger;
