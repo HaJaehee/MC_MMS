@@ -38,7 +38,7 @@ public class SplittingTest extends MMSTestBase {
 	final static int LIMITED = 40 * MB;
 	final static int OFFSET = 3;
 	final static int START_OFFSET = 1;
-	final static int SLEEP_TIME = 1000;
+	final static int SLEEP_TIME = 1;
 	
 	static PollingClient client;
 	static MessageProvider server;
