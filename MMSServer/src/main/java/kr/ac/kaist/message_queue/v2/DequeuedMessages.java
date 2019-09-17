@@ -91,6 +91,20 @@ class DequeuedMessages {
 			current_message_count++;
 		}
 		
+		return;
+	}
+	
+	public void append(String body) {
+		if (current_message_count > 0) {
+			message_buffer.append(",");
+		}
+		
+		message_buffer.append("\"" + body + "\"");
+		backupMsg.add(0, body);
+		
+		current_message_count++;
+
+		return;
 	}
 	
 	public StringBuffer getMessageBuffer() {

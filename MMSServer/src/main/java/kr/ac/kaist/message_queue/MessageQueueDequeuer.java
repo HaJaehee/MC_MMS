@@ -285,7 +285,7 @@ public class MessageQueueDequeuer extends Thread{
 	@Override
 	public void run() {
 		// TODO: Youngjin Kim must inspect this following code.
-		super.run();
+//		super.run();
 		
 		int connId = (int) (Long.decode("0x"+this.sessionId) % connectionPoolSize);
 		if (connectionPool.get(connId) == null || !connectionPool.get(connId).isOpen()) {

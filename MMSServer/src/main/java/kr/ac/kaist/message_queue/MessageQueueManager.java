@@ -98,7 +98,7 @@ public class MessageQueueManager {
 	
 	public void dequeueMessage (MRH_MessageInputChannel.ChannelBean bean) {
 //		MessageQueueDequeuer mqd = new MessageQueueDequeuer(this.sessionId);
-		MessageQueueDequeuer mqd = new MessageLimitSizeDequeuer(sessionId);
+		MessageQueueDequeuer mqd = new MessageLimitSizeDequeuer(this.sessionId);
 		mqd.dequeueMessage(bean);
 	}
 	

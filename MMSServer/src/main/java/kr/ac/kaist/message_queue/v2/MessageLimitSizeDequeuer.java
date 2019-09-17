@@ -44,13 +44,10 @@ Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 	private static final Logger logger = LoggerFactory.getLogger(MessageLimitSizeDequeuer.class);
 	
-	protected DeclareOk dok;
+	protected AMQP.Queue.DeclareOk dok;
 	
 	public MessageLimitSizeDequeuer(String sessionId) {
-		// TODO Auto-generated constructor stub
-		
 		super(sessionId);
-		dok = null;
 	}	
 	
 	/**
@@ -145,12 +142,13 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 	 */
 	protected boolean setQueueConnection() {
 		int connId = (int) (Long.decode("0x"+this.sessionId) % connectionPoolSize);
+		
 		if (connectionPool.get(connId) == null || !connectionPool.get(connId).isOpen()) {
 			try {
 				connectionPool.set(connId, connFac.newConnection());
 			} catch (IOException | TimeoutException e) {
 				mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
-				clear(true, true);
+				this.clear(true, true);
 				return false;
 			}
 
@@ -160,7 +158,7 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 			mqChannel = connectionPool.get(connId).createChannel();
 		} catch (IOException e1) {
 			mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString(), e1, 5);
-			clear(true, true);
+			this.clear(true, true);
 			return false;
 		}
 
@@ -169,41 +167,96 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 		}
 		catch (IOException e) {
 			mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
-			clear(true, true);
+			this.clear(true, true);
 			return false;
 		}
 		
 		return true;
 	}
 	
-	protected boolean consumeMessage(DequeuedMessages messages) {
+	protected boolean consumeMessage(DequeuedMessages dqMessages) {
 		final boolean[] dequeue_flag = new boolean[1];
 		dequeue_flag[0] = false;
 		
+//		mmsLog.debug(logger, sessionId, "메시지 큐 검사");
+		
+//		DefaultConsumer consumer = new DefaultConsumer(mqChannel) {
+//			@Override
+//			public void handleDelivery(String consumerTag, Envelope envelope, 
+//					BasicProperties properties, byte[] body) throws IOException {
+//				String message = new String(body, "UTF-8");
+//			    MessageLimitSizeDequeuer.this.consumerTag = consumerTag;
+//			    
+//			    boolean isExceeded = checkMessageSize(dqMessages, message);
+//			    mmsLog.debug(logger, sessionId, "메시지 버퍼 크기 검사");
+//			    
+//			    if (isExceeded) {
+//			    	mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
+//			    	dequeue_flag[0] = false;
+////			    	System.out.println("\u001B[34m" + "메시지 초과" + "\u001B[0m");
+//			    	mmsLog.debug(logger, sessionId, "메시지 초과");
+//			    }
+//			    else {
+//			    	mqChannel.basicAck(envelope.getDeliveryTag(), false);
+//			    	dqMessages.append(message);
+//			    	dequeue_flag[0] = true;
+//			    	
+////			    	System.out.println("\u001B[34m" + "메시지 버퍼에 넣음" + "\u001B[0m");
+//			    	mmsLog.debug(logger, sessionId, "메시지 버퍼에 넣음");
+//			    }
+//			    
+//			    mqChannel.basicCancel(consumerTag);
+//			}
+//		};
+		
 		try {
-			mqChannel.basicConsume(queueName, false, new DefaultConsumer(mqChannel) {
-				@Override
-				public void handleDelivery(String consumerTag, Envelope envelope, 
-						BasicProperties properties, byte[] body)
-						throws IOException {
-					// TODO Auto-generated method stub
-					String message = new String(body, "UTF-8");
-				    MessageLimitSizeDequeuer.this.consumerTag = consumerTag;
-				    
-				    boolean isExceeded = checkMessageSize(messages, message);
-				    
-				    if (isExceeded) {
-				    	mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
-				    	dequeue_flag[0] = false;
-				    }
-				    else {
-				    	mqChannel.basicAck(envelope.getDeliveryTag(), false);
-				    	dequeue_flag[0] = true;
-				    }
-				    
-				    mqChannel.basicCancel(consumerTag);
-				}
-			});
+			GetResponse res = mqChannel.basicGet(queueName, false);
+			
+			boolean isExceeded = checkMessageSize(dqMessages.getMessageBuffer(), res);
+			
+			if (isExceeded) {
+		    	mqChannel.basicNack(res.getEnvelope().getDeliveryTag(), false, true);
+		    	dequeue_flag[0] = false;
+//		    	System.out.println("\u001B[34m" + "메시지 초과" + "\u001B[0m");
+//		    	mmsLog.debug(logger, sessionId, "메시지 초과");
+		    }
+		    else {
+		    	mqChannel.basicAck(res.getEnvelope().getDeliveryTag(), false);
+		    	dqMessages.append(res);
+		    	dequeue_flag[0] = true;
+		    	
+//		    	System.out.println("\u001B[34m" + "메시지 버퍼에 넣음" + "\u001B[0m");
+//		    	mmsLog.debug(logger, sessionId, "메시지 버퍼에 넣음");
+		    }
+//			mqChannel.basicConsume(queueName, false, consumer);
+//			mqChannel.basicConsume(queueName, false, new DefaultConsumer(mqChannel) {
+//				@Override
+//				public void handleDelivery(String consumerTag, Envelope envelope, 
+//						BasicProperties properties, byte[] body) throws IOException {
+//					String message = new String(body, "UTF-8");
+//				    MessageLimitSizeDequeuer.this.consumerTag = consumerTag;
+//				    
+//				    boolean isExceeded = checkMessageSize(dqMessages, message);
+//				    mmsLog.debug(logger, sessionId, "메시지 버퍼 크기 검사");
+//				    
+//				    if (isExceeded) {
+//				    	mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
+//				    	dequeue_flag[0] = false;
+////				    	System.out.println("\u001B[34m" + "메시지 초과" + "\u001B[0m");
+//				    	mmsLog.debug(logger, sessionId, "메시지 초과");
+//				    }
+//				    else {
+//				    	mqChannel.basicAck(envelope.getDeliveryTag(), false);
+//				    	dqMessages.append(message);
+//				    	dequeue_flag[0] = true;
+//				    	
+////				    	System.out.println("\u001B[34m" + "메시지 버퍼에 넣음" + "\u001B[0m");
+//				    	mmsLog.debug(logger, sessionId, "메시지 버퍼에 넣음");
+//				    }
+//				    
+//				    mqChannel.basicCancel(consumerTag);
+//				}
+//			});
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_DEQUEUE_FAIL.toString());
@@ -215,7 +268,8 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 	
 	@Override
 	public void run() {
-		super.run();
+		// TODO: require to run the method of parent of parent (super.super.method).
+//		super.run();
 		
 		if(!setQueueConnection()) {
 			return;
@@ -224,11 +278,16 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 		int enqueued_message_count = dok.getMessageCount();
 		DequeuedMessages dqMessages = new DequeuedMessages(sessionId);
 		
+//		mmsLog.debug(logger, sessionId, "메시지 꺼내기 시작");
+//		mmsLog.debug(logger, sessionId, "enqueue된 메시지 수: " + enqueued_message_count);
+		
 		for (int i = 0; i < enqueued_message_count; i++) {
 			if (!consumeMessage(dqMessages)) {
 				break;
 			}
 		}
+		
+//		mmsLog.debug(logger, sessionId, "메시지 꺼내기 종료");
 		
 		if (dqMessages.getMessageCount() > 0) { //If the queue has a message
 			

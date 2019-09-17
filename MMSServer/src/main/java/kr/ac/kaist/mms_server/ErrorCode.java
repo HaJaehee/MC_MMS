@@ -36,7 +36,7 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
 Rev. history : 2019-09-16
 Version : 0.9.5
-	Added deqeueue fail error code.
+	Added dequeue fail error code.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
