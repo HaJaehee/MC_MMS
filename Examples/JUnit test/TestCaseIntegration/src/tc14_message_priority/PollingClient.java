@@ -18,7 +18,7 @@ import net.etri.pkilib.tool.ByteConverter;
 public class PollingClient {
 	private String payload = null;
 	private String priority = null;
-	
+	private int content_length = 0;
 
 	private String myMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 	private String dstMRN = "urn:mrn:smart-navi:device:mms1";
@@ -38,7 +38,17 @@ public class PollingClient {
 					// TODO Auto-generated method stub					
 //					List<String> list = headerField.get("priority");
 					//System.out.println("list" +list.get(0));		
-					payload = messages.toString();
+					
+					
+					List<String> list = headerField.get("content-length");
+					//System.out.println("list" +list.get(0));		
+															
+				
+					if(list != null){						
+						content_length = Integer.parseInt(list.get(0));
+						length = content_length;
+						payload = messages.toString();
+					}
 				}
 			};
 		} catch (IOException e) {
