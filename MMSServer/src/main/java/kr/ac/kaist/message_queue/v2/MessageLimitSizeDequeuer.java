@@ -40,6 +40,10 @@ Rev. history : 2019-09-16
 Version : 0.9.5
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 
+Rev. history : 2019-09-17
+Version : 0.9.5
+	Indicated maximum priority of a queue.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -165,10 +169,10 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 		}
 
 		try {
-			Map<String, Object> args = new HashMap<String, Object>();
-			args.put("x-max-priority", 10);
+//			Map<String, Object> args = new HashMap<String, Object>();
+//			args.put("x-max-priority", 10);
 			
-			dok = mqChannel.queueDeclare(queueName, true, false, false, args);
+			dok = mqChannel.queueDeclare(queueName, true, false, false, null);
 		}
 		catch (IOException e) {
 			mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());

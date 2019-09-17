@@ -44,12 +44,10 @@ public class PriorityMessagQueueEnqueuer extends MessageQueueEnqueuer {
 
 	public PriorityMessagQueueEnqueuer(String sessionId) {
 		super(sessionId);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	protected byte[] enqueueMessage(ChannelBean bean) {
-		// TODO Auto-generated method stub
 		Connection connection = null;
 		Channel channel = null;
 		String queueName = bean.getParser().getDstMRN()+"::"+bean.getParser().getSrcMRN();
@@ -57,7 +55,7 @@ public class PriorityMessagQueueEnqueuer extends MessageQueueEnqueuer {
 			mmsLog.trace(logger, this.sessionId, "Enqueue="+queueName +" Message=" + StringEscapeUtils.escapeXml(bean.getReq().content().toString(Charset.forName("UTF-8")).trim()));
 		 }
 		 else {
-			 mmsLog.debug(logger, this.sessionId, "Enqueue="+queueName+".");
+			 mmsLog.debug(logger, this.sessionId, "Enqueue="+queueName+" Priority=" + bean.getParser().getPriority());
 		 }
 		
 		try {

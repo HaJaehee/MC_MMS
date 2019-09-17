@@ -45,7 +45,7 @@ class SCMessageHandler {
 	byte[] enqueueSCMessage(MRH_MessageInputChannel.ChannelBean bean){
 		MessageQueueManager mqm = null;
 		
-		if (bean.getParser().getPriority() == PriorityMessageQueueManager.DEFAULT_PRIORITY) {
+		if (bean.getParser().getPriority() != PriorityMessageQueueManager.DEFAULT_PRIORITY) {
 			mqm = new PriorityMessageQueueManager(this.sessionId, bean.getParser().getPriority());
 		}
 		else {

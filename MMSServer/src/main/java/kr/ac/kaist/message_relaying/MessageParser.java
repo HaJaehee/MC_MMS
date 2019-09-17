@@ -505,13 +505,13 @@ public class MessageParser {
 		int priority = 0;
 		
 		if (s_priority == null) {
-			mmsLog.debug(logger, this.sessionId, "Default priority message.");
+//			mmsLog.debug(logger, this.sessionId, "Default priority message.");
 		}
 		else {
 			priority = Integer.parseInt(s_priority);
-			mmsLog.debug(logger, this.sessionId, "Defined priority message.");
+//			mmsLog.debug(logger, this.sessionId, "Defined priority message.");
 			
-			if (priority < 0 || priority > 255) {
+			if (priority < 0 || priority > 10) {
 				priority = 0;
 				mmsLog.debug(logger, this.sessionId, "Message priority is out of range. It is modified to 0");
 			}
