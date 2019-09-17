@@ -177,6 +177,7 @@ public class MessageQueueEnqueuer {
 			
 			Map<String, Object> args = new HashMap<String, Object>();
 			args.put("x-max-priority", 10);
+//			args.put("maxPriority", 10);
 			
 			channel.queueDeclare(queueName, true, false, false, args);
 			

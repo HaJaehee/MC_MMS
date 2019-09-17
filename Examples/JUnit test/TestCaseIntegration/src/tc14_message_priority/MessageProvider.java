@@ -20,7 +20,7 @@ import kr.ac.kaist.mms_client.MMSClientHandler;
 
 public class MessageProvider {
 	private int response = 0;
-	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-14-server";
+	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-15-server";
 //	private String dstMRN = "urn:mrn:imo:imo-no:ts-mms-03-client";
 	private String dstMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 	private MMSClientHandler myHandler = null;

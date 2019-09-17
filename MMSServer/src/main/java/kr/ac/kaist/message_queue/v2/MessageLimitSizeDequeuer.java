@@ -169,10 +169,10 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 		}
 
 		try {
-//			Map<String, Object> args = new HashMap<String, Object>();
-//			args.put("x-max-priority", 10);
+			Map<String, Object> args = new HashMap<String, Object>();
+			args.put("x-max-priority", 10);
 			
-			dok = mqChannel.queueDeclare(queueName, true, false, false, null);
+			dok = mqChannel.queueDeclare(queueName, true, false, false, args);
 		}
 		catch (IOException e) {
 			mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());

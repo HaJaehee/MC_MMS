@@ -22,7 +22,7 @@ public class PollingClient {
 
 	private String myMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
 	private String dstMRN = "urn:mrn:smart-navi:device:mms1";
-	private String svcMRN = "urn:mrn:imo:imo-no:ts-mms-14-server";
+	private String svcMRN = "urn:mrn:imo:imo-no:ts-mms-15-server";
 	private MMSClientHandler myHandler = null;
 	private MMSClientHandler.PollingResponseCallback callback = null;
 	private static int length = -1;
