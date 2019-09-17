@@ -191,7 +191,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -312,7 +314,10 @@ public class MessageQueueDequeuer extends Thread{
 
 		
 		try {
-			mqChannel.queueDeclare(queueName, true, false, false, null);
+			Map<String, Object> args = new HashMap<String, Object>();
+			args.put("x-max-priority", 10);
+			
+			mqChannel.queueDeclare(queueName, true, false, false, args);
 		}
 		catch (IOException e) {
 			mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
