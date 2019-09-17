@@ -13,20 +13,29 @@ import java.util.Map;
 import kr.ac.kaist.mms_client.MMSClientHandler;
 
 /**
- * File name : MessageProvider.java
- * Author : Jin Jeong (jungst0001@kaist.ac.kr) 
- * Creation Date : 2019-09-17
+File name : MessageProvider.java
+Author : Jin Jeong (jungst0001@kaist.ac.kr) 
+Creation Date : 2019-09-17
+
+
+Rev. history : 2019-09-17
+Version : 0.9.5
+	Add Constructor parameter for MRN.
+	
+	Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
  */
 
 public class MessageProvider {
 	private int response = 0;
-	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-15-server";
-//	private String dstMRN = "urn:mrn:imo:imo-no:ts-mms-03-client";
-	private String dstMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
+	private String myMRN;
+	private String dstMRN;
 	private MMSClientHandler myHandler = null;
 
-	public MessageProvider() {
-
+	public MessageProvider(String myMRN, String dstMRN) {
+		this.myMRN = myMRN;
+		this.dstMRN = dstMRN;
+		
 		try {
 			myHandler = new MMSClientHandler(myMRN);
 

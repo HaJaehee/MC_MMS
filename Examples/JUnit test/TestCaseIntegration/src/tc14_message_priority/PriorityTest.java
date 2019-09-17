@@ -3,6 +3,9 @@ import static org.junit.Assert.*;
 
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -14,67 +17,96 @@ import org.junit.runners.MethodSorters;
 import tc_base.MMSTestBase;
 
 /**
- * File name : PriorityTest.java
- * Author : Jin Jeong (jungst0001@kaist.ac.kr) 
- * Creation Date : 2019-09-17
+File name : PriorityTest.java
+Author : Jin Jeong (jungst0001@kaist.ac.kr) 
+Creation Date : 2019-09-17
+
+Rev. history : 2019-09-17
+Version : 0.9.5
+    Add priority test.
+    
+    Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
  */
 
 @FixMethodOrder(MethodSorters.DEFAULT)
 public class PriorityTest extends MMSTestBase {
+	final static String clientMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
+	final static String providerMRN = "urn:mrn:imo:imo-no:ts-mms-14-server";
+	final static String mmsMRN = "urn:mrn:smart-navi:device:mms1";
+	
 	static PollingClient client;
 	static MessageProvider server;
-	static int offset;
 	
 	@BeforeClass 
 	public static void setupForClass() throws Exception {
-		client = new PollingClient();
-		server = new MessageProvider();
-		offset = 4;
+		client = new PollingClient(clientMRN, mmsMRN, providerMRN);
+		server = new MessageProvider(providerMRN, clientMRN);
 	}
-
-	@AfterClass
-	public static void afterClass() {
-		server.terminateServer();
+	
+	public void sendMessageWithPriority(String[] priority, String[] payload, String[] expected) throws IOException, InterruptedException {		
+		assertTrue("All length of parameters must be same.", priority.length == payload.length);
+		assertTrue("All length of parameters must be same.", expected.length == payload.length);
+		
+		int length = priority.length;
+		
+		for(int i =0 ; i < length; i++) {
+			System.out.println(String.format("send payload[%s] as priority [%s]",payload[i], priority[i]));
+			server.sendContent(priority[i], payload[i]);
+		}
+		
+		verification(expected);
+	}
+	
+	public void verification(String[] expected) throws IOException, InterruptedException {
+		client.pollingReqeust();	
+		assertTrue(server.getResponse() == 200);	
+		
+		String ArrayToString = Arrays.deepToString(expected);
+		String payloadString = client.getPayload();
+		assertEquals(String.format("realval [%s]\nexpected[%s]", payloadString, ArrayToString), 
+				payloadString, ArrayToString);
+		System.out.println(String.format("realval [%s]\nexpected[%s]", payloadString, ArrayToString));
 	}
 	
 	@Test
-	public void test01() throws IOException, InterruptedException {		
-		int expected = 0;
-		int actual = 20*1024*1024;	
+	public void test01() throws IOException, InterruptedException {
+		String[] priority = new String[] {"1", "0", "3", "4", "5"};
+		String[] payload = new String[] {"4", "5", "3", "2", "1"};
+		String[] expected = new String[] {"1", "2", "3", "4", "5"};
 		
-		String[] message1 = new String[2];
-		message1[0] = "1";
-		message1[1] = "4";
-		String[] message2 = new String[2];
-		message2[0] = "0";
-		message2[1] = "5";
-		String[] message3 = new String[2];
-		message3[0] = "3";
-		message3[1] = "3";
-		String[] message4 = new String[2];
-		message4[0] = "4";
-		message4[1] = "2";
-		String[] message5 = new String[2];
-		message5[0] = "5";
-		message5[1] = "1";
-														// priority: 1    0    3    4    5
-		server.sendContent(message1[0], message1[1]);	//  payload: 4 -> 5 -> 3 -> 2 -> 1
-		Thread.sleep(1000);								// exptected: 1, 2, 3, 4 ,5
-		server.sendContent(message2[0], message2[1]);	
-		Thread.sleep(1000);	
-		server.sendContent(message3[0], message3[1]);	
-		Thread.sleep(1000);	
-		server.sendContent(message4[0], message4[1]);	
-		Thread.sleep(1000);	
-		server.sendContent(message5[0], message5[1]);	
-//		Thread.sleep(1000);	
+		System.out.printf("pri:%s\npay:%s\nexp:%s\n",
+				Arrays.toString(priority),
+				Arrays.toString(payload),
+				Arrays.toString(expected));
 		
-		Thread.sleep(10000);
-		expected = client.pollingReqeust();	
-//		assertTrue(server.getResponse() == 200);	
-		Thread.sleep(1000);
-		System.out.println(client.getPayload());
-		assertTrue(expected==(actual*2)+offset);		
+		sendMessageWithPriority(priority, payload, expected);
+		
+	}
+
+	@Test
+	public void test02() throws IOException, InterruptedException {
+		String[] alphabat = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"};
+		String[] shuffle = alphabat.clone();
+		List<String> tmplist = Arrays.asList(shuffle);
+		Collections.shuffle(tmplist);
+		shuffle = (String[]) tmplist.toArray();
+		String[] priority = new String[alphabat.length];
+		
+		for(int i = 0; i < shuffle.length; i++) {
+			priority[i] = "" + (int)('k' - shuffle[i].charAt(0));
+		}
+
+		System.out.printf("pri:%s\npay:%s\nexp:%s\n",
+				Arrays.toString(priority),
+				Arrays.toString(shuffle),
+				Arrays.toString(alphabat));
+		
+		sendMessageWithPriority(
+				priority,
+				shuffle,
+				alphabat
+		);
 	}	
 
 }
