@@ -2,6 +2,8 @@ package kr.ac.kaist.message_queue.v2;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -29,6 +31,10 @@ Rev. history : 2019-09-10
 Version : 0.9.5
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 
+Rev. history : 2019-09-17
+Version : 0.9.5
+	Indicated maximum priority of a queue.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -65,7 +71,11 @@ public class PriorityMessagQueueEnqueuer extends MessageQueueEnqueuer {
 			connection = connFac.newConnection();
 			
 			channel = connection.createChannel();
-			channel.queueDeclare(queueName, true, false, false, null);
+			
+			Map<String, Object> args = new HashMap<String, Object>();
+			args.put("x-max-priority", 10);
+			
+			channel.queueDeclare(queueName, true, false, false, args);
 			
 			channel.basicPublish("", queueName,
 					new AMQP.BasicProperties.Builder()

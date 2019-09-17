@@ -3,6 +3,8 @@ package kr.ac.kaist.message_queue;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -122,6 +124,11 @@ Rev. history : 2019-07-14
 Version : 0.9.4
 	Updated MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-09-17
+Version : 0.9.5
+	Indicated maximum priority of a queue.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 
 /* -------------------------------------------------------- */
@@ -167,7 +174,11 @@ public class MessageQueueEnqueuer {
 			connection = connFac.newConnection();
 			
 			channel = connection.createChannel();
-			channel.queueDeclare(queueName, true, false, false, null);
+			
+			Map<String, Object> args = new HashMap<String, Object>();
+			args.put("x-max-priority", 10);
+			
+			channel.queueDeclare(queueName, true, false, false, args);
 			
 			channel.basicPublish("", queueName, null, bean.getReq().content().toString(Charset.forName("UTF-8")).trim().getBytes());
 			channel.close(320, "Service stopped.");

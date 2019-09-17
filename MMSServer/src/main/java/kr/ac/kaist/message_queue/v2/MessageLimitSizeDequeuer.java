@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
@@ -163,7 +165,10 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 		}
 
 		try {
-			dok = mqChannel.queueDeclare(queueName, true, false, false, null);
+			Map<String, Object> args = new HashMap<String, Object>();
+			args.put("x-max-priority", 10);
+			
+			dok = mqChannel.queueDeclare(queueName, true, false, false, args);
 		}
 		catch (IOException e) {
 			mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
