@@ -29,8 +29,8 @@ Version : 0.9.2
 	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 	
 Rev. history : 2019-09-17
-Version : 0.9.2
-	Add assertion for size miss-match
+Version : 0.9.5
+	Add assertion for size mismatch
 	Modifier : Yunho Choi (choiking10@kaist.ac.kr)
  */
 
