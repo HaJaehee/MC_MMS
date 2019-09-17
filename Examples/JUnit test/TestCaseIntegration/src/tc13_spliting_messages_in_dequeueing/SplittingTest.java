@@ -3,6 +3,7 @@ import static org.junit.Assert.*;
 
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -14,160 +15,123 @@ import org.junit.runners.MethodSorters;
 import tc_base.MMSTestBase;
 
 /**
- * File name : SplittingTest.java
- * Author : Jin Jeong (jungst0001@kaist.ac.kr) 
- * Creation Date : 2019-09-16
+File name : SplittingTest.java
+Author : Jin Jeong (jungst0001@kaist.ac.kr) 
+Creation Date : 2019-09-16
+ 
+Rev. history : 2019-09-17
+Version : 0.9.5
+	Create 'repeatTest', 'verification' method. This method will be used to test message splitting function.
+	Create Testcase 01-06 using repeatTest method.
+	
+	Modifier : Yunho Choi (choiking10@kaist.ac.kr)
  */
 
 @FixMethodOrder(MethodSorters.DEFAULT)
 public class SplittingTest extends MMSTestBase {
+	final static String clientMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
+	final static String providerMRN = "urn:mrn:imo:imo-no:ts-mms-13-server";
+	final static String mmsMRN = "urn:mrn:smart-navi:device:mms1";
+
+	final static int KB = 1024;
+	final static int MB = 1024*1024;
+	final static int LIMITED = 40 * MB;
+	final static int OFFSET = 3;
+	final static int START_OFFSET = 1;
+	final static int SLEEP_TIME = 1000;
+	
 	static PollingClient client;
 	static MessageProvider server;
-	static int offset;
 	
 	@BeforeClass 
 	public static void setupForClass() throws Exception {
-		client = new PollingClient();
-		server = new MessageProvider();
-		offset = 4;
+		client = new PollingClient(clientMRN, mmsMRN, providerMRN);
+		server = new MessageProvider(providerMRN, clientMRN);
 	}
 
-	@AfterClass
-	public static void afterClass() {
-		server.terminateServer();
+	public void repeatTest(int repeated, int perSize, int limited)  throws IOException, InterruptedException {	
+		int[] sizeArray = new int[repeated];
+		Arrays.fill(sizeArray,  perSize);
+		repeatTest(sizeArray, limited);
+	}
+	
+	public void repeatTest(int[] sizeArray, int limited) throws IOException, InterruptedException {	
+		for(int i = 0; i < sizeArray.length; i++) {
+			server.sendFixedSizeMessage(sizeArray[i]);
+			Thread.sleep(SLEEP_TIME);
+			
+			System.out.println(String.format("Send %d-messages", i));
+		}
+		
+		verification(sizeArray, limited);
+	}
+	
+	public void verification(int[] sizeArray, int limited) throws IOException, InterruptedException {	
+		int received = 0;
+
+		// simulation of MMS Server
+		int consumption = START_OFFSET;
+		
+		
+		for(int i = 0; i < sizeArray.length; i++) {
+			if (consumption + sizeArray[i] <= limited) {
+				consumption += sizeArray[i];
+				consumption += OFFSET; // @TODO when offset insert in size?
+			} else {
+				received = client.pollingReqeust();	
+				assertTrue(String.format("received=%d, predicted=%d", received,  consumption), received==consumption);
+				Thread.sleep(SLEEP_TIME);
+				
+				System.out.println(String.format("received=%d, predicted=%d", received,  consumption));
+				
+				consumption = START_OFFSET + sizeArray[i] + OFFSET;
+			}
+			
+			if (i+1 == sizeArray.length) {
+				// polling start
+				received = client.pollingReqeust();	
+				assertTrue(String.format("received=%d, predicted=%d", received,  consumption), received==consumption);	
+				System.out.println(String.format("received=%d, predicted=%d", received,  consumption));
+				Thread.sleep(SLEEP_TIME);
+			}
+		}
+		
+		received = client.pollingReqeust();	
+		Thread.sleep(SLEEP_TIME);
+		
+		assertTrue(String.format("received=%d, predicted=%d", received,  0), received == 0);	
+		System.out.println(String.format("received=%d, predicted=%d all clear", received,  0));
 	}
 	
 	@Test
 	public void test01() throws IOException, InterruptedException {		
-		int expected = 0;
-		int actual = 20*1024*1024;				
-				
-		server.sendContent("files/file20MB.txt",actual);	
-		Thread.sleep(1000);
-		server.sendContent("files/file20MB.txt",actual);	
-		Thread.sleep(1000);
-		server.sendContent("files/file20MB.txt",actual);	
-		Thread.sleep(1000);
-		
-		System.out.println("response : " +server.getResponse());
-		expected = client.pollingReqeust();	
-		Thread.sleep(1000);
-//		assertTrue(server.getResponse() == 200);		
-		assertTrue(expected==(actual*2)+offset);		
+		repeatTest(1, 10 * MB, LIMITED);
+	}
+
+	@Test
+	public void test02() throws IOException, InterruptedException {		
+		repeatTest(2, 10 * MB, LIMITED);
+	}
+
+	@Test
+	public void test03() throws IOException, InterruptedException {		
+		repeatTest(3, 10 * MB, LIMITED);
+	}
+
+	@Test
+	public void test04() throws IOException, InterruptedException {		
+		repeatTest(4, 10 * MB, LIMITED);
+	}
+
+	@Test
+	public void test05() throws IOException, InterruptedException {		
+		repeatTest(10, 10 * MB, LIMITED);
 	}
 	
-//	@Test
-//	public void test02() throws IOException {
-//		int expected = 0;
-//		int actual = 170;				
-//				
-//		server.sendContent("files/file170B.txt",actual);	
-//		expected = client.pollingReqeust();		
-//		System.out.println("expected : " +expected);
-//		assertTrue(server.getResponse() == 200);		
-//		assertTrue(expected==(actual)+offset);					
-//	}
-//	@Test
-//	public void test03() throws IOException {
-//		int expected = 0;
-//		int actual = 3*1024;				
-//				
-//		server.sendContent("files/file3KB.txt",actual);	
-//		expected = client.pollingReqeust();		
-//		assertTrue(server.getResponse() == 200);		
-//		assertTrue(expected==(actual)+offset);			
-//	}
-//	@Test
-//	public void test04() throws IOException {
-//		int expected = 0;
-//		int actual = 200*1024;				
-//				
-//		server.sendContent("files/file200KB.txt",actual);	
-//		expected = client.pollingReqeust();		
-//		assertTrue(server.getResponse() == 200);		
-//		assertTrue(expected==(actual)+offset);				
-//	}
-//	@Test
-//	public void test05() throws IOException {
-//		int expected = 0;
-//		int actual = 500*1024;				
-//				
-//		server.sendContent("files/file500KB.txt",actual);	
-//		expected = client.pollingReqeust();		
-//		assertTrue(server.getResponse() == 200);		
-//		assertTrue(expected==(actual)+offset);		
-//	}
-//	@Test
-//	public void test06() throws IOException {
-//		int expected = 0;
-//		int actual = 2*1024*1024;				
-//				
-//		server.sendContent("files/file2MB.txt",actual);	
-//		expected = client.pollingReqeust();		
-//		assertTrue(server.getResponse() == 200);		
-//		assertTrue(expected==(actual)+offset);		
-//	}
-//	@Test
-//	public void test07() throws IOException {
-//		int expected = 0;
-//		int actual = 7*1024*1024;				
-//				
-//		server.sendContent("files/file7MB.txt",actual);	
-//		expected = client.pollingReqeust();		
-//		assertTrue(server.getResponse() == 200);		
-//		assertTrue(expected==(actual)+offset);		
-//	}
-//	@Test
-//	public void test08() throws IOException {
-//		int expected = 0;
-//		int actual = 10*1024*1024;				
-//				
-//		server.sendContent("files/file10MB.txt",actual);	
-//		expected = client.pollingReqeust();		
-//		assertTrue(server.getResponse() == 200);		
-//		assertTrue(expected==(actual)+offset);	
-//	}
-//	@Test
-//	public void test09() throws IOException {
-//		int expected = 0;
-//		int actual = 20*1024*1024;				
-//				
-//		server.sendContent("files/file20MB.txt",actual);	
-//		expected = client.pollingReqeust();		
-//		assertTrue(server.getResponse() == 200);		
-//		assertTrue(expected==(actual)+offset);		
-//	}
-//	@Test
-//	public void test10() throws IOException {
-//		int expected = 0;
-//		int actual = 30*1024*1024;				
-//				
-//		server.sendContent("files/file30MB.txt",actual);	
-//		expected = client.pollingReqeust();		
-//		assertTrue(server.getResponse() == 200);		
-//		assertTrue(expected==(actual)+offset);		
-//	}
-//	@Test
-//	public void test11() throws IOException {
-//		int expected = 0;
-//		int actual = 40*1024*1024;				
-//				
-//		server.sendContent("files/file40MB.txt",actual);	
-//		expected = client.pollingReqeust();		
-//		assertTrue(server.getResponse() == 200);		
-//		assertTrue(expected==(actual)+offset);	
-//	}
-//	@Test
-//	public void test12() throws IOException {
-//		int expected = 0;
-//		int actual = 50*1024*1024;				
-//				
-//		server.sendContent("files/file50MB.txt",actual);			
-//		
-//		assertTrue(server.getResponse() == 413);
-//		
-//		
-//	}
-	
-
+	@Test
+	public void test06() throws IOException, InterruptedException {		
+		repeatTest(
+				new int[] {10 * MB, 20 * MB, 500 * KB, 300 * KB, 5 * MB, 4 * MB, 10 * MB, 10 * MB, 10 * MB, 30 * MB},
+				LIMITED);
+	}
 }

@@ -10,23 +10,33 @@ import net.etri.pkilib.client.ClientPKILibrary;
 import net.etri.pkilib.tool.ByteConverter;
 
 /**
- * File name : PollingClient.java
- * Author : Jin Jeong (jungst0001@kaist.ac.kr) 
- * Creation Date : 2019-09-16
+File name : PollingClient.java
+Author : Jin Jeong (jungst0001@kaist.ac.kr) 
+Creation Date : 2019-09-16
+ 
+ 
+Rev. history : 2019-09-17
+Version : 0.9.5
+	Add Constructor parameter for MRN.
+	
+	Modifier : Yunho Choi (choiking10@kaist.ac.kr)
+
  */
 
 public class PollingClient {
 	private int content_length = 0;
-	
-//	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-03-client";
-	private String myMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
-	private String dstMRN = "urn:mrn:smart-navi:device:mms1";
-	private String svcMRN = "urn:mrn:imo:imo-no:ts-mms-13-server";
+
+	private String myMRN;
+	private String dstMRN;
+	private String svcMRN;
 	private MMSClientHandler myHandler = null;
 	private MMSClientHandler.PollingResponseCallback callback = null;
 	private static int length = -1;
 	
-	public PollingClient(){
+	public PollingClient(String myMRN, String dstMRN, String svcMRN){
+		this.myMRN = myMRN;
+		this.dstMRN = dstMRN;
+		this.svcMRN = svcMRN;
 		
 		try {
 			myHandler = new MMSClientHandler(myMRN);
