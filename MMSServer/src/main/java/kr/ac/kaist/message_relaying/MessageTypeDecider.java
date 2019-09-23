@@ -152,6 +152,7 @@ public class MessageTypeDecider {
 			NULL_SRC_MRN,
 			NULL_DST_MRN,
 			NULL_MRN,
+			PRIORITY_ERROR,
 			INVALID_SRC_MRN,
 			INVALID_DST_MRN,
 			INVALID_HTTP_METHOD,
@@ -231,6 +232,10 @@ public class MessageTypeDecider {
 		else if (dstMRN == null) {
 			
 			return msgType.NULL_DST_MRN;
+		}
+	   	
+		else if (parser.getPriority() < 0) {
+			return msgType.PRIORITY_ERROR;
 		}
 	   	
 		else if (srcMRN.equals(MMSConfiguration.getMmsMrn())) {

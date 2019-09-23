@@ -133,7 +133,7 @@ public class PriorityTest extends MMSTestBase {
 				
 				int code = Integer.parseInt(headerField.get("Response-code").get(0));
 				System.out.println("response message: "+message);
-				assertNotEquals(code, 200);
+				assertEquals(getErrorCode(message), "10016");
 			}
 		});
 		server.sendContent("a", "wrong");
@@ -150,9 +150,13 @@ public class PriorityTest extends MMSTestBase {
 				
 				int code = Integer.parseInt(headerField.get("Response-code").get(0));
 				System.out.println("response message: "+message);
-				assertNotEquals(code, 200);
+				assertEquals(getErrorCode(message), "10016");
 			}
 		});
 		server.sendContent("11", "wrong");
+	}
+	
+	public String getErrorCode(String s) {
+		return s.substring(1, 6);
 	}
 }

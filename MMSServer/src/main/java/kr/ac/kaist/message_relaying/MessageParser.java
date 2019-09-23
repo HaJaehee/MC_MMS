@@ -501,7 +501,7 @@ public class MessageParser {
 		return ret;
 	}
 	
-	private int setPriority (FullHttpRequest req) throws IOException {
+	private int setPriority (FullHttpRequest req) throws NumberFormatException {
 		String s_priority = req.headers().get("priority");
 		int priority = 0;
 		
@@ -509,13 +509,19 @@ public class MessageParser {
 //			mmsLog.debug(logger, this.sessionId, "Default priority message.");
 		}
 		else {
-			priority = Integer.parseInt(s_priority);
+			try {
+				priority = Integer.parseInt(s_priority);
+			} catch (NumberFormatException e) {
+				this.priority = -1;
+				throw e;
+			}
 //			mmsLog.debug(logger, this.sessionId, "Defined priority message.");
+
 			
 			if (priority < PriorityMessageQueueManager.MIN_PRIORITY || priority > PriorityMessageQueueManager.MAX_PRIORITY) {
-//				priority = 0;
 				mmsLog.info(logger, this.sessionId, ErrorCode.OUT_OF_RANGE_PRIORITY.toString());
-				throw new IOException ();
+				this.priority = -1;
+				throw new NumberFormatException();
 			}
 		}
 		

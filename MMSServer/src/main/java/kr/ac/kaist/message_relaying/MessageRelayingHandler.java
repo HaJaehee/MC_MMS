@@ -282,6 +282,7 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import java.awt.TrayIcon.MessageType;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
@@ -482,6 +483,10 @@ public class MessageRelayingHandler  {
 		else if (bean.getType() == MessageTypeDecider.msgType.NULL_DST_MRN) {
 			isErrorOccured = true;
 			message = ErrorCode.NULL_DST_MRN.getUTF8Bytes();
+		}
+		else if (bean.getType() == MessageTypeDecider.msgType.PRIORITY_ERROR) {
+			isErrorOccured = true;
+			message = ErrorCode.OUT_OF_RANGE_PRIORITY.getUTF8Bytes();
 		}
 		// TODO: Youngjin Kim must inspect this following code.
 		//This code MUST be 'else if' statement not 'if'. 
