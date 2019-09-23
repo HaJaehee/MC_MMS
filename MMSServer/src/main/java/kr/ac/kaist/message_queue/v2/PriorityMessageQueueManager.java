@@ -18,6 +18,10 @@ Rev. history : 2019-09-10
 Version : 0.9.5
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 
+Rev. history : 2019-09-23
+Version : 0.9.5
+	Added max, min priority.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -26,6 +30,8 @@ public class PriorityMessageQueueManager extends MessageQueueManager {
 	protected int priority;
 	private static final Logger logger = LoggerFactory.getLogger(PriorityMessageQueueManager.class);
 	public static final int DEFAULT_PRIORITY = 0;
+	public static final int MAX_PRIORITY = 10;
+	public static final int MIN_PRIORITY = 0;
 
 	public PriorityMessageQueueManager(String sessionId, int proirty) {
 		super(sessionId);

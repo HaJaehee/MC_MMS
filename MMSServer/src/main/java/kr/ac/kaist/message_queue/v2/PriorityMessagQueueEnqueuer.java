@@ -71,7 +71,7 @@ public class PriorityMessagQueueEnqueuer extends MessageQueueEnqueuer {
 			channel = connection.createChannel();
 			
 			Map<String, Object> args = new HashMap<String, Object>();
-			args.put("x-max-priority", 10);
+			args.put("x-max-priority", PriorityMessageQueueManager.MAX_PRIORITY);
 //			args.put("13", 10);
 			
 			channel.queueDeclare(queueName, true, false, false, args);

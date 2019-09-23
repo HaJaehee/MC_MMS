@@ -38,6 +38,11 @@ Rev. history : 2019-09-16
 Version : 0.9.5
 	Added dequeue fail error code.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-09-23
+Version : 0.9.5
+	Added priority error code.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -66,6 +71,7 @@ public enum ErrorCode {
 	MESSAGE_PARSING_ERROR("10013", "Message parsing error."),
 	MIR_API_ERROR("10014","MIR API error."),
 	INVALID_HTTP_METHOD("10015","Invalid HTTP method."),
+	OUT_OF_RANGE_PRIORITY("10016","Priority is out of range."),
 	
 	// Numbers greater than 10000 and lower than 20000 are internal error codes.
 	// Number 11XXX is related to configuration of MMS.

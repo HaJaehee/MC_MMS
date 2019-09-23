@@ -44,6 +44,11 @@ Rev. history : 2019-09-17
 Version : 0.9.5
 	Indicated maximum priority of a queue.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-09-23
+Version : 0.9.5
+	Fixed bug.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -60,7 +65,8 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 	 * 
 	 * @param messages	stored messages
 	 * @param res		dequeued message
-	 * @return			if the summation of size of both stored messages and dequeued message exceeds the maximum contents,
+	 * @return			if the summation of size of both stored messages and dequeued message 
+	 * 						exceeds the maximum contents,
 	 * 					return false
 	 */
 	protected boolean checkMessageSize(StringBuffer messages, GetResponse res) {
@@ -71,6 +77,10 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 		if (input != null) {
 			int current_size = messages.toString().getBytes().length;
 			int input_size = input.getBytes().length;
+			
+			System.out.println("current size: " + current_size);
+			System.out.println("input size: " + input_size);
+			System.out.println("MAX Size: " + MAX_SIZE);
 			
 			if (MAX_SIZE <= current_size + input_size) {
 				return true;
@@ -131,7 +141,7 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 	public String encodeMessage(GetResponse res) {
 		String content = null;
 		try {
-			content = "\""+URLEncoder.encode(new String(res.getBody()),"UTF-8")+"\"";
+			content = "" + URLEncoder.encode(new String(res.getBody()),"UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			mmsLog.info(logger, sessionId, ErrorCode.MESSAGE_ENCODING_ERROR.toString());

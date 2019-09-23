@@ -133,6 +133,7 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import kr.ac.kaist.message_casting.GeolocationCircleInfo;
 import kr.ac.kaist.message_casting.GeolocationPolygonInfo;
+import kr.ac.kaist.message_queue.v2.PriorityMessageQueueManager;
 import kr.ac.kaist.message_relaying.MessageTypeDecider.msgType;
 import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
@@ -500,7 +501,7 @@ public class MessageParser {
 		return ret;
 	}
 	
-	private int setPriority (FullHttpRequest req) {
+	private int setPriority (FullHttpRequest req) throws IOException {
 		String s_priority = req.headers().get("priority");
 		int priority = 0;
 		
@@ -511,9 +512,10 @@ public class MessageParser {
 			priority = Integer.parseInt(s_priority);
 //			mmsLog.debug(logger, this.sessionId, "Defined priority message.");
 			
-			if (priority < 0 || priority > 10) {
-				priority = 0;
-				mmsLog.debug(logger, this.sessionId, "Message priority is out of range. It is modified to 0");
+			if (priority < PriorityMessageQueueManager.MIN_PRIORITY || priority > PriorityMessageQueueManager.MAX_PRIORITY) {
+//				priority = 0;
+				mmsLog.info(logger, this.sessionId, ErrorCode.OUT_OF_RANGE_PRIORITY.toString());
+				throw new IOException ();
 			}
 		}
 		
