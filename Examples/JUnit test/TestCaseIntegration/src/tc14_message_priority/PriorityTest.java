@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -14,6 +15,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import kr.ac.kaist.mms_client.MMSClientHandler;
 import tc_base.MMSTestBase;
 
 /**
@@ -27,6 +29,12 @@ Version : 0.9.5
     
     Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 
+
+Rev. history : 2019-09-23
+Version : 0.9.5
+	Add error code check testcase.
+	
+	Modifier : Yunho Choi (choiking10@kaist.ac.kr)
  */
 
 @FixMethodOrder(MethodSorters.DEFAULT)
@@ -42,6 +50,11 @@ public class PriorityTest extends MMSTestBase {
 	public static void setupForClass() throws Exception {
 		client = new PollingClient(clientMRN, mmsMRN, providerMRN);
 		server = new MessageProvider(providerMRN, clientMRN);
+	}
+	
+	@After
+	public void resetCallback() {
+		server.SetSenderCallbackMethod(server.getBasicCallback());
 	}
 	
 	public void sendMessageWithPriority(String[] priority, String[] payload, String[] expected) throws IOException, InterruptedException {		
@@ -107,6 +120,39 @@ public class PriorityTest extends MMSTestBase {
 				shuffle,
 				alphabat
 		);
-	}	
+	}
 
+	@Test
+	public void testSendWrongPriority1() throws IOException, InterruptedException {
+		server.SetSenderCallbackMethod(new MMSClientHandler.ResponseCallback() {
+			
+			@Override
+			public void callbackMethod(Map<String, List<String>> headerField, String message) {
+				// TODO Auto-generated method stub
+				assertNotEquals(headerField.get("Response-code"), null);
+				
+				int code = Integer.parseInt(headerField.get("Response-code").get(0));
+				System.out.println("response message: "+message);
+				assertNotEquals(code, 200);
+			}
+		});
+		server.sendContent("a", "wrong");
+	}
+
+	@Test
+	public void testSendWrongPriority2() throws IOException, InterruptedException {
+		server.SetSenderCallbackMethod(new MMSClientHandler.ResponseCallback() {
+			
+			@Override
+			public void callbackMethod(Map<String, List<String>> headerField, String message) {
+				// TODO Auto-generated method stub
+				assertNotEquals(headerField.get("Response-code"), null);
+				
+				int code = Integer.parseInt(headerField.get("Response-code").get(0));
+				System.out.println("response message: "+message);
+				assertNotEquals(code, 200);
+			}
+		});
+		server.sendContent("11", "wrong");
+	}
 }

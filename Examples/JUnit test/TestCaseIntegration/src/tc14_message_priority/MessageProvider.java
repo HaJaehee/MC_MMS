@@ -24,6 +24,11 @@ Version : 0.9.5
 	
 	Modifier : Yunho Choi (choiking10@kaist.ac.kr)
 
+Rev. history : 2019-09-23
+Version : 0.9.5
+	Add setting callback function.
+	
+	Modifier : Yunho Choi (choiking10@kaist.ac.kr)
  */
 
 public class MessageProvider {
@@ -31,32 +36,43 @@ public class MessageProvider {
 	private String myMRN;
 	private String dstMRN;
 	private MMSClientHandler myHandler = null;
+	private MMSClientHandler.ResponseCallback callback;
 
 	public MessageProvider(String myMRN, String dstMRN) {
 		this.myMRN = myMRN;
 		this.dstMRN = dstMRN;
+		callback = getBasicCallback();
 		
 		try {
 			myHandler = new MMSClientHandler(myMRN);
 
-			myHandler.setSender(new MMSClientHandler.ResponseCallback() {
+			myHandler.setSender( new MMSClientHandler.ResponseCallback() {
 
 				@Override
 				public void callbackMethod(Map<String, List<String>> headerField, String message) {
 					// TODO Auto-generated method stub
-					if (headerField.get("Response-code") != null) {
-						int code = Integer.parseInt(headerField.get("Response-code").get(0));
-						response = code;
-						System.out.println("Response : " +response);
-					}
+					callback.callbackMethod(headerField, message);
 				}
-
 			});
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public MMSClientHandler.ResponseCallback getBasicCallback() {
+		return new MMSClientHandler.ResponseCallback() {
 
+			@Override
+			public void callbackMethod(Map<String, List<String>> headerField, String message) {
+				// TODO Auto-generated method stub
+				if (headerField.get("Response-code") != null) {
+					int code = Integer.parseInt(headerField.get("Response-code").get(0));
+					response = code;
+					System.out.println("Response : " +response);
+				}
+			}
+		};
 	}
 
 	public int getResponse() {
@@ -82,4 +98,10 @@ public class MessageProvider {
 	public void terminateServer() {
 		myHandler.terminateServer();
 	}
+	
+	public void SetSenderCallbackMethod(MMSClientHandler.ResponseCallback callback) {
+		this.callback = callback;
+		
+	}
+	
 }
