@@ -82,7 +82,7 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 //			System.out.println("input size: " + input_size);
 //			System.out.println("MAX Size: " + MAX_SIZE);
 			
-			if (MAX_SIZE <= current_size + input_size) {
+			if (MAX_SIZE < current_size + input_size) {
 				return true;
 			}
 		}
@@ -104,7 +104,7 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 			int current_size = messages.toString().getBytes().length;
 			int input_size = body.getBytes().length;
 			
-			if (MAX_SIZE <= current_size + input_size) {
+			if (MAX_SIZE < current_size + input_size) {
 				return true;
 			}
 		}
@@ -125,7 +125,7 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 		int current_size = messages.getMessageBuffer().toString().getBytes().length;
 		int input_size = body.getBytes().length;
 		
-		if (MAX_SIZE <= current_size + input_size) {
+		if (MAX_SIZE < current_size + input_size) {
 			return true;
 		}
 		
