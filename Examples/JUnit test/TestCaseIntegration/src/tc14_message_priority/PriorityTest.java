@@ -54,7 +54,7 @@ public class PriorityTest extends MMSTestBase {
 	
 	@After
 	public void resetCallback() {
-		server.SetSenderCallbackMethod(server.getBasicCallback());
+		server.setSenderCallbackMethod(server.getBasicCallback());
 	}
 	
 	public void sendMessageWithPriority(String[] priority, String[] payload, String[] expected) throws IOException, InterruptedException {		
@@ -124,7 +124,7 @@ public class PriorityTest extends MMSTestBase {
 
 	@Test
 	public void testSendWrongPriority1() throws IOException, InterruptedException {
-		server.SetSenderCallbackMethod(new MMSClientHandler.ResponseCallback() {
+		server.setSenderCallbackMethod(new MMSClientHandler.ResponseCallback() {
 			
 			@Override
 			public void callbackMethod(Map<String, List<String>> headerField, String message) {
@@ -141,7 +141,7 @@ public class PriorityTest extends MMSTestBase {
 
 	@Test
 	public void testSendWrongPriority2() throws IOException, InterruptedException {
-		server.SetSenderCallbackMethod(new MMSClientHandler.ResponseCallback() {
+		server.setSenderCallbackMethod(new MMSClientHandler.ResponseCallback() {
 			
 			@Override
 			public void callbackMethod(Map<String, List<String>> headerField, String message) {

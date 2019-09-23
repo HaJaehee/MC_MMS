@@ -99,7 +99,7 @@ public class MessageProvider {
 		myHandler.terminateServer();
 	}
 	
-	public void SetSenderCallbackMethod(MMSClientHandler.ResponseCallback callback) {
+	public void setSenderCallbackMethod(MMSClientHandler.ResponseCallback callback) {
 		this.callback = callback;
 		
 	}
