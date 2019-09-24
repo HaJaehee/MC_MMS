@@ -355,7 +355,7 @@ public class MessageQueueDequeuer extends Thread{
 	    	if (SessionManager.getSessionType(this.sessionId) != null) {
 	    		SessionManager.removeSessionInfo(this.sessionId);
 	    	}
-	    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId)!=null) {
+	    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId)!=0) {
 	    		SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
 	    	}
 	    	try {
@@ -455,7 +455,7 @@ public class MessageQueueDequeuer extends Thread{
 							    		SessionManager.removeSessionInfo(sessionId);
 							    	}
 							    	
-							    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId)!=null) {
+							    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId)!=0) {
 							    		SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
 							    	}
 							    	

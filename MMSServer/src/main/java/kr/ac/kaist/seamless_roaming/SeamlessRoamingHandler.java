@@ -91,6 +91,7 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
+import kr.ac.kaist.message_relaying.MRH_MessageInputChannel.ChannelBean;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.MessageParser;
 import kr.ac.kaist.message_relaying.MessageTypeDecider;
@@ -124,7 +125,8 @@ public class SeamlessRoamingHandler {
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
 
-	private static HashMap<String, Integer> duplicateInfo = new HashMap<>();
+	private static HashMap<String, DupInfoRefCntAndChannelBean> duplicateInfo = new HashMap<>();
+
 	
 
 	public SeamlessRoamingHandler(String sessionId) {
@@ -263,7 +265,8 @@ public class SeamlessRoamingHandler {
 			// Youngjin code
 			// Duplicated polling request is not allowed.
 			String duplicateId = bean.getParser().getSrcMRN() + bean.getParser().getSvcMRN();
-			retainDuplicateInfo(duplicateId);
+		
+			retainDuplicateInfo(duplicateId, bean);
 			
 			if (getDuplicateInfoCnt(duplicateId) > 1) {
 				
@@ -302,18 +305,45 @@ public class SeamlessRoamingHandler {
 		}
 	}
 	
-	public static Integer getDuplicateInfoCnt(String duplicateId) {
+	public static int getDuplicateInfoCnt(String duplicateId) {
 		synchronized(duplicateInfo) {
-			return duplicateInfo.get(duplicateId);
+			DupInfoRefCntAndChannelBean obj = duplicateInfo.get(duplicateId);
+			if (obj != null) {
+				return obj.getRefCnt();
+			}
+			else {
+				return 0;
+			}
 		}
 	}
 	
-	public static void retainDuplicateInfo(String duplicateId) {
+	public static void retainDuplicateInfo(String duplicateId, ChannelBean bean) {
 		synchronized(duplicateInfo) {
 
 			//System.out.println("Retain Dup");
-			Integer refCnt = duplicateInfo.get(duplicateId);
-			duplicateInfo.put(duplicateId, refCnt == null? new Integer(1) : (Integer) (refCnt.intValue() + 1));
+			DupInfoRefCntAndChannelBean obj = duplicateInfo.get(duplicateId);
+			if (obj == null) {
+				obj = new DupInfoRefCntAndChannelBean(bean);
+				obj.setRefCnt(1);
+				System.out.println(obj.getRefCnt());
+				duplicateInfo.put(duplicateId,obj);
+			}
+			else {
+				ChannelBean beanInDupInfo = obj.getBean();
+				
+				beanInDupInfo.getCtx().channel().disconnect();
+				beanInDupInfo.getCtx().channel().close();
+				beanInDupInfo.getCtx().disconnect();
+				beanInDupInfo.getCtx().close();
+					
+				int refCnt = obj.getRefCnt();
+				DupInfoRefCntAndChannelBean obj2 = new DupInfoRefCntAndChannelBean(bean);
+				obj2.setRefCnt(refCnt);
+				
+				System.out.println(obj2.getRefCnt());
+				
+				duplicateInfo.put(duplicateId,obj2);
+			}
 		}
 	}
 	
@@ -321,16 +351,21 @@ public class SeamlessRoamingHandler {
 		synchronized(duplicateInfo) {
 
 			//System.out.println("Release Dup");
-			Integer refCnt = duplicateInfo.get(duplicateId);
-			if (refCnt != null) {
-				if (refCnt.intValue() == 1) {
+			DupInfoRefCntAndChannelBean obj = duplicateInfo.get(duplicateId);
+			if (obj != null) {
+				int refCnt = obj.getRefCnt();
+				if (refCnt == 1) {
+					System.out.println(obj.getRefCnt());
 					duplicateInfo.remove(duplicateId);
 				}
 				else {
-					duplicateInfo.put(duplicateId, (Integer) (refCnt.intValue() - 1));
+					obj.setRefCnt(refCnt - 1);
+					System.out.println(obj.getRefCnt());
 				}
 			}
 		}
 	}
+	
+
 }
 

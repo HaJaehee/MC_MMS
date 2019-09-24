@@ -362,6 +362,10 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     		} 
     		else if (clientType.equals("lp")) {
     			mmsLog.info(logger, this.sessionId, ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
+    			LinkedList<ChannelTerminateListener> listeners = ctx.channel().attr(TERMINATOR).get();
+    	        for(ChannelTerminateListener listener: listeners) {
+    	        	listener.terminate(ctx);
+    	        }
     		}
     		else {
     			mmsLog.info(logger, this.sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
