@@ -183,7 +183,7 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2019-09-25
 Version : 0.9.5
  	Revised bugs related to not allowing duplicated long polling request 
- 	    when a MMS Client loses connection with MMS because of network disconnection.
+ 	    when a MMS Client loses connection with MMS because of unexpected network disconnection.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
