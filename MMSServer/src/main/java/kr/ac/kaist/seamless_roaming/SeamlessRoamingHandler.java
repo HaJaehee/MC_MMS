@@ -284,7 +284,6 @@ public class SeamlessRoamingHandler {
 					mmsLog.debug(logger, bean.getSessionId(), ErrorCode.DUPLICATED_POLLING.toString());
 					try {
 						beanInDupInfo.getOutputChannel().replyToSender(bean, message);
-						beanInDupInfo.release();
 						beanInDupInfo.getCtx().fireChannelInactive();
 					} catch (IOException e) {
 						mmsLog.infoException(logger, beanInDupInfo.getSessionId(), ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString(), new IOException(), 5);
