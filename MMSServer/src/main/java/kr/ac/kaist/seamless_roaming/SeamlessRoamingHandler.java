@@ -280,10 +280,10 @@ public class SeamlessRoamingHandler {
 					DupInfoRefCntAndChannelBean obj = duplicationInfo.get(duplicationId);
 					ChannelBean beanInDupInfo = obj.getBean();
 					
-					message = ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes();
+				
 					mmsLog.debug(logger, bean.getSessionId(), ErrorCode.DUPLICATED_POLLING.toString());
 					try {
-						beanInDupInfo.getOutputChannel().replyToSender(bean, message);
+						beanInDupInfo.getOutputChannel().replyToSender(bean, ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes());
 						beanInDupInfo.getCtx().fireChannelInactive();
 					} catch (IOException e) {
 						mmsLog.infoException(logger, beanInDupInfo.getSessionId(), ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString(), new IOException(), 5);
