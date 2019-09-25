@@ -284,9 +284,10 @@ public class SeamlessRoamingHandler {
 					mmsLog.debug(logger, bean.getSessionId(), ErrorCode.DUPLICATED_POLLING.toString());
 					try {
 						beanInDupInfo.getOutputChannel().replyToSender(bean, message);
+						beanInDupInfo.release();
 						beanInDupInfo.getCtx().fireChannelInactive();
 					} catch (IOException e) {
-						mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString(), new IOException(), 5);
+						mmsLog.infoException(logger, beanInDupInfo.getSessionId(), ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString(), new IOException(), 5);
 					}
 						
 					int refCnt = obj.getRefCnt();
@@ -356,12 +357,12 @@ public class SeamlessRoamingHandler {
 			if (obj != null) {
 				int refCnt = obj.getRefCnt();
 				if (refCnt == 1) {
-					System.out.println(obj.getRefCnt());
+					//System.out.println(obj.getRefCnt());
 					duplicationInfo.remove(duplicationId);
 				}
 				else {
 					obj.setRefCnt(refCnt - 1);
-					System.out.println(obj.getRefCnt());
+					//System.out.println(obj.getRefCnt());
 				}
 			}
 		}
