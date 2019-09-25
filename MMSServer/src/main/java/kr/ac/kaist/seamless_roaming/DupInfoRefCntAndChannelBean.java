@@ -1,4 +1,14 @@
 package kr.ac.kaist.seamless_roaming;
+/* -------------------------------------------------------- */
+/** 
+File name : DupInfoRefCntAndChannelBean.java
+	It has a reference count and a channel bean.
+Author : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+Creation Date : 2019-09-25
+Version : 0.9.5
+
+**/
+/* -------------------------------------------------------- */
 
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 

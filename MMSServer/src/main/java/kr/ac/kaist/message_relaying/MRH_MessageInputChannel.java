@@ -138,15 +138,21 @@ Version : 0.9.4
 	Introduced MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
- Rev. history : 2019-07-16
- Version : 0.9.4
+Rev. history : 2019-07-16
+Version : 0.9.4
  	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
  
- Rev. history : 2019-07-16
- Version : 0.9.4
+Rev. history : 2019-07-16
+Version : 0.9.4
  	Added bean release() in channelInactive().
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+ 
+Rev. history : 2019-09-25
+Version : 0.9.5
+ 	Revised bugs related to not allowing duplicated long polling request 
+ 	    when a MMS Client loses connection with MMS because of network disconnection.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -194,7 +200,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     
     private ChannelBean bean = null;
 	
-    private String duplicateId="";
+    private String duplicationId="";
 
 	public MRH_MessageInputChannel(String protocol) {
 		super();
@@ -265,7 +271,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			
 			String svcMRN = parser.getSvcMRN();
     		String srcMRN = parser.getSrcMRN();
-    		duplicateId = srcMRN+svcMRN;
+    		duplicationId = srcMRN+svcMRN;
 
     		ctx.channel().attr(TERMINATOR).set(new LinkedList<ChannelTerminateListener>());
     		
