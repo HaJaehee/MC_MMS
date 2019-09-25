@@ -183,6 +183,12 @@ Rev. history : 2019-09-11
 Version : 0.9.5
  	Added a function that message is split along the maximum message size.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-09-25
+Version : 0.9.5
+ 	Revised bugs related to not allowing duplicated long polling request
+ 	    when a MMS Client loses connection with MMS because of unexpected network disconnection.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -231,7 +237,7 @@ public class MessageQueueDequeuer extends Thread{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueDequeuer.class);
 	protected String sessionId = "";
-	protected String duplicateId="";
+	protected String duplicationId="";
 	protected MRH_MessageInputChannel.ChannelBean bean = null;
 	protected String queueName = null;
 	protected String srcMRN = null;
@@ -245,7 +251,7 @@ public class MessageQueueDequeuer extends Thread{
 
 	
 	protected MMSLog mmsLog = null;
-	
+
 	protected MessageQueueDequeuer (String sessionId) {
 		this.sessionId = sessionId;
 		mmsLog = MMSLog.getInstance();
@@ -259,7 +265,7 @@ public class MessageQueueDequeuer extends Thread{
 		this.bean = bean;
 		this.queueName = srcMRN+"::"+svcMRN;
 		this.pollingMethod = bean.getType();
-		this.duplicateId = srcMRN+svcMRN;		
+		this.duplicationId = srcMRN+svcMRN;
 		
 		this.start();
 
@@ -288,8 +294,8 @@ public class MessageQueueDequeuer extends Thread{
 	public void run() {
 		// TODO: Youngjin Kim must inspect this following code.
 //		super.run();
-		
-		int connId = (int) (Long.decode("0x"+this.sessionId) % connectionPoolSize);
+
+        int connId = (int) (Long.decode("0x"+this.sessionId) % connectionPoolSize);
 		if (connectionPool.get(connId) == null || !connectionPool.get(connId).isOpen()) {
 			try {
 				connectionPool.set(connId, connFac.newConnection());
@@ -316,7 +322,7 @@ public class MessageQueueDequeuer extends Thread{
 		try {
 			Map<String, Object> args = new HashMap<String, Object>();
 			args.put("x-max-priority", 10);
-			
+
 			mqChannel.queueDeclare(queueName, true, false, false, args);
 		}
 		catch (IOException e) {
@@ -333,7 +339,6 @@ public class MessageQueueDequeuer extends Thread{
 		int msgCount = 0;
 		do { //Check that the queue having queueName has a message
 			try {
-				// TODO: requeue the message in the head of the queue.
 				res = mqChannel.basicGet(queueName, true);
 			}
 			catch (IOException e) {
@@ -368,8 +373,8 @@ public class MessageQueueDequeuer extends Thread{
 	    	if (SessionManager.getSessionType(this.sessionId) != null) {
 	    		SessionManager.removeSessionInfo(this.sessionId);
 	    	}
-	    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId)!=null) {
-	    		SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
+	    	if(SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId)!=0) {
+	    		SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId);
 	    	}
 	    	try {
 	    		bean.getOutputChannel().replyToSender(bean, message.toString().getBytes());
@@ -468,8 +473,8 @@ public class MessageQueueDequeuer extends Thread{
 							    		SessionManager.removeSessionInfo(sessionId);
 							    	}
 							    	
-							    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId)!=null) {
-							    		SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
+							    	if(SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId)!=0) {
+							    		SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId);
 							    	}
 							    	
 							    	try {
@@ -542,9 +547,9 @@ public class MessageQueueDequeuer extends Thread{
 					@Override
 					public void terminate(ChannelHandlerContext ctx) {
 
-						Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId);
+						Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId);
 						if (duplicateInfoCnt != null) {
-							SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
+							SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId);
 						}
 						if (bean != null && bean.refCnt() > 0) {
 							//mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
@@ -686,7 +691,7 @@ public class MessageQueueDequeuer extends Thread{
 
 	public void clear(boolean clearMqChannel, boolean clearMrns) {
 		this.pollingMethod = null;
-		this.duplicateId = null;
+		this.duplicationId = null;
 		if (clearMrns) {
 			this.srcMRN = null;
 			this.svcMRN = null;

@@ -196,38 +196,7 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 	protected boolean consumeMessage(DequeuedMessages dqMessages) {
 		final boolean[] dequeue_flag = new boolean[1];
 		dequeue_flag[0] = false;
-		
-//		mmsLog.debug(logger, sessionId, "메시지 큐 검사");
-		
-//		DefaultConsumer consumer = new DefaultConsumer(mqChannel) {
-//			@Override
-//			public void handleDelivery(String consumerTag, Envelope envelope, 
-//					BasicProperties properties, byte[] body) throws IOException {
-//				String message = new String(body, "UTF-8");
-//			    MessageLimitSizeDequeuer.this.consumerTag = consumerTag;
-//			    
-//			    boolean isExceeded = checkMessageSize(dqMessages, message);
-//			    mmsLog.debug(logger, sessionId, "메시지 버퍼 크기 검사");
-//			    
-//			    if (isExceeded) {
-//			    	mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
-//			    	dequeue_flag[0] = false;
-////			    	System.out.println("\u001B[34m" + "메시지 초과" + "\u001B[0m");
-//			    	mmsLog.debug(logger, sessionId, "메시지 초과");
-//			    }
-//			    else {
-//			    	mqChannel.basicAck(envelope.getDeliveryTag(), false);
-//			    	dqMessages.append(message);
-//			    	dequeue_flag[0] = true;
-//			    	
-////			    	System.out.println("\u001B[34m" + "메시지 버퍼에 넣음" + "\u001B[0m");
-//			    	mmsLog.debug(logger, sessionId, "메시지 버퍼에 넣음");
-//			    }
-//			    
-//			    mqChannel.basicCancel(consumerTag);
-//			}
-//		};
-		
+
 		try {
 			GetResponse res = mqChannel.basicGet(queueName, false);
 			
@@ -315,8 +284,8 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 	    	if (SessionManager.getSessionType(this.sessionId) != null) {
 	    		SessionManager.removeSessionInfo(this.sessionId);
 	    	}
-	    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId)!=null) {
-	    		SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
+	    	if(SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId)!=0) {
+	    		SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId);
 	    	}
 	    	try {
 	    		bean.getOutputChannel().replyToSender(bean, dqMessages.getMessages().getBytes());
@@ -356,6 +325,8 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 	    	}
 		} 
 		else { //If the queue does not have any message, message count == 0
+            dqMessages.clear();
+
 			if (pollingMethod == MessageTypeDecider.msgType.POLLING ) {//If polling method is normal polling
 				mmsLog.debug(logger, this.sessionId, "Empty queue="+queueName+".");
 
@@ -412,8 +383,8 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 							    		SessionManager.removeSessionInfo(sessionId);
 							    	}
 							    	
-							    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId)!=null) {
-							    		SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
+							    	if(SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId) != 0) {
+							    		SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId);
 							    	}
 							    	
 							    	try {
@@ -486,9 +457,9 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 					@Override
 					public void terminate(ChannelHandlerContext ctx) {
 
-						Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId);
+						Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId);
 						if (duplicateInfoCnt != null) {
-							SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
+							SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId);
 						}
 						if (bean != null && bean.refCnt() > 0) {
 							//mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());

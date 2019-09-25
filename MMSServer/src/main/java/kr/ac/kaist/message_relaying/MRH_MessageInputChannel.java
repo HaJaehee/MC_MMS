@@ -138,15 +138,21 @@ Version : 0.9.4
 	Introduced MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
- Rev. history : 2019-07-16
- Version : 0.9.4
+Rev. history : 2019-07-16
+Version : 0.9.4
  	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
  
- Rev. history : 2019-07-16
- Version : 0.9.4
+Rev. history : 2019-07-16
+Version : 0.9.4
  	Added bean release() in channelInactive().
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-09-25
+Version : 0.9.5
+ 	Revised bugs related to not allowing duplicated long polling request
+ 	    when a MMS Client loses connection with MMS because of unexpected network disconnection.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -194,7 +200,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     
     private ChannelBean bean = null;
 	
-    private String duplicateId="";
+    private String duplicationId="";
 
 	public MRH_MessageInputChannel(String protocol) {
 		super();
@@ -250,9 +256,9 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			this.parser = new MessageParser(sessionId);
 			bean = new ChannelBean(protocol, ctx, req, sessionId, parser);
 			bean.retain();
-			
+
 			ctx.channel().attr(TERMINATOR).set(new LinkedList<ChannelTerminateListener>());
-			
+
 			//System.out.println("0-"+bean.refCnt());
 			//System.out.println("0-"+bean.getReq().refCnt());
 			try {
@@ -261,7 +267,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			} catch (IOException | NumberFormatException | NullPointerException  e) {
 				mmsLog.info(logger, sessionId, ErrorCode.MESSAGE_PARSING_ERROR.toString());
 //				bean.getOutputChannel().replyToSender(bean, ErrorCode.MESSAGE_PARSING_ERROR.getUTF8Bytes(), 400);
-//				
+//
 //				return;
 			} 
 			if (!parser.isRealtimeLogReq()) {
@@ -270,8 +276,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			
 			String svcMRN = parser.getSvcMRN();
     		String srcMRN = parser.getSrcMRN();
-    		duplicateId = srcMRN+svcMRN;
-    		
+    		duplicationId = srcMRN+svcMRN;
+
             relayingHandler = new MessageRelayingHandler(bean);
 			//System.out.println("Successfully processed");
 		}
@@ -363,6 +369,10 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     		} 
     		else if (clientType.equals("lp")) {
     			mmsLog.info(logger, this.sessionId, ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
+    			LinkedList<ChannelTerminateListener> listeners = ctx.channel().attr(TERMINATOR).get();
+    	        for(ChannelTerminateListener listener: listeners) {
+    	        	listener.terminate(ctx);
+    	        }
     		}
     		else {
     			mmsLog.info(logger, this.sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
