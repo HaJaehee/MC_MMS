@@ -457,8 +457,8 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 					@Override
 					public void terminate(ChannelHandlerContext ctx) {
 
-						Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId);
-						if (duplicateInfoCnt != null) {
+						int duplicateInfoCnt = SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId);
+						if (duplicateInfoCnt != 0) {
 							SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId);
 						}
 						if (bean != null && bean.refCnt() > 0) {
