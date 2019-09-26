@@ -96,6 +96,7 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.util.AttributeKey;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel.ChannelBean;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
@@ -103,6 +104,7 @@ import kr.ac.kaist.message_relaying.MessageParser;
 import kr.ac.kaist.message_relaying.MessageTypeDecider;
 import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.message_relaying.polling_auth.ClientVerifier;
+import kr.ac.kaist.mms_server.ChannelTerminateListener;
 import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
@@ -114,6 +116,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -271,34 +274,38 @@ public class SeamlessRoamingHandler {
 			// Youngjin code
 			// Duplicated polling request is not allowed.
 			String duplicationId = bean.getParser().getSrcMRN() + bean.getParser().getSvcMRN();
-		
+			DupInfoRefCntAndChannelBean obj = null;
+			synchronized (duplicationInfo) { // Get an instance from duplicationInfo if it exists, otherwise get null.
+				obj = duplicationInfo.get(duplicationId);
+			}
+			
 			retainDuplicationInfo(duplicationId, bean);
 			
 			if (getDuplicationInfoCnt(duplicationId) > 1) {
-
-				synchronized (duplicationInfo) {
-					DupInfoRefCntAndChannelBean obj = duplicationInfo.get(duplicationId);
-					ChannelBean beanInDupInfo = obj.getBean();
-					
-				
-					mmsLog.debug(logger, bean.getSessionId(), ErrorCode.DUPLICATED_POLLING.toString());
-					try {
-						beanInDupInfo.getOutputChannel().replyToSender(bean, ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes());
-						beanInDupInfo.getCtx().fireChannelInactive();
-					} catch (IOException e) {
-						mmsLog.infoException(logger, beanInDupInfo.getSessionId(), ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString(), new IOException(), 5);
-					}
-						
-					int refCnt = obj.getRefCnt();
-					DupInfoRefCntAndChannelBean obj2 = new DupInfoRefCntAndChannelBean(bean);
-					obj2.setRefCnt(refCnt);
-					duplicationInfo.put(duplicationId,obj2);
-				}
 				releaseDuplicationInfo(duplicationId);
 			}
+			
 			bean.retain();
 			pmh.dequeueSCMessage(bean);
 			
+			try {
+				Thread.sleep(1000); // Wait for registering message queue dequeuer.
+			} catch (InterruptedException e1) {
+				mmsLog.trace(logger, bean.getSessionId(), "InterruptedException occurs but is ignored.");
+			}
+			if (obj != null) { // This obj instance is used by prior session.
+				ChannelBean beanInDupInfo = obj.getBean();
+				
+				mmsLog.debug(logger, bean.getSessionId(), ErrorCode.DUPLICATED_POLLING.toString());
+				try {
+					beanInDupInfo.getOutputChannel().replyToSender(bean, ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes());
+				} catch (IOException e) {
+					mmsLog.info(logger, beanInDupInfo.getSessionId(), ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
+				}
+				finally { 
+					clear(beanInDupInfo); // Clear the prior session.
+				}
+			}
 		}
 		
 		return message;
@@ -341,9 +348,10 @@ public class SeamlessRoamingHandler {
 				duplicationInfo.put(duplicationId,obj);
 			}
 			else {
-				int refCnt = obj.getRefCnt();
-				obj.setRefCnt(refCnt+1);
-				duplicationInfo.put(duplicationId,obj);
+				DupInfoRefCntAndChannelBean obj2 = new DupInfoRefCntAndChannelBean(bean); 
+				// The obj instance of prior session in duplicationInfo must be replaced by the obj2 instance of this session.
+				obj2.setRefCnt(2);
+				duplicationInfo.put(duplicationId,obj2);
 			}
 		}
 	}
@@ -367,6 +375,19 @@ public class SeamlessRoamingHandler {
 		}
 	}
 	
+	void clear (ChannelBean bean) {
+		bean.getCtx().channel().disconnect();
+		bean.getCtx().channel().close();
+		bean.getCtx().fireChannelInactive();
+		bean.getCtx().fireChannelUnregistered();
+		LinkedList<ChannelTerminateListener> listeners = bean.getCtx().channel().attr(MRH_MessageInputChannel.TERMINATOR).get();
+        for(ChannelTerminateListener listener: listeners) {
+        	listener.terminate(bean.getCtx());
+        }
+        bean.release();
+		bean.getCtx().disconnect();
+		bean.getCtx().close();
+	}
 
 }
 
