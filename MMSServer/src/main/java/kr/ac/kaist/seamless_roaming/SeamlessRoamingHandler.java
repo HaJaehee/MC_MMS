@@ -85,17 +85,26 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
  Version : 0.9.4
  	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
  Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+ Rev. history : 2019-09-25
+ Version : 0.9.5
+ 	Revised bugs related to not allowing duplicated long polling request 
+ 	    when a MMS Client loses connection with MMS because of unexpected network disconnection.
+ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.util.AttributeKey;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
+import kr.ac.kaist.message_relaying.MRH_MessageInputChannel.ChannelBean;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.MessageParser;
 import kr.ac.kaist.message_relaying.MessageTypeDecider;
 import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.message_relaying.polling_auth.ClientVerifier;
+import kr.ac.kaist.mms_server.ChannelTerminateListener;
 import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
@@ -107,6 +116,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,7 +134,8 @@ public class SeamlessRoamingHandler {
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
 
-	private static HashMap<String, Integer> duplicateInfo = new HashMap<>();
+	private static HashMap<String, DupInfoRefCntAndChannelBean> duplicationInfo = new HashMap<>();
+
 	
 
 	public SeamlessRoamingHandler(String sessionId) {
@@ -262,32 +273,39 @@ public class SeamlessRoamingHandler {
 			
 			// Youngjin code
 			// Duplicated polling request is not allowed.
-			String duplicateId = bean.getParser().getSrcMRN() + bean.getParser().getSvcMRN();
-			retainDuplicateInfo(duplicateId);
+			String duplicationId = bean.getParser().getSrcMRN() + bean.getParser().getSvcMRN();
+			DupInfoRefCntAndChannelBean obj = null;
+			synchronized (duplicationInfo) { // Get an instance from duplicationInfo if it exists, otherwise get null.
+				obj = duplicationInfo.get(duplicationId);
+			}
 			
-			if (getDuplicateInfoCnt(duplicateId) > 1) {
+			retainDuplicationInfo(duplicationId, bean);
+			
+			if (getDuplicationInfoCnt(duplicationId) > 1) {
+				releaseDuplicationInfo(duplicationId);
+			}
+			
+			bean.retain();
+			pmh.dequeueSCMessage(bean);
+			
+			if (obj != null) { // This obj instance is used by prior session.
+				ChannelBean beanInDupInfo = obj.getBean();
 				
-//					System.out.println("duplicate long polling request");
-				
-				// TODO: To define error message.
-				message = ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes();
-				mmsLog.debug(logger, sessionId, ErrorCode.DUPLICATED_POLLING.toString());
-
-				releaseDuplicateInfo(duplicateId);
-				return message;
-				
-			} else {
-				bean.retain();
-				pmh.dequeueSCMessage(bean);
+				mmsLog.debug(logger, bean.getSessionId(), ErrorCode.DUPLICATED_POLLING.toString());
+				try {
+					beanInDupInfo.getOutputChannel().replyToSender(bean, ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes());
+				} catch (IOException e) {
+					mmsLog.info(logger, beanInDupInfo.getSessionId(), ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
+				}
+				finally { 
+					clear(beanInDupInfo); // Clear the prior session.
+				}
 			}
 		}
 		
 		return message;
 		
-		//Removed at version 0.8.2.
-		/*if (MMSConfiguration.getMnsHost().equals("localhost")||MMSConfiguration.getMnsHost().equals("127.0.0.1")) {
-			pmh.updateClientInfo(mih, srcMRN, srcIP);
-		}*/
+		
 	}
 
 //	save SC message into queue
@@ -296,41 +314,75 @@ public class SeamlessRoamingHandler {
 	}
 
 	
-	public static long getDuplicateInfoSize() {
-		synchronized(duplicateInfo) {
-			return duplicateInfo.size();
+	public static long getDuplicationInfoSize() {
+		synchronized(duplicationInfo) {
+			return duplicationInfo.size();
 		}
 	}
 	
-	public static Integer getDuplicateInfoCnt(String duplicateId) {
-		synchronized(duplicateInfo) {
-			return duplicateInfo.get(duplicateId);
+	public static int getDuplicationInfoCnt(String duplicationId) {
+		synchronized(duplicationInfo) {
+			DupInfoRefCntAndChannelBean obj = duplicationInfo.get(duplicationId);
+			if (obj != null) {
+				return obj.getRefCnt();
+			}
+			else {
+				return 0;
+			}
 		}
 	}
 	
-	public static void retainDuplicateInfo(String duplicateId) {
-		synchronized(duplicateInfo) {
+	public static void retainDuplicationInfo(String duplicationId, ChannelBean bean) {
+		synchronized(duplicationInfo) {
 
 			//System.out.println("Retain Dup");
-			Integer refCnt = duplicateInfo.get(duplicateId);
-			duplicateInfo.put(duplicateId, refCnt == null? new Integer(1) : (Integer) (refCnt.intValue() + 1));
+			DupInfoRefCntAndChannelBean obj = duplicationInfo.get(duplicationId);
+			if (obj == null) {
+				obj = new DupInfoRefCntAndChannelBean(bean);
+				obj.setRefCnt(1);
+				duplicationInfo.put(duplicationId,obj);
+			}
+			else {
+				DupInfoRefCntAndChannelBean obj2 = new DupInfoRefCntAndChannelBean(bean); 
+				// The obj instance of prior session in duplicationInfo must be replaced by the obj2 instance of this session.
+				obj2.setRefCnt(2);
+				duplicationInfo.put(duplicationId,obj2);
+			}
 		}
 	}
 	
-	public static void releaseDuplicateInfo(String duplicateId) {
-		synchronized(duplicateInfo) {
+	public static void releaseDuplicationInfo(String duplicationId) {
+		synchronized(duplicationInfo) {
 
 			//System.out.println("Release Dup");
-			Integer refCnt = duplicateInfo.get(duplicateId);
-			if (refCnt != null) {
-				if (refCnt.intValue() == 1) {
-					duplicateInfo.remove(duplicateId);
+			DupInfoRefCntAndChannelBean obj = duplicationInfo.get(duplicationId);
+			if (obj != null) {
+				int refCnt = obj.getRefCnt();
+				if (refCnt == 1) {
+					//System.out.println(obj.getRefCnt());
+					duplicationInfo.remove(duplicationId);
 				}
 				else {
-					duplicateInfo.put(duplicateId, (Integer) (refCnt.intValue() - 1));
+					obj.setRefCnt(refCnt - 1);
+					//System.out.println(obj.getRefCnt());
 				}
 			}
 		}
 	}
+	
+	void clear (ChannelBean bean) {
+		bean.getCtx().channel().disconnect();
+		bean.getCtx().channel().close();
+		bean.getCtx().fireChannelInactive();
+		bean.getCtx().fireChannelUnregistered();
+		LinkedList<ChannelTerminateListener> listeners = bean.getCtx().channel().attr(MRH_MessageInputChannel.TERMINATOR).get();
+        for(ChannelTerminateListener listener: listeners) {
+        	listener.terminate(bean.getCtx());
+        }
+        bean.release();
+		bean.getCtx().disconnect();
+		bean.getCtx().close();
+	}
+
 }
 

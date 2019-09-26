@@ -138,15 +138,21 @@ Version : 0.9.4
 	Introduced MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
- Rev. history : 2019-07-16
- Version : 0.9.4
+Rev. history : 2019-07-16
+Version : 0.9.4
  	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
  
- Rev. history : 2019-07-16
- Version : 0.9.4
+Rev. history : 2019-07-16
+Version : 0.9.4
  	Added bean release() in channelInactive().
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-09-25
+Version : 0.9.5
+ 	Revised bugs related to not allowing duplicated long polling request
+ 	    when a MMS Client loses connection with MMS because of unexpected network disconnection.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -182,6 +188,7 @@ import java.io.IOException;
 
 public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHttpRequest>{
 	public static final AttributeKey<LinkedList<ChannelTerminateListener>> TERMINATOR = AttributeKey.newInstance("terminator");
+
 	private static final Logger logger = LoggerFactory.getLogger(MRH_MessageInputChannel.class); 
 
 	private String sessionId = "";
@@ -194,13 +201,11 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
     
     private ChannelBean bean = null;
 	
-    private String duplicateId="";
-
+    private String duplicationId="";
+    
 	public MRH_MessageInputChannel(String protocol) {
 		super();
 		this.protocol = protocol;
-		
-		
 	}
 	
 	/*
@@ -250,6 +255,9 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			this.parser = new MessageParser(sessionId);
 			bean = new ChannelBean(protocol, ctx, req, sessionId, parser);
 			bean.retain();
+
+			ctx.channel().attr(TERMINATOR).set(new LinkedList<ChannelTerminateListener>());
+
 			//System.out.println("0-"+bean.refCnt());
 			//System.out.println("0-"+bean.getReq().refCnt());
 			try {
@@ -257,7 +265,9 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 				
 			} catch (IOException | NumberFormatException | NullPointerException  e) {
 				mmsLog.info(logger, sessionId, ErrorCode.MESSAGE_PARSING_ERROR.toString());
-				
+//				bean.getOutputChannel().replyToSender(bean, ErrorCode.MESSAGE_PARSING_ERROR.getUTF8Bytes(), 400);
+//
+//				return;
 			} 
 			if (!parser.isRealtimeLogReq()) {
 				mmsLog.info(logger, sessionId, "Receive a message."); 
@@ -265,12 +275,8 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			
 			String svcMRN = parser.getSvcMRN();
     		String srcMRN = parser.getSrcMRN();
-    		duplicateId = srcMRN+svcMRN;
+    		duplicationId = srcMRN+svcMRN;
 
-    		ctx.channel().attr(TERMINATOR).set(new LinkedList<ChannelTerminateListener>());
-    		
-    		
-    		
             relayingHandler = new MessageRelayingHandler(bean);
 			//System.out.println("Successfully processed");
 		}

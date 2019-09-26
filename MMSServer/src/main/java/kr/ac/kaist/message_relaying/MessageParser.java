@@ -130,8 +130,10 @@ import org.slf4j.LoggerFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpRequest;
 import kr.ac.kaist.message_casting.GeolocationCircleInfo;
 import kr.ac.kaist.message_casting.GeolocationPolygonInfo;
+import kr.ac.kaist.message_queue.v2.PriorityMessageQueueManager;
 import kr.ac.kaist.message_relaying.MessageTypeDecider.msgType;
 import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
@@ -155,6 +157,7 @@ public class MessageParser {
 	private String svcMRN = null;
 	private String netType = null;
 	private boolean isGeocasting = false;
+	private int priority;
 
 	private boolean isJSONOfPollingFormat = false;
 	private GeolocationCircleInfo geoCircleInfo = null;
@@ -188,6 +191,7 @@ public class MessageParser {
 		seqNum = -1;
 		mmsLog = MMSLog.getInstance();
 		mmsLogForDebug = MMSLogForDebug.getInstance();
+		priority = 0;
 	}
 	
 	void parseMessage(ChannelHandlerContext ctx, FullHttpRequest req) throws NullPointerException, NumberFormatException, IOException{
@@ -280,7 +284,7 @@ public class MessageParser {
 			isGeocasting = false;
 		}
 		
-		
+		priority = setPriority(req);
 	}
 	
 	private void parsePollingRequestToJSON(String httpContents) throws org.json.simple.parser.ParseException{
@@ -496,6 +500,35 @@ public class MessageParser {
 		
 		return ret;
 	}
+	
+	private int setPriority (FullHttpRequest req) throws NumberFormatException {
+		String s_priority = req.headers().get("priority");
+		int priority = 0;
+		
+		if (s_priority == null) {
+//			mmsLog.debug(logger, this.sessionId, "Default priority message.");
+		}
+		else {
+			try {
+				priority = Integer.parseInt(s_priority);
+			} catch (NumberFormatException e) {
+				this.priority = -1;
+				throw e;
+			}
+//			mmsLog.debug(logger, this.sessionId, "Defined priority message.");
+
+			
+			if (priority < PriorityMessageQueueManager.MIN_PRIORITY || priority > PriorityMessageQueueManager.MAX_PRIORITY) {
+				mmsLog.info(logger, this.sessionId, ErrorCode.OUT_OF_RANGE_PRIORITY.toString());
+				this.priority = -1;
+				throw new NumberFormatException();
+			}
+		}
+		
+		return priority;
+	}
+	
+	public int getPriority() { return priority; }
 	
 	//TODO
 	public GeolocationPolygonInfo getGeoPolygonInfo() {

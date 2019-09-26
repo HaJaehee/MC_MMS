@@ -33,6 +33,16 @@ Rev. history : 2019-06-18
 Version : 0.9.2
 	Added ErrorCode.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-09-16
+Version : 0.9.5
+	Added dequeue fail error code.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-09-23
+Version : 0.9.5
+	Added priority error code.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -60,6 +70,8 @@ public enum ErrorCode {
 	AUTHENTICATE_FAIL("10012", "Authentication is failed."),
 	MESSAGE_PARSING_ERROR("10013", "Message parsing error."),
 	MIR_API_ERROR("10014","MIR API error."),
+	INVALID_HTTP_METHOD("10015","Invalid HTTP method."),
+	OUT_OF_RANGE_PRIORITY("10016","Priority is out of range."),
 	
 	// Numbers greater than 10000 and lower than 20000 are internal error codes.
 	// Number 11XXX is related to configuration of MMS.
@@ -88,6 +100,7 @@ public enum ErrorCode {
 	RABBITMQ_CONNECTION_CLOSE_ERROR("20003","Rabbit MQ connection close error."),
 	RABBITMQ_CONNECTION_OPEN_ERROR("20004","Rabbit MQ connection open error."),
 	RABBITMQ_MANAGEMENT_CONNECTION_OPEN_ERROR("20005","Rabbit MQ management plugin connection open error."),
+	RABBITMQ_DEQUEUE_FAIL("20006", "Dequeue a message in a queue is failed"),
 	
 	// Number 21XXX is related to interface between MMS Server and MNS.
 	MNS_CONNECTION_CLOSE_ERROR("21001","MNS connection close error."),

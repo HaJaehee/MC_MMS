@@ -174,10 +174,21 @@ Version : 0.9.4
 	Updated MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
- Rev. history : 2019-07-16
- Version : 0.9.4
+Rev. history : 2019-07-16
+Version : 0.9.4
  	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-09-11
+Version : 0.9.5
+ 	Added a function that message is split along the maximum message size.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-09-25
+Version : 0.9.5
+ 	Revised bugs related to not allowing duplicated long polling request
+ 	    when a MMS Client loses connection with MMS because of unexpected network disconnection.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -186,7 +197,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -194,6 +207,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.AMQP.Basic;
 import com.rabbitmq.client.AlreadyClosedException;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -222,22 +236,23 @@ import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 public class MessageQueueDequeuer extends Thread{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueDequeuer.class);
-	private String sessionId = "";
-	private String duplicateId="";
-	private MRH_MessageInputChannel.ChannelBean bean = null;
-	private String queueName = null;
-	private String srcMRN = null;
-	private String svcMRN = null;
-	private MessageTypeDecider.msgType pollingMethod = MessageTypeDecider.msgType.POLLING;
-	private Channel mqChannel = null;
-	private String consumerTag = null;
-	private static ArrayList<Connection> connectionPool = null;
-	private static ConnectionFactory connFac = null;
-	private static int connectionPoolSize = 0;
+	protected String sessionId = "";
+	protected String duplicationId="";
+	protected MRH_MessageInputChannel.ChannelBean bean = null;
+	protected String queueName = null;
+	protected String srcMRN = null;
+	protected String svcMRN = null;
+	protected MessageTypeDecider.msgType pollingMethod = MessageTypeDecider.msgType.POLLING;
+	protected Channel mqChannel = null;
+	protected String consumerTag = null;
+	protected static ArrayList<Connection> connectionPool = null;
+	protected static ConnectionFactory connFac = null;
+	protected static int connectionPoolSize = 0;
 
 	
-	private MMSLog mmsLog = null;
-	MessageQueueDequeuer (String sessionId) {
+	protected MMSLog mmsLog = null;
+
+	protected MessageQueueDequeuer (String sessionId) {
 		this.sessionId = sessionId;
 		mmsLog = MMSLog.getInstance();
 	}
@@ -250,7 +265,7 @@ public class MessageQueueDequeuer extends Thread{
 		this.bean = bean;
 		this.queueName = srcMRN+"::"+svcMRN;
 		this.pollingMethod = bean.getType();
-		this.duplicateId = srcMRN+svcMRN;		
+		this.duplicationId = srcMRN+svcMRN;
 		
 		this.start();
 
@@ -278,9 +293,9 @@ public class MessageQueueDequeuer extends Thread{
 	@Override
 	public void run() {
 		// TODO: Youngjin Kim must inspect this following code.
-		super.run();
-		
-		int connId = (int) (Long.decode("0x"+this.sessionId) % connectionPoolSize);
+//		super.run();
+
+        int connId = (int) (Long.decode("0x"+this.sessionId) % connectionPoolSize);
 		if (connectionPool.get(connId) == null || !connectionPool.get(connId).isOpen()) {
 			try {
 				connectionPool.set(connId, connFac.newConnection());
@@ -305,7 +320,10 @@ public class MessageQueueDequeuer extends Thread{
 
 		
 		try {
-			mqChannel.queueDeclare(queueName, true, false, false, null);
+			Map<String, Object> args = new HashMap<String, Object>();
+			args.put("x-max-priority", 10);
+
+			mqChannel.queueDeclare(queueName, true, false, false, args);
 		}
 		catch (IOException e) {
 			mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
@@ -355,8 +373,8 @@ public class MessageQueueDequeuer extends Thread{
 	    	if (SessionManager.getSessionType(this.sessionId) != null) {
 	    		SessionManager.removeSessionInfo(this.sessionId);
 	    	}
-	    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId)!=null) {
-	    		SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
+	    	if(SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId)!=0) {
+	    		SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId);
 	    	}
 	    	try {
 	    		bean.getOutputChannel().replyToSender(bean, message.toString().getBytes());
@@ -455,8 +473,8 @@ public class MessageQueueDequeuer extends Thread{
 							    		SessionManager.removeSessionInfo(sessionId);
 							    	}
 							    	
-							    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId)!=null) {
-							    		SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
+							    	if(SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId)!=0) {
+							    		SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId);
 							    	}
 							    	
 							    	try {
@@ -529,9 +547,9 @@ public class MessageQueueDequeuer extends Thread{
 					@Override
 					public void terminate(ChannelHandlerContext ctx) {
 
-						Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId);
-						if (duplicateInfoCnt != null) {
-							SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
+						int duplicateInfoCnt = SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId);
+						if (duplicateInfoCnt != 0) {
+							SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId);
 						}
 						if (bean != null && bean.refCnt() > 0) {
 							//mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
@@ -673,7 +691,7 @@ public class MessageQueueDequeuer extends Thread{
 
 	public void clear(boolean clearMqChannel, boolean clearMrns) {
 		this.pollingMethod = null;
-		this.duplicateId = null;
+		this.duplicationId = null;
 		if (clearMrns) {
 			this.srcMRN = null;
 			this.svcMRN = null;

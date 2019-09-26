@@ -1,5 +1,18 @@
 Patch Notes
 ***********
+23-September 2019
+MC_MMS 0.9.5 new features/enhancements & bug-fixes:
+1. Added priority queue.
+2. Added priority field in the HTTP(S) message.
+3. Added error code about priority queue.
+4. Added test cases of priority queue.
+5. Modified dequeue function.
+6. Added test cases of dequeue function.
+7. Added test cases of error code.
+8. Fixed several bugs above described functions.
+9. Fixed bugs related to not allowing duplicated long polling request
+	when a MMS Client loses connection with MMS because of unexpected network disconnection.
+
 30-July 2019
 MC_MMS 0.9.4-2 new features/enhancements & bug-fixes:
 1. Fixed several bugs.

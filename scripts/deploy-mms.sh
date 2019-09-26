@@ -3,16 +3,17 @@
 
 help()
 {
-	echo "Usage: $0 [domain name to run]"
+	echo "Usage: $0 [domain name to run] [docker bridge IP address connecting database]"
 	echo "Do not use loopback, localhost, and 127.0.0.1 as a domain name."
 }
 
-if [ $# -ne 1 ]
+if [ $# -ne 2 ]
 then
 	help
 	exit 0
 fi
 newdomain=$1
+docker_db_br=$2
 
 while true; do
 	read -p "Do you wish to install this program? Please read it carefully. Port number 3306 will be mapped to mariadb container's port number and port numbers 80 and 443 will be mapped to mms monitoring container's port numbers. If you want to remap port numbers, please modify 'docker-compose.yml' before executing this setup script. In addition, existing WordPress files and database will be overwritten after this setup. If you want not to overwrite WordPress files and database, just execute docker-compose with docker-compose.yml. Do you agree with it? [y/n]" yn
@@ -60,7 +61,8 @@ while true; do
 
 		echo "Database post-setting."
 		sleep 10
-		mysql -h 172.17.0.1 --port 3306 -u root -proot mydb < mcp_mms_monitoring_database.sql;
+		#mysql -h 172.17.0.1 --port 3306 -u root -proot mydb < mcp_mms_monitoring_database.sql;
+		mysql -h $docker_db_br --port 3306 -u root -proot mydb < mcp_mms_monitoring_database.sql;
 
 		sleep 10
 		sudo echo $MY_WEB

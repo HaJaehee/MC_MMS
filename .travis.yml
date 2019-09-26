@@ -15,7 +15,7 @@ before_install:
 
 install:
     # Build the spring boot app and copy the result to the docker folder
-    - mvn clean install && cp MMSServer/target/MC_MMS-0.9.4-SNAPSHOT.jar docker/MMSServer/MMSServer.jar && cp MMSServer/target/MC_MMS-0.9.4-SNAPSHOT.jar docker/MNSDummy/MMSServer.jar
+    - mvn clean install && cp MMSServer/target/MC_MMS-0.9.5-SNAPSHOT.jar docker/MMSServer/MMSServer.jar && cp MMSServer/target/MC_MMS-0.9.5-SNAPSHOT.jar docker/MNSDummy/MMSServer.jar
     - cp -r MMSServer/target/lib docker/MMSServer/ && cp -r MMSServer/target/lib docker/MNSDummy/
     - cp -r MMSServer/MMS-configuration docker/MMSServer/
 
@@ -24,18 +24,18 @@ before_script:
 
 script:
     - docker build --no-cache -t lovesm135/mmsserver docker/MMSServer
-    - docker tag lovesm135/mmsserver lovesm135/mmsserver:0.9.4
-    - docker push lovesm135/mmsserver:0.9.4
+    - docker tag lovesm135/mmsserver lovesm135/mmsserver:0.9.5
+    - docker push lovesm135/mmsserver:0.9.5
     - docker build --no-cache -t lovesm135/mnsdummy docker/MNSDummy
-    - docker tag lovesm135/mnsdummy lovesm135/mnsdummy:0.9.4
-    - docker push lovesm135/mnsdummy:0.9.4
+    - docker tag lovesm135/mnsdummy lovesm135/mnsdummy:0.9.5
+    - docker push lovesm135/mnsdummy:0.9.5
  
 
 branches:
   only:
     - master
     - stable
-    - beta-0.9.4-closed
+    - beta-0.9.5-closed
   except:
     - legacy
     - experimental

@@ -62,8 +62,8 @@ public class MMSPollingReturnedwithVariablePayloadTest extends MMSTestBase {
 		
 		System.out.println("response : " +server.getResponse());
 		expected = client.pollingReqeust();		
-		assertTrue(server.getResponse() == 200);		
-		assertTrue(expected==(actual)+offset);		
+		assertTrue(server.getResponse() == 200);	
+		assertEquals(expected, actual+offset);	
 	}
 	
 	@Test
@@ -74,8 +74,8 @@ public class MMSPollingReturnedwithVariablePayloadTest extends MMSTestBase {
 		server.sendContent("files/file170B.txt",actual);	
 		expected = client.pollingReqeust();		
 		System.out.println("expected : " +expected);
-		assertTrue(server.getResponse() == 200);		
-		assertTrue(expected==(actual)+offset);					
+		assertTrue(server.getResponse() == 200);	
+		assertEquals(expected, actual+offset);				
 	}
 	@Test
 	public void test03() throws IOException {
@@ -84,8 +84,8 @@ public class MMSPollingReturnedwithVariablePayloadTest extends MMSTestBase {
 				
 		server.sendContent("files/file3KB.txt",actual);	
 		expected = client.pollingReqeust();		
-		assertTrue(server.getResponse() == 200);		
-		assertTrue(expected==(actual)+offset);			
+		assertTrue(server.getResponse() == 200);	
+		assertEquals(expected, actual+offset);	
 	}
 	@Test
 	public void test04() throws IOException {
@@ -94,8 +94,8 @@ public class MMSPollingReturnedwithVariablePayloadTest extends MMSTestBase {
 				
 		server.sendContent("files/file200KB.txt",actual);	
 		expected = client.pollingReqeust();		
-		assertTrue(server.getResponse() == 200);		
-		assertTrue(expected==(actual)+offset);				
+		assertTrue(server.getResponse() == 200);	
+		assertEquals(expected, actual+offset);		
 	}
 	@Test
 	public void test05() throws IOException {
@@ -105,7 +105,7 @@ public class MMSPollingReturnedwithVariablePayloadTest extends MMSTestBase {
 		server.sendContent("files/file500KB.txt",actual);	
 		expected = client.pollingReqeust();		
 		assertTrue(server.getResponse() == 200);		
-		assertTrue(expected==(actual)+offset);		
+		assertEquals(expected, actual+offset);
 	}
 	@Test
 	public void test06() throws IOException {
@@ -114,8 +114,8 @@ public class MMSPollingReturnedwithVariablePayloadTest extends MMSTestBase {
 				
 		server.sendContent("files/file2MB.txt",actual);	
 		expected = client.pollingReqeust();		
-		assertTrue(server.getResponse() == 200);		
-		assertTrue(expected==(actual)+offset);		
+		assertTrue(server.getResponse() == 200);	
+		assertEquals(expected, actual+offset);
 	}
 	@Test
 	public void test07() throws IOException {
@@ -124,8 +124,8 @@ public class MMSPollingReturnedwithVariablePayloadTest extends MMSTestBase {
 				
 		server.sendContent("files/file7MB.txt",actual);	
 		expected = client.pollingReqeust();		
-		assertTrue(server.getResponse() == 200);		
-		assertTrue(expected==(actual)+offset);		
+		assertTrue(server.getResponse() == 200);	
+		assertEquals(expected, actual+offset);	
 	}
 	@Test
 	public void test08() throws IOException {
@@ -134,8 +134,8 @@ public class MMSPollingReturnedwithVariablePayloadTest extends MMSTestBase {
 				
 		server.sendContent("files/file10MB.txt",actual);	
 		expected = client.pollingReqeust();		
-		assertTrue(server.getResponse() == 200);		
-		assertTrue(expected==(actual)+offset);	
+		assertTrue(server.getResponse() == 200);	
+		assertEquals(expected, actual+offset);
 	}
 	@Test
 	public void test09() throws IOException {
@@ -144,8 +144,8 @@ public class MMSPollingReturnedwithVariablePayloadTest extends MMSTestBase {
 				
 		server.sendContent("files/file20MB.txt",actual);	
 		expected = client.pollingReqeust();		
-		assertTrue(server.getResponse() == 200);		
-		assertTrue(expected==(actual)+offset);		
+		assertTrue(server.getResponse() == 200);	
+		assertEquals(expected, actual+offset);
 	}
 	@Test
 	public void test10() throws IOException {
@@ -154,8 +154,8 @@ public class MMSPollingReturnedwithVariablePayloadTest extends MMSTestBase {
 				
 		server.sendContent("files/file30MB.txt",actual);	
 		expected = client.pollingReqeust();		
-		assertTrue(server.getResponse() == 200);		
-		assertTrue(expected==(actual)+offset);		
+		assertTrue(server.getResponse() == 200);	
+		assertEquals(expected, actual+offset);
 	}
 	@Test
 	public void test11() throws IOException {
@@ -164,8 +164,8 @@ public class MMSPollingReturnedwithVariablePayloadTest extends MMSTestBase {
 				
 		server.sendContent("files/file40MB.txt",actual);	
 		expected = client.pollingReqeust();		
-		assertTrue(server.getResponse() == 200);		
-		assertTrue(expected==(actual)+offset);	
+		assertTrue(server.getResponse() == 200);
+		assertEquals(expected, actual+offset);	
 	}
 	@Test
 	public void test12() throws IOException {

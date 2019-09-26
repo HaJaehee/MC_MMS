@@ -1,4 +1,4 @@
-package tc03_polling_variable_payload;
+package tc13_spliting_messages_in_dequeueing;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,34 +16,30 @@ import java.util.Map;
 import kr.ac.kaist.mms_client.MMSClientHandler;
 
 /**
- * File name : TS3_server.java Polling request message function for the purpose
- * of testing MMS This class acts as signal generator Author : Jin Jeong
- * (jungst0001@kaist.ac.kr) Creation Date : 2017-11-06
+File name : MessageProvider.java
+Author : Jin Jeong (jungst0001@kaist.ac.kr) 
+Creation Date : 2019-09-16
 
-Rev.history :2018-10-13
-Version : 0.8.0
-Modifier : Youngjin Kim (jcdad3000@kaist.ac.kr)
 
-Rev. history : 2019-06-13
-Version : 0.9.2
-	Change the class name from TS3_Test to MMSPollingReturnedwithVariablePayloadServer
-	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
-	
 Rev. history : 2019-09-17
 Version : 0.9.5
-	Add assertion for size mismatch
+	Add Constructor parameter for MRN.
+	Create 'SendFixedSizeMessage' method in order to send fixed size message.
+	Add Assertion for contents mismatch.
+	
 	Modifier : Yunho Choi (choiking10@kaist.ac.kr)
  */
 
-public class MMSPollingReturnedwithVariablePayloadServer {
+public class MessageProvider {
 	private int response = 0;
-	private String myMRN = "urn:mrn:imo:imo-no:ts-mms-03-server";
-//	private String dstMRN = "urn:mrn:imo:imo-no:ts-mms-03-client";
-	private String dstMRN = "urn:mrn:mcl:vessel:dma:poul-lowenorn";
+	private String myMRN;
+	private String dstMRN;
 	private MMSClientHandler myHandler = null;
 
-	public MMSPollingReturnedwithVariablePayloadServer() {
-
+	public MessageProvider(String myMRN, String dstMRN) {
+		this.myMRN = myMRN;
+		this.dstMRN = dstMRN;
+		
 		try {
 			myHandler = new MMSClientHandler(myMRN);
 
@@ -69,10 +66,27 @@ public class MMSPollingReturnedwithVariablePayloadServer {
 	public int getResponse() {
 		return response;
 	}
-
-	public void sendContent(String FileName, int content) throws IOException {
-		File file = new File(FileName);
+	
+	public void sendFixedSizeMessage(int length) {
+		char[] charStr = new char[length];
+		Arrays.fill(charStr,  'A');
+		String data = new String(charStr);
 		
+		try {
+            assertTrue(
+                    String.format("The length of the data[%d] is different from the length expected[%d].", data.length(), length), 
+                    data.length() == length);
+
+			myHandler.sendPostMsg(dstMRN, data, 10000);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendContent(String FileName, long content) throws IOException {
+		File file = new File(FileName);
+
 		System.out.println(FileName);
 		FileReader fileReader = new FileReader(file);
 		BufferedReader bufReader = new BufferedReader(fileReader);
@@ -82,10 +96,10 @@ public class MMSPollingReturnedwithVariablePayloadServer {
 		if(data==null)
 			data="";
 		try {
-			assertTrue(
-					String.format("The length of the data[%d] is different from the length expected[%d].", data.length(), content), 
-					data.length() == content);
-			
+            assertTrue(
+                    String.format("The length of the data[%d] is different from the length expected[%d].", data.length(), content), 
+                    data.length() == content);
+
 			myHandler.sendPostMsg(dstMRN, data, 10000);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

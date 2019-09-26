@@ -282,6 +282,7 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import java.awt.TrayIcon.MessageType;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
@@ -483,6 +484,10 @@ public class MessageRelayingHandler  {
 			isErrorOccured = true;
 			message = ErrorCode.NULL_DST_MRN.getUTF8Bytes();
 		}
+		else if (bean.getType() == MessageTypeDecider.msgType.PRIORITY_ERROR) {
+			isErrorOccured = true;
+			message = ErrorCode.OUT_OF_RANGE_PRIORITY.getUTF8Bytes();
+		}
 		// TODO: Youngjin Kim must inspect this following code.
 		//This code MUST be 'else if' statement not 'if'. 
 		else if (bean.getType() == MessageTypeDecider.msgType.POLLING || bean.getType() == MessageTypeDecider.msgType.LONG_POLLING) {
@@ -611,6 +616,13 @@ public class MessageRelayingHandler  {
 			isErrorOccured = true;
 			mmsLog.info(logger, bean.getSessionId(), ErrorCode.UNKNOWN_MRN.toString());
 			message = ErrorCode.UNKNOWN_MRN.getUTF8Bytes();
+			//logger.info("test "+message);
+		} 
+		//This code MUST be 'else if' statement not 'if'. 
+		else if (bean.getType() == MessageTypeDecider.msgType.INVALID_HTTP_METHOD) {
+			isErrorOccured = true;
+			mmsLog.info(logger, bean.getSessionId(), ErrorCode.INVALID_HTTP_METHOD.toString());
+			message = ErrorCode.INVALID_HTTP_METHOD.getUTF8Bytes();
 			//logger.info("test "+message);
 		} 
 
