@@ -379,7 +379,11 @@ public class SeamlessRoamingHandler {
         for(ChannelTerminateListener listener: listeners) {
         	listener.terminate(bean.getCtx());
         }
-        bean.release();
+        if (bean != null) {
+			while (bean.refCnt() > 0) {
+				bean.release();
+			}
+		}
 		bean.getCtx().disconnect();
 		bean.getCtx().close();
 	}
