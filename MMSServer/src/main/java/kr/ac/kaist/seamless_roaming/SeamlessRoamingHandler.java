@@ -288,11 +288,6 @@ public class SeamlessRoamingHandler {
 			bean.retain();
 			pmh.dequeueSCMessage(bean);
 			
-			try {
-				Thread.sleep(1000); // Wait for registering message queue dequeuer.
-			} catch (InterruptedException e1) {
-				mmsLog.trace(logger, bean.getSessionId(), "InterruptedException occurs but is ignored.");
-			}
 			if (obj != null) { // This obj instance is used by prior session.
 				ChannelBean beanInDupInfo = obj.getBean();
 				
