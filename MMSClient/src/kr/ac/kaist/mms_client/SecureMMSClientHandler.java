@@ -127,7 +127,7 @@ import kr.ac.kaist.mms_client.MMSClientHandler.ResponseCallback;
 
 /**
  * This handler helps client communicate to MMS over HTTPS. Client uses it to send or receive messages.
- * @version 0.9.4
+ * @version 0.9.5
  * @see MMSClientHandler
  */
 public class SecureMMSClientHandler {
