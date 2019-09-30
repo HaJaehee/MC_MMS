@@ -30,7 +30,7 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 
 /**
  * It is an object that contains values for setting MMSClientHandler and SecureMMSClientHandler.
- * @version 0.9.4
+ * @version 0.9.5
  * @see MMSClientHandler
  * @see SecureMMSClientHandler
  */
