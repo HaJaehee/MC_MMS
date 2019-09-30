@@ -356,26 +356,34 @@ public class MessageRelayingHandler  {
 		try {
 			processRelaying(bean);
 		}
+		catch(NullPointerException e1) {
+			exceptionCaught(e1);
+		}
 		catch(Exception e1) {
-			mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.UNKNOWN_ERR.toString(), e1, 5);
-			try {
-				bean.getOutputChannel().replyToSender(bean, ErrorCode.UNKNOWN_ERR.getUTF8Bytes(), 400);
+			exceptionCaught(e1);
+		}
+	}
+
+	private void exceptionCaught (Exception cause) {
+		mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.UNKNOWN_ERR.toString() + cause.getMessage(), cause, 5);
+		try {
+			bean.getOutputChannel().replyToSender(bean, ErrorCode.UNKNOWN_ERR.getUTF8Bytes(), 400);
+		}
+		catch (IOException e2) {
+			mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e2, 5);
+			if (bean.getCtx() != null && !bean.getCtx().isRemoved()){
+				bean.getCtx().close();
 			}
-			catch (IOException e2) {
-				mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e2, 5);
-				if (bean.getCtx() != null && !bean.getCtx().isRemoved()){
-                    bean.getCtx().close();
-                }
-				return;
-			}
-			finally {
-				while (bean.refCnt() > 0) {
-					bean.release();
-				}
+			return;
+		}
+		finally {
+			while (bean.refCnt() > 0) {
+				bean.release();
 			}
 		}
 	}
-	
+
+
 	private void initializeModule() {
 		mch = new MessageCastingHandler(bean.getSessionId());
 		mmsLog = MMSLog.getInstance();

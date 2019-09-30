@@ -262,7 +262,7 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
 			//System.out.println("0-"+bean.getReq().refCnt());
 			try {
 				parser.parseMessage(ctx, req);
-				
+
 			} catch (IOException | NumberFormatException | NullPointerException  e) {
 				mmsLog.info(logger, sessionId, ErrorCode.MESSAGE_PARSING_ERROR.toString());
 //				bean.getOutputChannel().replyToSender(bean, ErrorCode.MESSAGE_PARSING_ERROR.getUTF8Bytes(), 400);
