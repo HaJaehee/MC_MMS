@@ -1,8 +1,3 @@
-## Caution!
-## This branch is currently under development.
-## Can be corrected without notice.
-
-
 # MC_MMS
 [![Build Status](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS.svg?branch=beta-0.9.6-active)](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS)  
 Beta Version 0.9.6   
@@ -18,6 +13,7 @@ https://mms.smartnav.org
 * Long polling method.  
 * Switching polling method between long polling or normal polling.  
 * Maintaining long polling client session.  
+* Sorting messages using message priority in a message queue.  
 * HTTPS communication.  
 * Saving MMS logs automatically.  
 * Displaying MMS logs on web browser.  
