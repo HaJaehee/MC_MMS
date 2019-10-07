@@ -163,6 +163,7 @@ class SecureMMSRcvHandler {
 				sslContext = SSLContext.getInstance( "TLS" );
 			} catch (NoSuchAlgorithmException e1) {
 				System.out.println("No such algorithm exception.");
+				return;
 			}
 
 			 // initialise the keystore
@@ -172,6 +173,7 @@ class SecureMMSRcvHandler {
 				ks = KeyStore.getInstance ( "JKS" );
 			} catch (KeyStoreException e1) {
 				System.out.println("Key store exception.");
+				return;
 			}
 		    //FileInputStream fis = new FileInputStream ( System.getProperty("user.dir")+"/testkey.jks" );
 		    fis = new FileInputStream ( jksDirectory );
@@ -186,8 +188,10 @@ class SecureMMSRcvHandler {
 				}
 			} catch (NoSuchAlgorithmException e1) {
 				System.out.println("No such algorithm exception.");
+				return;
 			} catch (CertificateException e1) {
 				System.out.println("Certification exception.");
+				return;
 			}
 
 		    // setup the key manager factory
@@ -207,10 +211,13 @@ class SecureMMSRcvHandler {
 				}
 			} catch (UnrecoverableKeyException e1) {
 				System.out.println("Unrecoverable exception.");
+				return;
 			} catch (KeyStoreException e1) {
 				System.out.println("Key store exception.");
+				return;
 			} catch (NoSuchAlgorithmException e1) {
 				System.out.println("No such algorithm exception.");
+				return;
 			}
 
 
@@ -220,8 +227,8 @@ class SecureMMSRcvHandler {
 			try {
 				tmf = TrustManagerFactory.getInstance ( "SunX509" );
 			} catch (NoSuchAlgorithmException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.out.println("No such algorithm exception.");
+				return;
 			}
 			try {
 				if (tmf != null) {
@@ -231,8 +238,8 @@ class SecureMMSRcvHandler {
 					return;
 				}
 			} catch (KeyStoreException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.out.println("Key store exception.");
+				return;
 			}
 
 
@@ -247,6 +254,7 @@ class SecureMMSRcvHandler {
 
 			} catch (KeyManagementException e1) {
 				System.out.println("Key management exception.");
+				return;
 			}
 
 		    server.setHttpsConfigurator ( new HttpsConfigurator( sslContext )
@@ -268,6 +276,7 @@ class SecureMMSRcvHandler {
 			                params.setSSLParameters ( defaultSSLParameters );
 						} catch (NoSuchAlgorithmException e) {
 			                System.err.println( "Failed to create HTTPS port" );
+			                return;
 						}
 		                
 		            
