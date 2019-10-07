@@ -102,7 +102,8 @@ class SecureMMSRcvHandler {
 		if (hrh != null) {
 			server.createContext("/", hrh);
 		} else {
-			throw new NullPointerException();
+			System.out.println("Https request handler is null.");
+			return;
 		}
         if(MMSConfiguration.DEBUG) {System.out.println(TAG+"Context \"/\" is created");}
 
@@ -114,6 +115,10 @@ class SecureMMSRcvHandler {
 	}
 	
 	SecureMMSRcvHandler(int port, String context, String jksDirectory, String jksPassword) throws IOException {
+		if (context == null) {
+			System.out.println("context parameter is null.");
+			return;
+		}
 		httpsServerConfigure(port, jksDirectory, jksPassword);
 		hrh = new HttpsReqHandler();
 		if (!context.startsWith("/")){
@@ -157,73 +162,87 @@ class SecureMMSRcvHandler {
 			try {
 				sslContext = SSLContext.getInstance( "TLS" );
 			} catch (NoSuchAlgorithmException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.out.println("No such algorithm exception.");
 			}
-			
+
 			 // initialise the keystore
 		    char[] jksPwCharArr = jksPassword.toCharArray ();
 		    KeyStore ks = null;
 			try {
 				ks = KeyStore.getInstance ( "JKS" );
 			} catch (KeyStoreException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.out.println("Key store exception.");
 			}
 		    //FileInputStream fis = new FileInputStream ( System.getProperty("user.dir")+"/testkey.jks" );
 		    fis = new FileInputStream ( jksDirectory );
-		    try {
-				ks.load ( fis, jksPwCharArr );
+
+			try {
+				if (fis != null && jksPwCharArr != null && ks != null) {
+					ks.load(fis, jksPwCharArr);
+				}
+				else {
+					System.out.println("Java key store, file input stream or jks password is null.");
+					return;
+				}
 			} catch (NoSuchAlgorithmException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.out.println("No such algorithm exception.");
 			} catch (CertificateException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.out.println("Certification exception.");
 			}
-	
+
 		    // setup the key manager factory
 		    try {
 				kmf = KeyManagerFactory.getInstance ( "SunX509" );
 			} catch (NoSuchAlgorithmException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
+				System.out.println("No such algorithm exception.");
 			}
-		    try {
-				kmf.init ( ks, jksPwCharArr );
+
+
+			try {
+				if (kmf != null) {
+					kmf.init(ks, jksPwCharArr);
+				} else {
+					System.out.println("An instance from key manager factory is null.");
+					return;
+				}
 			} catch (UnrecoverableKeyException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.out.println("Unrecoverable exception.");
 			} catch (KeyStoreException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.out.println("Key store exception.");
 			} catch (NoSuchAlgorithmException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.out.println("No such algorithm exception.");
 			}
+
+
 		    
 		    // setup the trust manager factory
 		    TrustManagerFactory tmf = null;
 			try {
-				tmf = TrustManagerFactory.getInstance ( "SunX509" );
+				if (tmf != null) {
+					tmf = TrustManagerFactory.getInstance("SunX509");
+				} else {
+					System.out.println("An instance from trust manager factory is null.");
+					return;
+				}
 			} catch (NoSuchAlgorithmException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.out.println("No such algorithm exception.");
 			}
-		    try {
-				tmf.init ( ks );
-			} catch (KeyStoreException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-	
+
+
+
 		    // setup the HTTPS context and parameters
 		    try {
-				sslContext.init ( kmf.getKeyManagers (), tmf.getTrustManagers (), null );
+		    	if (sslContext != null && kmf != null && tmf != null) {
+					sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+				} else {
+					System.out.println("SSL context, kmf or tmf is null.");
+					return;
+				}
+
 			} catch (KeyManagementException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				System.out.println("Key management exception.");
 			}
+
 		    server.setHttpsConfigurator ( new HttpsConfigurator( sslContext )
 		    {
 		        public void configure ( HttpsParameters params )
@@ -242,9 +261,7 @@ class SecureMMSRcvHandler {
 			                SSLParameters defaultSSLParameters = c.getDefaultSSLParameters ();
 			                params.setSSLParameters ( defaultSSLParameters );
 						} catch (NoSuchAlgorithmException e) {
-							// TODO Auto-generated catch block
 			                System.err.println( "Failed to create HTTPS port" );
-							//e.printStackTrace();
 						}
 		                
 		            

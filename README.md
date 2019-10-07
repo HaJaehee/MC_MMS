@@ -13,6 +13,7 @@ https://mms.smartnav.org
 * Long polling method.  
 * Switching polling method between long polling or normal polling.  
 * Maintaining long polling client session.  
+* Sorting messages using message priority in a message queue.  
 * HTTPS communication.  
 * Saving MMS logs automatically.  
 * Displaying MMS logs on web browser.  
