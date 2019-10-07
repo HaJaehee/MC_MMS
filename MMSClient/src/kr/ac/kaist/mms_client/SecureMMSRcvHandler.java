@@ -218,16 +218,22 @@ class SecureMMSRcvHandler {
 		    // setup the trust manager factory
 		    TrustManagerFactory tmf = null;
 			try {
+				tmf = TrustManagerFactory.getInstance ( "SunX509" );
+			} catch (NoSuchAlgorithmException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
 				if (tmf != null) {
-					tmf = TrustManagerFactory.getInstance("SunX509");
+					tmf.init(ks);
 				} else {
 					System.out.println("An instance from trust manager factory is null.");
 					return;
 				}
-			} catch (NoSuchAlgorithmException e1) {
-				System.out.println("No such algorithm exception.");
+			} catch (KeyStoreException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
-
 
 
 		    // setup the HTTPS context and parameters
