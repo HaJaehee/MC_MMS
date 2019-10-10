@@ -38,11 +38,11 @@ Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
-public class PriorityMessagQueueEnqueuer extends MessageQueueEnqueuer {
+public class PriorityMessageQueueEnqueuer extends MessageQueueEnqueuer {
 	
-	private static final Logger logger = LoggerFactory.getLogger(PriorityMessagQueueEnqueuer.class);
+	private static final Logger logger = LoggerFactory.getLogger(PriorityMessageQueueEnqueuer.class);
 
-	public PriorityMessagQueueEnqueuer(String sessionId) {
+	public PriorityMessageQueueEnqueuer(String sessionId) {
 		super(sessionId);
 	}
 
