@@ -1,7 +1,7 @@
 # MC_MMS
-[![Build Status](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS.svg?branch=beta-0.9.5-closed)](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS)  
+[![Build Status](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS.svg?branch=beta-0.9.5-closed-HOTFIX)](https://travis-ci.org/MaritimeConnectivityPlatform/MC_MMS)  
 Beta Version 0.9.5   
-2019.09.26   
+2019.10.12   
 
 # Web Site
 https://www.mms-kaist.com   
