@@ -113,10 +113,17 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
  Version : 0.9.4
  	Let methods have timeout parameter default.
  Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+ 
+Rev. history : 2019-10-14
+Version : 0.9.6
+	Added priority parameter to sendPostMsgWithPriority() methods.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -541,6 +548,140 @@ public class SecureMMSClientHandler {
 			System.out.println(TAG+"Failed! HTTP client is required! Do setSender()");
 		} else {
 			this.sendHandler.sendHttpsPostWithTimeout(dstMRN, loc, data, headerField, timeout);
+		}
+	}
+	
+	/**
+	 * Send a POST message to the destination MRN via MMS with priority.
+	 * 
+	 * @param dstMRN the destination MRN to send data
+	 * @param data   the data to send
+	 * @param priority   message priority
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
+	 * @throws IOException if exception occurs
+	 * @see #sendPostMsg(String, String, int)
+	 * @see #setSender(ResponseCallback)
+	 */
+	public void sendPostMsgWithPriority(String dstMRN, String data, int priority, int timeout) throws IOException {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			System.out.println("Client MRN must not be null.");
+			return;
+		}
+		if (this.sendHandler == null) {
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
+		} else {
+			if(headerField == null) {
+				headerField = new HashMap<String, List<String>>();
+			}
+			
+			List<String> valueList = new ArrayList<String>();
+			valueList.add("" + priority);
+			headerField.put("priority", valueList);
+			
+			this.sendHandler.sendHttpsPostWithTimeout(dstMRN, "", data, headerField, timeout);
+		}
+	}
+	
+	/**
+	 * Send a POST message to the destination MRN via MMS with priority.
+	 * 
+	 * @param dstMRN the destination MRN to send data
+	 * @param loc	 url location
+	 * @param data   the data to send
+	 * @param priority   message priority
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
+	 * @throws IOException if exception occurs
+	 * @see #sendPostMsg(String, String, int)
+	 * @see #sendPostMsgWithPriority(String, String, int, int)
+	 * @see #setSender(ResponseCallback)
+	 */
+	public void sendPostMsgWithPriority(String dstMRN, String loc, String data, int priority, int timeout) throws IOException {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			System.out.println("Client MRN must not be null.");
+			return;
+		}
+		if (this.sendHandler == null) {
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
+		} else {
+			if(headerField == null) {
+				headerField = new HashMap<String, List<String>>();
+			}
+			
+			List<String> valueList = new ArrayList<String>();
+			valueList.add("" + priority);
+			headerField.put("priority", valueList);
+			
+			this.sendHandler.sendHttpsPostWithTimeout(dstMRN, loc, data, headerField, timeout);
+		}
+	}
+	
+	/**
+	 * Send a POST message to the destination MRN via MMS with priority.
+	 * 
+	 * @param dstMRN the destination MRN to send data
+	 * @param data   the data to send
+	 * @param priority   message priority
+	 * @param seqNum sequence number of message
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
+	 * @throws IOException if exception occurs
+	 * @see #sendPostMsg(String, String, int)
+	 * @see #setSender(ResponseCallback)
+	 */
+	public void sendPostMsgWithPriority(String dstMRN, String data, int priority, int seqNum, int timeout) throws IOException {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			System.out.println("Client MRN must not be null.");
+			return;
+		}
+		if (this.sendHandler == null) {
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
+		} else {
+			if(headerField == null) {
+				headerField = new HashMap<String, List<String>>();
+			}
+			
+			List<String> valueList = new ArrayList<String>();
+			valueList.add("" + priority);
+			headerField.put("priority", valueList);
+			
+			this.sendHandler.sendHttpsPostWithTimeout(dstMRN, "", data, headerField, seqNum, timeout);
+		}
+	}
+	
+	/**
+	 * Send a POST message to the destination MRN via MMS with priority.
+	 * 
+	 * @param dstMRN the destination MRN to send data
+	 * @param loc	 url location
+	 * @param data   the data to send
+	 * @param priority   message priority
+	 * @param seqNum sequence number of message
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
+	 * @throws IOException if exception occurs
+	 * @see #sendPostMsg(String, String, int)
+	 * @see #sendPostMsgWithPriority(String, String, int, int)
+	 * @see #setSender(ResponseCallback)
+	 */
+	public void sendPostMsgWithPriority(String dstMRN, String loc, String data, int priority, int seqNum, int timeout) throws IOException {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			System.out.println("Client MRN must not be null.");
+			return;
+		}
+		if (this.sendHandler == null) {
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
+		} else {
+			if(headerField == null) {
+				headerField = new HashMap<String, List<String>>();
+			}
+			
+			List<String> valueList = new ArrayList<String>();
+			valueList.add("" + priority);
+			headerField.put("priority", valueList);
+			
+			this.sendHandler.sendHttpsPostWithTimeout(dstMRN, loc, data, headerField, seqNum, timeout);
 		}
 	}
 	
