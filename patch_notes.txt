@@ -1,5 +1,13 @@
 Patch Notes
 ***********
+25-October 2019
+MC_MMS 0.9.6 new features/enhancements & bug-fixes:
+1. Fixed bugs related to not allowing duplicated long polling request.
+
+12-October 2019
+MC_MMS 0.9.5-HOTFIX new features/enhancements & bug-fixes:
+1. Updated Netty engine from 4.1.37 to 4.1.42 because of its memory leak issue.
+
 23-September 2019
 MC_MMS 0.9.5 new features/enhancements & bug-fixes:
 1. Added priority queue.
