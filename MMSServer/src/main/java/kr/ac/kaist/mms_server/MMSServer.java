@@ -61,6 +61,7 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import kr.ac.kaist.message_queue.MessageQueueDequeuer;
+import kr.ac.kaist.message_queue.v2.MessageLimitSizeDequeuer;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
 import kr.ac.kaist.message_relaying.SessionManager;
 
@@ -131,7 +132,7 @@ public class MMSServer {
 			Thread.sleep(1000);
 			
 			logger.error("Now setting message queue connection pool size.");
-			MessageQueueDequeuer.setConnectionPool(MMSConfiguration.getRabbitMqConnPool());
+			MessageLimitSizeDequeuer.setConnectionPool(MMSConfiguration.getRabbitMqConnPool());
 			Thread.sleep(1500);
 			
 			if (MMSConfiguration.isHttpsEnabled()) {

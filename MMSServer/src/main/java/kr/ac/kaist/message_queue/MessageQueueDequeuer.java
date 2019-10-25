@@ -194,6 +194,11 @@ Rev. history : 2019-10-11
 Version : 0.9.6
  	Commented out unused codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-10-25
+Version : 0.9.6
+ 	Added isTermintated.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -250,19 +255,23 @@ public class MessageQueueDequeuer extends Thread{
 	protected MessageTypeDecider.msgType pollingMethod = MessageTypeDecider.msgType.POLLING;
 	protected Channel mqChannel = null;
 	protected String consumerTag = null;
+	protected boolean isTerminated = false;
 	protected static ArrayList<Connection> connectionPool = null;
 	protected static ConnectionFactory connFac = null;
 	protected static int connectionPoolSize = 0;
+
 
 	
 	protected MMSLog mmsLog = null;
 
 	protected MessageQueueDequeuer (String sessionId) {
 		this.sessionId = sessionId;
+		this.consumerTag = sessionId;
+		this.isTerminated = false;
 		mmsLog = MMSLog.getInstance();
 	}
 	
-	void dequeueMessage (MRH_MessageInputChannel.ChannelBean bean) {
+	public void dequeueMessage (MRH_MessageInputChannel.ChannelBean bean) {
 		
 		
 		this.srcMRN = bean.getParser().getSrcMRN();

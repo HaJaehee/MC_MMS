@@ -9,16 +9,17 @@ import net.etri.pkilib.client.ClientPKILibrary;
 import net.etri.pkilib.tool.ByteConverter;
 
 /**
- * File name : LongPollingDuplicateClient.java Polling request message function for the purpose
- * of testing MMS Author : Youngjin Kim (jcdad3000@kaist.ac.kr) Creation Date :
- * 2019-05-02
- * 
- * 
- * Rev. history : 2019-05-17
- * Version : 0.9.1
- *		Added assert statements.
- * Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
- * 
+ File name : LongPollingDuplicateClient.java 
+ 	Polling request message function for the purpose
+	of testing MMS 
+Author : Youngjin Kim (jcdad3000@kaist.ac.kr) 
+Creation Date : 2019-05-02
+
+Rev. history : 2019-05-17
+Version : 0.9.1
+	Added assert statements.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
 Rev. history : 2019-06-13
 Version : 0.9.2
 	Change the class name from TS8_Client to LongPollingDuplicateClient
@@ -28,7 +29,13 @@ Rev. history : 2019-06-20
 Version : 0.9.2
 	Revised test cases and fixed bugs.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-10-25
+Version : 0.9.6
+	Revised test cases and fixed bugs.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
  */
+
 public class LongPollingDuplicateClient {
 
 	private static int length = -1;
@@ -91,11 +98,11 @@ public class LongPollingDuplicateClient {
 
 		try {
 			thread1.start();
-			Thread.sleep(100);
+			Thread.sleep(1000);
 			thread2.start();
-			Thread.sleep(100);
+			Thread.sleep(1000);
 			thread3.start();
-			Thread.sleep(100);
+			Thread.sleep(1000);
 			thread4.start();	
 		} 
 		catch (InterruptedException e) {

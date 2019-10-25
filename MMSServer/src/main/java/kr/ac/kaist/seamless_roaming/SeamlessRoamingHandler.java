@@ -91,6 +91,11 @@ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
  	Revised bugs related to not allowing duplicated long polling request 
  	    when a MMS Client loses connection with MMS because of unexpected network disconnection.
  Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+ 
+Rev. history : 2019-10-25
+ Version : 0.9.6
+ 	Revised bugs related to not allowing duplicated long polling request. 
+ Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -115,6 +120,7 @@ import java.awt.TrayIcon.MessageType;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -134,7 +140,7 @@ public class SeamlessRoamingHandler {
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
 
-	private static HashMap<String, DupInfoRefCntAndChannelBean> duplicationInfo = new HashMap<>();
+	private static HashMap<String, ArrayList<ChannelBean>> duplicationInfo = new HashMap<>();
 
 	
 
@@ -274,38 +280,36 @@ public class SeamlessRoamingHandler {
 			// Youngjin code
 			// Duplicated polling request is not allowed.
 			String duplicationId = bean.getParser().getSrcMRN() + bean.getParser().getSvcMRN();
-			DupInfoRefCntAndChannelBean obj = null;
-			synchronized (duplicationInfo) { // Get an instance from duplicationInfo if it exists, otherwise get null.
-				obj = duplicationInfo.get(duplicationId);
-			}
-			
-			retainDuplicationInfo(duplicationId, bean);
-			
-			if (getDuplicationInfoCnt(duplicationId) > 1) {
-				releaseDuplicationInfo(duplicationId);
+		
+			synchronized (duplicationInfo) {
+				if (getDuplicationInfoCnt(duplicationId) > 0) { 
+					ArrayList<ChannelBean> obj = duplicationInfo.get(duplicationId);
+					ChannelBean beanInDupInfo = null;
+					if (obj.size() > 0) { // This beanInDupInfo instance is used by prior session.
+						beanInDupInfo = obj.get(0);
+						//System.out.println(" This obj "+beanInDupInfo.getSessionId()+" instance is used by prior session.");
+						MMSLog.getInstance().debug(logger, beanInDupInfo.getSessionId(), ErrorCode.DUPLICATED_POLLING.toString());
+						try {
+							beanInDupInfo.getOutputChannel().replyToSender(beanInDupInfo, ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes());
+						} catch (IOException e) {
+							MMSLog.getInstance().info(logger, beanInDupInfo.getSessionId(), ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
+						}
+						finally { 
+							obj.remove(0);
+							clear(beanInDupInfo); // Clear the prior session.
+						}
+					}
+					releaseDuplicationInfo(duplicationId, beanInDupInfo);
+				}
+				retainDuplicationInfo(duplicationId, bean);
 			}
 			
 			bean.retain();
 			pmh.dequeueSCMessage(bean);
-			
-			if (obj != null) { // This obj instance is used by prior session.
-				ChannelBean beanInDupInfo = obj.getBean();
 				
-				mmsLog.debug(logger, bean.getSessionId(), ErrorCode.DUPLICATED_POLLING.toString());
-				try {
-					beanInDupInfo.getOutputChannel().replyToSender(bean, ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes());
-				} catch (IOException e) {
-					mmsLog.info(logger, beanInDupInfo.getSessionId(), ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
-				}
-				finally { 
-					clear(beanInDupInfo); // Clear the prior session.
-				}
-			}
 		}
 		
 		return message;
-		
-		
 	}
 
 //	save SC message into queue
@@ -322,9 +326,9 @@ public class SeamlessRoamingHandler {
 	
 	public static int getDuplicationInfoCnt(String duplicationId) {
 		synchronized(duplicationInfo) {
-			DupInfoRefCntAndChannelBean obj = duplicationInfo.get(duplicationId);
+			ArrayList<ChannelBean> obj = duplicationInfo.get(duplicationId);
 			if (obj != null) {
-				return obj.getRefCnt();
+				return obj.size();
 			}
 			else {
 				return 0;
@@ -336,47 +340,44 @@ public class SeamlessRoamingHandler {
 		synchronized(duplicationInfo) {
 
 			//System.out.println("Retain Dup");
-			DupInfoRefCntAndChannelBean obj = duplicationInfo.get(duplicationId);
+			ArrayList<ChannelBean> obj = duplicationInfo.get(duplicationId);
 			if (obj == null) {
-				obj = new DupInfoRefCntAndChannelBean(bean);
-				obj.setRefCnt(1);
+				obj = new ArrayList<ChannelBean>();
+				obj.add(bean);
 				duplicationInfo.put(duplicationId,obj);
 			}
 			else {
-				DupInfoRefCntAndChannelBean obj2 = new DupInfoRefCntAndChannelBean(bean); 
-				// The obj instance of prior session in duplicationInfo must be replaced by the obj2 instance of this session.
-				obj2.setRefCnt(2);
-				duplicationInfo.put(duplicationId,obj2);
+				obj.add(bean);
+				
 			}
 		}
 	}
 	
-	public static void releaseDuplicationInfo(String duplicationId) {
+	public static void releaseDuplicationInfo(String duplicationId, ChannelBean bean) {
 		synchronized(duplicationInfo) {
 
 			//System.out.println("Release Dup");
-			DupInfoRefCntAndChannelBean obj = duplicationInfo.get(duplicationId);
+			ArrayList<ChannelBean> obj = duplicationInfo.get(duplicationId);
 			if (obj != null) {
-				int refCnt = obj.getRefCnt();
-				if (refCnt == 1) {
-					//System.out.println(obj.getRefCnt());
+				obj.remove(bean);
+
+				if (obj.size() == 0 ) {
+					obj.clear();
 					duplicationInfo.remove(duplicationId);
-				}
-				else {
-					obj.setRefCnt(refCnt - 1);
-					//System.out.println(obj.getRefCnt());
 				}
 			}
 		}
 	}
 	
-	void clear (ChannelBean bean) {
+	static void clear (ChannelBean bean) {
 		bean.getCtx().channel().disconnect();
 		bean.getCtx().channel().close();
 		bean.getCtx().fireChannelInactive();
 		bean.getCtx().fireChannelUnregistered();
+		
 		LinkedList<ChannelTerminateListener> listeners = bean.getCtx().channel().attr(MRH_MessageInputChannel.TERMINATOR).get();
         for(ChannelTerminateListener listener: listeners) {
+        	//System.out.println("SessionId="+sessionId+" listener="+listener);
         	listener.terminate(bean.getCtx());
         }
         if (bean != null) {
@@ -384,6 +385,7 @@ public class SeamlessRoamingHandler {
 				bean.release();
 			}
 		}
+
 		bean.getCtx().disconnect();
 		bean.getCtx().close();
 	}

@@ -13,7 +13,10 @@ import org.slf4j.LoggerFactory;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.AlreadyClosedException;
+import com.rabbitmq.client.CancelCallback;
 import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.DeliverCallback;
+import com.rabbitmq.client.Delivery;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.GetResponse;
 import com.rabbitmq.client.AMQP.BasicProperties;
@@ -49,6 +52,11 @@ Rev. history : 2019-09-23
 Version : 0.9.5
 	Fixed bug.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-10-25
+Version : 0.9.6
+ 	Added isTermintated.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -277,6 +285,8 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 		
 //		mmsLog.debug(logger, sessionId, "메시지 꺼내기 종료");
 		
+		
+		
 		if (dqMessages.getMessageCount() > 0) { //If the queue has a message
 			
 			mmsLog.debug(logger, this.sessionId, "Dequeue="+queueName+".");
@@ -285,7 +295,7 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 	    		SessionManager.removeSessionInfo(this.sessionId);
 	    	}
 	    	if(SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId)!=0) {
-	    		SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId);
+	    		SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId, bean);
 	    	}
 	    	try {
 	    		bean.getOutputChannel().replyToSender(bean, dqMessages.getMessages().getBytes());
@@ -365,14 +375,18 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 				//TODO: Even though a polling client disconnects long polling session, this DefaultConsumer holds a mqChannel.
 				//When a polling client disconnects long polling session, this DefaultConsumer have to free the mqChannel. 
 				try {
-					mqChannel.basicConsume(queueName, false, new DefaultConsumer(mqChannel) {
-						 @Override
-						  public void handleDelivery(String consumerTag, Envelope envelope,
-						                             AMQP.BasicProperties properties, byte[] body)
-						      throws IOException {
-						    String dqMessage = new String(body, "UTF-8");
-						    MessageLimitSizeDequeuer.this.consumerTag = consumerTag;
-						    if(mqChannel != null && mqChannel.isOpen()) {
+					mqChannel.basicConsume(queueName, false, consumerTag, new DeliverCallback() {
+						
+						@Override
+						public void handle(String consumerTag, Delivery deliveredMessage) throws IOException {
+							// TODO Auto-generated method stub
+							
+							Envelope envelope = deliveredMessage.getEnvelope();
+							byte[] body = deliveredMessage.getBody();
+							
+							String dqMessage = new String(body, "UTF-8");
+							   
+						    if(mqChannel != null && mqChannel.isOpen() && !isTerminated) {
 						    	if (bean.getCtx() != null && !bean.getCtx().isRemoved()){
 							    	StringBuffer message = new StringBuffer();
 									message.append("[\""+URLEncoder.encode(dqMessage,"UTF-8")+"\"]");
@@ -384,7 +398,7 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 							    	}
 							    	
 							    	if(SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId) != 0) {
-							    		SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId);
+							    		SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId, bean);
 							    	}
 							    	
 							    	try {
@@ -396,8 +410,12 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 										}
 							    		
 						    			mqChannel.basicAck(envelope.getDeliveryTag(), false);
-						    			mqChannel.basicCancel(consumerTag);
-						    			mqChannel.close(320, "Service stoppted.");
+						    			if (mqChannel.isOpen()) {
+						    				mqChannel.basicCancel(consumerTag);
+						    			}
+						    			if (mqChannel.isOpen()) {
+						    				mqChannel.close(320, "Service stoppted.");
+						    			}
 							    		
 								    	clear(true, true);
 							    	}
@@ -406,8 +424,12 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 							    		try {
 							    			if (mqChannel != null && mqChannel.isOpen()) {
 							    				mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
-							    				mqChannel.basicCancel(consumerTag);
-							    				mqChannel.close(320, "Service stoppted.");
+							    				if (mqChannel.isOpen()) {
+							    					mqChannel.basicCancel(consumerTag);
+							    				}
+							    				if (mqChannel.isOpen()) {
+							    					mqChannel.close(320, "Service stoppted.");
+							    				}
 							    			}
 							    		}
 							    		catch (AlreadyClosedException | IOException | TimeoutException e1) {
@@ -423,8 +445,12 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 									
 									try {
 										mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
-										mqChannel.basicCancel(consumerTag);
-										mqChannel.close(320, "Service stoppted.");
+										if (mqChannel.isOpen()) {
+											mqChannel.basicCancel(consumerTag);
+										}
+										if (mqChannel.isOpen()) {
+											mqChannel.close(320, "Service stoppted.");
+										}
 									}
 									catch (AlreadyClosedException | IOException | TimeoutException e) {
 										mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
@@ -436,6 +462,13 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 									}
 								}
 						    }
+						}
+					}, new CancelCallback() {
+						
+						@Override
+						public void handle(String consumerTag) throws IOException {
+							// TODO Auto-generated method stub
+							System.out.println("SessionId="+sessionId+" is canceled.");
 						}
 					});
 				}
@@ -449,53 +482,55 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 				//However, it does not block exactly this thread.
 			}
 			
-			//TODO: Unexpectedly a mqChannel is shutdown while transferring a response to polling client, MUST A MESSAGE IS REQUEUED.
-
-			if (bean != null && bean.getCtx() != null) {
-				bean.getCtx().channel().attr(MRH_MessageInputChannel.TERMINATOR).get().add(new ChannelTerminateListener() {
-					
-					@Override
-					public void terminate(ChannelHandlerContext ctx) {
-
-						int duplicateInfoCnt = SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId);
-						if (duplicateInfoCnt != 0) {
-							SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId);
-						}
-						if (bean != null && bean.refCnt() > 0) {
-							//mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
-							try {
-								//System.out.println(consumerTag);
-								if(consumerTag != null && mqChannel != null && mqChannel.isOpen()) {
-									//System.out.println(mqChannel.getDefaultConsumer());
-									if (mqChannel.getDefaultConsumer() != null) {
-										mqChannel.basicCancel(consumerTag);
-									}
-								}
-
-							}
-							catch (IOException e) {
-								mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString(), e, 5);
-							}
-							try {
-								if(mqChannel != null && mqChannel.isOpen()){
-									mqChannel.close(320, "Service stoppted.");
-								}
-							}
-							catch (AlreadyClosedException | IOException | TimeoutException e) {
-								mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
-								return;
-							}
-							finally {
-								clear(true, true);
-							}
-						}
-
-
-					}
-				});
-			}
+			
 		}
 	    
+		//TODO: Unexpectedly a mqChannel is shutdown while transferring a response to polling client, MUST A MESSAGE IS REQUEUED.
+		if (bean != null && bean.getCtx() != null) {
+			bean.getCtx().channel().attr(MRH_MessageInputChannel.TERMINATOR).get().add(new ChannelTerminateListener() {
+				
+				@Override
+				public void terminate(ChannelHandlerContext ctx) {
+					
+					isTerminated = true;
+					
+					int duplicateInfoCnt = SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId);
+					if (duplicateInfoCnt != 0) {
+						SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId, bean);
+					}
+					
+					//mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
+					try {
+						//System.out.println("SessionId="+sessionId+" consumer tag="+consumerTag);
+						if(consumerTag != null && mqChannel != null && mqChannel.isOpen()) {
+							
+							//System.out.println("SessionId="+sessionId+" basic cancel="+consumerTag);
+							mqChannel.basicCancel(consumerTag);
+							consumerTag = null;
+						}
+
+					}
+					catch (IOException e) {
+						mmsLog.trace(logger, sessionId, "Consumer is already canceled.");
+					}
+					try {
+						if(mqChannel != null && mqChannel.isOpen()){
+							mqChannel.close(320, "Service stoppted.");
+						}
+					}
+					catch (AlreadyClosedException | IOException | TimeoutException e) {
+						mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
+						return;
+					}
+					finally {
+						clear(true, true);
+					}
+					
+
+				}
+			});
+		}
+		
     	if (pollingMethod != null && pollingMethod == MessageTypeDecider.msgType.POLLING) { // Polling method: normal polling
     		if (mqChannel != null && mqChannel.isOpen()) {
 	    		try {

@@ -43,6 +43,13 @@ Rev. history : 2019-09-23
 Version : 0.9.5
 	Added priority error code.
 Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-10-25
+Version : 0.9.6
+	Modified a error code
+	    from DUPLICATED_POLLING("10011", "The polling request is already received. Duplicated request is not accepted.") 
+	    to DUPLICATED_POLLING("10011", "The long polling request is received. Duplicated request is not accepted. The prior request is discarded.") 
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -66,7 +73,7 @@ public enum ErrorCode {
 	JSON_FORMAT_ERROR("10009", "The message is not formatted by JSON."),
 	@Deprecated
 	AUTHENTICATION_FAIL_NOTMATCHING("10010", "It is failed to verify the client. The source MRN is not equal to the certificate's."),
-	DUPLICATED_POLLING("10011", "The polling request is already received. Duplicated request is not accepted."),
+	DUPLICATED_POLLING("10011", "The long polling request is received. Duplicated request is not accepted. The prior request is discarded."),
 	AUTHENTICATE_FAIL("10012", "Authentication is failed."),
 	MESSAGE_PARSING_ERROR("10013", "Message parsing error."),
 	MIR_API_ERROR("10014","MIR API error."),
