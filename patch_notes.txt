@@ -3,6 +3,7 @@ Patch Notes
 25-October 2019
 MC_MMS 0.9.6 new features/enhancements & bug-fixes:
 1. Fixed bugs related to not allowing duplicated long polling request.
+2. Removed unused source codes.
 
 12-October 2019
 MC_MMS 0.9.5-HOTFIX new features/enhancements & bug-fixes:
