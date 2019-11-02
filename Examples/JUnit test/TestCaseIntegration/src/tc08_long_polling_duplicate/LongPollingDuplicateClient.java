@@ -98,11 +98,11 @@ public class LongPollingDuplicateClient {
 
 		try {
 			thread1.start();
-			Thread.sleep(1000);
+			Thread.sleep(100);
 			thread2.start();
-			Thread.sleep(1000);
+			Thread.sleep(100);
 			thread3.start();
-			Thread.sleep(1000);
+			Thread.sleep(100);
 			thread4.start();	
 		} 
 		catch (InterruptedException e) {

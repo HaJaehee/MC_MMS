@@ -81,21 +81,26 @@ Version : 0.9.4
 	Updated MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
- Rev. history : 2019-07-16
- Version : 0.9.4
+Rev. history : 2019-07-16
+Version : 0.9.4
  	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
- Rev. history : 2019-09-25
- Version : 0.9.5
+Rev. history : 2019-09-25
+Version : 0.9.5
  	Revised bugs related to not allowing duplicated long polling request 
  	    when a MMS Client loses connection with MMS because of unexpected network disconnection.
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
  
 Rev. history : 2019-10-25
- Version : 0.9.6
+Version : 0.9.6
  	Revised bugs related to not allowing duplicated long polling request. 
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-11-3
+Version : 0.9.6
+ 	Modified ambiguous names of methods of SeamlessRoamingHandler. 
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -281,28 +286,34 @@ public class SeamlessRoamingHandler {
 			// Duplicated polling request is not allowed.
 			String duplicationId = bean.getParser().getSrcMRN() + bean.getParser().getSvcMRN();
 		
-			synchronized (duplicationInfo) {
-				if (getDuplicationInfoCnt(duplicationId) > 0) { 
-					ArrayList<ChannelBean> obj = duplicationInfo.get(duplicationId);
-					ChannelBean beanInDupInfo = null;
-					if (obj.size() > 0) { // This beanInDupInfo instance is used by prior session.
-						beanInDupInfo = obj.get(0);
-						//System.out.println(" This obj "+beanInDupInfo.getSessionId()+" instance is used by prior session.");
-						MMSLog.getInstance().debug(logger, beanInDupInfo.getSessionId(), ErrorCode.DUPLICATED_POLLING.toString());
-						try {
-							beanInDupInfo.getOutputChannel().replyToSender(beanInDupInfo, ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes());
-						} catch (IOException e) {
-							MMSLog.getInstance().info(logger, beanInDupInfo.getSessionId(), ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
-						}
-						finally { 
-							obj.remove(0);
-							clear(beanInDupInfo); // Clear the prior session.
-						}
-					}
-					releaseDuplicationInfo(duplicationId, beanInDupInfo);
+			
+			if (getDupCntForDupId(duplicationId) > 0) { 
+				ArrayList<ChannelBean> pollingReqList = null;
+				synchronized (duplicationInfo)	{ // get polling request list.
+					pollingReqList = duplicationInfo.get(duplicationId);
 				}
-				retainDuplicationInfo(duplicationId, bean);
+				if (pollingReqList != null) {
+					synchronized (pollingReqList) {
+						ChannelBean beanInDupInfo = null;
+						if (pollingReqList.size() > 0) { // This beanInDupInfo instance is used by prior session.
+							beanInDupInfo = pollingReqList.get(0);
+							//System.out.println(" This pollingReqList "+beanInDupInfo.getSessionId()+" instance is used by prior session.");
+							MMSLog.getInstance().debug(logger, beanInDupInfo.getSessionId(), ErrorCode.DUPLICATED_POLLING.toString());
+							try {
+								beanInDupInfo.getOutputChannel().replyToSender(beanInDupInfo, ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes());
+							} catch (IOException e) {
+								MMSLog.getInstance().info(logger, beanInDupInfo.getSessionId(), ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
+							}
+							finally { 
+								pollingReqList.remove(beanInDupInfo);
+								clear(beanInDupInfo); // Clear the prior session.
+							}
+						}
+						releaseDupCntForDupId(duplicationId, beanInDupInfo);
+					}
+				}
 			}
+			retainDupCntForDupId(duplicationId, bean);
 			
 			bean.retain();
 			pmh.dequeueSCMessage(bean);
@@ -318,17 +329,17 @@ public class SeamlessRoamingHandler {
 	}
 
 	
-	public static long getDuplicationInfoSize() {
+	public static long getDupInfoSize() {
 		synchronized(duplicationInfo) {
 			return duplicationInfo.size();
 		}
 	}
 	
-	public static int getDuplicationInfoCnt(String duplicationId) {
+	public static int getDupCntForDupId(String duplicationId) {
 		synchronized(duplicationInfo) {
-			ArrayList<ChannelBean> obj = duplicationInfo.get(duplicationId);
-			if (obj != null) {
-				return obj.size();
+			ArrayList<ChannelBean> pollingReqList = duplicationInfo.get(duplicationId);
+			if (pollingReqList != null) {
+				return pollingReqList.size();
 			}
 			else {
 				return 0;
@@ -336,33 +347,34 @@ public class SeamlessRoamingHandler {
 		}
 	}
 	
-	public static void retainDuplicationInfo(String duplicationId, ChannelBean bean) {
+	public static void retainDupCntForDupId(String duplicationId, ChannelBean bean) {
 		synchronized(duplicationInfo) {
 
 			//System.out.println("Retain Dup");
-			ArrayList<ChannelBean> obj = duplicationInfo.get(duplicationId);
-			if (obj == null) {
-				obj = new ArrayList<ChannelBean>();
-				obj.add(bean);
-				duplicationInfo.put(duplicationId,obj);
+			ArrayList<ChannelBean> pollingReqList = duplicationInfo.get(duplicationId);
+			if (pollingReqList == null) {
+				pollingReqList = new ArrayList<ChannelBean>();
+				pollingReqList.add(bean);
+				duplicationInfo.put(duplicationId,pollingReqList);
 			}
 			else {
-				obj.add(bean);
+				pollingReqList.add(bean);
 				
 			}
 		}
 	}
 	
-	public static void releaseDuplicationInfo(String duplicationId, ChannelBean bean) {
+	public static void releaseDupCntForDupId(String duplicationId, ChannelBean bean) {
 		synchronized(duplicationInfo) {
 
 			//System.out.println("Release Dup");
-			ArrayList<ChannelBean> obj = duplicationInfo.get(duplicationId);
-			if (obj != null) {
-				obj.remove(bean);
+			ArrayList<ChannelBean> pollingReqList = duplicationInfo.get(duplicationId);
 
-				if (obj.size() == 0 ) {
-					obj.clear();
+			if (pollingReqList != null) {
+				pollingReqList.remove(bean);
+
+				if (pollingReqList.size() == 0 ) {
+					pollingReqList.clear();
 					duplicationInfo.remove(duplicationId);
 				}
 			}

@@ -57,6 +57,11 @@ Rev. history : 2019-10-25
 Version : 0.9.6
  	Added isTermintated.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-11-3
+Version : 0.9.6
+ 	Modified ambiguous names of methods of SeamlessRoamingHandler. 
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -294,9 +299,9 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 					
 					isTerminated = true;
 					
-					int duplicateInfoCnt = SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId);
+					int duplicateInfoCnt = SeamlessRoamingHandler.getDupCntForDupId(duplicationId);
 					if (duplicateInfoCnt != 0) {
-						SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId, bean);
+						SeamlessRoamingHandler.releaseDupCntForDupId(duplicationId, bean);
 					}
 					
 					//mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
@@ -338,8 +343,8 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 	    	if (SessionManager.getSessionType(this.sessionId) != null) {
 	    		SessionManager.removeSessionInfo(this.sessionId);
 	    	}
-	    	if(SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId)!=0) {
-	    		SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId, bean);
+	    	if(SeamlessRoamingHandler.getDupCntForDupId(duplicationId)!=0) {
+	    		SeamlessRoamingHandler.releaseDupCntForDupId(duplicationId, bean);
 	    	}
 	    	try {
 	    		bean.getOutputChannel().replyToSender(bean, dqMessages.getMessages().getBytes());
@@ -441,8 +446,8 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 							    		SessionManager.removeSessionInfo(sessionId);
 							    	}
 							    	
-							    	if(SeamlessRoamingHandler.getDuplicationInfoCnt(duplicationId) != 0) {
-							    		SeamlessRoamingHandler.releaseDuplicationInfo(duplicationId, bean);
+							    	if(SeamlessRoamingHandler.getDupCntForDupId(duplicationId) != 0) {
+							    		SeamlessRoamingHandler.releaseDupCntForDupId(duplicationId, bean);
 							    	}
 							    	
 							    	try {
