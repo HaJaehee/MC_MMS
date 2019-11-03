@@ -309,10 +309,9 @@ public class SeamlessRoamingHandler {
 						MMSLog.getInstance().info(logger, beanInDupInfo.getSessionId(), ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
 					}
 					finally { 
-						pollingReqList.remove(beanInDupInfo);
 						clear(beanInDupInfo); // Clear the prior session.
+						releaseDupCntForDupId(duplicationId, beanInDupInfo);
 					}
-					releaseDupCntForDupId(duplicationId, beanInDupInfo);
 				}
 				bean.retain();
 				pmh.dequeueSCMessage(bean);
@@ -369,7 +368,7 @@ public class SeamlessRoamingHandler {
 			//System.out.println("Release Dup");
 			ArrayList<ChannelBean> pollingReqList = duplicationInfo.get(duplicationId);
 
-			if (pollingReqList != null) {
+			if (pollingReqList != null && bean != null) {
 				pollingReqList.remove(bean);
 
 				if (pollingReqList.size() == 0 ) {
