@@ -101,6 +101,11 @@ Rev. history : 2019-11-3
 Version : 0.9.6
  	Modified ambiguous names of methods of SeamlessRoamingHandler. 
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-11-4
+Version : 0.9.6
+ 	Modified synchronized clauses in processPollingMessage(). 
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -286,37 +291,45 @@ public class SeamlessRoamingHandler {
 			// Duplicated polling request is not allowed.
 			String duplicationId = bean.getParser().getSrcMRN() + bean.getParser().getSvcMRN();
 		
-			
-			if (getDupCntForDupId(duplicationId) > 0) { 
-				ArrayList<ChannelBean> pollingReqList = null;
-				synchronized (duplicationInfo)	{ // get polling request list.
-					pollingReqList = duplicationInfo.get(duplicationId);
-				}
-				if (pollingReqList != null) {
-					synchronized (pollingReqList) {
-						ChannelBean beanInDupInfo = null;
-						if (pollingReqList.size() > 0) { // This beanInDupInfo instance is used by prior session.
-							beanInDupInfo = pollingReqList.get(0);
-							//System.out.println(" This pollingReqList "+beanInDupInfo.getSessionId()+" instance is used by prior session.");
-							MMSLog.getInstance().debug(logger, beanInDupInfo.getSessionId(), ErrorCode.DUPLICATED_POLLING.toString());
-							try {
-								beanInDupInfo.getOutputChannel().replyToSender(beanInDupInfo, ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes());
-							} catch (IOException e) {
-								MMSLog.getInstance().info(logger, beanInDupInfo.getSessionId(), ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
-							}
-							finally { 
-								pollingReqList.remove(beanInDupInfo);
-								clear(beanInDupInfo); // Clear the prior session.
-							}
+			ArrayList<ChannelBean> pollingReqList = null;
+			synchronized (duplicationInfo)	{ // get polling request list.
+				pollingReqList = duplicationInfo.get(duplicationId);
+			}
+			if (pollingReqList != null) {
+				synchronized (pollingReqList) {
+					ChannelBean beanInDupInfo = null;
+					if (pollingReqList.size() > 0) { // This beanInDupInfo instance is used by prior session.
+						beanInDupInfo = pollingReqList.get(0);
+						//System.out.println(" This pollingReqList "+beanInDupInfo.getSessionId()+" instance is used by prior session.");
+						MMSLog.getInstance().debug(logger, beanInDupInfo.getSessionId(), ErrorCode.DUPLICATED_POLLING.toString());
+						try {
+							beanInDupInfo.getOutputChannel().replyToSender(beanInDupInfo, ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes());
+						} catch (IOException e) {
+							MMSLog.getInstance().info(logger, beanInDupInfo.getSessionId(), ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
+						}
+						finally { 
+							pollingReqList.remove(beanInDupInfo);
+							clear(beanInDupInfo); // Clear the prior session.
 						}
 						releaseDupCntForDupId(duplicationId, beanInDupInfo);
 					}
+					retainDupCntForDupId(duplicationId, bean);
+					
+					bean.retain();
+					pmh.dequeueSCMessage(bean);
 				}
 			}
-			retainDupCntForDupId(duplicationId, bean);
-			
-			bean.retain();
-			pmh.dequeueSCMessage(bean);
+			else { //pollingReqList == null
+				retainDupCntForDupId(duplicationId, bean);
+				
+				synchronized (duplicationInfo)	{ // get polling request list.
+					pollingReqList = duplicationInfo.get(duplicationId);
+				}
+				synchronized (pollingReqList) {
+					bean.retain();
+					pmh.dequeueSCMessage(bean);
+				}
+			}
 				
 		}
 		
