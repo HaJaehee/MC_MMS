@@ -315,11 +315,14 @@ public class MRH_MessageInputChannel extends SimpleChannelInboundHandler<FullHtt
         }
         
 
+        synchronized (ctx) {
+        	LinkedList<ChannelTerminateListener> listeners = ctx.channel().attr(TERMINATOR).get();
+            for(ChannelTerminateListener listener: listeners) {
+            	listener.terminate(ctx);
+            }
+            ctx.channel().attr(TERMINATOR).get().clear(); // Clear the attribute. 
+		}
         
-        LinkedList<ChannelTerminateListener> listeners = ctx.channel().attr(TERMINATOR).get();
-        for(ChannelTerminateListener listener: listeners) {
-        	listener.terminate(ctx);
-        }
         
 		if (bean != null) {
 			while (bean.refCnt() > 0) {

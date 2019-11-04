@@ -380,24 +380,28 @@ public class SeamlessRoamingHandler {
 	}
 	
 	static void clear (ChannelBean bean) {
-		bean.getCtx().channel().disconnect();
-		bean.getCtx().channel().close();
-		bean.getCtx().fireChannelInactive();
-		bean.getCtx().fireChannelUnregistered();
-		
-		LinkedList<ChannelTerminateListener> listeners = bean.getCtx().channel().attr(MRH_MessageInputChannel.TERMINATOR).get();
-        for(ChannelTerminateListener listener: listeners) {
-        	//System.out.println("SessionId="+sessionId+" listener="+listener);
-        	listener.terminate(bean.getCtx());
-        }
-        if (bean != null) {
-			while (bean.refCnt() > 0) {
-				bean.release();
+		synchronized (bean) {
+			bean.getCtx().channel().disconnect();
+			bean.getCtx().channel().close();
+			bean.getCtx().fireChannelInactive();
+			bean.getCtx().fireChannelUnregistered();
+			
+			LinkedList<ChannelTerminateListener> listeners = bean.getCtx().channel().attr(MRH_MessageInputChannel.TERMINATOR).get();
+	        for(ChannelTerminateListener listener: listeners) {
+	        	//System.out.println("SessionId="+sessionId+" listener="+listener);
+	        	listener.terminate(bean.getCtx());
+	        }
+	        bean.getCtx().channel().attr(MRH_MessageInputChannel.TERMINATOR).get().clear(); // Clear the attribute. 
+	        
+	        if (bean != null) {
+				while (bean.refCnt() > 0) {
+					bean.release();
+				}
 			}
+	
+			bean.getCtx().disconnect();
+			bean.getCtx().close();
 		}
-
-		bean.getCtx().disconnect();
-		bean.getCtx().close();
 	}
 
 }

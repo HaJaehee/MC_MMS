@@ -62,6 +62,11 @@ Rev. history : 2019-11-3
 Version : 0.9.6
  	Modified ambiguous names of methods of SeamlessRoamingHandler. 
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-11-4
+Version : 0.9.6
+ 	Modified synchronized clauses in MessageLimitSizeDequeuer. 
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -211,52 +216,58 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 		dequeue_flag[0] = false;
 
 		try {
-			GetResponse res = mqChannel.basicGet(queueName, false);
-			
-			boolean isExceeded = checkMessageSize(dqMessages.getMessageBuffer(), res);
-			
-			if (isExceeded) {
-		    	mqChannel.basicNack(res.getEnvelope().getDeliveryTag(), false, true);
-		    	dequeue_flag[0] = false;
-//		    	System.out.println("\u001B[34m" + "메시지 초과" + "\u001B[0m");
-//		    	mmsLog.debug(logger, sessionId, "메시지 초과");
-		    }
-		    else {
-		    	mqChannel.basicAck(res.getEnvelope().getDeliveryTag(), false);
-		    	dqMessages.append(res);
-		    	dequeue_flag[0] = true;
-		    	
-//		    	System.out.println("\u001B[34m" + "메시지 버퍼에 넣음" + "\u001B[0m");
-//		    	mmsLog.debug(logger, sessionId, "메시지 버퍼에 넣음");
-		    }
-//			mqChannel.basicConsume(queueName, false, consumer);
-//			mqChannel.basicConsume(queueName, false, new DefaultConsumer(mqChannel) {
-//				@Override
-//				public void handleDelivery(String consumerTag, Envelope envelope, 
-//						BasicProperties properties, byte[] body) throws IOException {
-//					String message = new String(body, "UTF-8");
-//				    MessageLimitSizeDequeuer.this.consumerTag = consumerTag;
-//				    
-//				    boolean isExceeded = checkMessageSize(dqMessages, message);
-//				    mmsLog.debug(logger, sessionId, "메시지 버퍼 크기 검사");
-//				    
-//				    if (isExceeded) {
-//				    	mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
-//				    	dequeue_flag[0] = false;
-////				    	System.out.println("\u001B[34m" + "메시지 초과" + "\u001B[0m");
-//				    	mmsLog.debug(logger, sessionId, "메시지 초과");
-//				    }
-//				    else {
-//				    	mqChannel.basicAck(envelope.getDeliveryTag(), false);
-//				    	dqMessages.append(message);
-//				    	dequeue_flag[0] = true;
-//				    	
-////				    	System.out.println("\u001B[34m" + "메시지 버퍼에 넣음" + "\u001B[0m");
-//				    	mmsLog.debug(logger, sessionId, "메시지 버퍼에 넣음");
-//				    }
-//				    
-//				    mqChannel.basicCancel(consumerTag);
-//				}
+			synchronized (mqChannel) {
+				GetResponse res = mqChannel.basicGet(queueName, false);
+				
+				boolean isExceeded = checkMessageSize(dqMessages.getMessageBuffer(), res);
+				
+				if (isExceeded) {
+					
+						mqChannel.basicNack(res.getEnvelope().getDeliveryTag(), false, true);
+					
+			    	dequeue_flag[0] = false;
+	//		    	System.out.println("\u001B[34m" + "메시지 초과" + "\u001B[0m");
+	//		    	mmsLog.debug(logger, sessionId, "메시지 초과");
+			    }
+			    else {
+			    	
+			    		mqChannel.basicAck(res.getEnvelope().getDeliveryTag(), false);
+			    	
+			    	dqMessages.append(res);
+			    	dequeue_flag[0] = true;
+			    	
+	//		    	System.out.println("\u001B[34m" + "메시지 버퍼에 넣음" + "\u001B[0m");
+	//		    	mmsLog.debug(logger, sessionId, "메시지 버퍼에 넣음");
+			    }
+	//			mqChannel.basicConsume(queueName, false, consumer);
+	//			mqChannel.basicConsume(queueName, false, new DefaultConsumer(mqChannel) {
+	//				@Override
+	//				public void handleDelivery(String consumerTag, Envelope envelope, 
+	//						BasicProperties properties, byte[] body) throws IOException {
+	//					String message = new String(body, "UTF-8");
+	//				    MessageLimitSizeDequeuer.this.consumerTag = consumerTag;
+	//				    
+	//				    boolean isExceeded = checkMessageSize(dqMessages, message);
+	//				    mmsLog.debug(logger, sessionId, "메시지 버퍼 크기 검사");
+	//				    
+	//				    if (isExceeded) {
+	//				    	mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
+	//				    	dequeue_flag[0] = false;
+	////				    	System.out.println("\u001B[34m" + "메시지 초과" + "\u001B[0m");
+	//				    	mmsLog.debug(logger, sessionId, "메시지 초과");
+	//				    }
+	//				    else {
+	//				    	mqChannel.basicAck(envelope.getDeliveryTag(), false);
+	//				    	dqMessages.append(message);
+	//				    	dequeue_flag[0] = true;
+	//				    	
+	////				    	System.out.println("\u001B[34m" + "메시지 버퍼에 넣음" + "\u001B[0m");
+	//				    	mmsLog.debug(logger, sessionId, "메시지 버퍼에 넣음");
+	//				    }
+	//				    
+	//				    mqChannel.basicCancel(consumerTag);
+	//				}
+			}
 //			});
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -307,10 +318,14 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 					//mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
 					try {
 						//System.out.println("SessionId="+sessionId+" consumer tag="+consumerTag);
-						if(consumerTag != null && mqChannel != null && mqChannel.isOpen()) {
+						if(consumerTag != null && mqChannel != null) {
 							
 							//System.out.println("SessionId="+sessionId+" basic cancel="+consumerTag);
-							mqChannel.basicCancel(consumerTag);
+							synchronized (mqChannel) {
+								if (mqChannel.isOpen()) {
+									mqChannel.basicCancel(consumerTag);
+								}
+							}
 							consumerTag = null;
 						}
 
@@ -319,8 +334,12 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 						mmsLog.trace(logger, sessionId, "Consumer is already canceled.");
 					}
 					try {
-						if(mqChannel != null && mqChannel.isOpen()){
-							mqChannel.close(320, "Service stoppted.");
+						if(mqChannel != null){
+							synchronized (mqChannel) {
+								if (mqChannel.isOpen()) {
+									mqChannel.close(320, "Service stoppted.");
+								}
+							}
 						}
 					}
 					catch (AlreadyClosedException | IOException | TimeoutException e) {
@@ -358,7 +377,9 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 	    		mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
 	    		for (String msg : dqMessages.getBackupMessages()) {
 	    			try {
-						mqChannel.basicPublish("", queueName, null, msg.getBytes());
+	    				synchronized (mqChannel) {
+	    					mqChannel.basicPublish("", queueName, null, msg.getBytes());
+	    				}
 					} catch (IOException e1) {
 						mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
 						dqMessages.clear();
@@ -369,10 +390,14 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 	    	}
 	    	
 	    	try {
-	    		if (mqChannel != null && mqChannel.isOpen()) {
-	    			mqChannel.close(320, "Service stoppted.");
-		    		mqChannel = null;
-	    		}
+	    		if(mqChannel != null){
+					synchronized (mqChannel) {
+						if (mqChannel.isOpen()) {
+							mqChannel.close(320, "Service stoppted.");
+						}
+					}
+					mqChannel = null;
+				}
 	    	}
 	    	catch (IOException | TimeoutException e) {
 	    		mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString());
@@ -402,10 +427,14 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 
 		    	
 		    	try {
-		    		if (mqChannel != null && mqChannel.isOpen()) {
-			    		mqChannel.close(320, "Service stoppted.");
-			    		mqChannel = null;
-		    		}
+		    		if(mqChannel != null){
+						synchronized (mqChannel) {
+							if (mqChannel.isOpen()) {
+								mqChannel.close(320, "Service stoppted.");
+							}
+						}
+						mqChannel = null;
+					}
 		    	}
 		    	catch (IOException | TimeoutException e) {
 		    		mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString());
@@ -457,27 +486,23 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 							    			bean.release();
 							    			bean = null;
 										}
-							    		
-						    			mqChannel.basicAck(envelope.getDeliveryTag(), false);
-						    			if (mqChannel.isOpen()) {
-						    				mqChannel.basicCancel(consumerTag);
-						    			}
-						    			if (mqChannel.isOpen()) {
-						    				mqChannel.close(320, "Service stoppted.");
-						    			}
-							    		
+							    		synchronized (mqChannel) {
+							    			mqChannel.basicAck(envelope.getDeliveryTag(), false);
+							    			if (mqChannel.isOpen()) {
+							    				mqChannel.close(320, "Service stoppted.");
+							    			}
+							    		}
 								    	clear(true, true);
 							    	}
 								    catch (IOException | TimeoutException e) {
 							    		mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
 							    		try {
-							    			if (mqChannel != null && mqChannel.isOpen()) {
-							    				mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
-							    				if (mqChannel.isOpen()) {
-							    					mqChannel.basicCancel(consumerTag);
-							    				}
-							    				if (mqChannel.isOpen()) {
-							    					mqChannel.close(320, "Service stoppted.");
+							    			if (mqChannel != null) {
+							    				synchronized (mqChannel) {
+								    				mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
+								    				if (mqChannel.isOpen()) {
+								    					mqChannel.close(320, "Service stoppted.");
+								    				}
 							    				}
 							    			}
 							    		}
@@ -493,12 +518,11 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 									mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString()+" srcMRN="+ srcMRN+". Re-enqueue the messages.");
 									
 									try {
-										mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
-										if (mqChannel.isOpen()) {
-											mqChannel.basicCancel(consumerTag);
-										}
-										if (mqChannel.isOpen()) {
-											mqChannel.close(320, "Service stoppted.");
+										synchronized (mqChannel) {
+											mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
+											if (mqChannel.isOpen()) {
+												mqChannel.close(320, "Service stoppted.");
+											}
 										}
 									}
 									catch (AlreadyClosedException | IOException | TimeoutException e) {
@@ -537,12 +561,20 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 
 		
     	if (pollingMethod != null && pollingMethod == MessageTypeDecider.msgType.POLLING) { // Polling method: normal polling
-    		if (mqChannel != null && mqChannel.isOpen()) {
-	    		try {
-					mqChannel.close(320, "Service stoppted.");
-				} catch (IOException | TimeoutException e) {
-					mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
+    		if (mqChannel != null) {
+    			synchronized (mqChannel) {
+    				try {
+    					if (mqChannel.isOpen()) {
+    						mqChannel.close(320, "Service stoppted.");
+    					}
+    				} catch (IOException | TimeoutException e) {
+    					mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
+    				}
+    				finally {
+    					mqChannel = null;
+    				}
 				}
+	    		
 	    	}
     	}	
 	}
