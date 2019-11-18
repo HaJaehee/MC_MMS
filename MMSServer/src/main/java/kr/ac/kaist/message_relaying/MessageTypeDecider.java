@@ -114,6 +114,11 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2019-07-03
 Version : 0.9.3
 	Added multi-thread safety.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)\
+
+Rev. history : 2019-10-25
+Version : 0.9.6
+	Removed unused codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -138,7 +143,7 @@ public class MessageTypeDecider {
 			POLLING,
 			LONG_POLLING,
 			RELAYING_TO_SC,
-			RELAYING_TO_SC_SEQUENTIALLY,
+			//RELAYING_TO_SC_SEQUENTIALLY,
 			RELAYING_TO_SERVER,
 			RELAYING_TO_SERVER_SEQUENTIALLY,
 			//REGISTER_CLIENT,
@@ -341,12 +346,10 @@ public class MessageTypeDecider {
 	        	else if (model.equals("polling")){//when model A, it puts the message into the queue
 	        		if (httpMethod == HttpMethod.POST) {
 	        			SessionManager.incSessionCount();
-		        		if (seqNum == -1) {
-		        			return msgType.RELAYING_TO_SC;
-		        		}
-		        		else {
-		        			return msgType.RELAYING_TO_SC_SEQUENTIALLY;
-		        		}
+		        		
+		        		return msgType.RELAYING_TO_SC;
+		        		
+		        		
 	        		}
 	        		else { //httpMethod != HttpMethod.POST
 	        			return msgType.INVALID_HTTP_METHOD;

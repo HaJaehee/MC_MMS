@@ -44,7 +44,7 @@ public class PriorityMessageQueueManager extends MessageQueueManager {
 	@Override
 	public byte[] enqueueMessage(ChannelBean bean) {
 		// TODO Auto-generated method stub
-		PriorityMessagQueueEnqueuer mqe = new PriorityMessagQueueEnqueuer(this.sessionId);
+		PriorityMessageQueueEnqueuer mqe = new PriorityMessageQueueEnqueuer(this.sessionId);
 		return mqe.enqueueMessage(bean);
 	}
 }

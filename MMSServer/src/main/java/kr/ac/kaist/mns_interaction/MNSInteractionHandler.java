@@ -63,7 +63,6 @@ public class MNSInteractionHandler {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MNSInteractionHandler.class);
 	private String sessionId = "";
-	private LocatorUpdater locatorUpdater = null;
 	private MRNInformationQuerier MRNInfoQuerier = null;
 	private MIH_MessageOutputChannel messageOutput = null;
 	private MMSLog mmsLog = null;
@@ -77,7 +76,6 @@ public class MNSInteractionHandler {
 	
 	private void initializeModule(){
 		MRNInfoQuerier = new MRNInformationQuerier();
-		locatorUpdater = new LocatorUpdater(this.sessionId);
 		messageOutput = new MIH_MessageOutputChannel(this.sessionId);
 		mmsLog = MMSLog.getInstance();
 		mmsLogForDebug = MMSLogForDebug.getInstance();
@@ -104,17 +102,5 @@ public class MNSInteractionHandler {
 	public String requestDstInfo(String srcMRN, String dstMRN, String srcIP){
 		String msg = MRNInfoQuerier.buildQuery("unicasting", srcMRN, dstMRN, srcIP);
 		return messageOutput.sendToMNS(msg);
-	}
-	
-	@Deprecated
-	public String updateClientInfo(String srcMRN, String srcIP){
-		String msg = locatorUpdater.buildUpdate(srcMRN, srcIP);
-		mmsLog.debug(logger, this.sessionId, "Update client information.");
-		return messageOutput.sendToMNS(msg);
-	}
-
-	@Deprecated
-	public String registerClientInfo (String srcMRN, String srcIP){
-		return updateClientInfo(srcMRN, srcIP);
 	}
 }

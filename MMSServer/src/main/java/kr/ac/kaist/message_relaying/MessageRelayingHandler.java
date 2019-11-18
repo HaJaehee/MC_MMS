@@ -270,15 +270,20 @@ Version : 0.9.4
 	Updated MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
- Rev. history : 2019-07-16
- Version : 0.9.4
+Rev. history : 2019-07-16
+Version : 0.9.4
 	 Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
  
-  Rev. history : 2019-07-22
- Version : 0.9.4
+Rev. history : 2019-07-22
+Version : 0.9.4
 	 Added exception safety codes around decideType() and processRelaying().
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+ 
+Rev. history : 2019-10-25
+Version : 0.9.6
+	Removed unused codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -463,7 +468,7 @@ public class MessageRelayingHandler  {
 		}
 		
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
+		else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
 			moh = new MessageOrderingHandler();
 			message = moh.initializeAndGetError(bean);
 			if (message != null) { // message is an ErrorCode.
@@ -538,7 +543,7 @@ public class MessageRelayingHandler  {
 		
 		
 		//Below code MUST be 'if' statement not 'else if'. 
-		if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
+		if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
 			message = moh.processMessage(bean, mch); // The (FullHttpRequest) req MUST be released in this logic.
 			if (message != null) { // message is OK from SeamlessRoamingHandler or an ErrorCode.
 				try {
