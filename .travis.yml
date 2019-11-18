@@ -35,7 +35,7 @@ branches:
   only:
     - master
     - stable
-    - beta-0.9.6-active
+    - beta-0.9.6-closed
   except:
     - legacy
     - experimental
