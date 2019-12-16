@@ -5,8 +5,8 @@ import org.junit.BeforeClass;
 import kr.ac.kaist.mms_client.MMSConfiguration;
 
 public class MMSTestBase {
-	//public static String MMS_HOST = "127.0.0.1";
-	public static String MMS_HOST = "mms-kaist.com";
+	public static String MMS_HOST = "127.0.0.1";
+//	public static String MMS_HOST = "mms-kaist.com";
 	//public static String MMS_HOST = "mms.smartnav.org";
 	public static String MMS_URL = MMS_HOST + ":" + MMSConfiguration.MMS_PORT;
 	@BeforeClass

@@ -37,10 +37,15 @@ Version : 0.9.4
 	Updated MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
- Rev. history : 2019-07-16
- Version : 0.9.4
- 	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Rev. history : 2019-07-16
+Version : 0.9.4
+	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+ 
+Rev. history : 2019-10-25
+Version : 0.9.6
+	Removed unused codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 **/
 /* -------------------------------------------------------- */
 
@@ -273,10 +278,7 @@ class MessageOrderingHandler {
 					thread = mch.asynchronizedUnicast(bean); // Execute this relaying process
 					bean.retain();
 				}
-				else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
-					SeamlessRoamingHandler srh = new SeamlessRoamingHandler(bean.getSessionId());
-					return srh.putSCMessage(bean);
-				}
+				
 				message = rmvCurRlyFromScheduleAndWakeUpNxtRlyBlked(srcDstPair, bean.getSessionId());
 				if (message != null) {
 					mmsLog.info(logger, bean.getSessionId(), new String(message));

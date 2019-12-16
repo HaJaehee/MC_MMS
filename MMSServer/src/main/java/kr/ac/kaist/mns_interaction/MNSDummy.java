@@ -223,6 +223,10 @@ public class MNSDummy {
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-10-server","127.0.0.1:8907:2");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-12-client","1.1.1.1:0:1");
 		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-12-server","127.0.0.1:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-13-client","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-13-server","127.0.0.1:8907:2");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-14-client","1.1.1.1:0:1");
+		MRNtoIP.put("urn:mrn:imo:imo-no:ts-mms-14-server","127.0.0.1:8907:2");
 		MRNtoIP.put("urn:mrn:smart-navi:device:service-provider","127.0.0.1:0:2");
 		
 		// REQUESTED MRN //

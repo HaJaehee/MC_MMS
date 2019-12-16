@@ -81,21 +81,45 @@ Version : 0.9.4
 	Updated MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
- Rev. history : 2019-07-16
- Version : 0.9.4
+Rev. history : 2019-07-16
+Version : 0.9.4
  	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-09-25
+Version : 0.9.5
+ 	Revised bugs related to not allowing duplicated long polling request 
+ 	    when a MMS Client loses connection with MMS because of unexpected network disconnection.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+ 
+Rev. history : 2019-10-25
+Version : 0.9.6
+ 	Revised bugs related to not allowing duplicated long polling request. 
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-11-3
+Version : 0.9.6
+ 	Modified ambiguous names of methods of SeamlessRoamingHandler. 
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-11-4
+Version : 0.9.6
+ 	Modified synchronized clauses in processPollingMessage(). 
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.util.AttributeKey;
 import kr.ac.kaist.message_relaying.MRH_MessageInputChannel;
+import kr.ac.kaist.message_relaying.MRH_MessageInputChannel.ChannelBean;
 import kr.ac.kaist.message_relaying.MRH_MessageOutputChannel;
 import kr.ac.kaist.message_relaying.MessageParser;
 import kr.ac.kaist.message_relaying.MessageTypeDecider;
 import kr.ac.kaist.message_relaying.SessionManager;
 import kr.ac.kaist.message_relaying.polling_auth.ClientVerifier;
+import kr.ac.kaist.mms_server.ChannelTerminateListener;
 import kr.ac.kaist.mms_server.ErrorCode;
 import kr.ac.kaist.mms_server.MMSConfiguration;
 import kr.ac.kaist.mms_server.MMSLog;
@@ -106,7 +130,9 @@ import java.awt.TrayIcon.MessageType;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,7 +150,8 @@ public class SeamlessRoamingHandler {
 	private MMSLog mmsLog = null;
 	private MMSLogForDebug mmsLogForDebug = null;
 
-	private static HashMap<String, Integer> duplicateInfo = new HashMap<>();
+	private static HashMap<String, ArrayList<ChannelBean>> duplicationInfo = new HashMap<>();
+
 	
 
 	public SeamlessRoamingHandler(String sessionId) {
@@ -262,32 +289,36 @@ public class SeamlessRoamingHandler {
 			
 			// Youngjin code
 			// Duplicated polling request is not allowed.
-			String duplicateId = bean.getParser().getSrcMRN() + bean.getParser().getSvcMRN();
-			retainDuplicateInfo(duplicateId);
+			String duplicationId = bean.getParser().getSrcMRN() + bean.getParser().getSvcMRN();
+		
+			ArrayList<ChannelBean> pollingReqList = null;
+			synchronized (duplicationInfo)	{ // get polling request list.
+				retainDupCntForDupId(duplicationId, bean);
+				pollingReqList = duplicationInfo.get(duplicationId);
+			}
 			
-			if (getDuplicateInfoCnt(duplicateId) > 1) {
-				
-//					System.out.println("duplicate long polling request");
-				
-				// TODO: To define error message.
-				message = ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes();
-				mmsLog.debug(logger, sessionId, ErrorCode.DUPLICATED_POLLING.toString());
-
-				releaseDuplicateInfo(duplicateId);
-				return message;
-				
-			} else {
+			synchronized (pollingReqList) {
+				ChannelBean beanInDupInfo = null;
+				if (pollingReqList.size() > 1) { // This beanInDupInfo instance is used by prior session.
+					beanInDupInfo = pollingReqList.get(0);
+					//System.out.println(" This pollingReqList "+beanInDupInfo.getSessionId()+" instance is used by prior session.");
+					MMSLog.getInstance().debug(logger, beanInDupInfo.getSessionId(), ErrorCode.DUPLICATED_POLLING.toString());
+					try {
+						beanInDupInfo.getOutputChannel().replyToSender(beanInDupInfo, ErrorCode.DUPLICATED_POLLING.getJSONFormattedUTF8Bytes());
+					} catch (IOException e) {
+						MMSLog.getInstance().info(logger, beanInDupInfo.getSessionId(), ErrorCode.LONG_POLLING_CLIENT_DISCONNECTED.toString());
+					}
+					finally { 
+						clear(beanInDupInfo); // Clear the prior session.
+						releaseDupCntForDupId(duplicationId, beanInDupInfo);
+					}
+				}
 				bean.retain();
 				pmh.dequeueSCMessage(bean);
-			}
+			}	
 		}
 		
 		return message;
-		
-		//Removed at version 0.8.2.
-		/*if (MMSConfiguration.getMnsHost().equals("localhost")||MMSConfiguration.getMnsHost().equals("127.0.0.1")) {
-			pmh.updateClientInfo(mih, srcMRN, srcIP);
-		}*/
 	}
 
 //	save SC message into queue
@@ -296,41 +327,82 @@ public class SeamlessRoamingHandler {
 	}
 
 	
-	public static long getDuplicateInfoSize() {
-		synchronized(duplicateInfo) {
-			return duplicateInfo.size();
+	public static long getDupInfoSize() {
+		synchronized(duplicationInfo) {
+			return duplicationInfo.size();
 		}
 	}
 	
-	public static Integer getDuplicateInfoCnt(String duplicateId) {
-		synchronized(duplicateInfo) {
-			return duplicateInfo.get(duplicateId);
+	public static int getDupCntForDupId(String duplicationId) {
+		synchronized(duplicationInfo) {
+			ArrayList<ChannelBean> pollingReqList = duplicationInfo.get(duplicationId);
+			if (pollingReqList != null) {
+				return pollingReqList.size();
+			}
+			else {
+				return 0;
+			}
 		}
 	}
 	
-	public static void retainDuplicateInfo(String duplicateId) {
-		synchronized(duplicateInfo) {
+	public static void retainDupCntForDupId(String duplicationId, ChannelBean bean) {
+		synchronized(duplicationInfo) {
 
 			//System.out.println("Retain Dup");
-			Integer refCnt = duplicateInfo.get(duplicateId);
-			duplicateInfo.put(duplicateId, refCnt == null? new Integer(1) : (Integer) (refCnt.intValue() + 1));
+			ArrayList<ChannelBean> pollingReqList = duplicationInfo.get(duplicationId);
+			if (pollingReqList == null) {
+				pollingReqList = new ArrayList<ChannelBean>();
+				pollingReqList.add(bean);
+				duplicationInfo.put(duplicationId,pollingReqList);
+			}
+			else {
+				pollingReqList.add(bean);
+				
+			}
 		}
 	}
 	
-	public static void releaseDuplicateInfo(String duplicateId) {
-		synchronized(duplicateInfo) {
+	public static void releaseDupCntForDupId(String duplicationId, ChannelBean bean) {
+		synchronized(duplicationInfo) {
 
 			//System.out.println("Release Dup");
-			Integer refCnt = duplicateInfo.get(duplicateId);
-			if (refCnt != null) {
-				if (refCnt.intValue() == 1) {
-					duplicateInfo.remove(duplicateId);
-				}
-				else {
-					duplicateInfo.put(duplicateId, (Integer) (refCnt.intValue() - 1));
+			ArrayList<ChannelBean> pollingReqList = duplicationInfo.get(duplicationId);
+
+			if (pollingReqList != null && bean != null) {
+				pollingReqList.remove(bean);
+
+				if (pollingReqList.size() == 0 ) {
+					pollingReqList.clear();
+					duplicationInfo.remove(duplicationId);
 				}
 			}
 		}
 	}
+	
+	static void clear (ChannelBean bean) {
+		synchronized (bean) {
+			bean.getCtx().channel().disconnect();
+			bean.getCtx().channel().close();
+			bean.getCtx().fireChannelInactive();
+			bean.getCtx().fireChannelUnregistered();
+			
+			LinkedList<ChannelTerminateListener> listeners = bean.getCtx().channel().attr(MRH_MessageInputChannel.TERMINATOR).get();
+	        for(ChannelTerminateListener listener: listeners) {
+	        	//System.out.println("SessionId="+sessionId+" listener="+listener);
+	        	listener.terminate(bean.getCtx());
+	        }
+	        bean.getCtx().channel().attr(MRH_MessageInputChannel.TERMINATOR).get().clear(); // Clear the attribute. 
+	        
+	        if (bean != null) {
+				while (bean.refCnt() > 0) {
+					bean.release();
+				}
+			}
+	
+			bean.getCtx().disconnect();
+			bean.getCtx().close();
+		}
+	}
+
 }
 

@@ -174,10 +174,31 @@ Version : 0.9.4
 	Updated MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
- Rev. history : 2019-07-16
- Version : 0.9.4
+Rev. history : 2019-07-16
+Version : 0.9.4
  	Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-09-11
+Version : 0.9.5
+ 	Added a function that message is split along the maximum message size.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+
+Rev. history : 2019-09-25
+Version : 0.9.5
+ 	Revised bugs related to not allowing duplicated long polling request
+ 	    when a MMS Client loses connection with MMS because of unexpected network disconnection.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-10-11
+Version : 0.9.6
+ 	Commented out unused codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-10-25
+Version : 0.9.6
+ 	Added isTermintated.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
@@ -186,7 +207,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -194,6 +217,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.AMQP.Basic;
 import com.rabbitmq.client.AlreadyClosedException;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -222,27 +246,32 @@ import kr.ac.kaist.seamless_roaming.SeamlessRoamingHandler;
 public class MessageQueueDequeuer extends Thread{
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageQueueDequeuer.class);
-	private String sessionId = "";
-	private String duplicateId="";
-	private MRH_MessageInputChannel.ChannelBean bean = null;
-	private String queueName = null;
-	private String srcMRN = null;
-	private String svcMRN = null;
-	private MessageTypeDecider.msgType pollingMethod = MessageTypeDecider.msgType.POLLING;
-	private Channel mqChannel = null;
-	private String consumerTag = null;
-	private static ArrayList<Connection> connectionPool = null;
-	private static ConnectionFactory connFac = null;
-	private static int connectionPoolSize = 0;
+	protected String sessionId = "";
+	protected String duplicationId="";
+	protected MRH_MessageInputChannel.ChannelBean bean = null;
+	protected String queueName = null;
+	protected String srcMRN = null;
+	protected String svcMRN = null;
+	protected MessageTypeDecider.msgType pollingMethod = MessageTypeDecider.msgType.POLLING;
+	protected Channel mqChannel = null;
+	protected String consumerTag = null;
+	protected boolean isTerminated = false;
+	protected static ArrayList<Connection> connectionPool = null;
+	protected static ConnectionFactory connFac = null;
+	protected static int connectionPoolSize = 0;
+
 
 	
-	private MMSLog mmsLog = null;
-	MessageQueueDequeuer (String sessionId) {
+	protected MMSLog mmsLog = null;
+
+	protected MessageQueueDequeuer (String sessionId) {
 		this.sessionId = sessionId;
+		this.consumerTag = sessionId;
+		this.isTerminated = false;
 		mmsLog = MMSLog.getInstance();
 	}
 	
-	void dequeueMessage (MRH_MessageInputChannel.ChannelBean bean) {
+	public void dequeueMessage (MRH_MessageInputChannel.ChannelBean bean) {
 		
 		
 		this.srcMRN = bean.getParser().getSrcMRN();
@@ -250,7 +279,7 @@ public class MessageQueueDequeuer extends Thread{
 		this.bean = bean;
 		this.queueName = srcMRN+"::"+svcMRN;
 		this.pollingMethod = bean.getType();
-		this.duplicateId = srcMRN+svcMRN;		
+		this.duplicationId = srcMRN+svcMRN;
 		
 		this.start();
 
@@ -275,405 +304,14 @@ public class MessageQueueDequeuer extends Thread{
 		}
 	}
 	
-	@Override
+	@Deprecated
 	public void run() {
-		// TODO: Youngjin Kim must inspect this following code.
-		super.run();
-		
-		int connId = (int) (Long.decode("0x"+this.sessionId) % connectionPoolSize);
-		if (connectionPool.get(connId) == null || !connectionPool.get(connId).isOpen()) {
-			try {
-				connectionPool.set(connId, connFac.newConnection());
-			} catch (IOException | TimeoutException e) {
-				mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CONNECTION_OPEN_ERROR.toString(), e, 5);
-				clear(true, true);
-				return;
-			}
-
-		}
-		
-		try {
-			mqChannel = connectionPool.get(connId).createChannel();
-		} catch (IOException e1) {
-			mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString(), e1, 5);
-			clear(true, true);
-			return;
-		}
-
-		
-
-
-		
-		try {
-			mqChannel.queueDeclare(queueName, true, false, false, null);
-		}
-		catch (IOException e) {
-			mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
-			clear(true, true);
-			return;
-		}
-		
-		GetResponse res = null;
-		StringBuffer message = new StringBuffer();
-		ArrayList<String> backupMsg = new ArrayList<String>();
-		message.append("[");
-		
-		int msgCount = 0;
-		do { //Check that the queue having queueName has a message
-			try {
-				res = mqChannel.basicGet(queueName, true);
-			}
-			catch (IOException e) {
-				mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
-				message = null;
-				backupMsg = null;
-				clear(true, true);
-				return;
-			}
-			
-			if (res != null){
-				if (msgCount > 0) {
-					message.append(",");
-				}
-				try {
-					message.append("\""+URLEncoder.encode(new String(res.getBody()),"UTF-8")+"\"");
-					backupMsg.add(0,new String(res.getBody()));
-				} catch (UnsupportedEncodingException e) {
-					mmsLog.info(logger, sessionId, ErrorCode.MESSAGE_ENCODING_ERROR.toString());
-				}
-				msgCount++;
-
-			} 
-		    
-		} while (res != null);
-		
-		if (msgCount > 0) { //If the queue has a message
-			message.append("]");
-			
-			mmsLog.debug(logger, this.sessionId, "Dequeue="+queueName+".");
-	  
-	    	if (SessionManager.getSessionType(this.sessionId) != null) {
-	    		SessionManager.removeSessionInfo(this.sessionId);
-	    	}
-	    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId)!=null) {
-	    		SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
-	    	}
-	    	try {
-	    		bean.getOutputChannel().replyToSender(bean, message.toString().getBytes());
-	    		if(bean != null && bean.refCnt() > 0) {
-					//System.out.println("The request is released.");
-	    			bean.release();
-	    			bean = null;
-				}
-	    	}
-	    	catch (IOException e) {
-	    		mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
-	    		for (String msg : backupMsg) {
-	    			try {
-						mqChannel.basicPublish("", queueName, null, msg.getBytes());
-					} catch (IOException e1) {
-						mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
-						backupMsg = null;
-	    	    		message = null;
-	    	    		clear(true, true);
-						return;
-					}
-	    		}
-	    	}
-	    	try {
-	    		if (mqChannel != null && mqChannel.isOpen()) {
-	    			mqChannel.close(320, "Service stoppted.");
-		    		mqChannel = null;
-	    		}
-	    	}
-	    	catch (IOException | TimeoutException e) {
-	    		mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString());
-	    		return;
-	    	}
-	    	finally {
-	    		backupMsg = null;
-	    		message = null;
-	    		clear(true, true);
-	    	}
-		} 
-		else { //If the queue does not have any message, message count == 0
-			message = null;
-			backupMsg = null;
-			if (pollingMethod == MessageTypeDecider.msgType.POLLING ) {//If polling method is normal polling
-				mmsLog.debug(logger, this.sessionId, "Empty queue="+queueName+".");
-
-		    	if (SessionManager.getSessionType(this.sessionId) != null) {
-		    		SessionManager.removeSessionInfo(this.sessionId);
-		    	}
-
-		    	try {
-		    		bean.getOutputChannel().replyToSender(bean, "".getBytes());
-		    	}
-		    	catch (IOException e) {
-		    		mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
-		    	}
-
-		    	
-		    	try {
-		    		if (mqChannel != null && mqChannel.isOpen()) {
-			    		mqChannel.close(320, "Service stoppted.");
-			    		mqChannel = null;
-		    		}
-		    	}
-		    	catch (IOException | TimeoutException e) {
-		    		mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString());
-		    		return;
-		    	}
-				finally {
-					clear(true, true);
-				}
-
-			}
-			
-			else if (pollingMethod == MessageTypeDecider.msgType.LONG_POLLING){ //If polling method is long polling
-				//Enroll a delivery listener to the queue mqChannel in order to get a message from the queue.
-				mmsLog.debug(logger, this.sessionId, "Client is waiting the message queue="+queueName+".");
-				
-				//TODO: Even though a polling client disconnects long polling session, this DefaultConsumer holds a mqChannel.
-				//When a polling client disconnects long polling session, this DefaultConsumer have to free the mqChannel. 
-				try {
-					mqChannel.basicConsume(queueName, false, new DefaultConsumer(mqChannel) {
-						 @Override
-						  public void handleDelivery(String consumerTag, Envelope envelope,
-						                             AMQP.BasicProperties properties, byte[] body)
-						      throws IOException {
-						    String dqMessage = new String(body, "UTF-8");
-						    MessageQueueDequeuer.this.consumerTag = consumerTag;
-						    if(mqChannel != null && mqChannel.isOpen()) {
-						    	if (bean.getCtx() != null && !bean.getCtx().isRemoved()){
-							    	StringBuffer message = new StringBuffer();
-									message.append("[\""+URLEncoder.encode(dqMessage,"UTF-8")+"\"]");
-									
-									mmsLog.debug(logger, sessionId, "Dequeue="+queueName+".");
-	
-							    	if (SessionManager.getSessionType(sessionId) != null) {
-							    		SessionManager.removeSessionInfo(sessionId);
-							    	}
-							    	
-							    	if(SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId)!=null) {
-							    		SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
-							    	}
-							    	
-							    	try {
-							    		bean.getOutputChannel().replyToSender(bean, message.toString().getBytes());
-							    		if(bean != null && bean.refCnt() > 0) {
-											//System.out.println("The request is released.");
-							    			bean.release();
-							    			bean = null;
-										}
-							    		
-						    			mqChannel.basicAck(envelope.getDeliveryTag(), false);
-						    			mqChannel.basicCancel(consumerTag);
-						    			mqChannel.close(320, "Service stoppted.");
-							    		
-								    	clear(true, true);
-							    	}
-								    catch (IOException | TimeoutException e) {
-							    		mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
-							    		try {
-							    			if (mqChannel != null && mqChannel.isOpen()) {
-							    				mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
-							    				mqChannel.basicCancel(consumerTag);
-							    				mqChannel.close(320, "Service stoppted.");
-							    			}
-							    		}
-							    		catch (AlreadyClosedException | IOException | TimeoutException e1) {
-							    			mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
-							    			clear(true, true);
-							    			return;
-							    		}
-							    	}
-								} else {
-	
-									mmsLog.debug(logger, sessionId, "Dequeue="+queueName+".");
-									mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString()+" srcMRN="+ srcMRN+". Re-enqueue the messages.");
-									
-									try {
-										mqChannel.basicNack(envelope.getDeliveryTag(), false, true);
-										mqChannel.basicCancel(consumerTag);
-										mqChannel.close(320, "Service stoppted.");
-									}
-									catch (AlreadyClosedException | IOException | TimeoutException e) {
-										mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
-										return;
-									}
-									finally {
-										//System.out.println(req.refCnt());
-										clear(true, true);
-									}
-								}
-						    }
-						}
-					});
-				}
-				catch (IOException e) {
-					mmsLog.warn(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString());
-					clear(true, true);
-				}
-
-				
-				//Enroll a  to the queue mqChannel in order to get a message from the queue.
-				//However, it does not block exactly this thread.
-			}
-			
-			//TODO: Unexpectedly a mqChannel is shutdown while transferring a response to polling client, MUST A MESSAGE IS REQUEUED.
-
-			if (bean != null && bean.getCtx() != null) {
-				bean.getCtx().channel().attr(MRH_MessageInputChannel.TERMINATOR).get().add(new ChannelTerminateListener() {
-					
-					@Override
-					public void terminate(ChannelHandlerContext ctx) {
-
-						Integer duplicateInfoCnt = SeamlessRoamingHandler.getDuplicateInfoCnt(duplicateId);
-						if (duplicateInfoCnt != null) {
-							SeamlessRoamingHandler.releaseDuplicateInfo(duplicateId);
-						}
-						if (bean != null && bean.refCnt() > 0) {
-							//mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
-							try {
-								//System.out.println(consumerTag);
-								if(consumerTag != null && mqChannel != null && mqChannel.isOpen()) {
-									//System.out.println(mqChannel.getDefaultConsumer());
-									if (mqChannel.getDefaultConsumer() != null) {
-										mqChannel.basicCancel(consumerTag);
-									}
-								}
-
-							}
-							catch (IOException e) {
-								mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_OPEN_ERROR.toString(), e, 5);
-							}
-							try {
-								if(mqChannel != null && mqChannel.isOpen()){
-									mqChannel.close(320, "Service stoppted.");
-								}
-							}
-							catch (AlreadyClosedException | IOException | TimeoutException e) {
-								mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
-								return;
-							}
-							finally {
-								clear(true, true);
-							}
-						}
-
-
-					}
-				});
-			}
-			
-			
-			//QueueingConsumer is deprecated from amqp-client-5.3.0.jar.
-			/*
-			 else { //If polling method of service having svcMRN is long polling
-			 
-				//Enroll a delivery listener to the queue mqChannel in order to get a message from the queue.
-				if(MMSConfiguration.WEB_LOG_PROVIDING) {
-					String log = "SessionID="+this.sessionId+" Client is waiting message queue="+queueName+".";
-					mmsLog.addBriefLogForStatus(log);
-					mmsLogForDebug.addLog(this.sessionId, log);
-				}
-				logger.debug("SessionID="+this.sessionId+" Client is waiting message queue="+queueName+".");
-				QueueingConsumer consumer = new QueueingConsumer(mqChannel);
-				mqChannel.basicConsume(queueName, false, consumer);
-				QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-				if(!ctx.isRemoved()){
-					message.append("[\""+URLEncoder.encode(new String(delivery.getBody()),"UTF-8")+"\"]");
-					
-					if(MMSConfiguration.WEB_LOG_PROVIDING) {
-						String log = "SessionID="+this.sessionId+" Dequeue="+queueName+".";
-						mmsLog.addBriefLogForStatus(log);
-						mmsLogForDebug.addLog(this.sessionId, log);
-					}
-					logger.debug("SessionID="+this.sessionId+" Dequeue="+queueName+".");
-			    	
-			    	if (SessionManager.sessionInfo.get(this.sessionId) != null) {
-			    		SessionManager.sessionInfo.remove(this.sessionId);
-			    	}
-				    outputChannel.replyToSender(ctx, message.toString().getBytes());
-					mqChannel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-				} else {
-					message.append(new String(delivery.getBody()));
-					if(MMSConfiguration.WEB_LOG_PROVIDING) {
-						String log = "SessionID="+this.sessionId+" Dequeue="+queueName+".";
-						mmsLog.addBriefLogForStatus(log);
-						mmsLogForDebug.addLog(this.sessionId, log);
-						log = "SessionID="+this.sessionId+" "+srcMRN+" is disconnected. Requeue.";
-						mmsLog.addBriefLogForStatus(log);
-						mmsLogForDebug.addLog(this.sessionId, log);
-					}
-					logger.debug("SessionID="+this.sessionId+" Dequeue="+queueName+".");
-					logger.warn("SessionID="+this.sessionId+" "+srcMRN+" is disconnected. Requeue.");
-					mqChannel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
-				}
-				
-				
-				//Enroll a delivery listener to the queue mqChannel in order to get a message from the queue.
-				//However, it blocks exactly this thread.
-			}*/
-		}
-
-			
-			//Busy waiting
-//			GetResponse res = null;
-//			while (res == null){
-//				res = mqChannel.basicGet(queueName, true);
-//				if (res != null){
-//					String message = new String(res.getBody());
-//					if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+" [x] Received '" + message + "'");
-//					outputChannel.replyToSender(ctx, res.getBody());
-//				}
-//			}
-		//Busy waiting
-		//It consumes CPU resources a lot.
-		
-		
-		//Enroll a callback to queue mqChannel
-//			Consumer consumer = new DefaultConsumer(mqChannel)
-//			{
-//			  @Override
-//			  public void handleDelivery(String consumerTag, Envelope envelope,
-//			                             AMQP.BasicProperties properties, byte[] body) {
-//				 
-//				String message = new String(body);
-//			    if(MMSConfiguration.CONSOLE_LOGGING)System.out.println(TAG+" [x] Received '" + message + "'");
-//			    if(MMSConfiguration.CONSOLE_LOGGING)System.out.print(TAG+"\""+message+"\"");
-//			    outputChannel.replyToSender(ctx, body);		  
-//			  	}
-//			};
-//			mqChannel.basicConsume(queueName, true, consumer);
-		//Enroll a callback to queue mqChannel
-		//If there are some messages in the queue, callback is called and messages are retrieved from the queue 
-		//		until the queue is empty.
-		//It do not block this thread.
-			
-	    
-    	if (pollingMethod != null && pollingMethod == MessageTypeDecider.msgType.POLLING) { // Polling method: normal polling
-    		if (mqChannel != null && mqChannel.isOpen()) {
-	    		try {
-					mqChannel.close(320, "Service stoppted.");
-				} catch (IOException | TimeoutException e) {
-					mmsLog.warnException(logger, sessionId, ErrorCode.RABBITMQ_CHANNEL_CLOSE_ERROR.toString(), e, 5);
-				}
-	    	}
-			/*if (mqConnection != null) {
-				try {
-					mqConnection.close();
-				} catch (IOException e) {
-					mmsLog.warnException(logger, sessionId, "", e, 5);
-				}
-			}*/
-    	}		
+//		Implementations are in MessageLimitSizeDequeuer class.
 	}
 
 	public void clear(boolean clearMqChannel, boolean clearMrns) {
 		this.pollingMethod = null;
-		this.duplicateId = null;
+		this.duplicationId = null;
 		if (clearMrns) {
 			this.srcMRN = null;
 			this.svcMRN = null;

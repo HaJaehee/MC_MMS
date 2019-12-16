@@ -76,11 +76,6 @@ class PollingMessageHandler {
 		mqm = new MessageQueueManager(this.sessionId);
 	}
 	
-	@Deprecated
-	void updateClientInfo(MNSInteractionHandler mih, String srcMRN, String srcIP) {
-		mih.updateClientInfo(srcMRN, srcIP);
-	}
-	
 	// TODO: Youngjin Kim must inspect this following code.
 	void dequeueSCMessage(MRH_MessageInputChannel.ChannelBean bean){
 		mqm.dequeueMessage(bean);

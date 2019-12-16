@@ -270,18 +270,24 @@ Version : 0.9.4
 	Updated MRH_MessageInputChannel.ChannelBean.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 
- Rev. history : 2019-07-16
- Version : 0.9.4
+Rev. history : 2019-07-16
+Version : 0.9.4
 	 Revised bugs related to MessageOrderingHandler and SeamlessRoamingHandler.
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
  
-  Rev. history : 2019-07-22
- Version : 0.9.4
+Rev. history : 2019-07-22
+Version : 0.9.4
 	 Added exception safety codes around decideType() and processRelaying().
- Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+ 
+Rev. history : 2019-10-25
+Version : 0.9.6
+	Removed unused codes.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
+import java.awt.TrayIcon.MessageType;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
@@ -355,26 +361,34 @@ public class MessageRelayingHandler  {
 		try {
 			processRelaying(bean);
 		}
+		catch(NullPointerException e1) {
+			exceptionCaught(e1);
+		}
 		catch(Exception e1) {
-			mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.UNKNOWN_ERR.toString(), e1, 5);
-			try {
-				bean.getOutputChannel().replyToSender(bean, ErrorCode.UNKNOWN_ERR.getUTF8Bytes(), 400);
+			exceptionCaught(e1);
+		}
+	}
+
+	private void exceptionCaught (Exception cause) {
+		mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.UNKNOWN_ERR.toString() + cause.getMessage(), cause, 5);
+		try {
+			bean.getOutputChannel().replyToSender(bean, ErrorCode.UNKNOWN_ERR.getUTF8Bytes(), 400);
+		}
+		catch (IOException e2) {
+			mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e2, 5);
+			if (bean.getCtx() != null && !bean.getCtx().isRemoved()){
+				bean.getCtx().close();
 			}
-			catch (IOException e2) {
-				mmsLog.infoException(logger, bean.getSessionId(), ErrorCode.CLIENT_DISCONNECTED.toString(), e2, 5);
-				if (bean.getCtx() != null && !bean.getCtx().isRemoved()){
-                    bean.getCtx().close();
-                }
-				return;
-			}
-			finally {
-				while (bean.refCnt() > 0) {
-					bean.release();
-				}
+			return;
+		}
+		finally {
+			while (bean.refCnt() > 0) {
+				bean.release();
 			}
 		}
 	}
-	
+
+
 	private void initializeModule() {
 		mch = new MessageCastingHandler(bean.getSessionId());
 		mmsLog = MMSLog.getInstance();
@@ -454,7 +468,7 @@ public class MessageRelayingHandler  {
 		}
 		
 		//This code MUST be 'else if' statement not 'if'. 
-		else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
+		else if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
 			moh = new MessageOrderingHandler();
 			message = moh.initializeAndGetError(bean);
 			if (message != null) { // message is an ErrorCode.
@@ -482,6 +496,10 @@ public class MessageRelayingHandler  {
 		else if (bean.getType() == MessageTypeDecider.msgType.NULL_DST_MRN) {
 			isErrorOccured = true;
 			message = ErrorCode.NULL_DST_MRN.getUTF8Bytes();
+		}
+		else if (bean.getType() == MessageTypeDecider.msgType.PRIORITY_ERROR) {
+			isErrorOccured = true;
+			message = ErrorCode.OUT_OF_RANGE_PRIORITY.getUTF8Bytes();
 		}
 		// TODO: Youngjin Kim must inspect this following code.
 		//This code MUST be 'else if' statement not 'if'. 
@@ -525,7 +543,7 @@ public class MessageRelayingHandler  {
 		
 		
 		//Below code MUST be 'if' statement not 'else if'. 
-		if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY || bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SC_SEQUENTIALLY) {
+		if (bean.getType() == MessageTypeDecider.msgType.RELAYING_TO_SERVER_SEQUENTIALLY) {
 			message = moh.processMessage(bean, mch); // The (FullHttpRequest) req MUST be released in this logic.
 			if (message != null) { // message is OK from SeamlessRoamingHandler or an ErrorCode.
 				try {
@@ -611,6 +629,13 @@ public class MessageRelayingHandler  {
 			isErrorOccured = true;
 			mmsLog.info(logger, bean.getSessionId(), ErrorCode.UNKNOWN_MRN.toString());
 			message = ErrorCode.UNKNOWN_MRN.getUTF8Bytes();
+			//logger.info("test "+message);
+		} 
+		//This code MUST be 'else if' statement not 'if'. 
+		else if (bean.getType() == MessageTypeDecider.msgType.INVALID_HTTP_METHOD) {
+			isErrorOccured = true;
+			mmsLog.info(logger, bean.getSessionId(), ErrorCode.INVALID_HTTP_METHOD.toString());
+			message = ErrorCode.INVALID_HTTP_METHOD.getUTF8Bytes();
 			//logger.info("test "+message);
 		} 
 

@@ -59,6 +59,18 @@ Rev. history : 2019-07-10
 Version : 0.9.3
 	Added resource managing codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-09-25
+Version : 0.9.5
+ 	Revised bugs related to not allowing duplicated long polling request 
+ 	    when a MMS Client loses connection with MMS because of unexpected network disconnection.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-11-3
+Version : 0.9.6
+ 	Modified ambiguous names of methods of SeamlessRoamingHandler. 
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
+**/
 /* -------------------------------------------------------- */
 
 
@@ -347,7 +359,7 @@ public class MMSRestAPIHandler {
 				jobj.put("mms-configuration", jobj2);
 			}
 			if (longPollingSessionCount != -1) {
-				jobj.put("long-polling-session-count", SeamlessRoamingHandler.getDuplicateInfoSize());
+				jobj.put("long-polling-session-count", SeamlessRoamingHandler.getDupInfoSize());
 			}
 			
 			return jobj.toJSONString();

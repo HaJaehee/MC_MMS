@@ -114,6 +114,11 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 Rev. history : 2019-07-03
 Version : 0.9.3
 	Added multi-thread safety.
+Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)\
+
+Rev. history : 2019-10-25
+Version : 0.9.6
+	Removed unused codes.
 Modifier : Jaehee ha (jaehee.ha@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
@@ -138,7 +143,7 @@ public class MessageTypeDecider {
 			POLLING,
 			LONG_POLLING,
 			RELAYING_TO_SC,
-			RELAYING_TO_SC_SEQUENTIALLY,
+			//RELAYING_TO_SC_SEQUENTIALLY,
 			RELAYING_TO_SERVER,
 			RELAYING_TO_SERVER_SEQUENTIALLY,
 			//REGISTER_CLIENT,
@@ -152,8 +157,10 @@ public class MessageTypeDecider {
 			NULL_SRC_MRN,
 			NULL_DST_MRN,
 			NULL_MRN,
+			PRIORITY_ERROR,
 			INVALID_SRC_MRN,
 			INVALID_DST_MRN,
+			INVALID_HTTP_METHOD,
 			DST_MRN_IS_THIS_MMS_MRN,
 			SRC_MRN_IS_THIS_MMS_MRN,
 			ADD_MRN_BEING_DEBUGGED,
@@ -232,6 +239,10 @@ public class MessageTypeDecider {
 			return msgType.NULL_DST_MRN;
 		}
 	   	
+		else if (parser.getPriority() < 0) {
+			return msgType.PRIORITY_ERROR;
+		}
+	   	
 		else if (srcMRN.equals(MMSConfiguration.getMmsMrn())) {
 			return msgType.SRC_MRN_IS_THIS_MMS_MRN;
 		}
@@ -259,36 +270,43 @@ public class MessageTypeDecider {
 		
 		// When geocasting
 		else if (parser.isGeocastingMsg()) {
-			SessionManager.incSessionCount();
 			
-			if (parser.getGeoCircleInfo() != null) {
-				GeolocationCircleInfo geo = parser.getGeoCircleInfo();
-				String geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geo.getGeoLat(), geo.getGeoLong(), geo.getGeoRadius());
-				parser.parseGeocastInfo(geocastInfo);
+			
+			if (httpMethod == HttpMethod.POST) {
+				SessionManager.incSessionCount();
 				
-				return msgType.GEOCASTING_CIRCLE;
-			}
-			
-			
-			else if (parser.getGeoPolygonInfo() != null) {
-				GeolocationPolygonInfo geo = parser.getGeoPolygonInfo();
-				float[] geoLatList = geo.getGeoLatList();
-				float[] geoLongList = geo.getGeoLongList();
-				String geocastInfo = null;
-				if (geoLatList != null && geoLongList != null) {
-					geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geoLatList, geoLongList);
-					if (geocastInfo != null) {
-						parser.parseGeocastInfo(geocastInfo);
-						return msgType.GEOCASTING_POLYGON;
-					} else {
+				if (parser.getGeoCircleInfo() != null) {
+					GeolocationCircleInfo geo = parser.getGeoCircleInfo();
+					String geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geo.getGeoLat(), geo.getGeoLong(), geo.getGeoRadius());
+					parser.parseGeocastInfo(geocastInfo);
+					
+					return msgType.GEOCASTING_CIRCLE;
+				}
+				
+				
+				else if (parser.getGeoPolygonInfo() != null) {
+					GeolocationPolygonInfo geo = parser.getGeoPolygonInfo();
+					float[] geoLatList = geo.getGeoLatList();
+					float[] geoLongList = geo.getGeoLongList();
+					String geocastInfo = null;
+					if (geoLatList != null && geoLongList != null) {
+						geocastInfo = mch.queryMNSForDstInfo(srcMRN, dstMRN, geoLatList, geoLongList);
+						if (geocastInfo != null) {
+							parser.parseGeocastInfo(geocastInfo);
+							return msgType.GEOCASTING_POLYGON;
+						} else {
+							//TODO: MUST define specific error code.
+							return msgType.UNKNOWN_MRN;
+						}
+					}
+					else {
 						//TODO: MUST define specific error code.
 						return msgType.UNKNOWN_MRN;
 					}
 				}
-				else {
-					//TODO: MUST define specific error code.
-					return msgType.UNKNOWN_MRN;
-				}
+			}
+			else { //httpMethod != HttpMethod.POST
+				return msgType.INVALID_HTTP_METHOD;
 			}
 		 	return msgType.UNKNOWN_MRN;
 		}
@@ -313,10 +331,11 @@ public class MessageTypeDecider {
 	
 	        	parser.parseDstInfo(dstInfo);
 	        	String model = parser.getDstModel();
-	        	SessionManager.incSessionCount();
+	        	
 				
 				
 	        	if (model.equals("push")) {//model B (destination MSR, MIR, or MSP as servers)
+	        		SessionManager.incSessionCount();
 	        		if (seqNum == -1) {
 	        			return msgType.RELAYING_TO_SERVER;
 	        		}
@@ -325,11 +344,15 @@ public class MessageTypeDecider {
 	        		}
 	        	} 
 	        	else if (model.equals("polling")){//when model A, it puts the message into the queue
-	        		if (seqNum == -1) {
-	        			return msgType.RELAYING_TO_SC;
+	        		if (httpMethod == HttpMethod.POST) {
+	        			SessionManager.incSessionCount();
+		        		
+		        		return msgType.RELAYING_TO_SC;
+		        		
+		        		
 	        		}
-	        		else {
-	        			return msgType.RELAYING_TO_SC_SEQUENTIALLY;
+	        		else { //httpMethod != HttpMethod.POST
+	        			return msgType.INVALID_HTTP_METHOD;
 	        		}
 	        	}
     		}

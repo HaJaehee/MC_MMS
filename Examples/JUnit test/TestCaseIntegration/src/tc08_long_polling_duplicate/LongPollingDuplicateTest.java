@@ -4,7 +4,7 @@ package tc08_long_polling_duplicate;
 package tc08_long_polling_duplicate;
 
 File name : LongPollingDuplicateTest.java
-	Dropping duplicate long polling request test 
+	Dropping duplicated long polling request test 
 Author : Youngjin Kim (jcdad3000@kaist.ac.kr)
 Creation Date : 2019-05-10
 
@@ -20,6 +20,11 @@ Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 	
 Rev. history : 2019-06-20
 Version : 0.9.2
+	Revised test cases and fixed bugs.
+Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
+
+Rev. history : 2019-10-25
+Version : 0.9.6
 	Revised test cases and fixed bugs.
 Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
 */
@@ -99,7 +104,7 @@ public class LongPollingDuplicateTest extends MMSTestBase {
 				testPass = true;
 				actual++;
 			}
-			else if (s.equals("[10011] The polling request is already received. Duplicated request is not accepted.")) {
+			else if (s.equals("[10011] The long polling request is received. Duplicated request is not accepted. The prior request is discarded.")) {
 				actualError++;
 			}
 		}

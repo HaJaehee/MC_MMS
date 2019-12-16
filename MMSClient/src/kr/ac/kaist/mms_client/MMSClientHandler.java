@@ -140,11 +140,17 @@ Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
  Version : 0.9.4
  	Let methods have timeout parameter default.
  Modifier : Jaehee Ha (jaehee.ha@kaist.ac.kr)
-
+ 
+Rev. history : 2019-10-14
+Version : 0.9.6
+	Added priority parameter to sendPostMsgWithPriority() methods.
+Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
 */
 /* -------------------------------------------------------- */
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -152,7 +158,7 @@ import java.util.Map;
  * It is an object that can communicate to MMS through HTTP and send or receive
  * messages of other objects.
  * 
- * @version 0.9.4
+ * @version 0.9.5
  * @see SecureMMSClientHandler
  */
 public class MMSClientHandler {
@@ -321,14 +327,15 @@ public class MMSClientHandler {
 	 * @param callback      the callback interface of
 	 *                      {@link PollingResponseCallback}
 	 * @throws IOException if exception occurs
-	 * @throws NullPointerException if exception occurs
+	 * //@throws NullPointerException if exception occurs
 	 * @see PollingResponseCallback
 	 */
 	public void startPolling(String dstMRN, String svcMRN, String hexSignedData, int interval,
-							 int timeout, PollingResponseCallback callback) throws IOException, NullPointerException {
+							 int timeout, PollingResponseCallback callback) throws IOException{
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
-			throw new NullPointerException();
+			System.out.println("Client MRN must not be null.");
+			return;
 		}
 		
 		if (this.sendHandler != null) {
@@ -535,7 +542,7 @@ public class MMSClientHandler {
 	 * @param dstMRN the destination MRN to send data
 	 * @param loc    url location
 	 * @param data   the data to send
-	 * @throws NullPointerException if exception occurs
+	 * //@throws NullPointerException if exception occurs
 	 * @throws IOException if exception occurs
 	 * @see #sendPostMsg(String, String)
 	 * @see #setSender(ResponseCallback)
@@ -560,7 +567,7 @@ public class MMSClientHandler {
 	 * @param dstMRN the destination MRN to send data
 	 * @param data   the data to send
 	 * @throws IOException if exception occurs
-	 * @throws NullPointerException if exception occurs
+	 * //@throws NullPointerException if exception occurs
 	 * @see #sendPostMsg(String, String, String)
 	 * @see #setSender(ResponseCallback)
 	 */
@@ -591,7 +598,8 @@ public class MMSClientHandler {
 	public void sendPostMsg(String dstMRN, String data, int timeout) throws IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
-			throw new NullPointerException();
+			System.out.println("Client MRN must not be null.");
+			return;
 		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
@@ -614,11 +622,135 @@ public class MMSClientHandler {
 	public void sendPostMsg(String dstMRN, String loc, String data, int timeout) throws IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
-			throw new NullPointerException();
+			System.out.println("Client MRN must not be null.");
+			return;
 		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
 		} else {
+			this.sendHandler.sendHttpPostWithTimeout(dstMRN, loc, data, headerField, timeout);
+		}
+	}
+	
+	/**
+	 * Send a POST message to the destination MRN via MMS. Message sender guarantees
+	 * message sequence.
+	 * 
+	 * @param dstMRN the destination MRN to send data
+	 * @param data   the data to send
+	 * @param seqNum sequence number of message
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
+	 * //@throws NullPointerException if exception occurs
+	 * @throws IOException if exception occurs
+	 * @see #sendPostMsg(String, String, int)
+	 * @see #setSender(ResponseCallback)
+	 */
+	public void sendPostMsg(String dstMRN, String data, int seqNum, int timeout) throws IOException {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			System.out.println("Client MRN must not be null.");
+			return;
+		}
+		if (this.sendHandler == null) {
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
+		} else if (seqNum < 0) {
+			System.out.println(TAG + "Failed! seqNum must be equal to or greater than zero.");
+		} else {
+			this.sendHandler.sendHttpPostWithTimeout(dstMRN, "", data, headerField, seqNum, timeout);
+		}
+	}
+	
+	/**
+	 * Send a POST message to the destination MRN that url matches the location via
+	 * MMS. Message sender guarantees message sequence.
+	 * 
+	 * @param dstMRN the destination MRN to send data
+	 * @param loc    url location
+	 * @param data   the data to send
+	 * @param seqNum sequence number of message
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
+	 * @throws IOException  if exception occurs
+	 * //@throws NullPointerException if exception occurs
+	 * @see #sendPostMsg(String, String, String, int)
+	 * @see #setSender(ResponseCallback)
+	 */
+	public void sendPostMsg(String dstMRN, String loc, String data, int seqNum, int timeout) throws IOException {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			System.out.println("Client MRN must not be null.");
+			return;
+		}
+		if (this.sendHandler == null) {
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
+		} else if (seqNum < 0) {
+			System.out.println(TAG + "Failed! seqNum must be equal to or greater than zero.");
+		} else {
+			this.sendHandler.sendHttpPostWithTimeout(dstMRN, loc, data, headerField, seqNum, timeout);
+		}
+	}
+	
+	/**
+	 * Send a POST message to the destination MRN via MMS with priority.
+	 * 
+	 * @param dstMRN the destination MRN to send data
+	 * @param data   the data to send
+	 * @param priority   message priority
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
+	 * @throws IOException if exception occurs
+	 * @see #sendPostMsg(String, String, int)
+	 * @see #setSender(ResponseCallback)
+	 */
+	public void sendPostMsgWithPriority(String dstMRN, String data, int priority, int timeout) throws IOException {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			System.out.println("Client MRN must not be null.");
+			return;
+		}
+		if (this.sendHandler == null) {
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
+		} else {
+			if(headerField == null) {
+				headerField = new HashMap<String, List<String>>();
+			}
+			
+			List<String> valueList = new ArrayList<String>();
+			valueList.add("" + priority);
+			headerField.put("priority", valueList);
+			
+			this.sendHandler.sendHttpPostWithTimeout(dstMRN, "", data, headerField, timeout);
+		}
+	}
+	
+	/**
+	 * Send a POST message to the destination MRN via MMS with priority.
+	 * 
+	 * @param dstMRN the destination MRN to send data
+	 * @param loc	 url location
+	 * @param data   the data to send
+	 * @param priority   message priority
+	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
+	 * @throws IOException if exception occurs
+	 * @see #sendPostMsg(String, String, int)
+	 * @see #sendPostMsgWithPriority(String, String, int, int)
+	 * @see #setSender(ResponseCallback)
+	 */
+	public void sendPostMsgWithPriority(String dstMRN, String loc, String data, int priority, int timeout) throws IOException {
+		if (clientMRN == null) {
+			System.out.println(TAG + "Failed! Client MRN must not be null.");
+			System.out.println("Client MRN must not be null.");
+			return;
+		}
+		if (this.sendHandler == null) {
+			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
+		} else {
+			if(headerField == null) {
+				headerField = new HashMap<String, List<String>>();
+			}
+			
+			List<String> valueList = new ArrayList<String>();
+			valueList.add("" + priority);
+			headerField.put("priority", valueList);
+			
 			this.sendHandler.sendHttpPostWithTimeout(dstMRN, loc, data, headerField, timeout);
 		}
 	}
@@ -630,13 +762,14 @@ public class MMSClientHandler {
 	 * @param dstMRN the destination MRN
 	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
 	 * @throws IOException  if exception occurs
-	 * @throws NullPointerException if exception occurs
+	 * //@throws NullPointerException if exception occurs
 	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendGetMsg(String dstMRN, int timeout) throws NullPointerException, IOException {
+	public void sendGetMsg(String dstMRN, int timeout) throws IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
-			throw new NullPointerException();
+			System.out.println("Client MRN must not be null.");
+			return;
 		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
@@ -654,15 +787,16 @@ public class MMSClientHandler {
 	 * @param loc    url location
 	 * @param params parameters
 	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
-	 * @throws NullPointerException if exception occurs
+	 * //@throws NullPointerException if exception occurs
 	 * @throws IOException if exception occurs
 	 * @see #sendGetMsg(String, int)
 	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendGetMsg(String dstMRN, String loc, String params, int timeout) throws NullPointerException, IOException {
+	public void sendGetMsg(String dstMRN, String loc, String params, int timeout) throws IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
-			throw new NullPointerException();
+			System.out.println("Client MRN must not be null.");
+			return;
 		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
@@ -703,7 +837,7 @@ public class MMSClientHandler {
 	 * @param data   the data to send
 	 * @param seqNum sequence number of message
 	 * @throws IOException  if exception occurs
-	 * @throws NullPointerException if exception occurs
+	 * //@throws NullPointerException if exception occurs
 	 * @see #sendPostMsg(String, String)
 	 * @see #setSender(ResponseCallback)
 	 */
@@ -723,34 +857,7 @@ public class MMSClientHandler {
 		}
 	}*/
 	
-	/**
-	 * Send a POST message to the destination MRN that url matches the location via
-	 * MMS. Message sender guarantees message sequence.
-	 * 
-	 * @param dstMRN the destination MRN to send data
-	 * @param loc    url location
-	 * @param data   the data to send
-	 * @param seqNum sequence number of message
-	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
-	 * @throws IOException  if exception occurs
-	 * @throws NullPointerException if exception occurs
-	 * @see #sendPostMsg(String, String, String, int)
-	 * @see #setSender(ResponseCallback)
-	 */
-
-	public void sendPostMsg(String dstMRN, String loc, String data, int seqNum, int timeout) throws NullPointerException, IOException {
-		if (clientMRN == null) {
-			System.out.println(TAG + "Failed! Client MRN must not be null.");
-			throw new NullPointerException();
-		}
-		if (this.sendHandler == null) {
-			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
-		} else if (seqNum < 0) {
-			System.out.println(TAG + "Failed! seqNum must be equal to or greater than zero.");
-		} else {
-			this.sendHandler.sendHttpPostWithTimeout(dstMRN, loc, data, headerField, seqNum, timeout);
-		}
-	}
+	
 
 	/**
 	 * Send a POST message to the destination MRN via MMS. Message sender guarantees
@@ -760,7 +867,7 @@ public class MMSClientHandler {
 	 * @param data   the data to send
 	 * @param seqNum sequence number of message
 	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
-	 * @throws NullPointerException if exception occurs
+	 * //@throws NullPointerException if exception occurs
 	 * @throws IOException if exception occurs
 	 * @see #sendPostMsg(String, String, String)
 	 * @see #setSender(ResponseCallback)
@@ -781,33 +888,6 @@ public class MMSClientHandler {
 		}
 	}*/
 	
-	/**
-	 * Send a POST message to the destination MRN via MMS. Message sender guarantees
-	 * message sequence.
-	 * 
-	 * @param dstMRN the destination MRN to send data
-	 * @param data   the data to send
-	 * @param seqNum sequence number of message
-	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
-	 * @throws NullPointerException if exception occurs
-	 * @throws IOException if exception occurs
-	 * @see #sendPostMsg(String, String, int)
-	 * @see #setSender(ResponseCallback)
-	 */
-	public void sendPostMsg(String dstMRN, String data, int seqNum, int timeout) throws NullPointerException, IOException {
-		if (clientMRN == null) {
-			System.out.println(TAG + "Failed! Client MRN must not be null.");
-			throw new NullPointerException();
-		}
-		if (this.sendHandler == null) {
-			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
-		} else if (seqNum < 0) {
-			System.out.println(TAG + "Failed! seqNum must be equal to or greater than zero.");
-		} else {
-			this.sendHandler.sendHttpPostWithTimeout(dstMRN, "", data, headerField, seqNum, timeout);
-		}
-	}
-
 	// HJH
 	/**
 	 * Send a GET message to the destination MRN via MMS. Message sender guarantees
@@ -816,15 +896,16 @@ public class MMSClientHandler {
 	 * @param dstMRN the destination MRN
 	 * @param seqNum sequence number of message
 	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
-	 * @throws NullPointerException if exception occurs
+	 * //@throws NullPointerException if exception occurs
 	 * @throws IOException if exception occurs
 	 * @see #sendGetMsg(String, int)
 	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendGetMsg(String dstMRN, int seqNum, int timeout) throws NullPointerException, IOException {
+	public void sendGetMsg(String dstMRN, int seqNum, int timeout) throws IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
-			throw new NullPointerException();
+			System.out.println("Client MRN must not be null.");
+			return;
 		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
@@ -845,15 +926,16 @@ public class MMSClientHandler {
 	 * @param params parameters
 	 * @param seqNum sequence number of message
 	 * @param timeout set timeout parameter to Connection Timeout and Read Timeout.
-	 * @throws NullPointerException if exception occurs
+	 * //@throws NullPointerException if exception occurs
 	 * @throws IOException if exception occurs
 	 * @see #sendGetMsg(String, String, String, int)
 	 * @see #setSender(ResponseCallback)
 	 */
-	public void sendGetMsg(String dstMRN, String loc, String params, int seqNum, int timeout) throws NullPointerException, IOException {
+	public void sendGetMsg(String dstMRN, String loc, String params, int seqNum, int timeout) throws IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
-			throw new NullPointerException();
+			System.out.println("Client MRN must not be null.");
+			return;
 		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");
@@ -879,12 +961,13 @@ public class MMSClientHandler {
 	 * @return returning result of saving file <code>null</code> if saving file is
 	 *         failed.
 	 * @throws IOException while requesting a file
-	 * @throws NullPointerException if exception occurs
+	 * ////@throws NullPointerException if exception occurs
 	 */
-	public String requestFile(String dstMRN, String fileName, int timeout) throws NullPointerException, IOException {
+	public String requestFile(String dstMRN, String fileName, int timeout) throws IOException {
 		if (clientMRN == null) {
 			System.out.println(TAG + "Failed! Client MRN must not be null.");
-			throw new NullPointerException();
+			System.out.println("Client MRN must not be null.");
+			return null;
 		}
 		if (this.sendHandler == null) {
 			System.out.println(TAG + "Failed! HTTP client is required! Do setSender()");

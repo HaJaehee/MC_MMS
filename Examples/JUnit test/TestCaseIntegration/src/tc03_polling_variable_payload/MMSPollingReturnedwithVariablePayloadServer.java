@@ -1,4 +1,6 @@
 package tc03_polling_variable_payload;
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,6 +27,11 @@ Rev. history : 2019-06-13
 Version : 0.9.2
 	Change the class name from TS3_Test to MMSPollingReturnedwithVariablePayloadServer
 	Modifier : Jin Jeong (jungst0001@kaist.ac.kr)
+	
+Rev. history : 2019-09-17
+Version : 0.9.5
+	Add assertion for size mismatch
+	Modifier : Yunho Choi (choiking10@kaist.ac.kr)
  */
 
 public class MMSPollingReturnedwithVariablePayloadServer {
@@ -65,7 +72,7 @@ public class MMSPollingReturnedwithVariablePayloadServer {
 
 	public void sendContent(String FileName, int content) throws IOException {
 		File file = new File(FileName);
-
+		
 		System.out.println(FileName);
 		FileReader fileReader = new FileReader(file);
 		BufferedReader bufReader = new BufferedReader(fileReader);
@@ -75,6 +82,10 @@ public class MMSPollingReturnedwithVariablePayloadServer {
 		if(data==null)
 			data="";
 		try {
+			assertTrue(
+					String.format("The length of the data[%d] is different from the length expected[%d].", data.length(), content), 
+					data.length() == content);
+			
 			myHandler.sendPostMsg(dstMRN, data, 10000);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo java -jar ../SimpleHttpServer.jar -p 8090
+sudo java -jar ./SimpleHttpServer.jar -p 8090
