@@ -397,10 +397,10 @@ public class SeamlessRoamingHandler {
 				while (bean.refCnt() > 0) {
 					bean.release();
 				}
+				
+				bean.getCtx().disconnect();
+				bean.getCtx().close();
 			}
-	
-			bean.getCtx().disconnect();
-			bean.getCtx().close();
 		}
 	}
 
