@@ -419,7 +419,9 @@ public class MessageLimitSizeDequeuer extends MessageQueueDequeuer {
 		    	}
 
 		    	try {
-		    		bean.getOutputChannel().replyToSender(bean, "".getBytes());
+		    		if (bean != null) {
+		    			bean.getOutputChannel().replyToSender(bean, "".getBytes());
+		    		}
 		    	}
 		    	catch (IOException e) {
 		    		mmsLog.info(logger, sessionId, ErrorCode.CLIENT_DISCONNECTED.toString());
