@@ -1,8 +1,0 @@
-bin/*
-logs/*
-logs/
-target/*
-*/bin/*
-target/
-session-count.csv
-.idea/*
